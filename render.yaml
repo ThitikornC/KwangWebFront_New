@@ -12,3 +12,7 @@ services:
         value: 18.17.0
       - key: NODE_ENV
         value: production
+      - key: API_BASE_URL
+        value: https://kwangwebback-new.railway.internal
+      - key: NUXT_PUBLIC_API_BASE_URL
+        value: https://kwangwebback-new.railway.internal
