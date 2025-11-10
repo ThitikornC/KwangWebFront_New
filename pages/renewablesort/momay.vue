@@ -62,58 +62,58 @@
   </div>
 
   <!-- Momay UI Images - Responsive layout -->
-  <div class="scroll-reveal mt-[clamp(2rem,4vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/1.png" alt="Momay UI 1" @click="toggleDescription(0)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[0]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(2rem,4vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/1.png" alt="Momay UI 1" @click="toggleDescription(0)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[0]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">ข้อมูลพื้นฐาน และค่าไฟฟ้าแบบเรียลไทมม์</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/2.png" alt="Momay UI 2" @click="toggleDescription(1)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[1]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/2.png" alt="Momay UI 2" @click="toggleDescription(1)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[1]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้าแดชบอร์ดแสดงข้อมูลเรียลไทม์</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/3.png" alt="Momay UI 3" @click="toggleDescription(2)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[2]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/3.png" alt="Momay UI 3" @click="toggleDescription(2)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[2]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้ารายละเอียดข้อมูลการใช้พลังงานไฟฟ้าของแต่ละชั้น</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/4.png" alt="Momay UI 4" @click="toggleDescription(3)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[3]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/4.png" alt="Momay UI 4" @click="toggleDescription(3)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[3]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">กราฟแบบเรียลไทมม์</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/5.png" alt="Momay UI 5" @click="toggleDescription(4)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[4]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/5.png" alt="Momay UI 5" @click="toggleDescription(4)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[4]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้ารายงานและสถิติรายเดือน</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/6.png" alt="Momay UI 6" @click="toggleDescription(5)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[5]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/6.png" alt="Momay UI 6" @click="toggleDescription(5)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[5]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">คำนวนและวิเคราห์การติดตั้งระบบโซล่าเซลล์และการช่วยประหยัดค่าไฟ</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/7.png" alt="Momay UI 7" @click="toggleDescription(6)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[6]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/7.png" alt="Momay UI 7" @click="toggleDescription(6)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[6]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">แจ้งเตือนเมื่อมีการใช้ไฟฟ้ามากขึ้น</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/8.png" alt="Momay UI 8" @click="toggleDescription(7)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[7]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/8.png" alt="Momay UI 8" @click="toggleDescription(7)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[7]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
       <p class="text-[clamp(0.875rem,1.5vw,1rem)]">สรุปค่าไฟฟ้าและเปรียบเทียบ</p>
     </div>
   </div>
