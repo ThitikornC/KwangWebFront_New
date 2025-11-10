@@ -372,19 +372,18 @@ onBeforeUnmount(() => {
     <!-- ตัววิ่ง -->
 <div class="flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">       
       <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
-          <div class="marquee">
-            <div class="marquee-content">
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
-            <div class="marquee-content">
-    
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
+        <div class="marquee">
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
+          </div>
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
           </div>
         </div>
       </div>
+    </div>
   <div class="w-full max-w-[min(80rem,95vw)] flex flex-col items-center gap-[clamp(1.5rem,3vw,2.5rem)] px-[clamp(1rem,3vw,1rem)]">
 
 <div class="neon-btn flex flex-col justify-center items-center text-center mb-[clamp(0.25rem,1vw,0.25rem)]">
@@ -415,7 +414,7 @@ onBeforeUnmount(() => {
               @mouseenter="pauseAutoScroll('solarcell-container')"
               @mouseleave="resumeAutoScroll('solarcell-container')"
               class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
-              style="scroll-snap-type: x mandatory;"
+              style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
                 v-for="(project, i) in projectsByCategory['Solar cell']"
@@ -513,7 +512,7 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               @mouseenter="pauseAutoScroll('software-container')"
               @mouseleave="resumeAutoScroll('software-container')"
               class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
-              style="scroll-snap-type: x mandatory;"
+              style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
                 v-for="(project, i) in projectsByCategory['Software']"
@@ -609,7 +608,7 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               @mouseenter="pauseAutoScroll('network-container')"
               @mouseleave="resumeAutoScroll('network-container')"
               class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
-              style="scroll-snap-type: x mandatory;"
+              style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
                 v-for="(project, i) in projectsByCategory['Network']"
@@ -1007,15 +1006,8 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
   font-weight: 700;
   text-transform: uppercase;
   padding: clamp(10px, 1.5vw, 15px) clamp(15px, 2vw, 20px);
-  box-shadow:
-    0 0 5px rgba(255,248,220,0.25),
-    0 0 10px rgba(255,240,180,0.2),
-    inset 0 10px 16px rgba(239,187,91,0.68),
-    inset 0 10px 16px rgba(255,220,140,0.55),
-    inset 0 0 45px rgba(255,235,180,0.45),
-    inset 0 0 80px rgba(255,250,230,1);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,0,0.15), 0 0 6px rgba(255,230,160,0.55);
   box-shadow: 1px 1px 0 #000, clamp(-6px, -0.8vw, -8px) clamp(4px, 0.6vw, 6px) #3b3305, 0 0 20px rgba(255,230,160,0.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,0,0.15), 0 0 6px rgba(255,230,160,0.55);
   overflow: hidden;
   position: relative;
   z-index: 50;
@@ -1024,9 +1016,9 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 /* ลดขนาด 70% สำหรับมือถือ */
 @media (max-width: 768px) {
   .running-text {
-    border-width: 3px;
-    padding: 7px 10px;
-    font-size: 0.7rem;
+    border-width: 2px;
+    padding: 3px 4px;
+    font-size: 0.6rem;
   }
   
   /* ป้องกัน text wrap */
@@ -1034,6 +1026,16 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
     white-space: nowrap !important;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+/* จอเล็กมาก (360px) */
+@media (max-width: 400px) {
+  .running-text {
+    border-width: 1.5px !important;
+    padding: 2px 3px !important;
+    font-size: 0.5rem !important;
+    max-width: 100% !important;
   }
 }
 
@@ -1059,11 +1061,22 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 
 @media (max-width: 768px) {
   .marquee span {
-    padding: 0.26rem 0.875rem;
+    padding: 0.2rem 0.6rem;
     border-width: 1px;
     border-radius: 3px;
-    font-size: 0.525rem;
-    margin-right: 0.525rem;
+    font-size: 0.5rem;
+    margin-right: 0.4rem;
+  }
+}
+
+/* จอเล็กมาก (360px) */
+@media (max-width: 400px) {
+  .marquee span {
+    padding: 0.15rem 0.4rem !important;
+    border-width: 0.5px !important;
+    border-radius: 2px !important;
+    font-size: 0.4rem !important;
+    margin-right: 0.3rem !important;
   }
 }
 

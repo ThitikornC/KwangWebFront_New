@@ -309,17 +309,17 @@ body {
 /* ลดขนาด 70% สำหรับมือถือ */
 @media (max-width: 768px) {
   .running-text {
-    border-width: 2px;
-    padding: 3px 4px;
-    font-size: 0.6rem;
+    border-width: 3px !important;
+    padding: 7px 10px !important;
+    font-size: 0.7rem !important;
   }
   
   .marquee span {
-    padding: 0.2rem 0.6rem;
-    border-width: 1px;
-    border-radius: 3px;
-    font-size: 0.5rem;
-    margin-right: 0.4rem;
+    padding: 0.26rem 0.875rem !important;
+    border-width: 1px !important;
+    border-radius: 3px !important;
+    font-size: 0.525rem !important;
+    margin-right: 0.525rem !important;
   }
   
   .neon-btn {
