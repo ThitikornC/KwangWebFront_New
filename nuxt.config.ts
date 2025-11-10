@@ -34,7 +34,7 @@ export default defineNuxtConfig({
 runtimeConfig: {
   public: {
     appURL: "http://localhost:3000",
-    apiURL: process.env.API_BASE_URL || "http://localhost:8080",
+    apiURL: process.env.API_BASE_URL || "https://kwangwebbacknew-production.up.railway.app",
     firebaseApiKey: process.env.FIREBASE_API_KEY || "",
     firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || "",
     firebaseProjectId: process.env.FIREBASE_PROJECT_ID || "",
