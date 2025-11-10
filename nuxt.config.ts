@@ -47,11 +47,8 @@ runtimeConfig: {
     prerender: {
       autoSubfolderIndex: false
     },
-    preset: "node-server",
-    experimental: {
-      asyncContext: true
-    }
+    preset: "node-server"
   },
   
-  ssr: true
+  ssr: false
 })
