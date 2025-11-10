@@ -47,6 +47,6 @@ runtimeConfig: {
     prerender: {
       autoSubfolderIndex: false
     },
-    preset: "cloudflare-pages"
+    preset: "node-server"
   },
 })
