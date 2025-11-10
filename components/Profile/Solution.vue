@@ -370,9 +370,8 @@ onBeforeUnmount(() => {
 </div>
 
     <!-- ตัววิ่ง -->
-<div class="running-text-container flex justify-center flex-1 px-6" 
-     style="margin-top: 90px; margin-left: 0px; margin-bottom: -40px;">       
-      <div class="running-text w-full max-w-[1000px] overflow-hidden relative">
+<div class="flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">       
+      <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
           <div class="marquee">
             <div class="marquee-content">
               <span>Make tech fresh get forward</span>
@@ -386,11 +385,11 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-  <div class="w-full max-w-[1280px] flex flex-col items-center gap-10 px-4 mt-20">
+  <div class="w-full max-w-[min(80rem,95vw)] flex flex-col items-center gap-[clamp(1.5rem,3vw,2.5rem)] px-[clamp(1rem,3vw,1rem)]">
 
-<div class="neon-btn flex flex-col justify-center items-center text-center mb-1">
-  <h1 class="text-header font-semibold text-black">OUR PROJECTS</h1>
-  <h2 class="text-topic text-black font-thai">ผลงาน</h2>
+<div class="neon-btn flex flex-col justify-center items-center text-center mb-[clamp(0.25rem,1vw,0.25rem)]">
+  <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-semibold text-black">OUR PROJECTS</h1>
+  <h2 class="text-[clamp(1.25rem,2.5vw,1.875rem)] text-black font-thai">ผลงาน</h2>
 </div>
 
 
@@ -401,11 +400,11 @@ onBeforeUnmount(() => {
 
         <!-- Solar Cell Category -->
         <div v-if="projectsByCategory['Solar cell']?.length > 0" class="w-full">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="pt-12 text-xl font-semibold font-thai neon-btn">
+          <div class="flex items-center justify-between mb-[clamp(1rem,2vw,1.5rem)]">
+            <h2 class="pt-[clamp(2rem,3vw,3rem)] text-[clamp(1rem,2vw,1.25rem)] font-semibold font-thai neon-btn whitespace-nowrap">
               ออกแบบและติดตั้งระบบโซล่าเซลล์ (Renewable energy)
             </h2>
-            <span class="text-sl text-gray-600 ml-4 neon-btn">
+            <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-gray-600 ml-[clamp(0.5rem,2vw,1rem)] neon-btn whitespace-nowrap">
               {{ projectsByCategory['Solar cell'].length }} Projects
             </span>
           </div>
@@ -415,18 +414,18 @@ onBeforeUnmount(() => {
               id="solarcell-container"
               @mouseenter="pauseAutoScroll('solarcell-container')"
               @mouseleave="resumeAutoScroll('solarcell-container')"
-              class="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth px-2 py-4"
+              class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
               style="scroll-snap-type: x mandatory;"
             >
               <div
                 v-for="(project, i) in projectsByCategory['Solar cell']"
                 :key="project.id"
-class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
+class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
                 @click="togglePopup('Solar cell', i)"
               >
                 <video
-                  class="h-[150px] w-full object-cover object-center pointer-events-none"
+                  class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
                   autoplay
                   muted
                   loop
@@ -435,15 +434,15 @@ class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6p
                   <source :src="project.linkVideoPreview" type="video/mp4" />
                 </video>
 
-                <div class="p-3 flex flex-col items-center gap-2">
-                  <span class="text-base text-graydeep">{{ formatDate(project.date) }}</span>
-                  <h3 class="font-semibold text-[16px] leading-6 text-black my-2">
+                <div class="p-[clamp(0.5rem,1.5vw,0.75rem)] flex flex-col items-center gap-[clamp(0.25rem,1vw,0.5rem)]">
+                  <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-graydeep">{{ formatDate(project.date) }}</span>
+                  <h3 class="font-semibold text-[clamp(0.875rem,1.5vw,1rem)] leading-6 text-black my-[clamp(0.25rem,1vw,0.5rem)]">
                     Project: <span class="font-thai">{{ project.projectName }}</span>
                   </h3>
-                  <div class="flex flex-col gap-y-2 w-full">
+                  <div class="flex flex-col gap-y-[clamp(0.25rem,1vw,0.5rem)] w-full">
                     <nuxt-link
                       :to="`/viewsolution/${project.id}`"
-class="bg-[#74640a] w-full px-4 py-2 font-thai text-white rounded-[4px] border flex gap-2 justify-center hover:bg-white hover:text-[#74640a] group"
+class="bg-[#74640a] w-full px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.5rem,1.5vw,0.5rem)] font-thai text-white rounded-[4px] border flex gap-[clamp(0.25rem,1vw,0.5rem)] justify-center hover:bg-white hover:text-[#74640a] group text-[clamp(0.75rem,1.25vw,0.875rem)]"
                     >
                       Document
                       <img
@@ -499,11 +498,11 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 
         <!-- Software Category -->
         <div v-if="projectsByCategory['Software']?.length > 0" class="w-full">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="pt-12 text-xl font-semibold font-thai neon-btn">
+          <div class="flex items-center justify-between mb-[clamp(1rem,2vw,1.5rem)]">
+            <h2 class="pt-[clamp(2rem,3vw,3rem)] text-[clamp(1rem,2vw,1.25rem)] font-semibold font-thai neon-btn whitespace-nowrap">
               ซอฟต์แวร์ (Software)
             </h2>
-            <span class="text-sl text-gray-600 ml-4 neon-btn">
+            <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-gray-600 ml-[clamp(0.5rem,2vw,1rem)] neon-btn whitespace-nowrap">
               {{ projectsByCategory['Software'].length }} Projects
             </span>
           </div>
@@ -513,18 +512,18 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               id="software-container"
               @mouseenter="pauseAutoScroll('software-container')"
               @mouseleave="resumeAutoScroll('software-container')"
-              class="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth px-2 py-4"
+              class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
               style="scroll-snap-type: x mandatory;"
             >
               <div
                 v-for="(project, i) in projectsByCategory['Software']"
                 :key="project.id"
-class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
+class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
                 @click="togglePopup('Software', i)"
               >
                 <video
-                  class="h-[150px] w-full object-cover object-center pointer-events-none"
+                  class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
                   autoplay
                   muted
                   loop
@@ -532,15 +531,15 @@ class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6p
                 >
                   <source :src="project.linkVideoPreview" type="video/mp4" />
                 </video>
-                <div class="p-3 flex flex-col items-center gap-2">
-                  <span class="text-base text-graydeep">{{ formatDate(project.date) }}</span>
-                  <h3 class="font-semibold text-[16px] leading-6 text-black my-2">
+                <div class="p-[clamp(0.5rem,1.5vw,0.75rem)] flex flex-col items-center gap-[clamp(0.25rem,1vw,0.5rem)]">
+                  <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-graydeep">{{ formatDate(project.date) }}</span>
+                  <h3 class="font-semibold text-[clamp(0.875rem,1.5vw,1rem)] leading-6 text-black my-[clamp(0.25rem,1vw,0.5rem)]">
                     Project: <span class="font-thai">{{ project.projectName }}</span>
                   </h3>
-                  <div class="flex flex-col gap-y-2 w-full">
+                  <div class="flex flex-col gap-y-[clamp(0.25rem,1vw,0.5rem)] w-full">
                     <nuxt-link
                       :to="`/viewsolution/${project.id}`"
-class="bg-[#74640a] w-full px-4 py-2 font-thai text-white rounded-[4px] border flex gap-2 justify-center hover:bg-white hover:text-[#74640a] group"
+class="bg-[#74640a] w-full px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.5rem,1.5vw,0.5rem)] font-thai text-white rounded-[4px] border flex gap-[clamp(0.25rem,1vw,0.5rem)] justify-center hover:bg-white hover:text-[#74640a] group text-[clamp(0.75rem,1.25vw,0.875rem)]"
                     >
                       Document
                       <img
@@ -595,11 +594,11 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 
         <!-- Network Category -->
         <div v-if="projectsByCategory['Network']?.length > 0" class="w-full">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="pt-12 text-xl font-semibold font-thai neon-btn">
+          <div class="flex items-center justify-between mb-[clamp(1rem,2vw,1.5rem)]">
+            <h2 class="pt-[clamp(2rem,3vw,3rem)] text-[clamp(1rem,2vw,1.25rem)] font-semibold font-thai neon-btn whitespace-nowrap">
               ออกแบบและติดตั้งไอทีเน็ตเวิร์ค (IT Network)
             </h2>
-            <span class="text-sl text-gray-600 ml-4 neon-btn">
+            <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-gray-600 ml-[clamp(0.5rem,2vw,1rem)] neon-btn whitespace-nowrap">
               {{ projectsByCategory['Network'].length }} Projects
             </span>
           </div>
@@ -609,18 +608,18 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               id="network-container"
               @mouseenter="pauseAutoScroll('network-container')"
               @mouseleave="resumeAutoScroll('network-container')"
-              class="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth px-2 py-4"
+              class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
               style="scroll-snap-type: x mandatory;"
             >
               <div
                 v-for="(project, i) in projectsByCategory['Network']"
                 :key="project.id"
-class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
+class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
                 @click="togglePopup('Network', i)"
               >
                 <video
-                  class="h-[150px] w-full object-cover object-center pointer-events-none"
+                  class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
                   autoplay
                   muted
                   loop
@@ -628,15 +627,15 @@ class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6p
                 >
                   <source :src="project.linkVideoPreview" type="video/mp4" />
                 </video>
-                <div class="p-3 flex flex-col items-center gap-2">
-                  <span class="text-base text-graydeep">{{ formatDate(project.date) }}</span>
-                  <h3 class="font-semibold text-[16px] leading-6 text-black my-2">
+                <div class="p-[clamp(0.5rem,1.5vw,0.75rem)] flex flex-col items-center gap-[clamp(0.25rem,1vw,0.5rem)]">
+                  <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-graydeep">{{ formatDate(project.date) }}</span>
+                  <h3 class="font-semibold text-[clamp(0.875rem,1.5vw,1rem)] leading-6 text-black my-[clamp(0.25rem,1vw,0.5rem)]">
                     Project: <span class="font-thai">{{ project.projectName }}</span>
                   </h3>
-                  <div class="flex flex-col gap-y-2 w-full">
+                  <div class="flex flex-col gap-y-[clamp(0.25rem,1vw,0.5rem)] w-full">
                     <nuxt-link
                       :to="`/viewsolution/${project.id}`"
-class="bg-[#74640a] w-full px-4 py-2 font-thai text-white rounded-[4px] border flex gap-2 justify-center hover:bg-white hover:text-[#74640a] group"
+class="bg-[#74640a] w-full px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.5rem,1.5vw,0.5rem)] font-thai text-white rounded-[4px] border flex gap-[clamp(0.25rem,1vw,0.5rem)] justify-center hover:bg-white hover:text-[#74640a] group text-[clamp(0.75rem,1.25vw,0.875rem)]"
                     >
                       Document
                       <img
@@ -1003,11 +1002,11 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 .running-text {
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   color: #000;
-   border: 6px solid #74640a;
-border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต็มสำหรับปุ่มสั้น */
+  border: clamp(4px, 0.5vw, 6px) solid #74640a;
+  border-radius: 9999px;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 15px 20px;
+  padding: clamp(10px, 1.5vw, 15px) clamp(15px, 2vw, 20px);
   box-shadow:
     0 0 5px rgba(255,248,220,0.25),
     0 0 10px rgba(255,240,180,0.2),
@@ -1016,10 +1015,26 @@ border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต�
     inset 0 0 45px rgba(255,235,180,0.45),
     inset 0 0 80px rgba(255,250,230,1);
   text-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,0,0.15), 0 0 6px rgba(255,230,160,0.55);
- box-shadow: 1px 1px 0 #000, -8px 6px  #3b3305, 0 0 20px rgba(255,230,160,0.55);
+  box-shadow: 1px 1px 0 #000, clamp(-6px, -0.8vw, -8px) clamp(4px, 0.6vw, 6px) #3b3305, 0 0 20px rgba(255,230,160,0.55);
   overflow: hidden;
   position: relative;
   z-index: 50;
+}
+
+/* ลดขนาด 70% สำหรับมือถือ */
+@media (max-width: 768px) {
+  .running-text {
+    border-width: 3px;
+    padding: 7px 10px;
+    font-size: 0.7rem;
+  }
+  
+  /* ป้องกัน text wrap */
+  .whitespace-nowrap {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 /* --- ส่วน marquee, scroll-reveal และอื่นๆ เหมือนเดิม --- */
@@ -1031,14 +1046,25 @@ border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต�
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  padding: 0.5rem 2rem;
+  padding: clamp(0.375rem, 1vw, 0.5rem) clamp(1.25rem, 2.5vw, 2rem);
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   font-weight: 700;
   text-transform: uppercase;
-  border: 2px solid #000;
-  border-radius: 6px;
+  border: clamp(1.5px, 0.25vw, 2px) solid #000;
+  border-radius: clamp(4px, 0.6vw, 6px);
   box-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 6px rgba(255,230,160,0.55);
-  margin-right: 1rem;
+  margin-right: clamp(0.75rem, 1.5vw, 1rem);
+  font-size: clamp(0.75rem, 1.25vw, 0.875rem);
+}
+
+@media (max-width: 768px) {
+  .marquee span {
+    padding: 0.26rem 0.875rem;
+    border-width: 1px;
+    border-radius: 3px;
+    font-size: 0.525rem;
+    margin-right: 0.525rem;
+  }
 }
 
 .running-text-container { justify-content: flex-start; padding-left: 25px; padding-right: 0; }
@@ -1048,22 +1074,27 @@ border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต�
 .neon-btn {
   background: linear-gradient(180deg, #f8f6f0 0%, #fffef8 45%, #fff8e8 55%, #f5f0e5 100%);
   color: #000000;
-  border: 6px solid #74640a;
-border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต็มสำหรับปุ่มสั้น */
+  border: clamp(4px, 0.5vw, 6px) solid #74640a;
+  border-radius: 9999px;
   box-shadow:
-
-  inset 0 0 90px rgba(255, 252, 240, 1),
-  1px 1px 0 #000,
-  -8px 6px  #3b3305,
-  0 0 20px rgba(255,230,160,0.55);
+    inset 0 0 90px rgba(255, 252, 240, 1),
+    1px 1px 0 #000,
+    clamp(-6px, -0.8vw, -8px) clamp(4px, 0.6vw, 6px) #3b3305,
+    0 0 20px rgba(255,230,160,0.55);
   font-weight: 700;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(0, 0, 0, 0.1);
-    
-
   position: relative;
-  padding: 16px 40px;
+  padding: clamp(12px, 1.5vw, 16px) clamp(28px, 4vw, 40px);
   transform: translateZ(0);
   transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .neon-btn {
+    border-width: 3px;
+    padding: 8.4px 19.6px;
+    font-size: 0.7rem;
+  }
 }
 .background-image2 {
   position: fixed;

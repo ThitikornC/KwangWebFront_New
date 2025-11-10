@@ -835,14 +835,18 @@ function closeImageModal() {
 
 /* Spline link card styling */
 .spline-link-card {
-  width: 250px;
-  height: 80px;
-  border-radius: 12px;
+  width: clamp(400px, min(60vw, 60vh), 800px);
+  height: clamp(400px, min(60vw, 60vh), 800px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .spline-link-card:hover {

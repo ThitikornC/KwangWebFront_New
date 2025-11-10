@@ -49,57 +49,53 @@ onBeforeUnmount(() => {
 
 
 <template>
-  <div class="root-bg min-h-screen flex flex-col relative z-10">
+  <div class="root-bg flex flex-col relative z-10 px-[clamp(1rem,2vw,2rem)] py-[clamp(2rem,4vw,3rem)]">
     <!-- Logo ลายน้ำ - ย้ายมาไว้ข้างนอก -->
     <div class="background-image">
       <img src="/kwang_logo.png" alt="Logo" />
     </div>
 
-    <!-- Logo + Running Text -->
-    <div class="flex items-center justify-between px-16 py-4 w-full gap-6 relative z-10">
-      <div class="running-text-container flex justify-center flex-1 px-6" 
-           style="margin-top: 90px; margin-left: 150px; margin-bottom: -40px;">       
-        <div class="running-text w-full max-w-[1000px] overflow-hidden relative">
-          <div class="marquee">
-            <div class="marquee-content">
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
-            <div class="marquee-content">
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
+    <!-- Running Text -->
+    <div class="flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">       
+      <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
+        <div class="marquee">
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
+          </div>
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Video + Menu -->
-    <div class="flex-1 max-w-6xl mx-auto px-6 py-0 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-20 my-6"
-         style="margin-top: -20px;">
+    <div class="flex-1 max-w-6xl mx-auto px-[clamp(1rem,3vw,2rem)] py-0 flex flex-col xl:flex-row items-center gap-[clamp(2rem,5vw,5rem)]">
       
       <!-- Video Box -->
-      <div class="flex-[2] w-full flex justify-center items-center video-box md:mr-8">
-        <video class="w-full max-w-3xl rounded-xl shadow-xl object-cover" autoplay muted loop playsinline>
+      <div class="flex-[2] w-full flex justify-center items-center video-box">
+        <video class="w-full max-w-[min(48rem,85vw)] rounded-xl shadow-xl object-cover" autoplay muted loop playsinline>
           <source src="/video/kwang_Temporary.mp4" type="video/mp4" />
         </video>
       </div>
       
       <!-- Menu -->
-      <div class="flex-[1] flex flex-col items-center gap-6 w-full">
-        <a href="/valueProposition" class="neon-btn bg-[#f8f6f0] text-black text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
+      <div class="flex-[1] flex flex-col items-center gap-[clamp(1rem,2.5vw,2rem)] w-full">
+        <a href="/valueProposition" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           ABOUT US
         </a>
 
-        <a href="/home" class="neon-btn bg-[#7d1007] text-white text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
+        <a href="/home" class="neon-btn bg-[#7d1007] text-white text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           PROJECTS
         </a>
 
-        <a href="/renewable" class="neon-btn bg-[#7d1007] text-white text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
+        <a href="/renewable" class="neon-btn bg-[#7d1007] text-white text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           FORWARD THINKING
         </a>
 
-        <a href="/products" class="neon-btn bg-[#f8f6f0] text-black text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
+        <a href="/products" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           SHOP
         </a>
       </div>
@@ -124,7 +120,6 @@ body {
 /* 🌈 พื้นหลังทั้งหน้า */
 .root-bg {
   position: relative;
-  min-height: 100vh;
   overflow-x: hidden;
 }
 
@@ -190,27 +185,16 @@ body {
 .running-text {
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   color: #000;
-  border: 6px solid #74640a;
+  border: clamp(4px, 0.5vw, 6px) solid #74640a;
   border-radius: 9999px;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 15px 20px;
-  box-shadow: 1px 1px 0 #000, -8px 6px #3b3305, 0 0 20px rgba(255,230,160,0.55);
+  padding: clamp(10px, 1.5vw, 15px) clamp(15px, 2vw, 20px);
+  box-shadow: 1px 1px 0 #000, clamp(-6px, -0.8vw, -8px) clamp(4px, 0.6vw, 6px) #3b3305, 0 0 20px rgba(255,230,160,0.55);
   text-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,0,0.15), 0 0 6px rgba(255,230,160,0.55);
   overflow: hidden;
   position: relative;
   z-index: 50;
-}
-
-.running-text-container { 
-  justify-content: flex-start; 
-  padding-left: 0px; 
-  padding-right: 0; 
-}
-
-.running-text { 
-  max-width: 1090px; 
-  width: auto; 
 }
 
 /* Marquee */
@@ -237,14 +221,15 @@ body {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  padding: 0.5rem 2rem;
+  padding: clamp(0.375rem, 1vw, 0.5rem) clamp(1.25rem, 2.5vw, 2rem);
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   font-weight: 700;
   text-transform: uppercase;
-  border: 2px solid #000;
-  border-radius: 6px;
+  border: clamp(1.5px, 0.25vw, 2px) solid #000;
+  border-radius: clamp(4px, 0.6vw, 6px);
   box-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 6px rgba(255,230,160,0.55);
-  margin-right: 1rem;
+  margin-right: clamp(0.75rem, 1.5vw, 1rem);
+  font-size: clamp(0.75rem, 1.25vw, 0.875rem);
 }
 
 @keyframes marquee { 
@@ -319,6 +304,43 @@ body {
   font-weight: 700; 
   color: #7d1007; 
   font-size: 2.7rem; 
+}
+
+/* ลดขนาด 70% สำหรับมือถือ */
+@media (max-width: 768px) {
+  .running-text {
+    border-width: 2px;
+    padding: 3px 4px;
+    font-size: 0.6rem;
+  }
+  
+  .marquee span {
+    padding: 0.2rem 0.6rem;
+    border-width: 1px;
+    border-radius: 3px;
+    font-size: 0.5rem;
+    margin-right: 0.4rem;
+  }
+  
+  .neon-btn {
+    border-width: 3px;
+    padding: 8.4px 19.6px;
+    font-size: 0.7rem;
+  }
+  
+  /* ป้องกัน text wrap */
+  .whitespace-nowrap {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* iPad Pro แนวนอน - แสดง menu ข้างๆ */
+@media (min-width: 1200px) {
+  .flex-1.max-w-6xl {
+    flex-direction: row !important;
+  }
 }
 
 </style>

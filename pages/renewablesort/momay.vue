@@ -3,53 +3,49 @@
   <div class="root-bg p-8 min-h-screen">
 
   <!-- Running Text -->
-  <div class="scroll-reveal flex items-center justify-center px-6 py-4 w-full">
-    <div class="running-text-container flex justify-center flex-1 px-6">       
-      <div class="running-text w-full max-w-[1000px] overflow-hidden relative">
-        <div class="marquee">
-          <div class="marquee-content">
-            <span>Momay Platform</span>
-            <span>Real-time Data Integration</span>
-            <span>Smart Energy Management</span>
-          </div>
-          <div class="marquee-content">
-            <span>Momay Platform</span>
-            <span>Real-time Data Integration</span>
-            <span>Smart Energy Management</span>
-          </div>
+  <div class="scroll-reveal flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">
+    <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
+      <div class="marquee">
+        <div class="marquee-content">
+          <span>Momay Platform</span>
+          <span>Real-time Data Integration</span>
+          <span>Smart Energy Management</span>
+        </div>
+        <div class="marquee-content">
+          <span>Momay Platform</span>
+          <span>Real-time Data Integration</span>
+          <span>Smart Energy Management</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- make the content container wider and centered; remove full-screen min height so content height is natural -->
-<div class="px-6 py-4 max-w-sm md:max-w-md lg:max-w-lg mx-auto flex flex-col items-center">
-  <h1 class="neon-btn text-4xl font-bold text-pink-900 capitalize font-thai text-center rounded-xl py-3 px-6">
+  <!-- Responsive container -->
+<div class="px-[clamp(1rem,3vw,1.5rem)] max-w-[min(80rem,95vw)] mx-auto flex flex-col items-center">
+  <h1 class="neon-btn text-[clamp(1.875rem,4vw,3rem)] font-bold text-pink-900 capitalize font-thai text-center rounded-xl py-[clamp(0.75rem,2vw,1rem)] px-[clamp(1.5rem,4vw,2.5rem)] w-full sm:w-auto">
     Momay
   </h1>
 
-
-
   <!-- Key Features -->
-  <h2 class="neon-btn mt-8 font-bold text-pink-900 text-2xl font-thai text-left rounded-xl py-2 px-6 self-start">
+  <h2 class="neon-btn mt-[clamp(1.5rem,3vw,2rem)] font-bold text-pink-900 text-[clamp(1.25rem,2.5vw,1.875rem)] font-thai text-left rounded-xl py-[clamp(0.5rem,1.5vw,0.75rem)] px-[clamp(1.5rem,4vw,2.5rem)] self-start">
     Value
   </h2>
 
-  <div class="mt-6 grid grid-cols-1 gap-6 font-thai w-full">
-    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-6 px-4 shadow hover:shadow-lg transition-shadow">
-      <p class="text-base text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
+  <div class="mt-[clamp(1.5rem,3vw,2rem)] grid grid-cols-1 gap-[clamp(1rem,2vw,1.5rem)] font-thai w-full">
+    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-[clamp(1rem,2.5vw,1.5rem)] px-[clamp(1rem,3vw,1.5rem)] shadow hover:shadow-lg transition-shadow">
+      <p class="text-[clamp(0.875rem,1.5vw,1.125rem)] text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
         แอพพริเคชั่นสำหรับผู้ใช้งานต้องการรักษาผลของตนเอง
       </p>
     </div>
 
-    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-6 px-4 shadow hover:shadow-lg transition-shadow">
-      <p class="text-base text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
+    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-[clamp(1rem,2.5vw,1.5rem)] px-[clamp(1rem,3vw,1.5rem)] shadow hover:shadow-lg transition-shadow">
+      <p class="text-[clamp(0.875rem,1.5vw,1.125rem)] text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
         เป็นโมเดลและแพลตฟอร์มที่มอบคำตอบที่เป็นผลประโยชน์ของผู้ใช้ ก่อนผู้ใช้จะตั้งคำถามเสมอ
       </p>
     </div>
 
-    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-6 px-4 shadow hover:shadow-lg transition-shadow">
-      <p class="text-base text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
+    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-[clamp(1rem,2.5vw,1.5rem)] px-[clamp(1rem,3vw,1.5rem)] shadow hover:shadow-lg transition-shadow">
+      <p class="text-[clamp(0.875rem,1.5vw,1.125rem)] text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
         Momay จะโน้มน้าวกลุ่มคนที่ตั้งคำถามและผู้หาคำตอบเพื่อรักษาผลประโยชน์ตัวเองให้มา
         ดูข้อมูลเพื่อเปรียบเทียบและกำหนดทิศทางที่ดีกว่าเดิมในทุกวัน
       </p>
@@ -59,77 +55,77 @@
 
 
   <!-- Diagram -->
-  <div class="flex justify-center items-center mt-8">
+  <div class="flex justify-center items-center mt-[clamp(1.5rem,3vw,2rem)] px-[clamp(1rem,3vw,2rem)]">
     <img src="/diagramSystem.png"
          alt="Diagram System"
-         class="my-2 w-3/4 md:w-1/2 h-auto rounded-lg shadow-lg block mx-auto" />
+         class="my-[clamp(0.5rem,1vw,1rem)] w-[min(100%,50rem)] h-auto rounded-lg shadow-lg" />
   </div>
 
-  <!-- Momay UI Images - Vertical scroll with Apple-style animation -->
-  <div class="scroll-reveal mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/1.png" alt="Momay UI 1" @click="toggleDescription(0)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[0]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>ข้อมูลพื้นฐาน และค่าไฟฟ้าแบบเรียลไทมม์</p>
+  <!-- Momay UI Images - Responsive layout -->
+  <div class="scroll-reveal mt-[clamp(2rem,4vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/1.png" alt="Momay UI 1" @click="toggleDescription(0)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[0]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">ข้อมูลพื้นฐาน และค่าไฟฟ้าแบบเรียลไทมม์</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/2.png" alt="Momay UI 2" @click="toggleDescription(1)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[1]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>หน้าแดชบอร์ดแสดงข้อมูลเรียลไทม์</p>
+  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/2.png" alt="Momay UI 2" @click="toggleDescription(1)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[1]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้าแดชบอร์ดแสดงข้อมูลเรียลไทม์</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/3.png" alt="Momay UI 3" @click="toggleDescription(2)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[2]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>หน้ารายละเอียดข้อมูลการใช้พลังงานไฟฟ้าของแต่ละชั้น</p>
+  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/3.png" alt="Momay UI 3" @click="toggleDescription(2)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[2]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้ารายละเอียดข้อมูลการใช้พลังงานไฟฟ้าของแต่ละชั้น</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/4.png" alt="Momay UI 4" @click="toggleDescription(3)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[3]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>กราฟแบบเรียลไทมม์</p>
+  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/4.png" alt="Momay UI 4" @click="toggleDescription(3)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[3]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">กราฟแบบเรียลไทมม์</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/5.png" alt="Momay UI 5" @click="toggleDescription(4)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[4]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>หน้ารายงานและสถิติรายเดือน</p>
+  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/5.png" alt="Momay UI 5" @click="toggleDescription(4)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[4]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้ารายงานและสถิติรายเดือน</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/6.png" alt="Momay UI 6" @click="toggleDescription(5)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[5]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>คำนวนและวิเคราห์การติดตั้งระบบโซล่าเซลล์และการช่วยประหยัดค่าไฟ</p>
+  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/6.png" alt="Momay UI 6" @click="toggleDescription(5)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[5]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">คำนวนและวิเคราห์การติดตั้งระบบโซล่าเซลล์และการช่วยประหยัดค่าไฟ</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/7.png" alt="Momay UI 7" @click="toggleDescription(6)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[6]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>แจ้งเตือนเมื่อมีการใช้ไฟฟ้ามากขึ้น</p>
+  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/7.png" alt="Momay UI 7" @click="toggleDescription(6)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[6]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">แจ้งเตือนเมื่อมีการใช้ไฟฟ้ามากขึ้น</p>
     </div>
   </div>
   
-  <div class="scroll-reveal -mt-12 mx-auto flex gap-4 items-center justify-center">
-    <img src="/Momay_UI/8.png" alt="Momay UI 8" @click="toggleDescription(7)" class="w-1/2 h-auto block cursor-pointer hover:opacity-90 transition-opacity" />
-    <div v-if="showDescription[7]" class="neon-btn p-4 rounded-xl font-thai text-gray-700 w-1/3 slide-in-right">
-      <p>สรุปค่าไฟฟ้าและเปรียบเทียบ</p>
+  <div class="scroll-reveal -mt-[clamp(1.5rem,3vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(0.5rem,2vw,1rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
+    <img src="/Momay_UI/8.png" alt="Momay UI 8" @click="toggleDescription(7)" class="w-[min(100%,40%)] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
+    <div v-if="showDescription[7]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-[min(100%,40%)] slide-in-right">
+      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">สรุปค่าไฟฟ้าและเปรียบเทียบ</p>
     </div>
   </div>
 
-  <!-- Spline Cards -->
-  <div class="flex gap-4 flex-wrap justify-center mt-10 px-4">
+  <!-- Spline Cards - Responsive -->
+  <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
     <div
       @click="openSplineDesign('momay_BanKlongResort')"
       class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-8 h-8 sm:w-12 sm:h-12 object-contain" />
         <span class="font-thai">Noen Maprang Hospital</span>
       </div>
     </div>
@@ -345,8 +341,8 @@ function openSplineDesign(key: keyof typeof splineLinks) {
 }
 
 .spline-link-card {
-  width: 250px;
-  height: 80px;
+  width: 200px;
+  height: 70px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -355,7 +351,15 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 12px;
+}
+
+@media (min-width: 640px) {
+  .spline-link-card {
+    width: 250px;
+    height: 80px;
+    padding: 0 20px;
+  }
 }
 
 .spline-link-card:hover {
@@ -367,15 +371,28 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 0 20px;
+  padding: 0 8px;
   width: 100%;
-  gap: 12px;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .card-content {
+    padding: 0 12px;
+    gap: 12px;
+  }
 }
 
 .card-content span {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   flex-grow: 1;
+}
+
+@media (min-width: 640px) {
+  .card-content span {
+    font-size: 16px;
+  }
 }
 .root-bg {
   position: relative;
@@ -422,6 +439,36 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   transform: translateZ(0);
   transition: all 0.3s ease;
   z-index: 10;
+}
+
+/* ลดขนาด 70% สำหรับมือถือ */
+@media (max-width: 768px) {
+  .running-text {
+    border-width: 3px;
+    padding: 7px 10px;
+    font-size: 0.7rem;
+  }
+  
+  .marquee span {
+    padding: 0.26rem 0.875rem;
+    border-width: 1px;
+    border-radius: 3px;
+    font-size: 0.525rem;
+    margin-right: 0.525rem;
+  }
+  
+  .neon-btn {
+    border-width: 2px;
+    padding: 8.4px 19.6px;
+    font-size: 0.7rem;
+  }
+  
+  /* ป้องกัน text wrap */
+  .whitespace-nowrap {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 </style>
