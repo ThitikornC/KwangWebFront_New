@@ -1,4 +1,3 @@
-
 <template>
 <div class="min-h-screen bg-gradient-to-br from-green-50 to-green-200 p-8">
     <header class="flex justify-between items-center mb-8">
@@ -99,32 +98,40 @@
           <span class="font-thai">Espresso Human</span>
         </div>
       </div>
+
+      <div 
+        @click="openSplineDesign('huaroa')"
+        class="spline-link-card bg-gradient-to-br from-pink-50 to-pink-200 hover:from-pink-100 hover:to-pink-300"
+      >
+        <div class="card-content">
+          <img src="/ESPRESSO_logo.png" alt="Espresso Design" class="w-12 h-12 object-contain" />
+          <span class="font-thai">Huaroa</span>
+        </div>
+      </div>
     </div>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const splineLinks = {
-  espresso_pharmacy: 'https://my.spline.design/espresopharmacy-a21edee004531a425af1c2768331add8/',
-  espresso_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
-}
+  espresso_pharmacy: '/renewablesort/espresso/espresso_pharmacy',
+  espresso_human: '/renewablesort/espresso/espresso_human',
+  huaroa: 'https://huaroa-production.up.railway.app/', // External link
+};
 
-// ✅ เพิ่มการใส่รหัสผ่านก่อนเปิดลิงก์
 function openSplineDesign(key: keyof typeof splineLinks) {
-  // ตรวจว่าเคยผ่านการยืนยันแล้วหรือยัง
-  const isAuthenticated = localStorage.getItem('espresso_auth') === 'ok'
+  const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง");
 
- const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
   if (password !== '240124') {
-    alert("รหัสผ่านไม่ถูกต้อง ❌")
-    return
+    alert("รหัสผ่านไม่ถูกต้อง ❌");
+    return;
   }
 
-  const url = splineLinks[key]
-  if (url) window.open(url, '_blank')
+  const url = splineLinks[key];
+  if (url) window.open(url, '_blank');
 }
 </script>
 
