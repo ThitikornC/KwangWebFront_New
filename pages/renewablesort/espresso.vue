@@ -100,12 +100,12 @@
       </div>
 
       <div 
-        @click="openSplineDesign('huaroa')"
+        @click="openSplineDesign('espresso_huaroi')"
         class="spline-link-card bg-gradient-to-br from-pink-50 to-pink-200 hover:from-pink-100 hover:to-pink-300"
       >
         <div class="card-content">
           <img src="/ESPRESSO_logo.png" alt="Espresso Design" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Huaroa</span>
+          <span class="font-thai">Espresso Huaroa</span>
         </div>
       </div>
     </div>
@@ -122,7 +122,7 @@ const router = useRouter();
 const splineLinks = {
   espresso_pharmacy: '/espresso/espresso_pharmacy',
   espresso_human: '/espresso/espresso_human',
-  huaroa: '/espresso/huaroa',
+  espresso_huaroi: '/espresso/espresso',
 };
 
 function openSplineDesign(key: keyof typeof splineLinks) {
