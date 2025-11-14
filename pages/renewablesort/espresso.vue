@@ -115,11 +115,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const splineLinks = {
-  espresso_pharmacy: '/renewablesort/espresso/espresso_pharmacy',
-  espresso_human: '/renewablesort/espresso/espresso_human',
-  huaroa: 'https://huaroa-production.up.railway.app/', // External link
+  espresso_pharmacy: '/espresso/espresso_pharmacy',
+  espresso_human: '/espresso/espresso_human',
+  huaroa: '/espresso/huaroa',
 };
 
 function openSplineDesign(key: keyof typeof splineLinks) {
@@ -131,7 +134,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   }
 
   const url = splineLinks[key];
-  if (url) window.open(url, '_blank');
+  if (url) router.push(url);
 }
 </script>
 
