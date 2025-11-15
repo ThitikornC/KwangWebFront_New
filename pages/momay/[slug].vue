@@ -9,7 +9,7 @@ const route = useRoute()
 const targets: Record<string, string> = {
   momay_BanKlongResort: 'https://momaysukhothai.web.app/',
   wongpanit_sukhothai: 'https://wongpanit-sukhothai.web.app/',
-  hospital_Noenmaprang: 'https://momay-4a073.web.app/',
+  hospital_Noenmaprang: 'https://momayretro-production.up.railway.app/',
   clinic: 'https://momayclinic.web.app/',
   momay02:'https://momay02-production.up.railway.app/'
 }

@@ -120,13 +120,14 @@
 
   <!-- Spline Cards - Responsive -->
   <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
-    <div
-      @click="openSplineDesign('momay_BanKlongResort')"
+
+        <div
+      @click="openSplineDesign('hospital_Noenmaprang')"
       class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Momay" class="w-8 h-8 sm:w-12 sm:h-12 object-contain" />
-        <span class="font-thai">Noen Maprang Hospital</span>
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Hospital Noenmaprang</span>
       </div>
     </div>
 
@@ -140,15 +141,7 @@
       </div>
     </div>
 
-    <div
-      @click="openSplineDesign('hospital_Noenmaprang')"
-      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
-    >
-      <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Hospital Noenmaprang</span>
-      </div>
-    </div>
+
 
     <div
       @click="openSplineDesign('clinic')"
