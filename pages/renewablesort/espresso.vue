@@ -108,6 +108,8 @@
           <span class="font-thai">Espresso Huaroa</span>
         </div>
       </div>
+      
+      
     </div>
   </div>
  </div>
@@ -123,12 +125,19 @@ const splineLinks = {
   espresso_pharmacy: '/espresso/espresso_pharmacy',
   espresso_human: '/espresso/espresso_human',
   espresso_huaroi: '/espresso/espresso',
+  
+};
+
+const passwords: Record<string, string> = {
+  default: '240124',
+  
 };
 
 function openSplineDesign(key: keyof typeof splineLinks) {
+  const expected = passwords[key] ?? passwords.default;
   const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง");
 
-  if (password !== '240124') {
+  if (password !== expected) {
     alert("รหัสผ่านไม่ถูกต้อง ❌");
     return;
   }

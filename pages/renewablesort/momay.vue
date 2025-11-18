@@ -162,6 +162,16 @@
         <span class="font-thai">Momay 2</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('naresuan_library')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Naresuan Library" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Naresuan University Library</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -185,7 +195,8 @@ const splineLinks = {
   wongpanit_sukhothai: '/momay/wongpanit_sukhothai',
   hospital_Noenmaprang: '/momay/hospital_Noenmaprang',
   clinic: '/momay/clinic',
-  momay2:'/momay/momay02'
+  momay2:'/momay/momay02',
+  naresuan_library: '/momay/naresuan_library'
 }
 
 // Scroll animation observer - Apple style
@@ -229,6 +240,11 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   if (key === 'hospital_Noenmaprang') {
     if (password !== '1125711257') {
       alert("รหัสสำหรับโรงพยาบาลไม่ถูกต้อง ❌")
+      return
+    }
+  } else if (key === 'naresuan_library') {
+    if (password !== '1608') {
+      alert("รหัสสำหรับ Naresuan Library ไม่ถูกต้อง ❌")
       return
     }
   } else {

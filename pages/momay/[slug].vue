@@ -11,7 +11,8 @@ const targets: Record<string, string> = {
   wongpanit_sukhothai: 'https://wongpanit-sukhothai.web.app/',
   hospital_Noenmaprang: 'https://momayretro-production.up.railway.app/',
   clinic: 'https://momayclinic.web.app/',
-  momay02:'https://momay02-production.up.railway.app/'
+  momay02:'https://momay02-production.up.railway.app/',
+  naresuan_library: 'https://momaylib-production.up.railway.app/'
 }
 const url = targets[String(route.params.slug)]
 if (!url) await navigateTo('/', { replace: true })
