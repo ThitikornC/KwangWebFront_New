@@ -17,9 +17,13 @@
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "firebase": "^11.6.1",
+    "flipbook-vue": "^1.0.0-beta.4",
+    "jquery": "^3.7.1",
+    "jszip": "^3.10.1",
     "nuxt": "^3.11.2",
     "nuxt-app": "file:",
     "pinia": "^2.1.7",
+    "turn.js": "^1.0.5",
     "vite": "^5.4.21",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"
@@ -27,6 +31,7 @@
   "devDependencies": {
     "@nuxtjs/proxy": "^2.1.0",
     "@types/aos": "^3.0.7",
+    "@types/jquery": "^3.5.33",
     "@types/node": "^24.9.2",
     "autoprefixer": "^10.4.21",
     "daisyui": "^4.11.1",

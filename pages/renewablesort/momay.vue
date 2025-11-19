@@ -20,108 +20,30 @@
     </div>
   </div>
 
-  <!-- Responsive container -->
-<div class="px-[clamp(1rem,3vw,1.5rem)] max-w-[min(80rem,95vw)] mx-auto flex flex-col items-center">
-  <h1 class="neon-btn text-[clamp(1.875rem,4vw,3rem)] font-bold text-pink-900 capitalize font-thai text-center rounded-xl py-[clamp(0.75rem,2vw,1rem)] px-[clamp(1.5rem,4vw,2.5rem)] w-full sm:w-auto">
-    Momay
-  </h1>
-
-  <!-- Key Features -->
-  <h2 class="neon-btn mt-[clamp(1.5rem,3vw,2rem)] font-bold text-pink-900 text-[clamp(1.25rem,2.5vw,1.875rem)] font-thai text-left rounded-xl py-[clamp(0.5rem,1.5vw,0.75rem)] px-[clamp(1.5rem,4vw,2.5rem)] self-start">
-    Value
-  </h2>
-
-  <div class="mt-[clamp(1.5rem,3vw,2rem)] grid grid-cols-1 gap-[clamp(1rem,2vw,1.5rem)] font-thai w-full">
-    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-[clamp(1rem,2.5vw,1.5rem)] px-[clamp(1rem,3vw,1.5rem)] shadow hover:shadow-lg transition-shadow">
-      <p class="text-[clamp(0.875rem,1.5vw,1.125rem)] text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
-        แอพพริเคชั่นสำหรับผู้ใช้งานต้องการรักษาผลของตนเอง
-      </p>
-    </div>
-
-    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-[clamp(1rem,2.5vw,1.5rem)] px-[clamp(1rem,3vw,1.5rem)] shadow hover:shadow-lg transition-shadow">
-      <p class="text-[clamp(0.875rem,1.5vw,1.125rem)] text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
-        เป็นโมเดลและแพลตฟอร์มที่มอบคำตอบที่เป็นผลประโยชน์ของผู้ใช้ ก่อนผู้ใช้จะตั้งคำถามเสมอ
-      </p>
-    </div>
-
-    <div class="neon-btn rounded-xl flex flex-col justify-center items-center py-[clamp(1rem,2.5vw,1.5rem)] px-[clamp(1rem,3vw,1.5rem)] shadow hover:shadow-lg transition-shadow">
-      <p class="text-[clamp(0.875rem,1.5vw,1.125rem)] text-gray-600 font-normal leading-relaxed tracking-wide font-thai text-center md:text-justify break-words">
-        Momay จะโน้มน้าวกลุ่มคนที่ตั้งคำถามและผู้หาคำตอบเพื่อรักษาผลประโยชน์ตัวเองให้มา
-        ดูข้อมูลเพื่อเปรียบเทียบและกำหนดทิศทางที่ดีกว่าเดิมในทุกวัน
-      </p>
-    </div>
-  </div>
-</div>
-
-
-  <!-- Diagram -->
-  <div class="flex justify-center items-center mt-[clamp(1.5rem,3vw,2rem)] px-[clamp(1rem,3vw,2rem)]">
-    <img src="/diagramSystem.png"
-         alt="Diagram System"
-         class="my-[clamp(0.5rem,1vw,1rem)] w-[min(100%,50rem)] h-auto rounded-lg shadow-lg" />
-  </div>
-
-  <!-- Momay UI Images - Responsive layout -->
-  <div class="scroll-reveal mt-[clamp(2rem,4vw,3rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/1.png" alt="Momay UI 1" @click="toggleDescription(0)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[0]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">ข้อมูลพื้นฐาน และค่าไฟฟ้าแบบเรียลไทมม์</p>
-    </div>
-  </div>
-  
-  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/2.png" alt="Momay UI 2" @click="toggleDescription(1)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[1]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้าแดชบอร์ดแสดงข้อมูลเรียลไทม์</p>
-    </div>
-  </div>
-  
-  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/3.png" alt="Momay UI 3" @click="toggleDescription(2)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[2]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้ารายละเอียดข้อมูลการใช้พลังงานไฟฟ้าของแต่ละชั้น</p>
-    </div>
-  </div>
-  
-  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/4.png" alt="Momay UI 4" @click="toggleDescription(3)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[3]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">กราฟแบบเรียลไทมม์</p>
-    </div>
-  </div>
-  
-  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/5.png" alt="Momay UI 5" @click="toggleDescription(4)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[4]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">หน้ารายงานและสถิติรายเดือน</p>
-    </div>
-  </div>
-  
-  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/6.png" alt="Momay UI 6" @click="toggleDescription(5)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[5]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">คำนวนและวิเคราห์การติดตั้งระบบโซล่าเซลล์และการช่วยประหยัดค่าไฟ</p>
-    </div>
-  </div>
-  
-  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/7.png" alt="Momay UI 7" @click="toggleDescription(6)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[6]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">แจ้งเตือนเมื่อมีการใช้ไฟฟ้ามากขึ้น</p>
-    </div>
-  </div>
-  
-  <div class="scroll-reveal mt-[clamp(1.5rem,3vw,2rem)] mx-auto flex flex-col md:flex-row gap-[clamp(1rem,2vw,1.5rem)] items-center justify-center px-[clamp(1rem,3vw,2rem)] max-w-[min(72rem,95vw)]">
-    <img src="/Momay_UI/8.png" alt="Momay UI 8" @click="toggleDescription(7)" class="w-full md:w-[45%] lg:w-[40%] h-auto block cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-md" />
-    <div v-if="showDescription[7]" class="neon-btn p-[clamp(0.75rem,2vw,1rem)] rounded-xl font-thai text-gray-700 w-full md:w-[45%] lg:w-[40%] slide-in-right">
-      <p class="text-[clamp(0.875rem,1.5vw,1rem)]">สรุปค่าไฟฟ้าและเปรียบเทียบ</p>
-    </div>
+  <div class="flipbook-container">
+    <client-only>
+      <template v-if="isMobile">
+        <MobileFlipbook :pages="pages" />
+      </template>
+      <template v-else>
+        <FlipbookVue
+          :pages="pages"
+          :zooms="[1]"
+          class="flipbook"
+          :clickToZoom="false"
+          :nPolygons="20"
+          :perspective="3000"
+          :flipDuration="1500"
+          v-slot="flipbook"
+        >
+        </FlipbookVue>
+      </template>
+    </client-only>
   </div>
 
   <!-- Spline Cards - Responsive -->
   <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
-
-        <div
+    <div
       @click="openSplineDesign('hospital_Noenmaprang')"
       class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
     >
@@ -140,8 +62,6 @@
         <span class="font-thai">Wongpanit Sukhothai</span>
       </div>
     </div>
-
-
 
     <div
       @click="openSplineDesign('clinic')"
@@ -173,22 +93,21 @@
       </div>
     </div>
   </div>
+
+  <!-- Flipbook Viewer using FlipbookVue Component -->
+
+  <div class="pdf-download-bar">
+    <a href="/Sale Kit Momay181125 .pdf" download class="pdf-download-btn">
+      Download PDF
+    </a>
+  </div>
 </div>
-
-
 </template>
 
-
 <script setup lang="ts">
+import FlipbookVue from 'flipbook-vue'
+import MobileFlipbook from '~/components/MobileFlipbook.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-
-// State for toggling descriptions
-const showDescription = ref([false, false, false, false, false, false, false, false])
-
-// Toggle description visibility
-function toggleDescription(index: number) {
-  showDescription.value[index] = !showDescription.value[index]
-}
 
 const splineLinks = {
   momay_BanKlongResort: 'https://momayretro-production.up.railway.app/',
@@ -199,15 +118,36 @@ const splineLinks = {
   naresuan_library: '/momay/naresuan_library'
 }
 
-// Scroll animation observer - Apple style
-let observer: IntersectionObserver | null = null;
+const pages = [
+  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0001.jpg',
+  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0002.jpg',
+  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0003.jpg',
+  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0004.jpg',
+  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0005.jpg',
+  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0006.jpg',
+  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0007.jpg',
+]
 
+const isMobile = ref(false)
+function updateIsMobile() {
+  if (typeof window !== 'undefined') {
+    isMobile.value = window.innerWidth <= 768
+  }
+}
 onMounted(() => {
+  updateIsMobile()
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateIsMobile)
+  }
+
+  // Scroll animation observer - Apple style
+  let observer: IntersectionObserver | null = null
+
   // Reset all scroll-reveal elements
-  const scrollElements = document.querySelectorAll('.scroll-reveal');
+  const scrollElements = document.querySelectorAll('.scroll-reveal')
   scrollElements.forEach(el => {
-    el.classList.remove('is-visible');
-  });
+    el.classList.remove('is-visible')
+  })
 
   const observerOptions = {
     root: null,
@@ -224,13 +164,16 @@ onMounted(() => {
   }, observerOptions)
 
   scrollElements.forEach(el => observer!.observe(el))
-})
 
-onBeforeUnmount(() => {
-  if (observer) {
-    observer.disconnect();
-    observer = null;
-  }
+  onBeforeUnmount(() => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', updateIsMobile)
+    }
+    if (observer) {
+      observer.disconnect()
+      observer = null
+    }
+  })
 })
 
 function openSplineDesign(key: keyof typeof splineLinks) {
@@ -258,7 +201,6 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   const url = splineLinks[key]
   if (url) window.open(url, '_blank')
 }
-
 </script>
 
 <style scoped>
@@ -279,22 +221,6 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   transform: translateY(0);
 }
 
-/* Slide-in animation from right for descriptions */
-.slide-in-right {
-  animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
 /* Running Text */
 .running-text {
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
@@ -309,12 +235,6 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   overflow: hidden;
   position: relative;
   z-index: 50;
-}
-
-.running-text-container { 
-  justify-content: center;
-  padding-left: 0px; 
-  padding-right: 0; 
 }
 
 /* Marquee */
@@ -403,6 +323,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
     font-size: 16px;
   }
 }
+
 .root-bg {
   position: relative;
   min-height: 100vh;
@@ -436,10 +357,11 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   50% { transform: translateY(20px); }
   100% { transform: translateY(0); }
 }
+
 .neon-btn {
   background: linear-gradient(180deg, #f8f6f0 0%, #fffef8 45%, #fff8e8 55%, #f5f0e5 100%);
   color: #000000;
-  border: 3px solid #74640a; /* ลดความหนาขอบลง */
+  border: 3px solid #74640a;
   border-radius: 12px;
   box-shadow: 1px 1px 0 #000, -6px 4px #3b3305, 0 0 16px rgba(255,230,160,0.45);
   font-weight: 700;
@@ -472,7 +394,6 @@ function openSplineDesign(key: keyof typeof splineLinks) {
     font-size: 0.7rem;
   }
   
-  /* ป้องกัน text wrap */
   .whitespace-nowrap {
     white-space: nowrap !important;
     overflow: hidden;
@@ -480,4 +401,104 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   }
 }
 
+/* Flipbook Styles */
+.flipbook-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 60px;
+  margin-bottom: 60px;
+  padding: 20px;
+  overflow: visible;
+}
+
+.flipbook {
+  width: 90%;
+  max-width: 900px;
+  height: 600px;
+  overflow: visible !important;
+}
+
+.flipbook :deep(.viewport) {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible !important;
+}
+
+.flipbook :deep(.bounding-box) {
+  overflow: visible !important;
+}
+
+.flipbook :deep(img) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .flipbook {
+    height: 400px;
+  }
+}
+
+.action-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.page-counter {
+  font-weight: 600;
+  font-size: 18px;
+  color: #f8f6f0;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .page-counter {
+    font-size: 16px;
+  }
+}
+
+.pdf-download-bar {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 100;
+}
+
+.pdf-download-btn {
+  padding: 12px 28px;
+  background: #f8f6f0;
+  color: #251f03;
+  border-radius: 24px;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.pdf-download-btn:hover {
+  background: #ffe8a0;
+}
+
+@media (max-width: 768px) {
+  .pdf-download-bar {
+    right: 12px;
+    bottom: 12px;
+  }
+  .pdf-download-btn {
+    padding: 10px 18px;
+    font-size: 15px;
+  }
+}
 </style>
