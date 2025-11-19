@@ -26,22 +26,11 @@
         <MobileFlipbook :pages="pages" />
       </template>
       <template v-else>
-        <FlipbookVue
-          :pages="pages"
-          :zooms="[1]"
-          class="flipbook"
-          :clickToZoom="false"
-          :nPolygons="20"
-          :perspective="3000"
-          :flipDuration="1500"
-          v-slot="flipbook"
-        >
-        </FlipbookVue>
+        <PageFlipBook :pages="pages" />
       </template>
     </client-only>
   </div>
 
-  <!-- Spline Cards - Responsive -->
   <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
     <div
       @click="openSplineDesign('hospital_Noenmaprang')"
@@ -98,15 +87,16 @@
 
   <div class="pdf-download-bar">
     <a href="/Sale Kit Momay181125 .pdf" download class="pdf-download-btn">
-      Download PDF
+      Download Document
     </a>
   </div>
 </div>
 </template>
 
 <script setup lang="ts">
-import FlipbookVue from 'flipbook-vue'
+import FastCarousel from '~/components/FastCarousel.vue'
 import MobileFlipbook from '~/components/MobileFlipbook.vue'
+import PageFlipBook from '~/components/PageFlipBook.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const splineLinks = {
@@ -237,6 +227,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   z-index: 50;
 }
 
+
 /* Marquee */
 .marquee { 
   display: flex; 
@@ -329,7 +320,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
-  background: linear-gradient(to bottom, #ebd09e 0%, #251f03 100%);
+  background: transparent !important;
 }
 
 .root-bg::before {
@@ -411,23 +402,42 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   margin-bottom: 60px;
   padding: 20px;
   overflow: visible;
+  background: transparent !important;
 }
 
 .flipbook {
-  width: 90%;
-  max-width: 900px;
-  height: 600px;
+  width: 100%;
+  max-width: 1200px;
+  height: 900px;
   overflow: visible !important;
+  /* removed all background colors - making completely transparent */
+  background: transparent !important;
 }
 
 .flipbook :deep(.viewport) {
   width: 100% !important;
   height: 100% !important;
   overflow: visible !important;
+  background: transparent !important;
 }
 
 .flipbook :deep(.bounding-box) {
   overflow: visible !important;
+  background: transparent !important;
+}
+
+.flipbook :deep(canvas) {
+  background: transparent !important;
+}
+
+.flipbook :deep(.stf__item),
+.flipbook :deep(.stf__block),
+.flipbook :deep(.stf__wrapper) {
+  background: transparent !important;
+}
+
+.flipbook :deep(div) {
+  background-color: transparent !important;
 }
 
 .flipbook :deep(img) {
@@ -440,6 +450,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
 @media (max-width: 768px) {
   .flipbook {
     height: 400px;
+    max-width: 600px;
   }
 }
 
@@ -487,7 +498,11 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   font-size: 18px;
 }
 
-.pdf-download-btn:hover {
+  .pdf-download-btn:hover {
+    transform: scale(1.08) rotate(-2deg);
+    box-shadow: 0 6px 24px rgba(255, 200, 80, 0.25);
+    background: #ffe8a0;
+    transition: transform 0.2s cubic-bezier(.4,2,.3,1), box-shadow 0.2s, background 0.2s;
   background: #ffe8a0;
 }
 

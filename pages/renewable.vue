@@ -35,7 +35,8 @@ const splineLinks = {
   espresso_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
   momay_BanKlongResort: 'https://momaysukhothai.web.app/',
   wongpanit_sukhothai:  'https://wongpanit-sukhothai.web.app/',
-  Collaborativesensing:'https://kwangdataisyourspace.space/'
+  Collaborativesensing:'https://kwangdataisyourspace.space/',
+  dashboard: 'https://dashboard-production-2af3.up.railway.app/'
 }
 
 // Dynamic background color
@@ -99,9 +100,7 @@ function closeImageModal() {
     <!-- Top nav -->
     <!-- Main logo -->
     <!-- Interactive area -->
-    <div class="flex-1 flex flex-col md:flex-row items-center justify-center
-            px-4 md:px-20 relative overflow-hidden">
-
+    <div class="flex-1 flex flex-col md:flex-row items-center justify-center px-4 md:px-20 relative overflow-hidden">
       <!-- Step 1: show both logos sliding out/in with Spline links below -->
       <transition name="slide-dual" mode="out-in">
         <div v-if="!selectedLogo" key="dual" class="flex flex-col items-center">
@@ -111,80 +110,39 @@ function closeImageModal() {
               @mouseenter="hoveredLogo = 'espresso'"
               @mouseleave="hoveredLogo = null"
               @click="navigateTo('/renewablesort/espresso')"
-               class="relative 
-            bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb]
-            rounded-full p-4 sm:p-6
-            border-8 border-[#9b7c3c]
-            flex justify-center items-center
-            transform transition-transform duration-500 hover:scale-110 cursor-pointer"
-     style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);">
+              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+              style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
+            >
               <img
                 src="/ESPRESSO_logo.png"
                 alt="Espresso Logo"
                 class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
               />
-              <transition-group name="dot" tag="template">
-                <div
-                  v-if="hoveredLogo==='espresso'"
-                  key="e-top"
-                  class="dot dot-top bg-red-300"
-                />
-                <div
-                  v-if="hoveredLogo==='espresso'"
-                  key="e-right"
-                  class="dot dot-right bg-red-300"
-                />
-                <div
-                  v-if="hoveredLogo==='espresso'"
-                  key="e-bottom"
-                  class="dot dot-bottom bg-red-300"
-                />
-                <div
-                  v-if="hoveredLogo==='espresso'"
-                  key="e-left"
-                  class="dot dot-left bg-red-300"
-                />
+              <transition-group name="dot" tag="div">
+                <div v-if="hoveredLogo==='espresso'" key="e-top" class="dot dot-top bg-red-300"></div>
+                <div v-if="hoveredLogo==='espresso'" key="e-right" class="dot dot-right bg-red-300"></div>
+                <div v-if="hoveredLogo==='espresso'" key="e-bottom" class="dot dot-bottom bg-red-300"></div>
+                <div v-if="hoveredLogo==='espresso'" key="e-left" class="dot dot-left bg-red-300"></div>
               </transition-group>
             </div>
-
             <!-- Momay -->
             <div
               @mouseenter="hoveredLogo = 'momay'"
               @mouseleave="hoveredLogo = null"
               @click="navigateTo('/renewablesort/momay')"
-               class="relative 
-            bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb]
-            rounded-full p-4 sm:p-6
-            border-8 border-[#9b7c3c]
-            flex justify-center items-center
-            transform transition-transform duration-500 hover:scale-110 cursor-pointer"
-     style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);">
+              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+              style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
+            >
               <img
                 src="/MOMAY_logo.png"
                 alt="Momay Logo"
                 class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
               />
-              <transition-group name="dot" tag="template">
-                <div
-                  v-if="hoveredLogo==='momay'"
-                  key="m-top"
-                  class="dot dot-top bg-pink-300"
-                />
-                <div
-                  v-if="hoveredLogo==='momay'"
-                  key="m-right"
-                  class="dot dot-right bg-pink-300"
-                />
-                <div
-                  v-if="hoveredLogo==='momay'"
-                  key="m-bottom"
-                  class="dot dot-bottom bg-pink-300"
-                />
-                <div
-                  v-if="hoveredLogo==='momay'"
-                  key="m-left"
-                  class="dot dot-left bg-pink-300"
-                />
+              <transition-group name="dot" tag="div">
+                <div v-if="hoveredLogo==='momay'" key="m-top" class="dot dot-top bg-pink-300"></div>
+                <div v-if="hoveredLogo==='momay'" key="m-right" class="dot dot-right bg-pink-300"></div>
+                <div v-if="hoveredLogo==='momay'" key="m-bottom" class="dot dot-bottom bg-pink-300"></div>
+                <div v-if="hoveredLogo==='momay'" key="m-left" class="dot dot-left bg-pink-300"></div>
               </transition-group>
             </div>
             <!-- Collaborativesensing -->
@@ -192,77 +150,57 @@ function closeImageModal() {
               @mouseenter="hoveredLogo = 'Collaborativesensing'"
               @mouseleave="hoveredLogo = null"
               @click="navigateTo('/renewablesort/collaborativesensing')"
-               class="relative 
-            bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb]
-            rounded-full p-4 sm:p-6
-            border-8 border-[#9b7c3c]
-            flex justify-center items-center
-            transform transition-transform duration-500 hover:scale-110 cursor-pointer"
-     style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);">
+              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+              style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
+            >
               <img
-                src=" /datacityplatform.png"
+                src="/datacityplatform.png"
                 alt="Collaborative sensing Logo"
                 class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
               />
-              <transition-group name="dot" tag="template">
-                <div
-                  v-if="hoveredLogo==='Collaborativesensing '"
-                  key="m-top"
-                  class="dot dot-top bg-red-300"
+              <transition-group name="dot" tag="div">
+                <div v-if="hoveredLogo==='Collaborativesensing'" key="c-top" class="dot dot-top bg-red-300"></div>
+                <div v-if="hoveredLogo==='Collaborativesensing'" key="c-right" class="dot dot-right bg-red-300"></div>
+                <div v-if="hoveredLogo==='Collaborativesensing'" key="c-bottom" class="dot dot-bottom bg-red-300"></div>
+                <div v-if="hoveredLogo==='Collaborativesensing'" key="c-left" class="dot dot-left bg-red-300"></div>
+              </transition-group>
+            </div>
+            <!-- Dashboard -->
+            <div
+              @mouseenter="hoveredLogo = 'dashboard'"
+              @mouseleave="hoveredLogo = null"
+              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-blue-400 flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+              style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
+            >
+              <div @click="navigateTo('/renewablesort/dashboard')" class="cursor-pointer">
+                <img
+                  src="/chart-logo.png"
+                  alt="Dashboard Logo"
+                  class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
                 />
-                <div
-                  v-if="hoveredLogo==='Collaborativesensing '"
-                  key="m-right"
-                  class="dot dot-right bg-red-300"
-                />
-                <div
-                  v-if="hoveredLogo==='Collaborativesensing '"
-                  key="m-bottom"
-                  class="dot dot-bottom bg-red-300"
-                />
-                <div
-                  v-if="hoveredLogo==='Collaborativesensing '"
-                  key="m-left"
-                  class="dot dot-left bg-red-300"
-                />
+              </div>
+              <transition-group name="dot" tag="div">
+                <div v-if="hoveredLogo==='dashboard'" key="d-top" class="dot dot-top bg-blue-300"></div>
+                <div v-if="hoveredLogo==='dashboard'" key="d-right" class="dot dot-right bg-blue-300"></div>
+                <div v-if="hoveredLogo==='dashboard'" key="d-bottom" class="dot dot-bottom bg-blue-300"></div>
+                <div v-if="hoveredLogo==='dashboard'" key="d-left" class="dot dot-left bg-blue-300"></div>
               </transition-group>
             </div>
           </div>
-
-          
-          
-          
           <!-- Spline Design Links Row -->
-          <div class="mt-16 flex flex-wrap gap-8 justify-center">
-           
-
-            
-            
-
-          </div>
+          <div class="mt-16 flex flex-wrap gap-8 justify-center"></div>
         </div>
-        
       </transition>
-
       <!-- Step 2: show single logo + content panel  -->
-      <div
-        v-if="selectedLogo"
-        :key="selectedLogo"
-        
-        class="absolute inset-0 flex justify-center px-4 sm:px-8 md:px-20"
-      >
-      
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-8 md:gap-y-0 gap-x-6 md:gap-x-8
-            w-full mt-6 px-4 md:px-0">
+      <div v-if="selectedLogo" :key="selectedLogo" class="absolute inset-0 flex justify-center px-4 sm:px-8 md:px-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-8 md:gap-y-0 gap-x-6 md:gap-x-8 w-full mt-6 px-4 md:px-0">
           <!-- Left column: big logo + swap thumbnail -->
           <div class="flex justify-center md:mt-12 2xl:mt-0">
             <div class="relative">
               <!-- Main Logo Container -->
               <div
                 @click="selectedLogo = null"
-                class="logo-container bg-white rounded-full p-6 shadow-lg border-4 border-white
-                       flex items-center justify-center
-                       transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+                class="logo-container bg-white rounded-full p-6 shadow-lg border-4 border-white flex items-center justify-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
               >
                 <!-- Main Logo (when not animating) -->
                 <transition name="logo-fade" mode="out-in">
@@ -274,141 +212,102 @@ function closeImageModal() {
                     class="w-64 h-64 object-contain z-10"
                   />
                 </transition>
-                
                 <!-- Animation Container - Moving from main to thumb -->
                 <div v-if="swapAnimation" class="animation-container">
-                  <!-- Current Logo (animating out) -->
                   <img
                     :src="selectedLogo==='espresso' ? '/ESPRESSO_logo.png' : selectedLogo==='momay' ? '/MOMAY_logo.png' : '/datacityplatform.png'"
-
                     :alt="selectedLogo + ' Logo'"
                     class="main-logo-out w-64 h-64 object-contain"
                   />
                 </div>
-                
-                <!-- Animation Container - Moving from thumb to main -->
                 <div v-if="swapAnimation" class="animation-container">
-                  <!-- New Logo (animating in) -->
                   <img
                     :src="selectedLogo==='espresso' ? '/ESPRESSO_logo.png' : selectedLogo==='momay' ? '/MOMAY_logo.png' : '/datacityplatform.png'"
-
                     :alt="targetLogo + ' Logo'"
                     class="thumb-logo-in w-64 h-64 object-contain"
                   />
                 </div>
-
-                
               </div>
-              
-              <!-- Swap thumbnails container -->
-              <div class="absolute -left-24 top-1/2 transform -translate-y-1/2">
-
+              <!-- Swap thumbnails container (แก้เป็น flex-column, overflow visible) -->
+              <div class="absolute -left-24 top-1/2 transform -translate-y-1/2 flex flex-col items-center justify-center gap-4" style="overflow:visible; min-height:320px;">
                 <!-- Espresso thumbnail -->
-                <div 
-                  v-if="selectedLogo !== 'espresso' && !swapAnimation"
-                  @click="swapLogo('espresso')"
-                  class="relative mb-6"
-                >
+                <div v-if="selectedLogo !== 'espresso' && !swapAnimation" @click="swapLogo('espresso')" class="relative">
                   <div class="logo-thumbnail">
-                    <img
-                      src="/ESPRESSO_logo.png"
-                      alt="Go to Espresso"
-                      class="w-16 h-16 rounded-full border-2 border-white shadow cursor-pointer"
-                    />
+                    <img src="/ESPRESSO_logo.png" alt="Go to Espresso" class="w-16 h-16 rounded-full border-2 border-white shadow cursor-pointer" />
                   </div>
                   <div class="absolute -right-2 -top-2 flex h-4 w-4">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-300 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-4 w-4 bg-red-400"></span>
                   </div>
                 </div>
-
-                <div 
-                  v-if="selectedLogo !== 'Collaborativesensing' && !swapAnimation"
-                  @click="swapLogo('Collaborativesensing')"
-                  class="relative mb-6"
-                >
-                  <div class="logo-thumbnail">
-                    <img
-                      src="/datacityplatform.png"
-                      alt="Go to datacityplatform"
-                      class="w-16 h-16 rounded-full border-2 border-white shadow cursor-pointer"
-                    />
-                  </div>
-                  <div class="absolute -right-2 -top-2 flex h-4 w-4">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-300 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-4 w-4 bg-red-400"></span>
-                  </div>
-                </div>
-                
                 <!-- Momay thumbnail -->
-                <div 
-                  v-if="selectedLogo !== 'momay' && !swapAnimation"
-                  @click="swapLogo('momay')"
-                  class="relative"
-                >
+                <div v-if="selectedLogo !== 'momay' && !swapAnimation" @click="swapLogo('momay')" class="relative">
                   <div class="logo-thumbnail">
-                    <img
-                      src="/MOMAY_logo.png"
-                      alt="Go to Momay"
-                      class="w-16 h-16 rounded-full border-2 border-white shadow cursor-pointer"
-                    />
+                    <img src="/MOMAY_logo.png" alt="Go to Momay" class="w-16 h-16 rounded-full border-2 border-white shadow cursor-pointer" />
                   </div>
                   <div class="absolute -right-2 -top-2 flex h-4 w-4">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-300 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-4 w-4 bg-pink-400"></span>
                   </div>
-                   <!-- collabrative thumbnail -->
-                
                 </div>
-              </div>
-                <!-- Animation for logo going to thumbnail position -->
-                <div v-if="swapAnimation" class="thumbnail-animation-container">
-                  <div class="thumb-position">
-                    <img
-                      :src="selectedLogo==='espresso' ? '/ESPRESSO_logo.png' : selectedLogo==='momay' ? '/MOMAY_logo.png' : '/datacityplatform.png'"
-
-                      :alt="selectedLogo + ' Logo'"
-                      class="logo-to-thumb w-16 h-16 rounded-full border-2 border-white shadow"
-                    />
+                <!-- Collaborativesensing thumbnail -->
+                <div v-if="selectedLogo !== 'Collaborativesensing' && !swapAnimation" @click="swapLogo('Collaborativesensing')" class="relative">
+                  <div class="logo-thumbnail">
+                    <img src="/datacityplatform.png" alt="Go to datacityplatform" class="w-16 h-16 rounded-full border-2 border-white shadow cursor-pointer" />
+                  </div>
+                  <div class="absolute -right-2 -top-2 flex h-4 w-4">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-300 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-4 w-4 bg-red-400"></span>
                   </div>
                 </div>
-                
-                <!-- Animation for logo coming from thumbnail position -->
-                <div v-if="swapAnimation" class="thumbnail-animation-container">
-                  <div class="thumb-position">
-                    <img
-                      :src="selectedLogo==='espresso' ? '/ESPRESSO_logo.png' : selectedLogo==='momay' ? '/MOMAY_logo.png' : '/datacityplatform.png'"
-
-                      :alt="targetLogo + ' Logo'"
-                      class="thumb-disappear w-16 h-16 rounded-full border-2 border-white shadow"
-                    />
+                <!-- Dashboard thumbnail -->
+                <div class="relative">
+                  <div class="logo-thumbnail">
+                    <div class="flex flex-col items-center">
+                      <img src="/datacityplatform.png" alt="Go to Dashboard" class="w-16 h-16 rounded-full border-2 border-blue-400 shadow" />
+                      <a href="/renewablesort/dashboard" class="mt-2 text-blue-600 underline text-xs">/renewablesort/dashboard</a>
+                    </div>
+                  </div>
+                  <div class="absolute -right-2 -top-2 flex h-4 w-4">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-300 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-4 w-4 bg-blue-400"></span>
                   </div>
                 </div>
               </div>
-                          <!-- ปุ่มย้อนกลับ แบบวงกลม -->
-              <div class="absolute top-10 left-1 ">
+              <div v-if="swapAnimation" class="thumbnail-animation-container">
+                <div class="thumb-position">
+                  <img
+                    :src="selectedLogo==='espresso' ? '/ESPRESSO_logo.png' : selectedLogo==='momay' ? '/MOMAY_logo.png' : '/datacityplatform.png'"
+                    :alt="selectedLogo + ' Logo'"
+                    class="logo-to-thumb w-16 h-16 rounded-full border-2 border-white shadow"
+                  />
+                </div>
+              </div>
+              <div v-if="swapAnimation" class="thumbnail-animation-container">
+                <div class="thumb-position">
+                  <img
+                    :src="selectedLogo==='espresso' ? '/ESPRESSO_logo.png' : selectedLogo==='momay' ? '/MOMAY_logo.png' : '/datacityplatform.png'"
+                    :alt="targetLogo + ' Logo'"
+                    class="thumb-disappear w-16 h-16 rounded-full border-2 border-white shadow"
+                  />
+                </div>
+              </div>
+              <div class="absolute top-10 left-1">
                 <button
                   @click="selectedLogo = null"
-                  class="bg-white hover:bg-pink-100 rounded-full p-3 shadow-lg
-                        transition-transform duration-200 hover:scale-500 focus:outline-none"
+                  class="bg-white hover:bg-pink-100 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-500 focus:outline-none"
                   title="ย้อนกลับ"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                      class="w-6 h-6 text-gray-600"
-                      fill="none" viewBox="0 0 24 24"
-                      stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M15 19l-7-7 7-7" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
               </div>
             </div>
           </div>
-
           <!-- Right column: content panel -->
           <div class="overflow-auto mt-12 md:mt-0">
             <h1 class="text-4xl font-bold text-red-900 capitalize ml-4 font-thai">{{ selectedLogo }}</h1>
-            
             <!-- Espresso content -->
             <div v-if="selectedLogo==='espresso'">
               <p class="mt-4 text-lg leading-relaxed indent-8 whitespace-pre-line font-thai">
@@ -416,174 +315,78 @@ function closeImageModal() {
                 Espresso ช่วยให้คุณเห็นและวิเคราะห์การใช้พลังงานแบบเรียลไทม์
                 เพื่อให้คุณสามารถตรวจสอบและแก้ไขปัญหาได้ทันที
               </p>
-              <h2
-                class="
-                mt-8
-                ml-4
-                font-bold text-red-900
-                text-3xl
-                text-center md:text-left font-thai
-                "
-            >
-                  Key Features
-              </h2>
-
-              <div
-                class="
-                  mt-6
-                  grid
-                    grid-cols-1      /* มือถือ: 1 คอลัมน์ */
-                    md:grid-cols-2   /* ≥768px (iPad ขึ้นไป): 2 คอลัมน์ */
-                  gap-6
-                  font-thai
-                "
-              >
-                <!-- Card 1 -->
+              <h2 class="mt-8 ml-4 font-bold text-red-900 text-3xl text-center md:text-left font-thai">Key Features</h2>
+              <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 font-thai">
                 <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
                   <h3 class="text-lg font-semibold mb-2">Real-time Monitoring</h3>
-                  <p class="text-gray-600 leading-relaxed">
-                    เฝ้าติดตามพลังงานแบบเรียลไทม์ ตั้งแต่ภาพรวมอาคารจนถึงแต่ละห้อง
-                  </p>
+                  <p class="text-gray-600 leading-relaxed">เฝ้าติดตามพลังงานแบบเรียลไทม์ ตั้งแต่ภาพรวมอาคารจนถึงแต่ละห้อง</p>
                 </div>
-
-                <!-- Card 2 -->
                 <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
                   <h3 class="text-lg font-semibold mb-2">Insight Analytics</h3>
-                  <p class="text-gray-600 leading-relaxed">
-                    วิเคราะห์ข้อมูลเชิงลึก พร้อมรายงานรายวัน รายเดือน และรายปี
-                  </p>
+                  <p class="text-gray-600 leading-relaxed">วิเคราะห์ข้อมูลเชิงลึก พร้อมรายงานรายวัน รายเดือน และรายปี</p>
                 </div>
-
-                <!-- Card 3 -->
                 <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
                   <h3 class="text-lg font-semibold mb-2">Auto-Reporting</h3>
-                  <p class="text-gray-600 leading-relaxed">
-                    สร้างรายงานอัตโนมัติ ส่งออกเป็น PDF หรือ CSV ได้ทันที
-                  </p>
+                  <p class="text-gray-600 leading-relaxed">สร้างรายงานอัตโนมัติ ส่งออกเป็น PDF หรือ CSV ได้ทันที</p>
                 </div>
-
-                <!-- Card 4 -->
                 <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
                   <h3 class="text-lg font-semibold mb-2">Web Access</h3>
-                  <p class="text-gray-600 leading-relaxed">
-                    เข้าถึงระบบออนไลน์ได้ทุกที่ ทุกเวลา ผ่านเว็บเบราว์เซอร์
-                  </p>
+                  <p class="text-gray-600 leading-relaxed">เข้าถึงระบบออนไลน์ได้ทุกที่ ทุกเวลา ผ่านเว็บเบราว์เซอร์</p>
                 </div>
               </div>
-              
               <div class="flex gap-4 flex-wrap justify-center mt-4"></div>
-              
               <div class="flex gap-4 flex-wrap">
-              <div 
-                  @click="openSplineDesign('espresso_pharmacy')"
-                  class="spline-link-card bg-gradient-to-br from-amber-50 to-amber-200 hover:from-amber-100 hover:to-amber-300"
-                >
+                <div @click="openSplineDesign('espresso_pharmacy')" class="spline-link-card bg-gradient-to-br from-amber-50 to-amber-200 hover:from-amber-100 hover:to-amber-300">
                   <div class="card-content">
-                    <img
-                      src="/ESPRESSO_logo.png"
-                      alt="Espresso Design"
-                      class="w-12 h-12 object-contain"
-                    />
+                    <img src="/ESPRESSO_logo.png" alt="Espresso Design" class="w-12 h-12 object-contain" />
                     <span class="font-thai">Espresso Pharmacy</span>
-                    <div class="card-arrow">
-                     
-                    </div>
+                    <div class="card-arrow"></div>
                   </div>
                 </div>
-
-                <!-- Espresso Human Spline Link -->
-                <div 
-                  @click="openSplineDesign('espresso_human')"
-                  class="spline-link-card bg-gradient-to-br from-pink-50 to-pink-200 hover:from-pink-100 hover:to-pink-300"
-                >
+                <div @click="openSplineDesign('espresso_human')" class="spline-link-card bg-gradient-to-br from-pink-50 to-pink-200 hover:from-pink-100 hover:to-pink-300">
                   <div class="card-content">
-                    <img
-                      src="/ESPRESSO_logo.png"
-                      alt="Espresso Design"
-                      class="w-12 h-12 object-contain"
-                    />
+                    <img src="/ESPRESSO_logo.png" alt="Espresso Design" class="w-12 h-12 object-contain" />
                     <span class="font-thai">Espresso Human</span>
-                    <div class="card-arrow">
-                      
-                    </div>
+                    <div class="card-arrow"></div>
                   </div>
                 </div>
-                </div>
-
+              </div>
             </div>
-
             <!-- Momay content -->
             <div v-if="selectedLogo==='momay'">
-              <p class="mt-3 text-lg leading-relaxed font-thai">
-                คือ SauceCode ที่เป็นตัวกลางในการรับข้อมูลจากแหล่งต่าง ๆ ได้ตามความต้องการ
-              </p>
+              <p class="mt-3 text-lg leading-relaxed font-thai">คือ SauceCode ที่เป็นตัวกลางในการรับข้อมูลจากแหล่งต่าง ๆ ได้ตามความต้องการ</p>
               <ul class="list-disc list-inside mt-2 space-y-1 text-lg font-thai">
                 <li>พลังงานไฟฟ้า</li>
                 <li>กล้องวงจรปิด</li>
                 <li>ห้องสมุดออนไลน์</li>
               </ul>
-              <p class="mt-2 text-lg leading-relaxed font-thai">
-                และส่งข้อมูลไปยัง Espresso เพื่อแสดงผลแบบเรียลไทม์
-              </p>
-              <img
-                src="/diagramSystem.png"
-                alt="Diagram System"
-                class="mt-3 w-1/2 h-auto rounded-lg shadow-lg ml-2"
-                @click="openImageModal('/diagramSystem.png')"
-              />
-              <!-- Momay BanKlong Resort Link -->
-            <div class="flex gap-4 flex-wrap justify-center mt-4"></div>
-              
-            <div class="flex gap-4 flex-wrap">
-            <div 
-              @click="openSplineDesign('momay_BanKlongResort')"
-              class="spline-link-card bg-gradient-to-br from-pink-50 to-pink-200 hover:from-pink-100 hover:to-pink-300"
-            >
-              <div class="card-content">
-                <img
-                  src="/MOMAY_logo.png"
-                  alt="Momay Design"
-                  class="w-12 h-12 object-contain"
-                />
-                <span class="font-thai">Momay Banklong Resort Hotel</span>
-                <div class="card-arrow">
-                  
+              <p class="mt-2 text-lg leading-relaxed font-thai">และส่งข้อมูลไปยัง Espresso เพื่อแสดงผลแบบเรียลไทม์</p>
+              <img src="/diagramSystem.png" alt="Diagram System" class="mt-3 w-1/2 h-auto rounded-lg shadow-lg ml-2" @click="openImageModal('/diagramSystem.png')" />
+              <div class="flex gap-4 flex-wrap justify-center mt-4"></div>
+              <div class="flex gap-4 flex-wrap">
+                <div @click="openSplineDesign('momay_BanKlongResort')" class="spline-link-card bg-gradient-to-br from-pink-50 to-pink-200 hover:from-pink-100 hover:to-pink-300">
+                  <div class="card-content">
+                    <img src="/MOMAY_logo.png" alt="Momay Design" class="w-12 h-12 object-contain" />
+                    <span class="font-thai">Momay Banklong Resort Hotel</span>
+                    <div class="card-arrow"></div>
+                  </div>
+                </div>
+                <div @click="openSplineDesign('wongpanit_sukhothai')" class="spline-link-card bg-gradient-to-br from-green-50 to-green-200 hover:from-green-100 hover:to-green-300">
+                  <div class="card-content">
+                    <img src="/MOMAY_logo.png" alt="Wongpanit Sukhothai" class="w-12 h-12 object-contain" />
+                    <span class="font-thai">Wongpanit Sukhothai</span>
+                    <div class="card-arrow"></div>
+                  </div>
                 </div>
               </div>
             </div>
-
-             <!-- Wongpanit_Sukhothai -->
-            <div 
-              @click="openSplineDesign('wongpanit_sukhothai')"
-              class="spline-link-card bg-gradient-to-br from-green-50 to-green-200 hover:from-green-100 hover:to-green-300"
-            >
-              <div class="card-content">
-                <img
-                  src="/MOMAY_logo.png"
-                  alt="Wongpanit Sukhothai"
-                  class="w-12 h-12 object-contain"
-                />
-                <span class="font-thai">Wongpanit Sukhothai</span>
-                <div class="card-arrow">
-                  
-                </div>
-              </div>
-
-              
-            </div>
-
-            
-            </div>
-            </div>
-            
-
             <!-- collabarate content -->
             <div v-if="selectedLogo==='Collaborativesensing'">
-             <p class="mt-3 text-lg leading-relaxed font-thai">
-              Collaborative sensing คือกระบวนการที่นำอุปกรณ์หลายตัวหรือหลายระบบทำงานร่วมกัน
-              เพื่อ<strong>ตรวจจับ รวบรวม และประมวลผลข้อมูล</strong>จากสภาพแวดล้อมโดยรอบ
-              เพื่อให้ได้ข้อมูลที่แม่นยำและครอบคลุมยิ่งขึ้น
-            </p>
+              <p class="mt-3 text-lg leading-relaxed font-thai">
+                Collaborative sensing คือกระบวนการที่นำอุปกรณ์หลายตัวหรือหลายระบบทำงานร่วมกัน
+                เพื่อ<strong>ตรวจจับ รวบรวม และประมวลผลข้อมูล</strong>จากสภาพแวดล้อมโดยรอบ
+                เพื่อให้ได้ข้อมูลที่แม่นยำและครอบคลุมยิ่งขึ้น
+              </p>
               <ul class="list-disc list-inside mt-2 space-y-1 text-lg font-thai">
                 <li>Energy</li>
                 <li>Camera CCTV</li>
@@ -592,32 +395,14 @@ function closeImageModal() {
               </ul>
               <p class="mt-2 text-lg leading-relaxed font-thai">
                 และส่งข้อมูลเพื่อแสดงผลบนระบบที่ถูกพัฒนาขึ้นมา
-                <strong>Data is your</strong> เพื่อให้ผู้ใช้สามารถเข้าถึงและวิเคราะห์ข้อมูลได้อย่างมีประสิทธิภาพ]
+                <strong>Data is your</strong> เพื่อให้ผู้ใช้สามารถเข้าถึงและวิเคราะห์ข้อมูลได้อย่างมีประสิทธิภาพ
               </p>
-              <img
-                src="/diagramSystem.png"
-                alt="Diagram System"
-                class="mt-3 w-1/2 h-auto rounded-lg shadow-lg ml-2"
-                @click="openImageModal('/diagramSystem.png')"
-              />
-
+              <img src="/diagramSystem.png" alt="Diagram System" class="mt-3 w-1/2 h-auto rounded-lg shadow-lg ml-2" @click="openImageModal('/diagramSystem.png')" />
               <div class="flex gap-4 flex-wrap justify-center mt-4"></div>
-              
               <div class="flex gap-5 flex-wrap">
-                <!-- Espresso Pharmacy Spline Link -->
-                
-
-                    <!-- figmadataisyour -->
-                <div 
-                  @click="openSplineDesign('Collaborativesensing')"
-                  class="spline-link-card bg-gradient-to-br from-green-50 to-green-200 hover:from-green-100 hover:to-green-300"
-                >
+                <div @click="openSplineDesign('Collaborativesensing')" class="spline-link-card bg-gradient-to-br from-green-50 to-green-200 hover:from-green-100 hover:to-green-300">
                   <div class="card-content">
-                    <img
-                      src="/datacityplatform.png"
-                      alt="figma data is your"
-                      class="w-12 h-12 object-contain"
-                    />
+                    <img src="/datacityplatform.png" alt="figma data is your" class="w-12 h-12 object-contain" />
                     <span class="font-thai">Collaborative sensing</span>
                     <div class="card-arrow">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
@@ -626,40 +411,28 @@ function closeImageModal() {
                     </div>
                   </div>
                 </div>
-                
               </div>
-                
-           
             </div>
           </div>
         </div>
-      
       </div>
-
     </div>
- 
-
-  <!--fade รูป-->
-  <transition name="fade">
-  <div
-    v-if="showImageModal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    @click.self="closeImageModal"
-  >
-    <div class="relative">
-      <button
-        class="absolute  right-2 text-white text-2xl font-bold"
-        @click="closeImageModal"
-      >&times;</button>
-      <img
-        :src="modalImageSrc"
-        class="max-w-full max-h-[90vh] rounded-lg shadow-lg"
-        alt="Enlarged Diagram"
-      />
+    <!--fade รูป-->
+    <transition name="fade">
+      <div v-if="showImageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="closeImageModal">
+        <div class="relative">
+          <button class="absolute right-2 text-white text-2xl font-bold" @click="closeImageModal">&times;</button>
+          <img :src="modalImageSrc" class="max-w-full max-h-[90vh] rounded-lg shadow-lg" alt="Enlarged Diagram" />
+        </div>
+      </div>
+    </transition>
+    <!-- PDF Download Bar -->
+    <div class="pdf-download-bar">
+      <a href="/Sale Kit Momay181125 .pdf" download class="pdf-download-btn">
+        Download PDF
+      </a>
     </div>
   </div>
-</transition>
-
 </template>
 
 <style scoped>
@@ -942,4 +715,47 @@ function closeImageModal() {
   100% { transform: translateY(0); }
 }
 
+/* PDF Download Bar */
+.pdf-download-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 32px;
+  z-index: 50;
+  background: rgba(255,255,255,0.85);
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+}
+.pdf-download-btn {
+  animation: pulse 1.2s infinite;
+  font-weight: 600;
+  color: #e84e40;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  background: #fff8e8;
+  box-shadow: 0 2px 8px rgba(255,200,80,0.12);
+  transition: background 0.2s;
+}
+.pdf-download-btn:hover {
+  background: #ffe0b2;
+}
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(255,200,80,0.12); }
+  50% { transform: scale(1.12) rotate(-2deg); box-shadow: 0 8px 32px rgba(255,200,80,0.25); }
+  100% { transform: scale(1); box-shadow: 0 2px 8px rgba(255,200,80,0.12); }
+}
+@media (max-width: 768px) {
+  .pdf-download-bar {
+    left: 50%;
+    bottom: 16px;
+    padding: 0.5rem 1rem;
+  }
+  .pdf-download-btn {
+    padding: 10px 18px;
+    font-size: 15px;
+  }
+}
 </style>
