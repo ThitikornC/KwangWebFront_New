@@ -169,16 +169,15 @@ function closeImageModal() {
             <div
               @mouseenter="hoveredLogo = 'dashboard'"
               @mouseleave="hoveredLogo = null"
-              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-blue-400 flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+              @click="navigateTo('/renewablesort/dashboard')"
+              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
               style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
             >
-              <div @click="navigateTo('/renewablesort/dashboard')" class="cursor-pointer">
-                <img
-                  src="/chart-logo.png"
-                  alt="Dashboard Logo"
-                  class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
-                />
-              </div>
+              <img
+                src="/chart-logo.png"
+                alt="Dashboard Logo"
+                class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
+              />
               <transition-group name="dot" tag="div">
                 <div v-if="hoveredLogo==='dashboard'" key="d-top" class="dot dot-top bg-blue-300"></div>
                 <div v-if="hoveredLogo==='dashboard'" key="d-right" class="dot dot-right bg-blue-300"></div>
@@ -429,7 +428,7 @@ function closeImageModal() {
     <!-- PDF Download Bar -->
     <div class="pdf-download-bar">
       <a href="/Sale Kit Momay181125 .pdf" download class="pdf-download-btn">
-        Download PDF
+        Download Document
       </a>
     </div>
   </div>
@@ -732,7 +731,7 @@ function closeImageModal() {
 .pdf-download-btn {
   animation: pulse 1.2s infinite;
   font-weight: 600;
-  color: #e84e40;
+  color: #8d5524;
   padding: 10px 24px;
   border-radius: 9999px;
   background: #fff8e8;
