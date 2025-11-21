@@ -54,7 +54,7 @@
       >
         <div class="card-content">
           <img src="/ESPRESSO_logo.png" alt="Espresso Huaroa" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Espresso โรงเรียนเทศบาล3 เเม่ฮ่องสอน</span>
+          <span class="font-thai text-xs">Espresso โรงเรียนเทศบาล3เเม่ฮ่องสอน</span>
         </div>
       </div>
     </div>
@@ -76,7 +76,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 const splineLinks = {
   espresso_pharmacy: 'https://espresso-pharmacy.example.com/',
   espresso_human: 'https://espresso-human.example.com/',
-  espresso_huaroa: '/espresso/espresso'
+  espresso_huaroa: '/espresso/MaeHongSon'
 }
 
 const pages = [
