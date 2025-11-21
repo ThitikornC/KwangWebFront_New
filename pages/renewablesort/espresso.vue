@@ -54,7 +54,7 @@
       >
         <div class="card-content">
           <img src="/ESPRESSO_logo.png" alt="Espresso Huaroa" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Espresso Education</span>
+          <span class="font-thai">Espresso โรงเรียนเทศบาล3 เเม่ฮ่องสอน</span>
         </div>
       </div>
     </div>
