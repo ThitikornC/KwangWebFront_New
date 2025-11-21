@@ -9,7 +9,8 @@ const route = useRoute()
 const targets: Record<string, string> = {
   espresso_pharmacy: '/renewablesort/espresso/espresso_pharmacy',
   espresso_human: '/renewablesort/espresso/espresso_human',
-  huaroa: 'https://huaroa-production.up.railway.app/'
+  huaroa: 'https://huaroa-production.up.railway.app/',
+  huaroa2: 'https://espressohuaroa-production.up.railway.app/'
 }
 const url = targets[String(route.params.slug)]
 if (!url) await navigateTo('/', { replace: true })

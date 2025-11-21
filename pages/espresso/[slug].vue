@@ -11,6 +11,8 @@ const route = useRoute()
   espresso_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
   espresso: 'https://huaroa-production.up.railway.app/',
   MaeHongSon: 'https://huaroa-production.up.railway.app/',
+  Huaroa: 'https://espressohuaroa-production.up.railway.app/',
+  huaroa2: 'https://espressohuaroa-production.up.railway.app/',
   naresuan_library: 'https://momaylib-production.up.railway.app/'
 }
 const url = targets[String(route.params.slug)]

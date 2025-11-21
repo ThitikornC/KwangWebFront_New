@@ -57,6 +57,15 @@
           <span class="font-thai text-xs">Espresso โรงเรียนเทศบาล3เเม่ฮ่องสอน</span>
         </div>
       </div>
+      <div
+        @click="openSplineDesign('espresso_Huaroa')"
+        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
+      >
+        <div class="card-content">
+          <img src="/ESPRESSO_logo.png" alt="Huaroa Project" class="w-12 h-12 object-contain" />
+          <span class="font-thai text-xs">Huaroa</span>
+        </div>
+      </div>
     </div>
 
     <div class="pdf-download-bar">
@@ -76,7 +85,9 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 const splineLinks = {
   espresso_pharmacy: 'https://espresso-pharmacy.example.com/',
   espresso_human: 'https://espresso-human.example.com/',
-  espresso_huaroa: '/espresso/MaeHongSon'
+  espresso_huaroa: '/espresso/MaeHongSon',
+  espresso_Huaroa: '/espresso/Huaroa',
+  espresso_Huaroa2: '/espresso/Huaroa'
 }
 
 const pages = [
