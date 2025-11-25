@@ -34,9 +34,7 @@
       <div class="w-full flex justify-end mb-2">
         <div
           @click="openTestProject"
-          class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"
-          style="max-width:260px; min-width:180px; background: linear-gradient(180deg, #fffbe8 0%, #ffe8a0 100%); border-color: #e6b800;"
-        >
+          class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"        >
           <div class="card-content">
             <img src="/ESPRESSO_logo.png" alt="ทดลองใช้งาน" class="w-12 h-12 object-contain" />
             <span class="font-thai text-xs">ทดลองใช้งานฟรี</span>
