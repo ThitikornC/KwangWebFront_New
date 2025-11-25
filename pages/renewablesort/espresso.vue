@@ -30,24 +30,8 @@
     </div>
 
     <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
-      <div
-        @click="openSplineDesign('espresso_pharmacy')"
-        class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Espresso Pharmacy" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Espresso Pharmacy</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('espresso_human')"
-        class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Espresso Human" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Espresso Human</span>
-        </div>
-      </div>
+
+   
       <div
         @click="openSplineDesign('espresso_huaroa')"
         class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
@@ -63,7 +47,7 @@
       >
         <div class="card-content">
           <img src="/ESPRESSO_logo.png" alt="Huaroa Project" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Huaroa</span>
+          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ</span>
         </div>
       </div>
     </div>
