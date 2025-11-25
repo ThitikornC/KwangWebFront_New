@@ -30,8 +30,21 @@
     </div>
 
     <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
+      <!-- ทดลองใช้งาน Project Card (Magazine style, right-aligned, above previous projects) -->
+      <div class="w-full flex justify-end mb-2">
+        <div
+          @click="openTestProject"
+          class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"
+          style="max-width:260px; min-width:180px; background: linear-gradient(180deg, #fffbe8 0%, #ffe8a0 100%); border-color: #e6b800;"
+        >
+          <div class="card-content">
+            <img src="/ESPRESSO_logo.png" alt="ทดลองใช้งาน" class="w-12 h-12 object-contain" />
+            <span class="font-thai text-xs">ทดลองใช้งานฟรี</span>
+          </div>
+        </div>
+      </div>
 
-   
+      <!-- Existing project cards -->
       <div
         @click="openSplineDesign('espresso_huaroa')"
         class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
@@ -73,6 +86,9 @@ const splineLinks = {
   espresso_Huaroa: '/espresso/Huaroa',
   espresso_Huaroa2: '/espresso/Huaroa'
 }
+
+// ทดลองใช้งาน (Magazine) project link
+const testProjectUrl = 'https://magazine-espresso-demo.example.com/';
 
 const pages = [
   '/5.png',
@@ -132,6 +148,11 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   }
   const url = splineLinks[key]
   if (url) window.open(url, '_blank')
+}
+
+// ทดลองใช้งาน (Magazine) project card handler
+function openTestProject() {
+  window.open(testProjectUrl, '_blank')
 }
 </script>
 
