@@ -91,13 +91,13 @@ const splineLinks = {
 }
 
 const pages = [
-  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0001.jpg',
-  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0002.jpg',
-  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0003.jpg',
-  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0004.jpg',
-  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0005.jpg',
-  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0006.jpg',
-  '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0007.jpg',
+  '/4.jpg',
+  '/5.jpg',
+  '/6.jpg',
+  '/7.jpg',
+  '/8.jpg',
+  '/9.jpg',
+  '/10.jpg',
 ]
 
 const isMobile = ref(false)
