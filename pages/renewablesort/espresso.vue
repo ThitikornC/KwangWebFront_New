@@ -75,13 +75,13 @@ const splineLinks = {
 }
 
 const pages = [
-  '/4.jpg',
-  '/5.jpg',
-  '/6.jpg',
-  '/7.jpg',
-  '/8.jpg',
-  '/9.jpg',
-  '/10.jpg',
+  '/4.png',
+  '/5.png',
+  '/6.png',
+  '/7.png',
+  '/8.png',
+  '/9.png',
+  '/10.png',
 ]
 
 const isMobile = ref(false)
