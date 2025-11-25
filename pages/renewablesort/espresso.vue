@@ -75,7 +75,6 @@ const splineLinks = {
 }
 
 const pages = [
-  '/4.png',
   '/5.png',
   '/6.png',
   '/7.png',
