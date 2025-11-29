@@ -45,11 +45,12 @@ useSeoMeta({
 
       <!-- Text Box -->
       <div class="neon-btn-H p-[clamp(1.5rem,3vw,2rem)] max-w-[min(48rem,90vw)] mx-auto text-justify text-[clamp(0.875rem,1.5vw,1.125rem)] text-graydeep font-light leading-relaxed">
+        <h2 class="text-3xl font-bold mb-[clamp(1.5rem,3vw,2rem)] text-center">เกี่ยวกับเรา</h2>
         <p class="mb-[clamp(1rem,2vw,1.5rem)] indent-8">
-          บริษัท กว้างไม่ จำกัด ก่อตั้งที่จังหวัดพิษณุโลกในปี 2024 ในฐานะบริษัทการออกแบบและติดตั้งระบบโซล่าเซลล์ ไอทีเน็ตเวิร์ค เคยให้บริการทั้งองค์กรภาครัฐบาลและภาคเอกชนในจังหวัดพิษณุโลกและจังหวัดใกล้เคียง
-        </p>
+ บริษัท กว้างไม่ จำกัดก่อตั้งขึ้นที่จังหวัดพิษณุโลกในปี 2024 ในฐานะบริษัทการออกแบบและติดตั้งระบบโซล่าเซลล์ ไอทีเน็ตเวิร์ค เคยให้บริการทั้งองค์กรภาครัฐบาลและภาคเอกชนในจังหวัดพิษณุโลกและจังหวัดใกล้เคียง
+  หลังจากนั้นได้พัฒนาซอฟแวร์และแพลตฟอร์มผู้ช่วยอัจฉริยะด้านพลังงาน ปลอดภัย การศึกษา ซึ่งผสานการบริหารจัดการการให้คำปรึกษาตามความต้องการสินค้าและบริการเข้าด้วยกันที่มุ่งเน้นนำเทคโนโลยีสร้างความเปลี่ยนแปลง ให้กับสังคมอย่างตรงไปตรงมา        </p>
 
-        <p class="mb-[clamp(1rem,2vw,1.5rem)] indent-8">
+        <p class="text-left mb-[clamp(1rem,2vw,1.5rem)] indent-8">
           หลังจากนั้นได้พัฒนาซอฟแวร์และแพลตฟอร์มบริการด้านจัดการพลังงานทดแทน ความปลอดภัย การศึกษา ซึ่งผสานการบริหารจัดการการให้คำปรึกษาตามความต้องการสินค้าและบริการเข้าด้วยกันที่มุ่งเน้นนำเทคโนโลยีสร้างความเปลี่ยนแปลง ให้กับสังคมอย่างตรงไปตรงมา
         </p>
       </div>
@@ -157,8 +158,7 @@ useSeoMeta({
            style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), transparent);"></div>
 
       <div class="neon-btn mt-[clamp(1rem,2vw,1.5rem)] bg-gradient-to-br from-gray-50 to-white p-[clamp(1rem,2vw,1.5rem)] rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 w-[clamp(12rem,20vw,15rem)]">
-        <div class="text-red-600 font-semibold text-[clamp(0.875rem,1.5vw,1rem)] mb-2">พลังงานทดแทน</div>
-        <div class="text-gray-600 text-[clamp(0.75rem,1.25vw,0.875rem)]" style="line-height: 1.6;">ออกแบบและติดตั้งระบบโซล่าเซลล์</div>
+        <div class="text-left text-gray-600 text-[clamp(0.75rem,1.25vw,0.875rem)]" style="line-height: 1.6;">บริษัทของเราได้ก้าวสู่การเป็นผู้นำด้านโซลูชันที่ยั่งยืน โดยเริ่มจาก การออกแบบและติดตั้งระบบโซลาร์เซลล์ครบวงจร ซึ่งสะท้อนถึงความมุ่งมั่นของเราในการสนับสนุนพลังงานทดแทนและสร้างอนาคตที่เป็นมิตรต่อสิ่งแวดล้อม</div>
       </div>
     </div>
 
@@ -177,14 +177,14 @@ useSeoMeta({
            style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), transparent);"></div>
 
       <div class="neon-btn mt-[clamp(1rem,2vw,1.5rem)] bg-gradient-to-br from-gray-50 to-white p-[clamp(1rem,2vw,1.5rem)] rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 w-[clamp(12rem,20vw,15rem)]">
-        <div class="text-red-600 font-semibold text-[clamp(0.875rem,1.5vw,1rem)] mb-2">เครือข่าย IT</div>
-        <div class="text-gray-600 text-[clamp(0.75rem,1.25vw,0.875rem)]" style="line-height: 1.6;">ออกแบบและติดตั้งไอทีเน็ตเวิร์ค</div>
+        <div class="text-left text-gray-600 text-[clamp(0.75rem,1.25vw,0.875rem)]" style="line-height: 1.6;">เราขยายธุรกิจเข้าสู่พื้นที่โครงสร้างพื้นฐานดิจิทัล ด้วยการ ออกแบบและติดตั้งระบบเครือข่าย IT ที่มีประสิทธิภาพสูง เพื่อเสริมสร้างความมั่นคงและความสามารถในการขยายตัวขององค์กร
+</div>
       </div>
     </div>
 
     <!-- 2026 -->
     <div class="flex-1 flex flex-col items-center text-center relative z-20">
-      <div class="relative group mb-[clamp(1rem,2vw,1.5rem)]">
+      <div class="relative group mb-[clamp(1rem,1vw,1.5rem)]">
         <div class="absolute bg-red-300 rounded-full opacity-40 group-hover:opacity-60 transition-opacity duration-300"
              style="filter: blur(24px); top: -10px; left: -10px; right: -10px; bottom: -10px;"></div>
         <div class="neon-btn relative text-white px-[clamp(1.5rem,3vw,2rem)] py-[clamp(0.75rem,2vw,1rem)] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
@@ -197,8 +197,8 @@ useSeoMeta({
            style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), transparent);"></div>
 
       <div class="neon-btn mt-6 bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 w-60">
-        <div class="text-red-600 font-semibold text-base mb-2">นวัตกรรมดิจิทัล</div>
-        <div class="text-gray-600 text-sm" style="line-height: 1.6;">พัฒนาซอฟแวร์และแพลตฟอร์ม</div>
+        <div class="text-left text-gray-600 text-sm" style="line-height: 1.6;">เราได้มุ่งเน้นไปที่ นวัตกรรมดิจิทัล ด้วยการ พัฒนาซอฟต์แวร์และแพลตฟอร์มดิจิทัลล้ำสมัย ที่ช่วยเพิ่มประสิทธิภาพ การเชื่อมต่อ และการตัดสินใจที่ชาญฉลาดสำหรับลูกค้าของเรา
+</div>
       </div>
     </div>
 
