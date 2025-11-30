@@ -106,44 +106,61 @@ function closeImageModal() {
         <div v-if="!selectedLogo" key="dual" class="flex flex-col items-center">
           <div class="flex flex-col sm:flex-row items-center space-y-8 sm:space-y-0 sm:space-x-12 md:space-x-16">
             <!-- Espresso -->
-            <div
-              @mouseenter="hoveredLogo = 'espresso'"
-              @mouseleave="hoveredLogo = null"
-              @click="navigateTo('/renewablesort/espresso')"
-              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
-              style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
-            >
-              <img
-                src="/ESPRESSO_logo.png"
-                alt="Espresso Logo"
-                class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
-              />
-              <transition-group name="dot" tag="div">
-                <div v-if="hoveredLogo==='espresso'" key="e-top" class="dot dot-top bg-red-300"></div>
-                <div v-if="hoveredLogo==='espresso'" key="e-right" class="dot dot-right bg-red-300"></div>
-                <div v-if="hoveredLogo==='espresso'" key="e-bottom" class="dot dot-bottom bg-red-300"></div>
-                <div v-if="hoveredLogo==='espresso'" key="e-left" class="dot dot-left bg-red-300"></div>
-              </transition-group>
-            </div>
+      <div class="espresso-container">
+      <div
+        @mouseenter="hoveredLogo = 'espresso'"
+        @mouseleave="hoveredLogo = null"
+        @click="navigateTo('/renewablesort/espresso')"
+        class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+        style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
+      >
+        <img
+          src="/ESPRESSO_logo.png"
+          alt="Espresso Logo"
+          class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
+        />
+        <transition-group name="dot" tag="div">
+          <div v-if="hoveredLogo==='espresso'" key="e-top" class="dot dot-top bg-red-300"></div>
+          <div v-if="hoveredLogo==='espresso'" key="e-right" class="dot dot-right bg-red-300"></div>
+          <div v-if="hoveredLogo==='espresso'" key="e-bottom" class="dot dot-bottom bg-red-300"></div>
+          <div v-if="hoveredLogo==='espresso'" key="e-left" class="dot dot-left bg-red-300"></div>
+        </transition-group>
+      </div>
+
+      <!-- Download button inside the same container -->
+      <div class="flex justify-center mt-2">
+        <a href="/Sale Kit Espresso251125.pdf" download class="pdf-download-btn">
+          Download Espresso Document
+        </a>
+      </div>
+    </div>
             <!-- Momay -->
-            <div
-              @mouseenter="hoveredLogo = 'momay'"
-              @mouseleave="hoveredLogo = null"
-              @click="navigateTo('/renewablesort/momay')"
-              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
-              style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
-            >
-              <img
-                src="/MOMAY_logo.png"
-                alt="Momay Logo"
-                class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
-              />
-              <transition-group name="dot" tag="div">
-                <div v-if="hoveredLogo==='momay'" key="m-top" class="dot dot-top bg-pink-300"></div>
-                <div v-if="hoveredLogo==='momay'" key="m-right" class="dot dot-right bg-pink-300"></div>
-                <div v-if="hoveredLogo==='momay'" key="m-bottom" class="dot dot-bottom bg-pink-300"></div>
-                <div v-if="hoveredLogo==='momay'" key="m-left" class="dot dot-left bg-pink-300"></div>
-              </transition-group>
+            <div class="momay-container">
+              <div
+                @mouseenter="hoveredLogo = 'momay'"
+                @mouseleave="hoveredLogo = null"
+                @click="navigateTo('/renewablesort/momay')"
+                class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+                style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
+              >
+                <img
+                  src="/MOMAY_logo.png"
+                  alt="Momay Logo"
+                  class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
+                />
+                <transition-group name="dot" tag="div">
+                  <div v-if="hoveredLogo==='momay'" key="m-top" class="dot dot-top bg-pink-300"></div>
+                  <div v-if="hoveredLogo==='momay'" key="m-right" class="dot dot-right bg-pink-300"></div>
+                  <div v-if="hoveredLogo==='momay'" key="m-bottom" class="dot dot-bottom bg-pink-300"></div>
+                  <div v-if="hoveredLogo==='momay'" key="m-left" class="dot dot-left bg-pink-300"></div>
+                </transition-group>
+              </div>
+              <!-- Download button inside the same container -->
+              <div class="flex justify-center mt-2">
+                <a href="/Sale Kit Momay181125 .pdf" download class="pdf-download-btn">
+                  Download Momay Document
+                </a>
+              </div>
             </div>
             <!-- Collaborativesensing -->
             <div
@@ -164,6 +181,7 @@ function closeImageModal() {
                 <div v-if="hoveredLogo==='Collaborativesensing'" key="c-bottom" class="dot dot-bottom bg-red-300"></div>
                 <div v-if="hoveredLogo==='Collaborativesensing'" key="c-left" class="dot dot-left bg-red-300"></div>
               </transition-group>
+    
             </div>
             <!-- Dashboard -->
             <div
@@ -426,11 +444,9 @@ function closeImageModal() {
       </div>
     </transition>
     <!-- PDF Download Bar -->
-    <div class="pdf-download-bar">
-      <a href="/Sale Kit Momay181125 .pdf" download class="pdf-download-btn">
-        Download Document
-      </a>
-    </div>
+
+    <!-- Integrated Espresso section with download button -->
+ 
   </div>
 </template>
 
@@ -466,11 +482,6 @@ function closeImageModal() {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-}
-
-.thumb-position {
-  position: relative;
-  margin-bottom: 6px;
 }
 
 /* Dual logos slide animation */
@@ -715,37 +726,54 @@ function closeImageModal() {
 }
 
 /* PDF Download Bar */
-.pdf-download-bar {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 32px;
-  z-index: 50;
-  background: rgba(255,255,255,0.85);
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  padding: 0.5rem 1.5rem;
+.pdf-download-container {
   display: flex;
-  align-items: center;
+  justify-content: flex-start; /* Align slightly to the left */
+  gap: 32px; /* Increase spacing between buttons */
+  margin-top: -50px; /* Force move further upwards */
+  padding-left: 80px; /* Adjust position slightly to the left */
+  position: relative; /* Ensure positioning context */
 }
+
+.pdf-download-bar {
+  display: inline-block;
+}
+
 .pdf-download-btn {
-  animation: pulse 1.2s infinite;
-  font-weight: 600;
-  color: #8d5524;
-  padding: 10px 24px;
-  border-radius: 9999px;
-  background: #fff8e8;
-  box-shadow: 0 2px 8px rgba(255,200,80,0.12);
+  padding: 8px 20px; /* Reduced padding */
+  background: #f8f6f0;
+  color: #251f03;
+  border-radius: 24px;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
   transition: background 0.2s;
+  text-decoration: none;
+  font-size: 14px; /* Reduced font size */
 }
+
 .pdf-download-btn:hover {
-  background: #ffe0b2;
+  transform: scale(1.05) rotate(-1deg); /* Slightly reduced hover effect */
+  box-shadow: 0 6px 24px rgba(255, 200, 80, 0.25);
+  background: #ffe8a0;
+  transition: transform 0.2s cubic-bezier(.4, 2, .3, 1), box-shadow 0.2s, background 0.2s;
 }
-@keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(255,200,80,0.12); }
-  50% { transform: scale(1.12) rotate(-2deg); box-shadow: 0 8px 32px rgba(255,200,80,0.25); }
-  100% { transform: scale(1); box-shadow: 0 2px 8px rgba(255,200,80,0.12); }
+
+.espresso-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Reduce space between logo and button */
 }
+
+.momay-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Reduce space between logo and button */
+}
+
 @media (max-width: 768px) {
   .pdf-download-bar {
     left: 50%;
