@@ -80,7 +80,7 @@ async function createRailwayProject(lead: any, event: any) {
     // Init project from the template repo directly
     // Using --repo to link it immediately
     // Use -p @railway/cli to ensure we use the new CLI, not the deprecated 'railway' package
-    await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName, '--repo', 'ThitikornC/EspressoHuaroa'], { cwd: tempDir, env });
+    await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName], { cwd: tempDir, env });
 
     // 3. Get Project ID from generated config
     let projectId = '';
