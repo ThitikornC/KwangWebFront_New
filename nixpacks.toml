@@ -2,7 +2,7 @@
 nixPkgs = ['nodejs_18', 'git']
 
 [phases.install]
-cmds = ['npm ci', 'npm install -g @railway/cli']
+cmds = ['npm ci']
 
 [phases.build]
 cmds = ['npm run build']

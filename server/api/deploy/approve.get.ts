@@ -56,25 +56,25 @@ async function deployProject(lead: any) {
     // If we have a project ID, link to it. Otherwise, fallback to init (safety net).
     if (lead.railwayProjectId) {
         console.log(`Linking to existing project ID: ${lead.railwayProjectId}`);
-        await runCommand('railway', ['link', lead.railwayProjectId], { cwd: tempDir, env });
+        await runCommand('npx', ['railway', 'link', lead.railwayProjectId], { cwd: tempDir, env });
     } else {
         console.warn('No Project ID found. Falling back to Railway Init.');
         const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
         const projectName = `Client-${projectRunNumber}-${lead.name.replace(/[^a-zA-Z0-9]/g, '')}`;
-        await runCommand('railway', ['init', '--name', projectName], { cwd: tempDir, env });
+        await runCommand('npx', ['railway', 'init', '--name', projectName], { cwd: tempDir, env });
     }
 
     // 3. Railway Up
     // Since it's an empty project initially, we need to make sure we are deploying the code we cloned.
     // 'railway up' inside the cloned directory should do this.
     // However, if the project on Railway is empty, 'railway up' will upload the local code.
-    await runCommand('railway', ['up', '--detach'], { cwd: tempDir, env });
+    await runCommand('npx', ['railway', 'up', '--detach'], { cwd: tempDir, env });
 
     // 4. Generate Domain
     // Try to get the domain. If it fails, we might need to wait or use 'railway domain' to generate one.
     let deployedUrl = 'URL not found';
     try {
-        const domainOutput = await runCommandWithOutput('railway', ['domain'], { cwd: tempDir, env });
+        const domainOutput = await runCommandWithOutput('npx', ['railway', 'domain'], { cwd: tempDir, env });
         const urlMatch = domainOutput.match(/(https?:\/\/[^\s]+)|([a-zA-Z0-9-]+\.up\.railway\.app)/);
         deployedUrl = urlMatch ? (urlMatch[0].startsWith('http') ? urlMatch[0] : `https://${urlMatch[0]}`) : 'URL not found';
     } catch (e) {
