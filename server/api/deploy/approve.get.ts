@@ -5,6 +5,7 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import JSZip from 'jszip';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -43,11 +44,13 @@ async function deployProject(lead: any) {
   console.log(`Starting deployment for ${lead.name} in ${tempDir}`);
 
   try {
-    // 1. Clone Repo
+    // 1. Download and Extract Repo (Avoid git clone)
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
-    await runCommand('git', ['clone', 'https://github.com/ThitikornC/EspressoHuaroa.git', tempDir], { env });
+    
+    // Use JSZip to download and extract
+    await downloadAndExtractRepo('https://github.com/ThitikornC/EspressoHuaroa/archive/refs/heads/main.zip', tempDir);
     
     // 2. Railway Link or Init
     // If we have a project ID, link to it. Otherwise, fallback to init (safety net).
@@ -91,6 +94,39 @@ async function deployProject(lead: any) {
   } catch (error) {
     console.error('Deployment error:', error);
     await sendLineNotification(`Deployment Failed for ${lead.name}. Check server logs.`);
+  }
+}
+
+async function downloadAndExtractRepo(url: string, dest: string) {
+  console.log(`Downloading repo from ${url}...`);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to download repo: ${response.statusText}`);
+  
+  const arrayBuffer = await response.arrayBuffer();
+  const zip = await JSZip.loadAsync(arrayBuffer);
+  
+  console.log(`Extracting to ${dest}...`);
+  fs.mkdirSync(dest, { recursive: true });
+
+  for (const filename of Object.keys(zip.files)) {
+      const file = zip.files[filename];
+      if (file.dir) continue;
+
+      const destPath = path.join(dest, filename);
+      fs.mkdirSync(path.dirname(destPath), { recursive: true });
+      const content = await file.async('nodebuffer');
+      fs.writeFileSync(destPath, content);
+  }
+  
+  // Handle root folder if exists (e.g. EspressoHuaroa-main/)
+  const items = fs.readdirSync(dest);
+  if (items.length === 1 && fs.statSync(path.join(dest, items[0])).isDirectory()) {
+      const rootDir = path.join(dest, items[0]);
+      const files = fs.readdirSync(rootDir);
+      for (const f of files) {
+          fs.renameSync(path.join(rootDir, f), path.join(dest, f));
+      }
+      fs.rmdirSync(rootDir);
   }
 }
 

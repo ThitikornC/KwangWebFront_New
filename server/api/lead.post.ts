@@ -5,6 +5,7 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import JSZip from 'jszip';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -60,21 +61,15 @@ async function createRailwayProject(lead: any, event: any) {
   };
 
   console.log(`Starting project creation (CLI) for ${lead.name} (No. ${lead.runNumber})`);
-  // console.log(`Using Token: ${apiKey ? apiKey.substring(0, 5) + '...' : 'None'}`);
 
   try {
-    // 1. Clone Repo (Need a repo to run init inside, or just an empty folder)
-    // Actually, railway init can run in an empty folder.
+    // 1. Download and Extract Repo (Avoid git clone if git is missing)
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
-    fs.mkdirSync(tempDir, { recursive: true });
     
-    // We clone the repo first because 'railway init' might look for a structure, 
-    // or we want the project to be associated with this code structure.
-    // But for just creating a project, an empty folder is fine.
-    // However, to ensure 'project.json' is created correctly for the future, let's clone.
-    await runCommand('git', ['clone', 'https://github.com/ThitikornC/EspressoHuaroa.git', tempDir], { env });
+    // Use JSZip to download and extract
+    await downloadAndExtractRepo('https://github.com/ThitikornC/EspressoHuaroa/archive/refs/heads/main.zip', tempDir);
     
     // 2. Railway Init
     const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
@@ -84,13 +79,7 @@ async function createRailwayProject(lead: any, event: any) {
     
     // Init project from the template repo directly
     // Using --repo to link it immediately
-    // Note: railway init --repo might not be a standard flag in all versions, but let's try standard init first
-    // Actually, to link a repo, we usually do 'railway init' then 'railway link' or configure it.
-    // But if we want to deploy from a specific repo, we might need to use 'railway init' inside that repo (which we cloned).
-    
-    // Since we are inside the cloned tempDir of 'EspressoHuaroa', running 'railway init' here 
-    // should associate this code with the new project.
-    await runCommand('railway', ['init', '--name', projectName], { cwd: tempDir, env });
+    await runCommand('railway', ['init', '--name', projectName, '--repo', 'ThitikornC/EspressoHuaroa'], { cwd: tempDir, env });
 
     // 3. Get Project ID from generated config
     let projectId = '';
@@ -143,6 +132,39 @@ Click to Approve & Deploy: ${approvalLink}
   } catch (error) {
     console.error('Project creation error:', error);
     await sendLineNotification(`Failed to create project for ${lead.name}. Check logs.`);
+  }
+}
+
+async function downloadAndExtractRepo(url: string, dest: string) {
+  console.log(`Downloading repo from ${url}...`);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to download repo: ${response.statusText}`);
+  
+  const arrayBuffer = await response.arrayBuffer();
+  const zip = await JSZip.loadAsync(arrayBuffer);
+  
+  console.log(`Extracting to ${dest}...`);
+  fs.mkdirSync(dest, { recursive: true });
+
+  for (const filename of Object.keys(zip.files)) {
+      const file = zip.files[filename];
+      if (file.dir) continue;
+
+      const destPath = path.join(dest, filename);
+      fs.mkdirSync(path.dirname(destPath), { recursive: true });
+      const content = await file.async('nodebuffer');
+      fs.writeFileSync(destPath, content);
+  }
+  
+  // Handle root folder if exists (e.g. EspressoHuaroa-main/)
+  const items = fs.readdirSync(dest);
+  if (items.length === 1 && fs.statSync(path.join(dest, items[0])).isDirectory()) {
+      const rootDir = path.join(dest, items[0]);
+      const files = fs.readdirSync(rootDir);
+      for (const f of files) {
+          fs.renameSync(path.join(rootDir, f), path.join(dest, f));
+      }
+      fs.rmdirSync(rootDir);
   }
 }
 
