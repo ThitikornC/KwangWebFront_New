@@ -32,6 +32,11 @@ export default defineNuxtConfig({
     cookieStore: true
   },
 runtimeConfig: {
+  mongodbUri: process.env.MONGODB_URI,
+  railwayApiKey: process.env.RAILWAY_API_KEY,
+  lineChannelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  lineUserId: process.env.LINE_USER_ID,
+  baseUrl: process.env.BASE_URL || 'http://localhost:3000',
   public: {
     appURL: "http://localhost:3000",
     apiURL: process.env.API_BASE_URL || "https://kwangwebbacknew-production.up.railway.app",

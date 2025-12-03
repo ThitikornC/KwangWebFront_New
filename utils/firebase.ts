@@ -15,4 +15,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-export { storage, ref, uploadBytes, getDownloadURL };
+export { storage, ref as storageRef, uploadBytes, getDownloadURL };

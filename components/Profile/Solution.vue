@@ -8,7 +8,7 @@ import { solutionsStore } from '~/store/solution_store';
 import type { Solution } from '~/store/solution_store';
 import type { Ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { storage, ref as storageRef, uploadBytes, getDownloadURL } from '~/utils/firebase';
+import { storage, storageRef, uploadBytes, getDownloadURL } from '~/utils/firebase';
 useSeoMeta({
   title: 'Kwang Unlimit',
   ogTitle: 'Kwang Unlimit',
