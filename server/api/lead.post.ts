@@ -82,6 +82,14 @@ async function createRailwayProject(lead: any, event: any) {
     const safeName = lead.name.replace(/[^a-zA-Z0-9]/g, '');
     const projectName = `Client-${projectRunNumber}-${safeName}`;
     
+    // Init project from the template repo directly
+    // Using --repo to link it immediately
+    // Note: railway init --repo might not be a standard flag in all versions, but let's try standard init first
+    // Actually, to link a repo, we usually do 'railway init' then 'railway link' or configure it.
+    // But if we want to deploy from a specific repo, we might need to use 'railway init' inside that repo (which we cloned).
+    
+    // Since we are inside the cloned tempDir of 'EspressoHuaroa', running 'railway init' here 
+    // should associate this code with the new project.
     await runCommand('railway', ['init', '--name', projectName], { cwd: tempDir, env });
 
     // 3. Get Project ID from generated config

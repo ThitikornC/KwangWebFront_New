@@ -62,6 +62,9 @@ async function deployProject(lead: any) {
     }
 
     // 3. Railway Up
+    // Since it's an empty project initially, we need to make sure we are deploying the code we cloned.
+    // 'railway up' inside the cloned directory should do this.
+    // However, if the project on Railway is empty, 'railway up' will upload the local code.
     await runCommand('railway', ['up', '--detach'], { cwd: tempDir, env });
 
     // 4. Generate Domain

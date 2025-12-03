@@ -8,6 +8,9 @@ export const sendLineNotification = async (message: string) => {
     return;
   }
 
+  // Clean token to remove any accidental newlines or spaces
+  const cleanToken = token.trim();
+
   if (!userId) {
     console.warn('LINE_USER_ID is not defined');
     return;
@@ -18,7 +21,7 @@ export const sendLineNotification = async (message: string) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${cleanToken}`,
       },
       body: {
         to: userId,
