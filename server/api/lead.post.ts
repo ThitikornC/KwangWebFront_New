@@ -75,7 +75,7 @@ async function createRailwayProject(lead: any, event: any) {
     const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
     // Clean name
     const safeName = lead.name.replace(/[^a-zA-Z0-9]/g, '');
-    const projectName = `Client-${projectRunNumber}-${safeName}`;
+    const projectName = `Espresso-${projectRunNumber}-${safeName}`;
     
     // Init project from the template repo directly
     // Using --repo to link it immediately
