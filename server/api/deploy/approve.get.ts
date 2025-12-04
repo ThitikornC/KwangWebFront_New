@@ -35,10 +35,10 @@ export default defineEventHandler(async (event) => {
 async function deployProject(lead: any) {
   const tempDir = path.join(os.tmpdir(), `deploy-${lead._id}`);
   const config = useRuntimeConfig();
-  // Use RAILWAY_API_KEY as RAILWAY_TOKEN for the CLI
+  // Use RAILWAY_API_TOKEN for Account Tokens (required for 'railway init' / 'railway link')
   const env = { 
     ...process.env, 
-    RAILWAY_TOKEN: config.railwayApiKey || process.env.RAILWAY_API_KEY 
+    RAILWAY_API_TOKEN: config.railwayApiKey || process.env.RAILWAY_API_KEY 
   };
 
   console.log(`Starting deployment for ${lead.name} in ${tempDir}`);
@@ -109,6 +109,9 @@ async function downloadAndExtractRepo(url: string, dest: string) {
   fs.mkdirSync(dest, { recursive: true });
 
   for (const filename of Object.keys(zip.files)) {
+      // Skip node_modules and .git to avoid issues and save time
+      if (filename.includes('node_modules/') || filename.includes('.git/')) continue;
+
       const file = zip.files[filename];
       if (file.dir) continue;
 
