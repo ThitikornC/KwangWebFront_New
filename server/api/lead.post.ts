@@ -76,24 +76,41 @@ async function createRailwayProject(lead: any, event: any) {
     
     // Init project in empty folder
     // Use -p @railway/cli to ensure we use the new CLI
-    await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName], { cwd: tempDir, env });
+    // Capture output to see if we can parse ID from it
+    console.log('Running railway init...');
+    const initOutput = await runCommandWithOutput('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName], { cwd: tempDir, env });
+    console.log('Init Output:', initOutput);
 
     // 3. Get Project ID from generated config
     let projectId = '';
     try {
-        // Method 1: Try reading .railway/project.json
-        const projectJsonPath = path.join(tempDir, '.railway', 'project.json');
-        if (fs.existsSync(projectJsonPath)) {
-            const projectData = JSON.parse(fs.readFileSync(projectJsonPath, 'utf-8'));
-            projectId = projectData.project || projectData.projectId;
+        // Method 1: Try reading .railway/project.json or any json in .railway
+        const railwayDir = path.join(tempDir, '.railway');
+        if (fs.existsSync(railwayDir)) {
+            const files = fs.readdirSync(railwayDir);
+            console.log('Files in .railway:', files);
+            
+            for (const file of files) {
+                if (file.endsWith('.json')) {
+                    try {
+                        const data = JSON.parse(fs.readFileSync(path.join(railwayDir, file), 'utf-8'));
+                        console.log(`Content of ${file}:`, data);
+                        if (data.project) projectId = data.project;
+                        if (data.projectId) projectId = data.projectId;
+                    } catch (err) {
+                        console.warn(`Error reading ${file}:`, err);
+                    }
+                }
+            }
+        } else {
+             console.warn('.railway directory not found');
         }
 
-        // Method 2: If file not found, ask CLI directly via 'railway run printenv'
-        if (!projectId) {
-            console.log('Project ID file not found, trying CLI printenv...');
-            const output = await runCommandWithOutput('npx', ['-y', '-p', '@railway/cli', 'railway', 'run', 'printenv', 'RAILWAY_PROJECT_ID'], { cwd: tempDir, env });
-            projectId = output.trim();
-        }
+        // Method 2: Parse from init output (if available)
+        // Example output: "Created project Espresso-009" -> No ID usually.
+        
+        // REMOVED: Method 3 (railway run printenv) because it triggers auto-deploy/build.
+        
     } catch (e) {
         console.warn('Failed to extract Project ID:', e);
     }
