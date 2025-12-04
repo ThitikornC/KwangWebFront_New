@@ -1,7 +1,7 @@
 export const sendLineNotification = async (message: string) => {
   const config = useRuntimeConfig();
   const token = config.lineChannelAccessToken || process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  const userId = config.lineUserId || process.env.LINE_USER_ID;
+  const userIdConfig = config.lineUserId || process.env.LINE_USER_ID;
 
   if (!token) {
     console.warn('LINE_CHANNEL_ACCESS_TOKEN is not defined');
@@ -11,20 +11,29 @@ export const sendLineNotification = async (message: string) => {
   // Clean token to remove any accidental newlines or spaces
   const cleanToken = token.trim();
 
-  if (!userId) {
+  if (!userIdConfig) {
     console.warn('LINE_USER_ID is not defined');
     return;
   }
 
+  // Split IDs by comma and trim whitespace
+  const userIds = userIdConfig.split(',').map((id: string) => id.trim()).filter((id: string) => id.length > 0);
+
+  if (userIds.length === 0) {
+    console.warn('No valid LINE User IDs found');
+    return;
+  }
+
   try {
-    await $fetch('https://api.line.me/v2/bot/message/push', {
+    // Use multicast to send to multiple users
+    await $fetch('https://api.line.me/v2/bot/message/multicast', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${cleanToken}`,
       },
       body: {
-        to: userId,
+        to: userIds,
         messages: [
           {
             type: 'text',

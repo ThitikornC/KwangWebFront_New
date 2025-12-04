@@ -5,7 +5,6 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import JSZip from 'jszip';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -63,36 +62,37 @@ async function createRailwayProject(lead: any, event: any) {
   console.log(`Starting project creation (CLI) for ${lead.name} (No. ${lead.runNumber})`);
 
   try {
-    // 1. Download and Extract Repo (Avoid git clone if git is missing)
+    // 1. Prepare Empty Directory (Do NOT download code here to prevent auto-deploy)
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
-    
-    // Use JSZip to download and extract
-    await downloadAndExtractRepo('https://github.com/ThitikornC/EspressoHuaroa/archive/refs/heads/main.zip', tempDir);
+    fs.mkdirSync(tempDir, { recursive: true });
     
     // 2. Railway Init
     const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
     // Clean name
-    const safeName = lead.name.replace(/[^a-zA-Z0-9]/g, '');
-    const projectName = `Espresso-${projectRunNumber}-${safeName}`;
+    // const safeName = lead.name.replace(/[^a-zA-Z0-9]/g, '');
+    const projectName = `Espresso-${projectRunNumber}`;
     
-    // Init project from the template repo directly
-    // Using --repo to link it immediately
-    // Use -p @railway/cli to ensure we use the new CLI, not the deprecated 'railway' package
+    // Init project in empty folder
+    // Use -p @railway/cli to ensure we use the new CLI
     await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName], { cwd: tempDir, env });
 
     // 3. Get Project ID from generated config
     let projectId = '';
     try {
+        // Method 1: Try reading .railway/project.json
         const projectJsonPath = path.join(tempDir, '.railway', 'project.json');
         if (fs.existsSync(projectJsonPath)) {
             const projectData = JSON.parse(fs.readFileSync(projectJsonPath, 'utf-8'));
-            console.log('Railway Project Data:', projectData);
-            // Structure is usually { "project": "PROJECT_ID", ... } or { "projectId": "..." }
             projectId = projectData.project || projectData.projectId;
-        } else {
-             console.warn('Could not find .railway/project.json');
+        }
+
+        // Method 2: If file not found, ask CLI directly via 'railway run printenv'
+        if (!projectId) {
+            console.log('Project ID file not found, trying CLI printenv...');
+            const output = await runCommandWithOutput('npx', ['-y', '-p', '@railway/cli', 'railway', 'run', 'printenv', 'RAILWAY_PROJECT_ID'], { cwd: tempDir, env });
+            projectId = output.trim();
         }
     } catch (e) {
         console.warn('Failed to extract Project ID:', e);
@@ -136,39 +136,6 @@ Click to Approve & Deploy: ${approvalLink}
   }
 }
 
-async function downloadAndExtractRepo(url: string, dest: string) {
-  console.log(`Downloading repo from ${url}...`);
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to download repo: ${response.statusText}`);
-  
-  const arrayBuffer = await response.arrayBuffer();
-  const zip = await JSZip.loadAsync(arrayBuffer);
-  
-  console.log(`Extracting to ${dest}...`);
-  fs.mkdirSync(dest, { recursive: true });
-
-  for (const filename of Object.keys(zip.files)) {
-      const file = zip.files[filename];
-      if (file.dir) continue;
-
-      const destPath = path.join(dest, filename);
-      fs.mkdirSync(path.dirname(destPath), { recursive: true });
-      const content = await file.async('nodebuffer');
-      fs.writeFileSync(destPath, content);
-  }
-  
-  // Handle root folder if exists (e.g. EspressoHuaroa-main/)
-  const items = fs.readdirSync(dest);
-  if (items.length === 1 && fs.statSync(path.join(dest, items[0])).isDirectory()) {
-      const rootDir = path.join(dest, items[0]);
-      const files = fs.readdirSync(rootDir);
-      for (const f of files) {
-          fs.renameSync(path.join(rootDir, f), path.join(dest, f));
-      }
-      fs.rmdirSync(rootDir);
-  }
-}
-
 function runCommand(command: string, args: string[], options: any = {}) {
   return new Promise((resolve, reject) => {
     console.log(`Running: ${command} ${args.join(' ')}`);
@@ -196,6 +163,25 @@ function runCommand(command: string, args: string[], options: any = {}) {
     proc.on('close', (code) => {
       if (code === 0) resolve(true);
       else reject(new Error(`Command failed with code ${code}\nStderr: ${stderr}`));
+    });
+    
+    proc.on('error', (err) => reject(err));
+  });
+}
+
+function runCommandWithOutput(command: string, args: string[], options: any = {}): Promise<string> {
+  return new Promise((resolve, reject) => {
+    console.log(`Running (capture): ${command} ${args.join(' ')}`);
+    const proc = spawn(command, args, { ...options, shell: true });
+    let stdout = '';
+    let stderr = '';
+
+    proc.stdout?.on('data', (data) => stdout += data.toString());
+    proc.stderr?.on('data', (data) => stderr += data.toString());
+
+    proc.on('close', (code) => {
+      if (code === 0) resolve(stdout.trim());
+      else reject(new Error(`Command failed with code ${code}: ${stderr}`));
     });
     
     proc.on('error', (err) => reject(err));

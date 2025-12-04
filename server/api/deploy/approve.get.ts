@@ -60,7 +60,7 @@ async function deployProject(lead: any) {
     } else {
         console.warn('No Project ID found. Falling back to Railway Init.');
         const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
-        const projectName = `Espresso-${projectRunNumber}-${lead.name.replace(/[^a-zA-Z0-9]/g, '')}`;
+        const projectName = `Espresso-${projectRunNumber}`;
         await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName], { cwd: tempDir, env });
     }
 
