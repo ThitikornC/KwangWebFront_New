@@ -136,16 +136,89 @@ async function createRailwayProject(lead: any, event: any) {
     console.log(approvalLink);
     console.log('---------------------------------------------------');
 
-    const message = `
-New Lead Received! (No. ${lead.runNumber})
-Name: ${lead.name}
-Phone: ${lead.phone}
-Project: ${projectName}
+    const flexMessage = {
+      type: "flex",
+      altText: `New Lead: ${lead.name}`,
+      contents: {
+        type: "bubble",
+        header: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "text",
+              text: "New Lead Received!",
+              weight: "bold",
+              color: "#1DB446",
+              size: "lg"
+            }
+          ]
+        },
+        body: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "No.", color: "#aaaaaa", size: "sm", flex: 2 },
+                { type: "text", text: `${lead.runNumber}`, wrap: true, color: "#666666", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "Name", color: "#aaaaaa", size: "sm", flex: 2 },
+                { type: "text", text: lead.name, wrap: true, color: "#666666", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "Phone", color: "#aaaaaa", size: "sm", flex: 2 },
+                { type: "text", text: lead.phone, wrap: true, color: "#666666", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "Project", color: "#aaaaaa", size: "sm", flex: 2 },
+                { type: "text", text: projectName, wrap: true, color: "#666666", size: "sm", flex: 5 }
+              ]
+            }
+          ]
+        },
+        footer: {
+          type: "box",
+          layout: "vertical",
+          spacing: "sm",
+          contents: [
+            {
+              type: "button",
+              style: "primary",
+              height: "sm",
+              action: {
+                type: "uri",
+                label: "Approve & Deploy",
+                uri: approvalLink
+              },
+              color: "#007bff"
+            }
+          ],
+          flex: 0
+        }
+      }
+    };
 
-Click to Approve & Deploy: ${approvalLink}
-    `.trim();
-
-    await sendLineNotification(message);
+    await sendLineNotification(flexMessage);
 
   } catch (error) {
     console.error('Project creation error:', error);

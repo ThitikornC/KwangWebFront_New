@@ -88,7 +88,82 @@ async function deployProject(lead: any) {
     await lead.save();
 
     // 6. Notify Admin
-    await sendLineNotification(`Deployment Successful for ${lead.name}!\nURL: ${deployedUrl}`);
+    const flexMessage = {
+      type: "flex",
+      altText: `Deployment Success: ${lead.name}`,
+      contents: {
+        type: "bubble",
+        header: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "text",
+              text: "Deployment Successful!",
+              weight: "bold",
+              color: "#1DB446",
+              size: "lg"
+            }
+          ]
+        },
+        body: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "text",
+              text: `Project for ${lead.name} is now live.`,
+              wrap: true,
+              color: "#666666",
+              size: "md"
+            },
+            {
+              type: "separator",
+              margin: "md"
+            },
+            {
+              type: "box",
+              layout: "vertical",
+              margin: "md",
+              contents: [
+                {
+                  type: "text",
+                  text: deployedUrl,
+                  wrap: true,
+                  color: "#007bff",
+                  size: "sm",
+                  action: {
+                    type: "uri",
+                    uri: deployedUrl
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        footer: {
+          type: "box",
+          layout: "vertical",
+          spacing: "sm",
+          contents: [
+            {
+              type: "button",
+              style: "primary",
+              height: "sm",
+              action: {
+                type: "uri",
+                label: "Open Website",
+                uri: deployedUrl
+              },
+              color: "#1DB446"
+            }
+          ],
+          flex: 0
+        }
+      }
+    };
+
+    await sendLineNotification(flexMessage);
     console.log(`Deployment finished. URL: ${deployedUrl}`);
 
   } catch (error) {

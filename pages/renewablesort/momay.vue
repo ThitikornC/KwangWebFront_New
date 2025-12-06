@@ -32,13 +32,35 @@
   </div>
 
   <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
+    <!-- New order: Humen - Phama - Bangkrong - Wongpanit - Ps - Clinic - hospital_Noenmaprang_v1 - hospital_Noenmaprang - Naresuan Library -->
+
     <div
-      @click="openSplineDesign('hospital_Noenmaprang')"
-      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+      @click="openSplineDesign('Mpmay_human')"
+      class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Hospital Noenmaprang</span>
+        <img src="/MOMAY_logo.png" alt="Momay Human" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Human_NU</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('Momay_pharmacy')"
+      class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay Pharmacy" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Pharmacy_NU</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_BanKlongResort')"
+      class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="BanKlong Resort" class="w-12 h-12 object-contain" />
+        <span class="font-thai">BanKlong Resort</span>
       </div>
     </div>
 
@@ -53,6 +75,16 @@
     </div>
 
     <div
+      @click="openSplineDesign('momay2')"
+      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay 2</span>
+      </div>
+    </div>
+
+    <div
       @click="openSplineDesign('clinic')"
       class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
     >
@@ -63,12 +95,22 @@
     </div>
 
     <div
-      @click="openSplineDesign('momay2')"
+      @click="openSplineDesign('hospital_Noenmaprang_v1')"
       class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
     >
       <div class="card-content">
         <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Momay 2</span>
+        <span class="font-thai">Hospital Noenmaprang V1</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('hospital_Noenmaprang')"
+      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Hospital Noenmaprang</span>
       </div>
     </div>
 
@@ -100,12 +142,15 @@ import PageFlipBook from '~/components/PageFlipBook.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const splineLinks = {
-  momay_BanKlongResort: 'https://momayretro-production.up.railway.app/',
+  momay_BanKlongResort: '/momay/momay_BanKlongResort',
   wongpanit_sukhothai: '/momay/wongpanit_sukhothai',
   hospital_Noenmaprang: '/momay/hospital_Noenmaprang',
+  hospital_Noenmaprang_v1: '/momay/hospital_Noenmaprang_v1',
   clinic: '/momay/clinic',
   momay2:'/momay/momay02',
-  naresuan_library: '/momay/naresuan_library'
+  naresuan_library: '/momay/naresuan_library',
+  Momay_pharmacy: '/momay/Momay_pharmacy',
+  Mpmay_human: '/momay/Mpmay_human'
 }
 
 const pages = [
@@ -170,7 +215,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
 
   // ถ้าเป็น hospital ให้ตรวจรหัสเฉพาะ
-  if (key === 'hospital_Noenmaprang') {
+  if (key === 'hospital_Noenmaprang' || key === 'hospital_Noenmaprang_v1') {
     if (password !== '1125711257') {
       alert("รหัสสำหรับโรงพยาบาลไม่ถูกต้อง ❌")
       return

@@ -1,4 +1,4 @@
-export const sendLineNotification = async (message: string) => {
+export const sendLineNotification = async (message: any) => {
   const config = useRuntimeConfig();
   const token = config.lineChannelAccessToken || process.env.LINE_CHANNEL_ACCESS_TOKEN;
   const userIdConfig = config.lineUserId || process.env.LINE_USER_ID;
@@ -24,6 +24,11 @@ export const sendLineNotification = async (message: string) => {
     return;
   }
 
+  // Determine message type (String -> Text Message, Object -> Flex/Other Message)
+  const messagesPayload = typeof message === 'string' 
+    ? [{ type: 'text', text: message }] 
+    : [message];
+
   try {
     // Use multicast to send to multiple users
     await $fetch('https://api.line.me/v2/bot/message/multicast', {
@@ -34,12 +39,7 @@ export const sendLineNotification = async (message: string) => {
       },
       body: {
         to: userIds,
-        messages: [
-          {
-            type: 'text',
-            text: message
-          }
-        ]
+        messages: messagesPayload
       }
     });
   } catch (error: any) {
