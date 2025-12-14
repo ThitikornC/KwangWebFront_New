@@ -13,6 +13,10 @@ const route = useRoute()
   MaeHongSon: 'https://huaroa-production.up.railway.app/',
   Huaroa: 'https://espressohuaroa-production.up.railway.app/',
   huaroa2: 'https://espressohuaroa-production.up.railway.app/',
+  huaroa3: 'https://espressohuaroa2-production.up.railway.app/',
+  huaroa4: 'https://espressohuaroa3-production.up.railway.app/',
+  huaroa5: 'https://espressohuaroa4-production.up.railway.app/',
+  huaroa6: 'https://espressohuaroa5-production.up.railway.app/',
   naresuan_library: 'https://momaylib-production.up.railway.app/'
 }
 const url = targets[String(route.params.slug)]

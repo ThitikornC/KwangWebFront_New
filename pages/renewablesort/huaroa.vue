@@ -1,4 +1,3 @@
-
 <template>
   <div class="root-bg p-8 min-h-screen">
     <div class="scroll-reveal flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">
@@ -6,12 +5,12 @@
         <div class="marquee">
           <div class="marquee-content">
             <span>Espresso Platform</span>
-            <span>Real-time Data Integration</span>
+            <span>เทศบาลหัวรอ</span>
             <span>Smart Classroom</span>
           </div>
           <div class="marquee-content">
             <span>Espresso Platform</span>
-            <span>Real-time Data Integration</span>
+            <span>เทศบาลหัวรอ</span>
             <span>Smart Classroom</span>
           </div>
         </div>
@@ -30,119 +29,73 @@
     </div>
 
     <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
-      <!-- ทดลองใช้งาน Project Card (Magazine style, right-aligned, above previous projects) -->
-      <div class="w-full flex justify-end mb-2">
-        <div
-          @click="openTestProject"
-          class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"        >
-          <div class="card-content">
-            <img src="/ESPRESSO_logo.png" alt="ทดลองใช้งาน" class="w-12 h-12 object-contain" />
-            <span class="font-thai text-xs">ทดลองใช้งานฟรี</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Existing project cards -->
+      <!-- เทศบาลหัวรอ 1-5 cards -->
       <div
-        @click="openSplineDesign('espresso_huaroa')"
+        @click="openProject('huaroa1')"
         class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
       >
         <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Espresso Huaroa" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso โรงเรียนเทศบาล3เเม่ฮ่องสอน</span>
+          <img src="/ESPRESSO_logo.png" alt="Huaroa 1" class="w-12 h-12 object-contain" />
+          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 1</span>
         </div>
       </div>
       <div
-        @click="openSplineDesign('espresso_Huaroa_page')"
+        @click="openProject('huaroa2')"
         class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
       >
         <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Huaroa Project" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ</span>
+          <img src="/ESPRESSO_logo.png" alt="Huaroa 2" class="w-12 h-12 object-contain" />
+          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 2</span>
+        </div>
+      </div>
+      <div
+        @click="openProject('huaroa3')"
+        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
+      >
+        <div class="card-content">
+          <img src="/ESPRESSO_logo.png" alt="Huaroa 3" class="w-12 h-12 object-contain" />
+          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 3</span>
+        </div>
+      </div>
+      <div
+        @click="openProject('huaroa4')"
+        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
+      >
+        <div class="card-content">
+          <img src="/ESPRESSO_logo.png" alt="Huaroa 4" class="w-12 h-12 object-contain" />
+          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 4</span>
+        </div>
+      </div>
+      <div
+        @click="openProject('huaroa5')"
+        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
+      >
+        <div class="card-content">
+          <img src="/ESPRESSO_logo.png" alt="Huaroa 5" class="w-12 h-12 object-contain" />
+          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 5</span>
         </div>
       </div>
     </div>
 
     <div class="pdf-download-bar">
-    <a href="/Sale Kit Espresso251125.pdf" download class="pdf-download-btn">
-      Download Document
-    </a>
-  </div>
-
-    <!-- Trial Modal -->
-    <teleport to="body">
-      <div v-if="showTrialModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]" @click.self="showTrialModal = false">
-        <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl transform transition-all">
-          <h3 class="text-2xl font-bold mb-4 text-gray-800 font-thai">ลงทะเบียนทดลองใช้งานฟรี</h3>
-          <form @submit.prevent="submitTrialForm" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
-              <input v-model="trialForm.name" required class="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition" placeholder="กรอกชื่อ-นามสกุล" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
-              <input v-model="trialForm.phone" type="tel" required class="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition" placeholder="08x-xxx-xxxx" />
-            </div>
-            <div class="flex justify-end gap-3 pt-4">
-              <button type="button" @click="showTrialModal = false" class="px-5 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl transition font-medium">ยกเลิก</button>
-              <button type="submit" :disabled="isSubmittingTrial" class="px-8 py-2.5 bg-gradient-to-r from-[#74640a] to-[#9e8c1a] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                <span v-if="isSubmittingTrial" class="animate-spin">⏳</span>
-                {{ isSubmittingTrial ? 'กำลังส่งข้อมูล...' : '✨ ยืนยันการลงทะเบียน' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </teleport>
+      <a href="/Sale Kit Espresso251125.pdf" download class="pdf-download-btn">
+        Download Document
+      </a>
+    </div>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import MobileFlipbook from '~/components/MobileFlipbook.vue'
 import PageFlipBook from '~/components/PageFlipBook.vue'
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const splineLinks = {
-  espresso_pharmacy: 'https://espresso-pharmacy.example.com/',
-  espresso_human: 'https://espresso-human.example.com/',
-  espresso_huaroa: '/espresso/MaeHongSon',
-  espresso_Huaroa_page: '/renewablesort/huaroa'
-}
-
-// ทดลองใช้งาน (Magazine) project link
-const testProjectUrl = 'https://magazine-espresso-demo.example.com/';
-
-const showTrialModal = ref(false);
-const trialForm = reactive({
-  name: '',
-  phone: ''
-});
-const isSubmittingTrial = ref(false);
-
-// ทดลองใช้งาน (Magazine) project card handler
-function openTestProject() {
-  showTrialModal.value = true;
-}
-
-async function submitTrialForm() {
-  isSubmittingTrial.value = true;
-  try {
-    await $fetch('/api/lead', {
-      method: 'POST',
-      body: trialForm
-    });
-    
-    alert('ส่งข้อมูลเรียบร้อยแล้ว! เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันการเปิดใช้งาน');
-    showTrialModal.value = false;
-    // Reset form
-    Object.assign(trialForm, { name: '', phone: '' });
-  } catch (e: any) {
-    console.error(e);
-    alert('เกิดข้อผิดพลาด: ' + (e.data?.statusMessage || 'ไม่สามารถส่งข้อมูลได้'));
-  } finally {
-    isSubmittingTrial.value = false;
-  }
+const projectLinks: Record<string, string> = {
+  huaroa1: '/espresso/Huaroa',
+  huaroa2: '/espresso/huaroa3',
+  huaroa3: '/espresso/huaroa4',
+  huaroa4: '/espresso/huaroa5',
+  huaroa5: '/espresso/huaroa6'
 }
 
 const pages = [
@@ -155,11 +108,18 @@ const pages = [
 ]
 
 const isMobile = ref(false)
+
 function updateIsMobile() {
   if (typeof window !== 'undefined') {
     isMobile.value = window.innerWidth <= 768
   }
 }
+
+function openProject(key: string) {
+  const url = projectLinks[key]
+  if (url) window.open(url, '_blank')
+}
+
 onMounted(() => {
   updateIsMobile()
   if (typeof window !== 'undefined') {
@@ -194,23 +154,9 @@ onMounted(() => {
     }
   })
 })
-
-function openSplineDesign(key: keyof typeof splineLinks) {
-  const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
-  if (password !== '240124') {
-    alert("รหัสผ่านไม่ถูกต้อง ❌")
-    return
-  }
-  const url = splineLinks[key]
-  if (url) window.open(url, '_blank')
-}
-
-
 </script>
 
-
 <style scoped>
-/* ใช้ style เดียวกับหน้า momay.vue */
 .font-thai {
   font-family: 'Roboto', sans-serif;
 }
@@ -374,11 +320,6 @@ function openSplineDesign(key: keyof typeof splineLinks) {
     padding: 8.4px 19.6px;
     font-size: 0.7rem;
   }
-  .whitespace-nowrap {
-    white-space: nowrap !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 .flipbook-container {
   display: flex;
@@ -431,26 +372,6 @@ function openSplineDesign(key: keyof typeof splineLinks) {
     max-width: 600px;
   }
 }
-.action-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
-}
-.page-counter {
-  font-weight: 600;
-  font-size: 18px;
-  color: #f8f6f0;
-  padding: 8px 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-@media (max-width: 768px) {
-  .page-counter {
-    font-size: 16px;
-  }
-}
 .pdf-download-bar {
   position: fixed;
   right: 24px;
@@ -470,12 +391,11 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   text-decoration: none;
   font-size: 18px;
 }
-  .pdf-download-btn:hover {
-    transform: scale(1.08) rotate(-2deg);
-    box-shadow: 0 6px 24px rgba(255, 200, 80, 0.25);
-    background: #ffe8a0;
-    transition: transform 0.2s cubic-bezier(.4,2,.3,1), box-shadow 0.2s, background 0.2s;
+.pdf-download-btn:hover {
+  transform: scale(1.08) rotate(-2deg);
+  box-shadow: 0 6px 24px rgba(255, 200, 80, 0.25);
   background: #ffe8a0;
+  transition: transform 0.2s cubic-bezier(.4,2,.3,1), box-shadow 0.2s, background 0.2s;
 }
 @media (max-width: 768px) {
   .pdf-download-bar {
