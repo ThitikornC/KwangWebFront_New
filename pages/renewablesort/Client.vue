@@ -5,90 +5,78 @@
         <div class="marquee">
           <div class="marquee-content">
             <span>Espresso Platform</span>
-            <span>เทศบาลหัวรอ</span>
             <span>Smart Classroom</span>
           </div>
           <div class="marquee-content">
             <span>Espresso Platform</span>
-            <span>เทศบาลหัวรอ</span>
             <span>Smart Classroom</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="flipbook-container">
-      <client-only>
-        <template v-if="isMobile">
-          <MobileFlipbook :pages="pages" />
-        </template>
-        <template v-else>
-          <PageFlipBook :pages="pages" />
-        </template>
-      </client-only>
-    </div>
+    <!-- Parent box styled like the child cards (group header) -->
+    <div class="tree-container">
+      <div class="tree-wrapper">
+        <!-- Parent Node -->
+        <div class="tree-parent">
+          <div class="neon-btn spline-link-card flow-card parent-box">
+            <div class="card-content parent-card-content">
+              <div class="parent-title">Usernumber : 001</div>
+              <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
+              <div class="parent-meta">Contractnumber :</div>
+              <div class="parent-meta">Date Installed : 1-11-25</div>
+              <div class="parent-meta">Expiration Date : 1-12-25</div>
+            </div>
+          </div>
+        </div>
 
-    <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
-      <!-- เทศบาลหัวรอ 1-5 cards -->
-      <div
-        @click="openProject('huaroa1')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Huaroa 1" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 1</span>
-        </div>
-      </div>
-      <div
-        @click="openProject('huaroa2')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Huaroa 2" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 2</span>
-        </div>
-      </div>
-      <div
-        @click="openProject('huaroa3')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Huaroa 3" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 3</span>
-        </div>
-      </div>
-      <div
-        @click="openProject('huaroa4')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Huaroa 4" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 4</span>
-        </div>
-      </div>
-      <div
-        @click="openProject('huaroa5')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Huaroa 5" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ 5</span>
+        <!-- Child Nodes -->
+        <div class="tree-children">
+          <div @click="openProject('huaroa1')" class="neon-btn spline-link-card flow-card child-card">
+            <div class="card-content">
+              <img src="/ESPRESSO_logo.png" alt="Huaroa 1" class="w-12 h-12 object-contain" />
+              <span class="font-thai text-sm">เทศบาลหัวรอ 1</span>
+            </div>
+          </div>
+
+          <div @click="openProject('huaroa2')" class="neon-btn spline-link-card flow-card child-card">
+            <div class="card-content">
+              <img src="/ESPRESSO_logo.png" alt="Huaroa 2" class="w-12 h-12 object-contain" />
+              <span class="font-thai text-sm">เทศบาลหัวรอ 2</span>
+            </div>
+          </div>
+
+          <div @click="openProject('huaroa3')" class="neon-btn spline-link-card flow-card child-card">
+            <div class="card-content">
+              <img src="/ESPRESSO_logo.png" alt="Huaroa 3" class="w-12 h-12 object-contain" />
+              <span class="font-thai text-sm">เทศบาลหัวรอ 3</span>
+            </div>
+          </div>
+
+          <div @click="openProject('huaroa4')" class="neon-btn spline-link-card flow-card child-card">
+            <div class="card-content">
+              <img src="/ESPRESSO_logo.png" alt="Huaroa 4" class="w-12 h-12 object-contain" />
+              <span class="font-thai text-sm">เทศบาลหัวรอ 4</span>
+            </div>
+          </div>
+
+          <div @click="openProject('huaroa5')" class="neon-btn spline-link-card flow-card child-card">
+            <div class="card-content">
+              <img src="/ESPRESSO_logo.png" alt="Huaroa 5" class="w-12 h-12 object-contain" />
+              <span class="font-thai text-sm">เทศบาลหัวรอ 5</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="pdf-download-bar">
-      <a href="/Sale Kit Espresso251125.pdf" download class="pdf-download-btn">
-        Download Document
-      </a>
-    </div>
+    <!-- PDF download removed -->
   </div>
 </template>
 
 <script setup lang="ts">
-import MobileFlipbook from '~/components/MobileFlipbook.vue'
-import PageFlipBook from '~/components/PageFlipBook.vue'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount } from 'vue'
 
 const projectLinks: Record<string, string> = {
   huaroa1: '/espresso/Huaroa',
@@ -98,22 +86,7 @@ const projectLinks: Record<string, string> = {
   huaroa5: '/espresso/huaroa6'
 }
 
-const pages = [
-  '/5.png',
-  '/6.png',
-  '/7.png',
-  '/8.png',
-  '/9.png',
-  '/10.png',
-]
 
-const isMobile = ref(false)
-
-function updateIsMobile() {
-  if (typeof window !== 'undefined') {
-    isMobile.value = window.innerWidth <= 768
-  }
-}
 
 function openProject(key: string) {
   const url = projectLinks[key]
@@ -121,11 +94,6 @@ function openProject(key: string) {
 }
 
 onMounted(() => {
-  updateIsMobile()
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', updateIsMobile)
-  }
-
   let observer: IntersectionObserver | null = null
   const scrollElements = document.querySelectorAll('.scroll-reveal')
   scrollElements.forEach(el => {
@@ -145,9 +113,6 @@ onMounted(() => {
   }, observerOptions)
   scrollElements.forEach(el => observer!.observe(el))
   onBeforeUnmount(() => {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('resize', updateIsMobile)
-    }
     if (observer) {
       observer.disconnect()
       observer = null
@@ -239,7 +204,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 0 8px;
+  padding: 0 6px;
   width: 100%;
   gap: 8px;
 }
@@ -251,7 +216,7 @@ onMounted(() => {
 }
 .card-content span {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   flex-grow: 1;
 }
 @media (min-width: 640px) {
@@ -302,6 +267,86 @@ onMounted(() => {
   transition: all 0.3s ease;
   z-index: 10;
 }
+/* Flow column styles */
+.flow-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+  padding-top: 6px;
+}
+.card-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.flow-card {
+  width: 320px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 10px;
+}
+/* arrows removed - keep styles if needed later */
+.arrow { display: none; }
+
+/* Tree Structure Styles */
+.tree-container { 
+  display: flex; 
+  justify-content: center; 
+  margin-top: 20px;
+  padding: 20px 20px 40px;
+}
+
+.tree-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tree-parent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.tree-children {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-left: 40px;
+}
+
+.child-card {
+  cursor: pointer;
+}
+
+/* Parent header */
+.parent-box { 
+  width: 320px; 
+  height: auto; 
+  padding: 16px 20px; 
+  border-radius: 10px;
+  border: 2px solid #74640a;
+}
+.parent-card-content { 
+  flex-direction: column; 
+  align-items: flex-start; 
+  gap: 4px; 
+}
+.parent-title { font-weight: 800; font-size: 18px; }
+.parent-sub { font-weight: 700; font-size: 16px; }
+.parent-meta { font-size: 14px; color: #2b2b2b; line-height: 1.4; }
+
+/* compact logo inside cards */
+.card-content img { width: 40px !important; height: 40px !important; }
+.card-content span { font-size: 15px; font-weight: 600; }
+
 @media (max-width: 768px) {
   .running-text {
     border-width: 3px;
@@ -320,22 +365,50 @@ onMounted(() => {
     padding: 8.4px 19.6px;
     font-size: 0.7rem;
   }
+  .tree-container {
+    padding: 15px 10px;
+  }
+  .tree-parent {
+    margin-bottom: 24px;
+  }
+  .tree-children {
+    gap: 12px;
+    padding-left: 20px;
+  }
+  .parent-box {
+    width: 280px;
+    padding: 12px 14px;
+  }
+  .parent-title { font-size: 15px; }
+  .parent-sub { font-size: 14px; }
+  .parent-meta { font-size: 12px; }
+  .flow-card {
+    width: 260px;
+    height: 52px;
+  }
+  .card-content img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .card-content span {
+    font-size: 13px;
+  }
 }
 .flipbook-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 60px;
-  margin-bottom: 60px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   padding: 20px;
   overflow: visible;
   background: transparent !important;
 }
 .flipbook {
   width: 100%;
-  max-width: 1200px;
-  height: 900px;
+  max-width: 600px;
+  height: 450px;
   overflow: visible !important;
   background: transparent !important;
 }
@@ -368,8 +441,8 @@ onMounted(() => {
 }
 @media (max-width: 768px) {
   .flipbook {
-    height: 400px;
-    max-width: 600px;
+    height: 200px;
+    max-width: 300px;
   }
 }
 .pdf-download-bar {

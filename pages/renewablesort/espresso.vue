@@ -27,47 +27,28 @@
           <PageFlipBook :pages="pages" />
         </template>
       </client-only>
-    </div>
-
-    <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
-      <!-- ทดลองใช้งาน Project Card (Magazine style, right-aligned, above previous projects) -->
-      <div class="w-full flex justify-end mb-2">
-        <div
-          @click="openTestProject"
-          class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"        >
+      <div class="ebook-badge" role="button" tabindex="0">
+        <div @click="openTestProject" class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300">
           <div class="card-content">
-            <img src="/ESPRESSO_logo.png" alt="ทดลองใช้งาน" class="w-12 h-12 object-contain" />
+            <img src="/ESPRESSO_logo.png" alt="ทดลองใช้งาน" class="w-8 h-8 object-contain" />
             <span class="font-thai text-xs">ทดลองใช้งานฟรี</span>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Existing project cards -->
-      <div
-        @click="openSplineDesign('espresso_huaroa')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Espresso Huaroa" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso โรงเรียนเทศบาล3เเม่ฮ่องสอน</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('espresso_Huaroa_page')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/ESPRESSO_logo.png" alt="Huaroa Project" class="w-12 h-12 object-contain" />
-          <span class="font-thai text-xs">Espresso เทศบาลหัวรอ</span>
-        </div>
-      </div>
+    <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
+      <!-- existing project cards removed (moved to fixed download bar) -->
     </div>
 
     <div class="pdf-download-bar">
-    <a href="/Sale Kit Espresso251125.pdf" download class="pdf-download-btn">
-      Download Document
-    </a>
-  </div>
+      <div @click="openSplineDesign('espresso_Huaroa_page')" class="pdf-download-btn" role="button" tabindex="0">
+        <span class="font-thai">Clients</span>
+      </div>
+      <a href="/Sale Kit Espresso251125.pdf" download class="pdf-download-btn">
+        Download Document
+      </a>
+    </div>
 
     <!-- Trial Modal -->
     <teleport to="body">
@@ -106,8 +87,7 @@ import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 const splineLinks = {
   espresso_pharmacy: 'https://espresso-pharmacy.example.com/',
   espresso_human: 'https://espresso-human.example.com/',
-  espresso_huaroa: '/espresso/MaeHongSon',
-  espresso_Huaroa_page: '/renewablesort/huaroa'
+  espresso_Huaroa_page: '/renewablesort/Client'
 }
 
 // ทดลองใช้งาน (Magazine) project link
@@ -381,6 +361,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   }
 }
 .flipbook-container {
+  position: relative; /* make absolute children position relative to this container */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -390,6 +371,20 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   padding: 20px;
   overflow: visible;
   background: transparent !important;
+}
+
+.ebook-badge {
+  position: absolute;
+  right: 40px;
+  bottom: 40px;
+  z-index: 120;
+}
+
+@media (max-width: 768px) {
+  .ebook-badge { right: 16px; bottom: 56px; }
+  .ebook-badge .spline-link-card { width: 180px; height: 56px; padding: 0 12px; }
+  .ebook-badge .card-content img { width: 32px; height: 32px; }
+  .ebook-badge .card-content span { font-size: 13px; }
 }
 .flipbook {
   width: 100%;
@@ -456,33 +451,67 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   right: 24px;
   bottom: 24px;
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
 }
 .pdf-download-btn {
-  padding: 12px 28px;
+  padding: 10px 18px;
+  width: 320px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #f8f6f0;
   color: #251f03;
   border-radius: 24px;
   font-weight: 700;
   border: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
 }
   .pdf-download-btn:hover {
-    transform: scale(1.08) rotate(-2deg);
-    box-shadow: 0 6px 24px rgba(255, 200, 80, 0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.14);
     background: #ffe8a0;
-    transition: transform 0.2s cubic-bezier(.4,2,.3,1), box-shadow 0.2s, background 0.2s;
-  background: #ffe8a0;
 }
+
+/* Project cards styled like download button */
+.project-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 320px;
+  padding: 10px 18px;
+  background: #f8f6f0;
+  color: #251f03;
+  border-radius: 24px;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s;
+}
+.project-download-btn:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.14); }
+.project-download-btn .card-content { padding: 0; width: 100%; }
+.project-download-btn img { width: 40px; height: 40px; }
+
 @media (max-width: 768px) {
   .pdf-download-bar {
-    right: 12px;
+    /* center the stacked buttons on small screens */
+    left: 50%;
+    right: auto;
     bottom: 12px;
+    transform: translateX(-50%);
+    align-items: center;
   }
-  .pdf-download-btn {
+  .pdf-download-btn,
+  .project-download-btn {
+    /* keep buttons a comfortable width on mobile */
+    width: min(320px, 92vw);
     padding: 10px 18px;
     font-size: 15px;
   }

@@ -12,6 +12,32 @@ import { PageFlip } from 'page-flip'
 const props = defineProps<{ pages: string[] }>()
 const container = ref<HTMLElement | null>(null)
 let pageFlip: any = null
+const currentPage = ref(0)
+const totalPages = ref(0)
+
+const flipNext = () => {
+  if (pageFlip) {
+    pageFlip.flipNext()
+  }
+}
+
+const flipPrev = () => {
+  if (pageFlip) {
+    pageFlip.flipPrev()
+  }
+}
+
+const getCurrentPage = () => currentPage.value
+const getTotalPages = () => totalPages.value
+
+defineExpose({
+  flipNext,
+  flipPrev,
+  getCurrentPage,
+  getTotalPages,
+  currentPage,
+  totalPages
+})
 
 onMounted(() => {
   if (container.value) {
@@ -31,12 +57,18 @@ onMounted(() => {
       backgroundColor: 'transparent',
     })
     pageFlip.loadFromImages(props.pages)
+    totalPages.value = props.pages.length
+    
+    pageFlip.on('flip', (e: any) => {
+      currentPage.value = e.data
+    })
   }
 })
 
 watch(() => props.pages, (newPages) => {
   if (pageFlip) {
     pageFlip.loadFromImages(newPages)
+    totalPages.value = newPages.length
   }
 })
 
