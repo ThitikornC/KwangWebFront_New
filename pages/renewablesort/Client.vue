@@ -1,6 +1,11 @@
 <template>
-  <div class="root-bg p-8 min-h-screen">
-    <div class="scroll-reveal flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">
+  <div class="root-bg p-4 sm:p-8 min-h-screen">
+    <!-- Logo ลายน้ำ -->
+    <div class="background-image">
+      <img src="/kwang_logo.png" alt="Logo" />
+    </div>
+
+    <div class="scroll-reveal flex justify-center flex-1 px-2 sm:px-[clamp(1rem,3vw,1.5rem)] mt-16 sm:mt-[clamp(4rem,10vw,5.625rem)] mb-4 sm:mb-[clamp(2rem,4vw,3rem)]">
       <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
         <div class="marquee">
           <div class="marquee-content">
@@ -15,8 +20,9 @@
       </div>
     </div>
 
-    <!-- Parent box styled like the child cards (group header) -->
+    <!-- Parent boxes styled like the child cards (group header) -->
     <div class="tree-container">
+      <!-- เทศบาลตำบลหัวรอ -->
       <div class="tree-wrapper">
         <!-- Parent Node -->
         <div class="tree-parent">
@@ -69,6 +75,32 @@
           </div>
         </div>
       </div>
+
+      <!-- เทศบาลแม่ฮ่องสอน -->
+      <div class="tree-wrapper">
+        <!-- Parent Node -->
+        <div class="tree-parent">
+          <div class="neon-btn spline-link-card flow-card parent-box">
+            <div class="card-content parent-card-content">
+              <div class="parent-title">Usernumber : 002</div>
+              <div class="parent-sub">เทศบาลแม่ฮ่องสอน</div>
+              <div class="parent-meta">Contractnumber :</div>
+              <div class="parent-meta">Date Installed : 1-11-25</div>
+              <div class="parent-meta">Expiration Date : 1-12-25</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Child Nodes -->
+        <div class="tree-children">
+          <div @click="openProject('huaroa')" class="neon-btn spline-link-card flow-card child-card">
+            <div class="card-content">
+              <img src="/ESPRESSO_logo.png" alt="Mae Hong Son 1" class="w-12 h-12 object-contain" />
+              <span class="font-thai text-sm">เทศบาลแม่ฮ่องสอน 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- PDF download removed -->
@@ -83,7 +115,9 @@ const projectLinks: Record<string, string> = {
   huaroa2: '/espresso/huaroa3',
   huaroa3: '/espresso/huaroa4',
   huaroa4: '/espresso/huaroa5',
-  huaroa5: '/espresso/huaroa6'
+  huaroa5: '/espresso/huaroa6',
+  maehongson1: '/espresso/Huaroa',
+
 }
 
 
@@ -203,21 +237,22 @@ onMounted(() => {
 .card-content {
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 100%;
   padding: 0 6px;
   width: 100%;
-  gap: 8px;
+  gap: 12px;
 }
 @media (min-width: 640px) {
   .card-content {
     padding: 0 12px;
-    gap: 12px;
+    gap: 16px;
   }
 }
 .card-content span {
   font-weight: 600;
   font-size: 13px;
-  flex-grow: 1;
+  text-align: center;
 }
 @media (min-width: 640px) {
   .card-content span {
@@ -254,6 +289,28 @@ onMounted(() => {
   50% { transform: translateY(20px); }
   100% { transform: translateY(0); }
 }
+
+/* Logo ลายน้ำ */
+.background-image {
+  position: fixed;
+  top: 55%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 1400px;
+  height: auto;
+  opacity: 0.3;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.background-image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .neon-btn {
   background: linear-gradient(180deg, #f8f6f0 0%, #fffef8 45%, #fff8e8 55%, #f5f0e5 100%);
   color: #000000;
@@ -296,34 +353,66 @@ onMounted(() => {
 /* Tree Structure Styles */
 .tree-container { 
   display: flex; 
-  justify-content: center; 
+  flex-wrap: wrap;
+  justify-content: flex-start; 
+  gap: 80px;
   margin-top: 20px;
   padding: 20px 20px 40px;
+  padding-left: 60px;
+  max-width: min(1200px, 95vw);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tree-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  position: relative;
 }
 
 .tree-parent {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* เอาเส้นออก */
+.tree-parent::after {
+  display: none;
 }
 
 .tree-children {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   padding-left: 40px;
+  margin-top: 0;
+  position: relative;
+}
+
+/* เอาเส้นออก */
+.tree-children::before {
+  display: none;
 }
 
 .child-card {
   cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+/* เอาเส้นออก */
+.child-card::before {
+  display: none;
+}
+
+/* เอาเส้นออก */
+.tree-line-vertical {
+  display: none;
 }
 
 /* Parent header */
@@ -350,15 +439,16 @@ onMounted(() => {
 @media (max-width: 768px) {
   .running-text {
     border-width: 3px;
-    padding: 7px 10px;
-    font-size: 0.7rem;
+    padding: 10px 15px;
+    font-size: 0.75rem;
+    border-radius: 20px;
   }
   .marquee span {
-    padding: 0.26rem 0.875rem;
+    padding: 0.4rem 1rem;
     border-width: 1px;
-    border-radius: 3px;
-    font-size: 0.525rem;
-    margin-right: 0.525rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    margin-right: 0.6rem;
   }
   .neon-btn {
     border-width: 2px;
@@ -367,17 +457,19 @@ onMounted(() => {
   }
   .tree-container {
     padding: 15px 10px;
+    padding-left: 20px;
   }
   .tree-parent {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
   .tree-children {
     gap: 12px;
-    padding-left: 20px;
+    padding-left: 25px;
   }
   .parent-box {
-    width: 280px;
-    padding: 12px 14px;
+    width: 90%;
+    max-width: 300px;
+    padding: 20px 22px;
   }
   .parent-title { font-size: 15px; }
   .parent-sub { font-size: 14px; }
