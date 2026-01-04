@@ -54,7 +54,7 @@
               </div>
               
               <div class="flex justify-between items-center px-3 py-2 bg-red-50 rounded-lg mt-2">
-                <span class="font-semibold text-red-700">ผู้เข้าใช้งานทั้งหมด</span>
+                <span class="font-semibold text-red-700">การเข้าใช้งานทั้งหมด</span>
                 <span class="font-semibold text-red-700">{{ formatNumber(totalUsers) }} ครั้ง</span>
               </div>
             </div>
@@ -62,12 +62,12 @@
         </div>
 
         <!-- Right Section - Chart -->
-        <div class="neon-btn p-6 flex flex-col justify-center items-center" style="height: auto;">
-          <h2 class="text-lg font-semibold text-center mb-4">จำนวนผู้เข้าใช้งาน</h2>
+        <div class="neon-btn p-4 flex flex-col justify-start items-center" style="height: auto;">
+          <h2 class="text-lg font-semibold text-center mb-2">จำนวนการเข้าใช้งาน</h2>
           
           <!-- Donut Chart -->
-          <div class="flex justify-center mb-6">
-            <div class="relative w-56 h-56">
+          <div class="flex justify-center mb-2">
+            <div class="relative w-48 h-48">
               <svg viewBox="0 0 100 100" class="w-full h-full transform -rotate-90">
                 <circle
                   v-for="(segment, index) in chartSegments"
@@ -86,7 +86,7 @@
           </div>
 
           <!-- Legend -->
-          <div class="space-y-1">
+          <div class="space-y-0.5">
             <div 
               v-for="(expense, index) in expenses" 
               :key="index"

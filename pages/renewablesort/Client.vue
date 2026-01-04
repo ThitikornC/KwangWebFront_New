@@ -26,51 +26,13 @@
       <div class="tree-wrapper">
         <!-- Parent Node -->
         <div class="tree-parent">
-          <div class="neon-btn spline-link-card flow-card parent-box">
+          <div @click="openProject('huaroaDashboard')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
               <div class="parent-title">Usernumber : 001</div>
               <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
               <div class="parent-meta">Contractnumber :</div>
               <div class="parent-meta">Date Installed : 1-11-25</div>
               <div class="parent-meta">Expiration Date : 1-12-25</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Child Nodes -->
-        <div class="tree-children">
-          <div @click="openProject('huaroa1')" class="neon-btn spline-link-card flow-card child-card">
-            <div class="card-content">
-              <img src="/ESPRESSO_logo.png" alt="Huaroa 1" class="w-12 h-12 object-contain" />
-              <span class="font-thai text-sm">เทศบาลหัวรอ 1</span>
-            </div>
-          </div>
-
-          <div @click="openProject('huaroa2')" class="neon-btn spline-link-card flow-card child-card">
-            <div class="card-content">
-              <img src="/ESPRESSO_logo.png" alt="Huaroa 2" class="w-12 h-12 object-contain" />
-              <span class="font-thai text-sm">เทศบาลหัวรอ 2</span>
-            </div>
-          </div>
-
-          <div @click="openProject('huaroa3')" class="neon-btn spline-link-card flow-card child-card">
-            <div class="card-content">
-              <img src="/ESPRESSO_logo.png" alt="Huaroa 3" class="w-12 h-12 object-contain" />
-              <span class="font-thai text-sm">เทศบาลหัวรอ 3</span>
-            </div>
-          </div>
-
-          <div @click="openProject('huaroa4')" class="neon-btn spline-link-card flow-card child-card">
-            <div class="card-content">
-              <img src="/ESPRESSO_logo.png" alt="Huaroa 4" class="w-12 h-12 object-contain" />
-              <span class="font-thai text-sm">เทศบาลหัวรอ 4</span>
-            </div>
-          </div>
-
-          <div @click="openProject('huaroa5')" class="neon-btn spline-link-card flow-card child-card">
-            <div class="card-content">
-              <img src="/ESPRESSO_logo.png" alt="Huaroa 5" class="w-12 h-12 object-contain" />
-              <span class="font-thai text-sm">เทศบาลหัวรอ 5</span>
             </div>
           </div>
         </div>
@@ -90,16 +52,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Child Nodes -->
-        <div class="tree-children">
-          <div @click="openProject('huaroa')" class="neon-btn spline-link-card flow-card child-card">
-            <div class="card-content">
-              <img src="/ESPRESSO_logo.png" alt="Mae Hong Son 1" class="w-12 h-12 object-contain" />
-              <span class="font-thai text-sm">เทศบาลแม่ฮ่องสอน 1</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -111,13 +63,7 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 
 const projectLinks: Record<string, string> = {
-  huaroa1: '/espresso/Huaroa',
-  huaroa2: '/espresso/huaroa3',
-  huaroa3: '/espresso/huaroa4',
-  huaroa4: '/espresso/huaroa5',
-  huaroa5: '/espresso/huaroa6',
-  maehongson1: '/espresso/Huaroa',
-
+  huaroaDashboard: '/renewablesort/HuaroiEspresso',
 }
 
 
