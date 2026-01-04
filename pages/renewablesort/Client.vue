@@ -28,8 +28,8 @@
         <div class="tree-parent">
           <div @click="openProject('huaroaDashboard')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
-              <div class="parent-title">Usernumber : 001</div>
               <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
+              <div class="parent-title">Usernumber : 001</div>
               <div class="parent-meta">Contractnumber :</div>
               <div class="parent-meta">Date Installed : 1-11-25</div>
               <div class="parent-meta">Expiration Date : 1-12-25</div>
@@ -44,8 +44,8 @@
         <div class="tree-parent">
           <div class="neon-btn spline-link-card flow-card parent-box">
             <div class="card-content parent-card-content">
-              <div class="parent-title">Usernumber : 002</div>
               <div class="parent-sub">เทศบาลแม่ฮ่องสอน</div>
+              <div class="parent-title">Usernumber : 002</div>
               <div class="parent-meta">Contractnumber :</div>
               <div class="parent-meta">Date Installed : 1-11-25</div>
               <div class="parent-meta">Expiration Date : 1-12-25</div>
@@ -374,8 +374,8 @@ onMounted(() => {
   align-items: flex-start; 
   gap: 4px; 
 }
-.parent-title { font-weight: 800; font-size: 18px; }
-.parent-sub { font-weight: 700; font-size: 16px; }
+.parent-title { font-weight: 700; font-size: 16px; }
+.parent-sub { font-weight: 800; font-size: 20px; }
 .parent-meta { font-size: 14px; color: #2b2b2b; line-height: 1.4; }
 
 /* compact logo inside cards */
