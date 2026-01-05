@@ -166,8 +166,13 @@ async function deployProject(lead: any) {
     // 2. Railway Link or Init
     // If we have a project ID, link to it. Otherwise, fallback to init (safety net).
     if (lead.railwayProjectId) {
-        console.log(`Linking to existing project ID: ${lead.railwayProjectId}`);
+      console.log(`Linking to existing project ID: ${lead.railwayProjectId}`);
+      try {
+        await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'link', '--project', lead.railwayProjectId], { cwd: tempDir, env });
+      } catch (err) {
+        console.warn('railway link with --project failed, retrying positional arg:', err);
         await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'link', lead.railwayProjectId], { cwd: tempDir, env });
+      }
     } else {
         console.warn('No Project ID found. Falling back to Railway Init.');
         const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
