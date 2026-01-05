@@ -109,7 +109,19 @@ async function createRailwayProject(lead: any, event: any) {
         }
 
         // Method 2: Parse from init output (if available)
-        // Example output: "Created project Espresso-009" -> No ID usually.
+        // Example init output sometimes contains a project URL like:
+        // https://railway.com/project/50a6744b-f5ba-4c67-9bf7-d3e2e07522da
+        // Try to extract a project UUID from the init output as a fallback.
+        try {
+          const projectUrlRegex = /https?:\/\/(?:www\.)?(?:railway\.com|railway\.app)\/project\/([0-9a-fA-F-]{36})/i;
+          const urlMatch = initOutput && initOutput.match ? initOutput.match(projectUrlRegex) : null;
+          if (urlMatch && urlMatch[1]) {
+            projectId = urlMatch[1];
+            console.log('Parsed projectId from init output:', projectId);
+          }
+        } catch (parseErr) {
+          console.warn('Failed parsing project ID from init output:', parseErr);
+        }
         
         // REMOVED: Method 3 (railway run printenv) because it triggers auto-deploy/build.
         
