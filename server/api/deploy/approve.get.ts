@@ -190,37 +190,7 @@ export default defineEventHandler(async (event) => {
           console.warn('Failed to save contract info to DB:', dbErr);
         }
         if (await verifyImageUrl(imageUrl)) {
-          // Create PDF from the generated PNG and send PDF file to LINE
-          try {
-            const pdfLibModule = await import('pdf-lib');
-            const { PDFDocument } = pdfLibModule as any;
-            const pngBuffer = fs.readFileSync(pngPath);
-            const pdfDoc = await PDFDocument.create();
-            const pngImg = await pdfDoc.embedPng(pngBuffer);
-            const page = pdfDoc.addPage([pngImg.width, pngImg.height]);
-            page.drawImage(pngImg, { x: 0, y: 0, width: pngImg.width, height: pngImg.height });
-            const pdfBytes = await pdfDoc.save();
-            const pdfFilename = `contract-${contractNumber}.pdf`;
-            const pdfPath = path.join(publicDir, pdfFilename);
-            fs.writeFileSync(pdfPath, Buffer.from(pdfBytes));
-            const pdfUrl = encodeURI(`${baseUrl}/${pdfFilename}`.replace(/^http:/, 'https:'));
-            if (await verifyFileUrl(pdfUrl, true)) {
-              try {
-                lead.contractNumber = contractNumber;
-                lead.contractImage = `/${pdfFilename}`;
-                await lead.save();
-              } catch (dbErr) {
-                console.warn('Failed to save contract info to DB (PDF):', dbErr);
-              }
-              await sendLineNotification({ type: 'file', originalContentUrl: pdfUrl, fileName: pdfFilename });
-            } else {
-              console.warn('PDF URL not reachable, falling back to image send:', pdfUrl);
-              await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
-            }
-          } catch (pdfErr) {
-            console.warn('Failed to create/send PDF, sending image instead:', pdfErr);
-            await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
-          }
+          await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
         } else {
           console.warn('Image URL not reachable, sending fallback text instead:', imageUrl);
           await sendLineNotification({ type: 'text', text: `Contract image generated but not reachable: ${imageUrl}` });
