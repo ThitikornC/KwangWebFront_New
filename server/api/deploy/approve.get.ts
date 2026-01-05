@@ -42,10 +42,19 @@ export default defineEventHandler(async (event) => {
     }
 
     const startDateObj = new Date();
-    const startDisplay = startDateObj.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+    // Display dates without time (Thai locale, Bangkok timezone)
+    const startDisplay = startDateObj.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
     const expiryObj = new Date(startDateObj);
     expiryObj.setMonth(expiryObj.getMonth() + 1);
-    const expiryDisplay = expiryObj.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+    const expiryDisplay = expiryObj.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
+
+    // Build contract number: YYYYMMDD + padded runNumber
+    const y = startDateObj.getFullYear();
+    const m = String(startDateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(startDateObj.getDate()).padStart(2, '0');
+    const datePart = `${y}${m}${d}`;
+    const runNoPart = String(lead.runNumber || 0).padStart(3, '0');
+    const contractNumber = `${datePart}${runNoPart}`;
 
     // Read kwang logo from public and encode as base64 to embed in SVG
     let logoBase64 = '';
@@ -60,37 +69,34 @@ export default defineEventHandler(async (event) => {
     }
 
     const svg = `<?xml version="1.0" encoding="UTF-8"?>\n` +
-`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="780">\n` +
-`  <rect width="100%" height="100%" fill="#fff" rx="16"/>\n` +
-`  <rect x="24" y="24" width="552" height="112" rx="12" fill="#4b2f2a"/>\n` +
-`  <image x="36" y="36" width="56" height="56" href="data:image/png;base64,${logoBase64}" />\n` +
-`  <text x="300" y="84" font-family="'Helvetica Neue', Arial" font-size="24" fill="#fff" text-anchor="middle" font-weight="700">ESPRESSO Contract</text>\n` +
-`  <g transform="translate(40,160)">\n` +
-`    <style> .label { fill: #a89993; font-size: 14px; font-family: 'Helvetica Neue', Arial; } .value { fill: #3b2b28; font-size: 18px; font-family: 'Helvetica Neue', Arial; font-weight:700; } </style>\n` +
-`    <text x="0" y="0" class="label">NO.</text>\n` +
-`    <text x="140" y="0" class="value">${String(lead.runNumber).padStart(3,'0')}</text>\n\n` +
-`    <text x="0" y="54" class="label">NAME</text>\n` +
-`    <text x="140" y="54" class="value">${escapeXml(lead.name || '')}</text>\n\n` +
-`    <text x="0" y="108" class="label">PHONE</text>\n` +
-`    <text x="140" y="108" class="value">${escapeXml(lead.phone || '')}</text>\n\n` +
-`    <text x="0" y="162" class="label">PROJECT</text>\n` +
-`    <text x="140" y="162" class="value">${escapeXml((lead.url && lead.url !== 'URL not found') ? lead.url : `Espresso-${String(lead.runNumber).padStart(3,'0')}`)}</text>\n\n` +
-`    <text x="0" y="216" class="label">START</text>\n` +
-`    <text x="140" y="216" class="value">${escapeXml(startDisplay)}</text>\n\n` +
-`    <text x="0" y="270" class="label">EXPIRY</text>\n` +
-`    <text x="140" y="270" class="value">${escapeXml(expiryDisplay)}</text>\n` +
-`  </g>\n` +
-`  <!-- Signature area -->\n` +
-`  <g transform="translate(40,340)">\n` +
-`    <rect x="0" y="0" width="520" height="140" rx="8" fill="#fff" stroke="#e6e2df" stroke-width="1"/>\n` +
-`    <text x="12" y="24" class="label">Signature</text>\n` +
-`    <line x1="12" y1="100" x2="508" y2="100" stroke="#3b2b28" stroke-width="1" stroke-linecap="round"/>\n` +
-`    <text x="12" y="124" class="label">(                           )</text>\n` +
-`  </g>\n` +
-`</svg>`;
+  `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720">\n` +
+  `  <rect width="100%" height="100%" fill="#fff" rx="16"/>\n` +
+  `  <rect x="24" y="24" width="552" height="112" rx="12" fill="#4b2f2a"/>\n` +
+  `  <image x="36" y="36" width="56" height="56" href="data:image/png;base64,${logoBase64}" />\n` +
+  `  <text x="300" y="84" font-family="'Helvetica Neue', Arial" font-size="24" fill="#fff" text-anchor="middle" font-weight="700">ESPRESSO Contract</text>\n` +
+  `  <g transform="translate(40,160)">\n` +
+  `    <style> .label { fill: #a89993; font-size: 14px; font-family: 'Helvetica Neue', Arial; } .value { fill: #3b2b28; font-size: 18px; font-family: 'Helvetica Neue', Arial; font-weight:700; } .contract { fill: #3b2b28; font-size:18px; font-family: 'Helvetica Neue', Arial; font-weight:700; } </style>\n` +
+  `    <!-- Layout: label at x=0, value at x=220; vertical spacing 56px -->\n` +
+  `    <text x="0" y="0" class="label">NAME</text>\n` +
+  `    <text x="220" y="0" class="value">${escapeXml(lead.name || '')}</text>\n\n` +
+  `    <text x="0" y="56" class="label">CONTRACT NO.</text>\n` +
+  `    <text x="220" y="56" class="contract">${escapeXml(contractNumber)}</text>\n\n` +
+  `    <text x="0" y="112" class="label">START</text>\n` +
+  `    <text x="220" y="112" class="value">${escapeXml(startDisplay)}</text>\n\n` +
+  `    <text x="0" y="168" class="label">EXPIRY</text>\n` +
+  `    <text x="220" y="168" class="value">${escapeXml(expiryDisplay)}</text>\n` +
+  `  </g>\n` +
+  `  <!-- Signature area (moved lower for spacing) -->\n` +
+  `  <g transform="translate(40,260)">\n` +
+  `    <rect x="0" y="0" width="520" height="140" rx="8" fill="#fff" stroke="#e6e2df" stroke-width="1"/>\n` +
+  `    <text x="12" y="22" class="label">Signature</text>\n` +
+  `    <line x1="12" y1="104" x2="508" y2="104" stroke="#3b2b28" stroke-width="1" stroke-linecap="round"/>\n` +
+     `    <text x="12" y="128" class="label"></text>\n` +
+  `  </g>\n` +
+  `</svg>`;
 
-    const svgFilename = `lead-${lead._id}.svg`;
-    const pngFilename = `lead-${lead._id}.png`;
+    const svgFilename = `contract-${contractNumber}.svg`;
+    const pngFilename = `contract-${contractNumber}.png`;
     const svgPath = path.join(process.cwd(), 'public', svgFilename);
     const pngPath = path.join(process.cwd(), 'public', pngFilename);
 
@@ -102,10 +108,26 @@ export default defineEventHandler(async (event) => {
         const sharp = (sharpModule && (sharpModule.default || sharpModule)) as any;
         await sharp(Buffer.from(svg)).png({ quality: 90 }).toFile(pngPath);
         const imageUrl = encodeURI(`${baseUrl}/${pngFilename}`);
+        // Save contract info to DB
+        try {
+          lead.contractNumber = contractNumber;
+          lead.contractImage = `/${pngFilename}`;
+          await lead.save();
+        } catch (dbErr) {
+          console.warn('Failed to save contract info to DB:', dbErr);
+        }
         await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
       } catch (convErr) {
         console.warn('sharp not available or conversion failed, sending SVG instead:', convErr);
         const imageUrl = encodeURI(`${baseUrl}/${svgFilename}`);
+        // Save contract info to DB (SVG fallback)
+        try {
+          lead.contractNumber = contractNumber;
+          lead.contractImage = `/${svgFilename}`;
+          await lead.save();
+        } catch (dbErr) {
+          console.warn('Failed to save contract info to DB:', dbErr);
+        }
         await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
       }
     } catch (e) {
