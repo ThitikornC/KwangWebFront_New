@@ -41,6 +41,74 @@ export default defineEventHandler(async (event) => {
       } as any)[c]);
     }
 
+    async function verifyImageUrl(url: string) {
+      const maxAttempts = 3;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+          let res: Response | null = null as any;
+          try {
+            res = await fetch(url, { method: 'HEAD', signal: controller.signal });
+            if (!res.ok) throw new Error('HEAD not ok');
+          } catch (headErr) {
+            try {
+              res = await fetch(url, { method: 'GET', signal: controller.signal });
+            } catch (getErr) {
+              // both HEAD and GET failed for this attempt
+              res = null as any;
+            }
+          } finally {
+            clearTimeout(timeout);
+          }
+
+          if (res && res.ok) {
+            const ct = res.headers.get('content-type') || '';
+            if (ct.startsWith('image/')) return true;
+          }
+        } catch (e) {
+          console.warn('verifyImageUrl attempt failed:', e);
+        }
+
+        // backoff before retry
+        await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+      }
+      return false;
+    }
+
+    async function verifyFileUrl(url: string, acceptPdf = true) {
+      const maxAttempts = 3;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+          let res: Response | null = null as any;
+          try {
+            res = await fetch(url, { method: 'HEAD', signal: controller.signal });
+            if (!res.ok) throw new Error('HEAD not ok');
+          } catch (headErr) {
+            try {
+              res = await fetch(url, { method: 'GET', signal: controller.signal });
+            } catch (getErr) {
+              res = null as any;
+            }
+          } finally {
+            clearTimeout(timeout);
+          }
+
+          if (res && res.ok) {
+            const ct = (res.headers.get('content-type') || '').toLowerCase();
+            if (ct.startsWith('image/')) return true;
+            if (acceptPdf && ct === 'application/pdf') return true;
+          }
+        } catch (e) {
+          console.warn('verifyFileUrl attempt failed:', e);
+        }
+        await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+      }
+      return false;
+    }
+
     const startDateObj = new Date();
     // Display dates without time (Thai locale, Bangkok timezone)
     const startDisplay = startDateObj.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
@@ -121,7 +189,42 @@ export default defineEventHandler(async (event) => {
         } catch (dbErr) {
           console.warn('Failed to save contract info to DB:', dbErr);
         }
-        await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
+        if (await verifyImageUrl(imageUrl)) {
+          // Create PDF from the generated PNG and send PDF file to LINE
+          try {
+            const pdfLibModule = await import('pdf-lib');
+            const { PDFDocument } = pdfLibModule as any;
+            const pngBuffer = fs.readFileSync(pngPath);
+            const pdfDoc = await PDFDocument.create();
+            const pngImg = await pdfDoc.embedPng(pngBuffer);
+            const page = pdfDoc.addPage([pngImg.width, pngImg.height]);
+            page.drawImage(pngImg, { x: 0, y: 0, width: pngImg.width, height: pngImg.height });
+            const pdfBytes = await pdfDoc.save();
+            const pdfFilename = `contract-${contractNumber}.pdf`;
+            const pdfPath = path.join(publicDir, pdfFilename);
+            fs.writeFileSync(pdfPath, Buffer.from(pdfBytes));
+            const pdfUrl = encodeURI(`${baseUrl}/${pdfFilename}`.replace(/^http:/, 'https:'));
+            if (await verifyFileUrl(pdfUrl, true)) {
+              try {
+                lead.contractNumber = contractNumber;
+                lead.contractImage = `/${pdfFilename}`;
+                await lead.save();
+              } catch (dbErr) {
+                console.warn('Failed to save contract info to DB (PDF):', dbErr);
+              }
+              await sendLineNotification({ type: 'file', originalContentUrl: pdfUrl, fileName: pdfFilename });
+            } else {
+              console.warn('PDF URL not reachable, falling back to image send:', pdfUrl);
+              await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
+            }
+          } catch (pdfErr) {
+            console.warn('Failed to create/send PDF, sending image instead:', pdfErr);
+            await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
+          }
+        } else {
+          console.warn('Image URL not reachable, sending fallback text instead:', imageUrl);
+          await sendLineNotification({ type: 'text', text: `Contract image generated but not reachable: ${imageUrl}` });
+        }
       } catch (convErr) {
         console.warn('sharp not available or conversion failed, sending SVG instead:', convErr);
         const imageUrl = encodeURI(`${baseUrl}/${svgFilename}`.replace(/^http:/, 'https:'));
@@ -134,7 +237,12 @@ export default defineEventHandler(async (event) => {
         } catch (dbErr) {
           console.warn('Failed to save contract info to DB:', dbErr);
         }
-        await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
+        if (await verifyImageUrl(imageUrl)) {
+          await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
+        } else {
+          console.warn('SVG URL not reachable, sending fallback text instead:', imageUrl);
+          await sendLineNotification({ type: 'text', text: `Contract SVG generated but not reachable: ${imageUrl}` });
+        }
       }
     } catch (e) {
       console.warn('Failed to write/send lead image:', e);
