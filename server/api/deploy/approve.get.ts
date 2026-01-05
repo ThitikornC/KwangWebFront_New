@@ -161,6 +161,7 @@ async function deployProject(lead: any) {
     }
     
     // Use JSZip to download and extract
+    // Use EspressoHuaroa repository for deployment (try main then master)
     await downloadAndExtractRepo('https://github.com/ThitikornC/EspressoHuaroa/archive/refs/heads/main.zip', tempDir);
     
     // 2. Railway Link or Init
@@ -290,15 +291,37 @@ async function deployProject(lead: any) {
 
   } catch (error) {
     console.error('Deployment error:', error);
-    await sendLineNotification(`Deployment Failed for ${lead.name}. Check server logs.`);
+    // Send helpful debugging info to admin (truncate to avoid huge messages)
+    try {
+      const details = (error && (error.stack || error.message)) ? (error.stack || error.message) : String(error);
+      const recentLogs = commandLogs.slice(-6).join('\n---\n');
+      const payload = `Deployment Failed for ${lead.name}.\nError: ${details}\nRecent logs:\n${recentLogs}`;
+      // truncate payload to safe length
+      const safe = payload.length > 4000 ? payload.slice(0, 4000) + '\n...[truncated]' : payload;
+      await sendLineNotification(safe);
+    } catch (notifyErr) {
+      console.error('Failed to send detailed deployment error to LINE:', notifyErr);
+      await sendLineNotification(`Deployment Failed for ${lead.name}. Check server logs.`);
+    }
   }
 }
 
 async function downloadAndExtractRepo(url: string, dest: string) {
   console.log(`Downloading repo from ${url}...`);
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to download repo: ${response.statusText}`);
-  
+  // Try primary URL first. If 404, try replacing 'main' with 'master' as fallback.
+  let response = await fetch(url);
+  if (response.status === 404) {
+    console.warn(`Primary repo URL returned 404, trying master branch fallback...`);
+    const altUrl = url.replace('/refs/heads/main.zip', '/refs/heads/master.zip');
+    console.log(`Trying alternative URL: ${altUrl}`);
+    response = await fetch(altUrl);
+    if (response.ok) {
+      url = altUrl; // use the successful URL
+    }
+  }
+
+  if (!response.ok) throw new Error(`Failed to download repo: ${response.status} ${response.statusText}`);
+
   const arrayBuffer = await response.arrayBuffer();
   const zip = await JSZip.loadAsync(arrayBuffer);
   
@@ -330,17 +353,41 @@ async function downloadAndExtractRepo(url: string, dest: string) {
   }
 }
 
+// Command logs collector for debugging deploy failures
+const commandLogs: string[] = [];
+
 function runCommand(command: string, args: string[], options: any = {}) {
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     console.log(`Running: ${command} ${args.join(' ')}`);
-    const proc = spawn(command, args, { stdio: 'inherit', shell: true, ...options });
-    
-    proc.on('close', (code) => {
-      if (code === 0) resolve(true);
-      else reject(new Error(`Command failed with code ${code}`));
+    const proc = spawn(command, args, { shell: true, ...options });
+    let stdout = '';
+    let stderr = '';
+
+    proc.stdout?.on('data', (data) => {
+      const s = data.toString();
+      stdout += s;
+      process.stdout.write(s);
     });
-    
-    proc.on('error', (err) => reject(err));
+    proc.stderr?.on('data', (data) => {
+      const s = data.toString();
+      stderr += s;
+      process.stderr.write(s);
+    });
+
+    proc.on('close', (code) => {
+      // record captured outputs for debugging
+      commandLogs.push(`CMD: ${command} ${args.join(' ')}\nEXIT:${code}\nSTDOUT:\n${stdout}\nSTDERR:\n${stderr}`);
+      // keep log array reasonably sized
+      if (commandLogs.length > 50) commandLogs.shift();
+
+      if (code === 0) resolve(stdout);
+      else reject(new Error(`Command failed with code ${code}: ${stderr}`));
+    });
+
+    proc.on('error', (err) => {
+      commandLogs.push(`CMD ERROR: ${command} ${args.join(' ')} => ${err.message}`);
+      reject(err);
+    });
   });
 }
 
@@ -355,6 +402,10 @@ function runCommandWithOutput(command: string, args: string[], options: any = {}
     proc.stderr?.on('data', (data) => stderr += data.toString());
 
     proc.on('close', (code) => {
+      // record outputs
+      commandLogs.push(`CAPTURE: ${command} ${args.join(' ')}\nEXIT:${code}\nSTDOUT:\n${stdout}\nSTDERR:\n${stderr}`);
+      if (commandLogs.length > 50) commandLogs.shift();
+
       if (code === 0) resolve(stdout.trim());
       else reject(new Error(`Command failed with code ${code}: ${stderr}`));
     });
