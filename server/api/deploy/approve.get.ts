@@ -97,8 +97,12 @@ export default defineEventHandler(async (event) => {
 
     const svgFilename = `contract-${contractNumber}.svg`;
     const pngFilename = `contract-${contractNumber}.png`;
-    const svgPath = path.join(process.cwd(), 'public', svgFilename);
-    const pngPath = path.join(process.cwd(), 'public', pngFilename);
+    // Prefer writing into Nitro's runtime public folder (.output/public) when available,
+    // otherwise fall back to repository `public/` so the files are served.
+    const possiblePublicDirs = [path.join(process.cwd(), '.output', 'public'), path.join(process.cwd(), 'public')];
+    const publicDir = possiblePublicDirs.find((d) => fs.existsSync(d)) || possiblePublicDirs[1];
+    const svgPath = path.join(publicDir, svgFilename);
+    const pngPath = path.join(publicDir, pngFilename);
 
     try {
       fs.writeFileSync(svgPath, svg, 'utf-8');
@@ -107,7 +111,8 @@ export default defineEventHandler(async (event) => {
         const sharpModule = await import('sharp');
         const sharp = (sharpModule && (sharpModule.default || sharpModule)) as any;
         await sharp(Buffer.from(svg)).png({ quality: 90 }).toFile(pngPath);
-        const imageUrl = encodeURI(`${baseUrl}/${pngFilename}`);
+        const imageUrl = encodeURI(`${baseUrl}/${pngFilename}`.replace(/^http:/, 'https:'));
+        if (!fs.existsSync(pngPath)) console.warn('PNG not found at', pngPath);
         // Save contract info to DB
         try {
           lead.contractNumber = contractNumber;
@@ -119,7 +124,8 @@ export default defineEventHandler(async (event) => {
         await sendLineNotification({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
       } catch (convErr) {
         console.warn('sharp not available or conversion failed, sending SVG instead:', convErr);
-        const imageUrl = encodeURI(`${baseUrl}/${svgFilename}`);
+        const imageUrl = encodeURI(`${baseUrl}/${svgFilename}`.replace(/^http:/, 'https:'));
+        if (!fs.existsSync(svgPath)) console.warn('SVG not found at', svgPath);
         // Save contract info to DB (SVG fallback)
         try {
           lead.contractNumber = contractNumber;
