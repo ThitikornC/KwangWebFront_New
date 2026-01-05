@@ -60,6 +60,8 @@ async function createRailwayProject(lead: any, event: any) {
   };
 
   console.log(`Starting project creation (CLI) for ${lead.name} (No. ${lead.runNumber})`);
+  // Prepare timestamp early so it's available in the catch block too
+  const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
 
   try {
     // 1. Prepare Empty Directory (Do NOT download code here to prevent auto-deploy)
@@ -131,6 +133,9 @@ async function createRailwayProject(lead: any, event: any) {
     const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
     const approvalLink = `${baseUrl}/api/deploy/approve?leadId=${lead._id}`;
 
+    // Attach timestamp (localized to Bangkok/Thailand)
+    const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+
     console.log('---------------------------------------------------');
     console.log('🚀 APPROVAL LINK (Click to Deploy):');
     console.log(approvalLink);
@@ -146,8 +151,16 @@ async function createRailwayProject(lead: any, event: any) {
           layout: "vertical",
           contents: [
             {
+              type: "image",
+              url: `${baseUrl}/ESPRESSO_logo.png`,
+              size: "xxs",
+              align: "start",
+              aspectMode: "fit",
+              margin: "none"
+            },
+            {
               type: "text",
-              text: "New Lead Received!",
+              text: "ลูกค้าส่งคำขอมาใหม่",
               weight: "bold",
               color: "#1DB446",
               size: "lg"
@@ -163,8 +176,8 @@ async function createRailwayProject(lead: any, event: any) {
               layout: "baseline",
               margin: "md",
               contents: [
-                { type: "text", text: "No.", color: "#aaaaaa", size: "sm", flex: 2 },
-                { type: "text", text: `${lead.runNumber}`, wrap: true, color: "#666666", size: "sm", flex: 5 }
+                { type: "text", text: "No.", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: `${lead.runNumber}`, wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" }
               ]
             },
             {
@@ -172,8 +185,8 @@ async function createRailwayProject(lead: any, event: any) {
               layout: "baseline",
               margin: "md",
               contents: [
-                { type: "text", text: "Name", color: "#aaaaaa", size: "sm", flex: 2 },
-                { type: "text", text: lead.name, wrap: true, color: "#666666", size: "sm", flex: 5 }
+                { type: "text", text: "NAME", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: lead.name, wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" }
               ]
             },
             {
@@ -181,8 +194,8 @@ async function createRailwayProject(lead: any, event: any) {
               layout: "baseline",
               margin: "md",
               contents: [
-                { type: "text", text: "Phone", color: "#aaaaaa", size: "sm", flex: 2 },
-                { type: "text", text: lead.phone, wrap: true, color: "#666666", size: "sm", flex: 5 }
+                { type: "text", text: "PHONE", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: lead.phone, wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
               ]
             },
             {
@@ -190,8 +203,17 @@ async function createRailwayProject(lead: any, event: any) {
               layout: "baseline",
               margin: "md",
               contents: [
-                { type: "text", text: "Project", color: "#aaaaaa", size: "sm", flex: 2 },
-                { type: "text", text: projectName, wrap: true, color: "#666666", size: "sm", flex: 5 }
+                { type: "text", text: "PROJECT", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: projectName, wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "DATE", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: timestamp, wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
               ]
             }
           ]
@@ -210,7 +232,7 @@ async function createRailwayProject(lead: any, event: any) {
                 label: "Approve & Deploy",
                 uri: approvalLink
               },
-              color: "#007bff"
+              color: "#4b2f2a"
             }
           ],
           flex: 0
@@ -222,7 +244,7 @@ async function createRailwayProject(lead: any, event: any) {
 
   } catch (error) {
     console.error('Project creation error:', error);
-    await sendLineNotification(`Failed to create project for ${lead.name}. Check logs.`);
+    await sendLineNotification(`Failed to create project for ${lead.name} at ${timestamp}. Check logs.`);
   }
 }
 
