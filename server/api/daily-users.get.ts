@@ -3,12 +3,15 @@ import mongoose from 'mongoose';
 // MongoDB connection string for Espresso
 const ESPRESSO_MONGO_URI = 'mongodb+srv://nippit62:ohm0966477158@testing.hgxbz.mongodb.net/?retryWrites=true&w=majority';
 
-// Define schema for daily_users
+// Define schema for daily_page_users (flexible fields)
 const dailyUserSchema = new mongoose.Schema({
   client_id: String,
+  clientId: String,
   day: String,
   created_at: String,
-}, { collection: 'daily_users' });
+  createdAt: String,
+  timestamp: String,
+}, { collection: 'daily_page_users' });
 
 // Database configurations for each center
 const databases = [
@@ -48,12 +51,20 @@ export default defineEventHandler(async (event) => {
           const totalVisits = await DailyUser.countDocuments();
           const uniqueClients = await DailyUser.distinct('client_id');
 
-          // Aggregate to get last seen per client (attempt to convert created_at to date)
+          // Aggregate to get last seen per client from `daily_page_users` collection.
+          // Use flexible field names for client id and timestamp.
           const agg = await DailyUser.aggregate([
             {
+              $project: {
+                clientId: { $ifNull: ['$client_id', '$clientId', '$client'] },
+                createdAt: { $ifNull: ['$created_at', '$createdAt', '$timestamp', '$time', null] }
+              }
+            },
+            { $match: { clientId: { $ne: null } } },
+            {
               $group: {
-                _id: '$client_id',
-                lastCreatedAt: { $max: { $toDate: '$created_at' } }
+                _id: '$clientId',
+                lastCreatedAt: { $max: { $toDate: '$createdAt' } }
               }
             }
           ]).allowDiskUse(true);
