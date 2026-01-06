@@ -144,19 +144,28 @@ const statusData = ref<any[]>([])
 const statusLoading = ref(false)
 let statusTimer: any = null
 
+// Fetch status from daily_page_users endpoint (per-DB online counts)
 const fetchStatus = async () => {
   try {
     statusLoading.value = true
-    const res: any = await $fetch('/api/daily-users')
-    if (res && res.success && Array.isArray(res.data)) {
-      statusData.value = res.data.map((d: any) => ({
-        dbName: d.dbName,
-        label: d.label,
-        totalVisits: d.totalVisits || 0,
-        uniqueUserCount: d.uniqueUserCount || 0,
-        onlineCount: d.onlineCount || 0,
-        clients: d.clients || []
-      }))
+    const res: any = await $fetch('/api/daily-page-users')
+    if (res && res.success) {
+      // API may return an array (all DBs) or a single object when ?db= is used
+      if (Array.isArray(res.data)) {
+        statusData.value = res.data.map((d: any) => ({
+          dbName: d.dbName,
+          label: d.label,
+          onlineCount: d.onlineCount ?? 0,
+          clients: d.clients ?? []
+        }))
+      } else if (res.data && typeof res.data === 'object') {
+        statusData.value = [{
+          dbName: res.data.dbName,
+          label: res.data.label,
+          onlineCount: res.data.onlineCount ?? 0,
+          clients: res.data.clients ?? []
+        }]
+      }
     }
   } catch (e) {
     console.error('fetchStatus error', e)
@@ -166,9 +175,9 @@ const fetchStatus = async () => {
 }
 
 onMounted(() => {
-  // start polling
+  // start polling (3 minutes)
   fetchStatus()
-  statusTimer = setInterval(fetchStatus, 5 * 60 * 1000)
+  statusTimer = setInterval(fetchStatus, 3 * 60 * 1000)
 })
 
 onBeforeUnmount(() => {

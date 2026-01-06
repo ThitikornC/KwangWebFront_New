@@ -68,7 +68,7 @@
 
         <!-- Right Section - Chart -->
         <div class="neon-btn p-4 flex flex-col justify-center items-center" style="min-height: 360px;">
-          <h2 class="text-lg font-semibold text-center mb-2">จำนวนการเข้าใช้งาน</h2>
+          <h2 class="text-lg font-semibold text-center mb-6">จำนวนการเข้าใช้งาน</h2>
           
           <!-- Donut Chart -->
           <div class="flex justify-center mb-2">
@@ -95,14 +95,8 @@
             <div 
               v-for="(expense, index) in expenses" 
               :key="index"
-              @click="openExpenseLink(expense.link)"
               class="legend-item"
             >
-              <span
-                class="status-dot"
-                :title="getStatusTitle(expense)"
-                :style="{ backgroundColor: statusColor(expense) }"
-              ></span>
               <span 
                 class="w-3 h-3 rounded-full flex-shrink-0" 
                 :style="{ backgroundColor: expense.color }"
@@ -116,7 +110,9 @@
     </div>
 
     
-  </div>
+  
+  
+</div>
 </template>
 
 <script setup>
@@ -148,26 +144,10 @@ const normalize = (s) => {
     .replace(/[^a-z0-9\u0E00-\u0E7F]/g, '')
 }
 
-// time window (ms) considered "recent" for page updates (5 minutes)
-const STATUS_WINDOW_MS = 5 * 60 * 1000
 // polling interval for fetching counts and status (3 minutes)
 const POLL_INTERVAL_MS = 3 * 60 * 1000
 
-// helper to parse various timestamp fields into epoch ms
-const parseTimestamp = (item) => {
-  const candidates = [item.lastUpdated, item.updatedAt, item.timestamp, item.time, item.lastSeen, item.ts, item.date]
-  for (const c of candidates) {
-    if (c === undefined || c === null) continue
-    if (typeof c === 'number' && !Number.isNaN(c)) return Number(c)
-    if (typeof c === 'string') {
-      const n = Date.parse(c)
-      if (!Number.isNaN(n)) return n
-      const maybeNum = Number(c)
-      if (!Number.isNaN(maybeNum)) return maybeNum
-    }
-  }
-  return null
-}
+// (timestamp parsing removed — status fetching not used)
 
 // Fetch counts from daily_users endpoint per DB (ensure correct collection)
 const fetchCounts = async () => {
@@ -204,62 +184,26 @@ const fetchCounts = async () => {
   }
 }
 
-// Fetch status timestamps from daily_page_users endpoint and map last update times
-const fetchStatus = async () => {
-  try {
-    const pageResp = await $fetch('/api/daily-page-users')
-    if (pageResp && pageResp.success) {
-      // We'll fetch status per DB to avoid cross-collection mixing
-      await Promise.all(expenses.value.map(async (e) => {
-        const db = e.dbSlug || ''
-        try {
-          const url = `/api/daily-page-users${db ? `?db=${encodeURIComponent(db)}` : ''}`
-          const resp = await $fetch(url)
-          if (resp && resp.success) {
-            // If array, take the most recent timestamp across entries
-            if (Array.isArray(resp.data) && resp.data.length > 0) {
-              let latest = null
-              resp.data.forEach(it => {
-                const ts = parseTimestamp(it)
-                if (ts && (!latest || ts > latest)) latest = ts
-              })
-              e.lastPageUpdate = latest
-              console.debug('[fetchStatus] db fetch', { db, name: e.name, lastPageUpdate: latest })
-            } else if (resp.data && typeof resp.data === 'object') {
-              const ts = parseTimestamp(resp.data)
-              e.lastPageUpdate = ts
-              console.debug('[fetchStatus] db fetch obj', { db, name: e.name, lastPageUpdate: ts })
-            }
-          }
-        } catch (inner) {
-          console.error('[fetchStatus] error for db', db, inner)
-        }
-      }))
-    }
-  } catch (err) {
-    console.error('Error fetching daily page users (status):', err)
-  }
-}
+// Status polling removed — this page no longer displays online status
 
 let pollTimerCounts = null
-let pollTimerStatus = null
-// Fetch data on mount and poll every 5 minutes (counts and status separated)
+// Fetch data on mount and poll every POLL_INTERVAL_MS (counts only)
 onMounted(() => {
   fetchCounts()
-  fetchStatus()
   pollTimerCounts = setInterval(fetchCounts, POLL_INTERVAL_MS)
-  pollTimerStatus = setInterval(fetchStatus, POLL_INTERVAL_MS)
 })
 
 onBeforeUnmount(() => {
   if (pollTimerCounts) clearInterval(pollTimerCounts)
-  if (pollTimerStatus) clearInterval(pollTimerStatus)
 })
 
 // Open expense link
 const openExpenseLink = (link) => {
   if (link) window.open(link, '_blank')
 }
+
+
+// (no password modal — links open directly)
 
 
 
@@ -307,17 +251,15 @@ const formatNumber = (num) => {
   return num.toLocaleString('th-TH')
 }
 
-// Determine status color based on most recent page update from daily_page_users
+// Status helpers — use `onlineCount` (from `fetchCounts`) or fall back to gray
 const statusColor = (expense) => {
-  const ts = Number(expense.lastPageUpdate)
-  if (ts && (Date.now() - ts) <= STATUS_WINDOW_MS) return '#22c55e' // green = recent page update
-  return '#9ca3af' // gray = no recent update
+  if (Number(expense.onlineCount) > 0) return '#22c55e'
+  return '#9ca3af'
 }
 
 const getStatusTitle = (expense) => {
-  const ts = Number(expense.lastPageUpdate)
-  if (ts) return `อัปเดตล่าสุด ${new Date(ts).toLocaleString('th-TH')}`
-  return 'ยังไม่มีข้อมูลล่าสุด'
+  if (Number(expense.onlineCount) > 0) return `ออนไลน์ ${expense.onlineCount} คน`
+  return 'ยังไม่มีผู้ใช้งานออนไลน์'
 }
 </script>
 
@@ -418,7 +360,6 @@ const getStatusTitle = (expense) => {
   gap: 8px;
   padding: 6px 10px;
   border-radius: 8px;
-  cursor: pointer;
   transition: all 0.2s ease;
 }
 .legend-item:hover {
