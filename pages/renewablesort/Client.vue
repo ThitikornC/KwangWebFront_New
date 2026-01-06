@@ -26,7 +26,7 @@
       <div class="tree-wrapper">
         <!-- Parent Node -->
         <div class="tree-parent">
-          <div @click="openProject('huaroaDashboard')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
+          <div @click="requestPassword('huaroaDashboard')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
               <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
               <div class="parent-title">Usernumber : 001</div>
@@ -42,7 +42,7 @@
       <div class="tree-wrapper">
         <!-- Parent Node -->
         <div class="tree-parent">
-          <div class="neon-btn spline-link-card flow-card parent-box">
+          <div @click="requestPassword('maehongson')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
               <div class="parent-sub">เทศบาลแม่ฮ่องสอน</div>
               <div class="parent-title">Usernumber : 002</div>
@@ -56,14 +56,69 @@
     </div>
 
     <!-- PDF download removed -->
+    
+    <!-- Password Modal -->
+    <div v-if="showPasswordModal" class="password-modal-overlay">
+      <div class="password-modal">
+        <h3 class="text-lg font-semibold mb-2">กรุณาใส่รหัสผ่าน</h3>
+        <div class="mb-2">{{ selectedKey ? selectedKey : '' }}</div>
+        <input v-model="passwordInput" type="password" class="password-input" placeholder="รหัสผ่าน" />
+        <div v-if="passwordError" class="text-red-600 text-sm mt-1">{{ passwordError }}</div>
+        <div class="mt-3 flex justify-end gap-2">
+          <button @click="cancelPassword" class="px-3 py-1 rounded bg-gray-200">ยกเลิก</button>
+          <button @click="submitPassword" class="px-3 py-1 rounded bg-blue-600 text-white">ตกลง</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 
 const projectLinks: Record<string, string> = {
   huaroaDashboard: '/renewablesort/HuaroiEspresso',
+  maehongson: '/renewablesort/MaeHongson'
+}
+
+// Per-item passwords (updated by user)
+const passwords: Record<string, string> = {
+  huaroaDashboard: '240124',
+  maehongson: '240124'
+}
+
+const showPasswordModal = ref(false)
+const selectedKey = ref<string | null>(null)
+const passwordInput = ref('')
+const passwordError = ref('')
+
+function requestPassword(key: string) {
+  selectedKey.value = key
+  passwordInput.value = ''
+  passwordError.value = ''
+  showPasswordModal.value = true
+}
+
+function submitPassword() {
+  if (!selectedKey.value) return
+  const expected = passwords[selectedKey.value]
+  if (passwordInput.value === expected) {
+    showPasswordModal.value = false
+    const key = selectedKey.value
+    selectedKey.value = null
+    passwordInput.value = ''
+    passwordError.value = ''
+    openProject(key)
+  } else {
+    passwordError.value = 'รหัสไม่ถูกต้อง'
+  }
+}
+
+function cancelPassword() {
+  showPasswordModal.value = false
+  selectedKey.value = null
+  passwordInput.value = ''
+  passwordError.value = ''
 }
 
 
@@ -517,5 +572,30 @@ onMounted(() => {
     padding: 10px 18px;
     font-size: 15px;
   }
+}
+
+/* Password modal styles */
+.password-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120;
+}
+.password-modal {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+.password-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
 }
 </style>
