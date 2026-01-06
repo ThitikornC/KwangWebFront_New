@@ -176,11 +176,6 @@ onMounted(() => {
 })
 
 function openSplineDesign(key: keyof typeof splineLinks) {
-  const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
-  if (password !== '240124') {
-    alert("รหัสผ่านไม่ถูกต้อง ❌")
-    return
-  }
   const url = splineLinks[key]
   if (url) window.open(url, '_blank')
 }

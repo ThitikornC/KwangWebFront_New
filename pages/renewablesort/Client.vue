@@ -57,20 +57,22 @@
 
     <!-- PDF download removed -->
     
-    <!-- Password Modal -->
-    <div v-if="showPasswordModal" class="password-modal-overlay">
+    
+  </div>
+  <!-- Password Modal -->
+  <teleport to="body">
+    <div v-if="showPasswordModal" class="password-modal-overlay" @click.self="cancelPassword">
       <div class="password-modal">
-        <h3 class="text-lg font-semibold mb-2">กรุณาใส่รหัสผ่าน</h3>
-        <div class="mb-2">{{ selectedKey ? selectedKey : '' }}</div>
-        <input v-model="passwordInput" type="password" class="password-input" placeholder="รหัสผ่าน" />
-        <div v-if="passwordError" class="text-red-600 text-sm mt-1">{{ passwordError }}</div>
-        <div class="mt-3 flex justify-end gap-2">
-          <button @click="cancelPassword" class="px-3 py-1 rounded bg-gray-200">ยกเลิก</button>
-          <button @click="submitPassword" class="px-3 py-1 rounded bg-blue-600 text-white">ตกลง</button>
+        <h3 class="font-thai text-lg font-bold mb-3">กรุณาใส่รหัสผ่าน</h3>
+        <input v-model="passwordInput" type="password" placeholder="รหัสผ่าน" class="password-input mb-3" />
+        <div v-if="passwordError" class="text-red-600 mb-2">{{ passwordError }}</div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button @click="cancelPassword" class="px-4 py-2 rounded bg-gray-200">ยกเลิก</button>
+          <button @click="submitPassword" class="px-4 py-2 rounded bg-[#9e8c1a] text-white">ยืนยัน</button>
         </div>
       </div>
     </div>
-  </div>
+  </teleport>
 </template>
 
 <script setup lang="ts">
