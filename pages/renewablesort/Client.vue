@@ -28,11 +28,16 @@
         <div class="tree-parent">
           <div @click="requestPassword('huaroaDashboard')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
-              <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
-              <div class="parent-title">Usernumber : 001</div>
-              <div class="parent-meta">Contractnumber :</div>
-              <div class="parent-meta">Date Installed : 1-11-25</div>
-              <div class="parent-meta">Expiration Date : 1-12-25</div>
+              <div>
+                <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
+                <div class="parent-title">Usernumber : 001</div>
+                <div class="parent-meta">Contractnumber :</div>
+                <div class="parent-meta">Date Installed : 1-11-25</div>
+                <div class="parent-meta">Expiration Date : 1-12-25</div>
+              </div>
+              <div class="w-full flex justify-end mt-3">
+                <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -44,11 +49,16 @@
         <div class="tree-parent">
           <div @click="requestPassword('maehongson')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
-              <div class="parent-sub">เทศบาลแม่ฮ่องสอน</div>
-              <div class="parent-title">Usernumber : 002</div>
-              <div class="parent-meta">Contractnumber :</div>
-              <div class="parent-meta">Date Installed : 1-11-25</div>
-              <div class="parent-meta">Expiration Date : 1-12-25</div>
+              <div>
+                <div class="parent-sub">เทศบาลแม่ฮ่องสอน</div>
+                <div class="parent-title">Usernumber : 002</div>
+                <div class="parent-meta">Contractnumber :</div>
+                <div class="parent-meta">Date Installed : 1-11-25</div>
+                <div class="parent-meta">Expiration Date : 1-12-25</div>
+              </div>
+              <div class="w-full flex justify-end mt-3">
+                <span :class="['status-dot', isOnlineFor('แม่ฮ่องสอน') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -56,8 +66,6 @@
     </div>
 
     <!-- PDF download removed -->
-    
-    
   </div>
   <!-- Password Modal -->
   <teleport to="body">
@@ -77,6 +85,7 @@
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { watchEffect } from 'vue'
 
 const projectLinks: Record<string, string> = {
   huaroaDashboard: '/renewablesort/HuaroiEspresso',
@@ -128,6 +137,47 @@ function cancelPassword() {
 function openProject(key: string) {
   const url = projectLinks[key]
   if (url) window.open(url, '_blank')
+}
+
+// ----- Online status polling -----
+const statusData = ref<any[]>([])
+const statusLoading = ref(false)
+let statusTimer: any = null
+
+const fetchStatus = async () => {
+  try {
+    statusLoading.value = true
+    const res: any = await $fetch('/api/daily-users')
+    if (res && res.success && Array.isArray(res.data)) {
+      statusData.value = res.data.map((d: any) => ({
+        dbName: d.dbName,
+        label: d.label,
+        totalVisits: d.totalVisits || 0,
+        uniqueUserCount: d.uniqueUserCount || 0,
+        onlineCount: d.onlineCount || 0,
+        clients: d.clients || []
+      }))
+    }
+  } catch (e) {
+    console.error('fetchStatus error', e)
+  } finally {
+    statusLoading.value = false
+  }
+}
+
+onMounted(() => {
+  // start polling
+  fetchStatus()
+  statusTimer = setInterval(fetchStatus, 5 * 60 * 1000)
+})
+
+onBeforeUnmount(() => {
+  if (statusTimer) clearInterval(statusTimer)
+})
+
+function isOnlineFor(keyword: string) {
+  const item = statusData.value.find(d => d.label && d.label.includes(keyword))
+  return item ? (Number(item.onlineCount) > 0) : false
 }
 
 onMounted(() => {
@@ -214,8 +264,10 @@ onMounted(() => {
   100% { transform: translateX(-50%); } 
 }
 .spline-link-card {
-  width: 200px;
-  height: 70px;
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  min-height: 0;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -229,7 +281,7 @@ onMounted(() => {
 @media (min-width: 640px) {
   .spline-link-card {
     width: 250px;
-    height: 80px;
+    min-height: 80px;
     padding: 0 20px;
   }
 }
@@ -241,7 +293,6 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
   padding: 0 6px;
   width: 100%;
   gap: 12px;
@@ -343,8 +394,9 @@ onMounted(() => {
   width: 100%;
 }
 .flow-card {
-  width: 320px;
-  height: 60px;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
   display: flex;
   align-items: center;
   padding: 0 14px;
@@ -361,7 +413,7 @@ onMounted(() => {
   gap: 80px;
   margin-top: 20px;
   padding: 20px 20px 40px;
-  padding-left: 60px;
+  padding-left: clamp(16px, 4vw, 60px);
   max-width: min(1200px, 95vw);
   margin-left: auto;
   margin-right: auto;
@@ -420,7 +472,8 @@ onMounted(() => {
 
 /* Parent header */
 .parent-box { 
-  width: 320px; 
+  width: 100%;
+  max-width: 360px;
   height: auto; 
   padding: 16px 20px; 
   border-radius: 10px;
@@ -461,6 +514,13 @@ onMounted(() => {
   .tree-container {
     padding: 15px 10px;
     padding-left: 20px;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  /* increase top spacing on mobile */
+  .root-bg {
+    padding-top: 3.5rem;
   }
   .tree-parent {
     margin-bottom: 16px;
@@ -471,16 +531,20 @@ onMounted(() => {
   }
   .parent-box {
     width: 90%;
-    max-width: 300px;
-    padding: 20px 22px;
+    max-width: 340px;
+    padding: 22px 24px;
   }
   .parent-title { font-size: 15px; }
   .parent-sub { font-size: 14px; }
   .parent-meta { font-size: 12px; }
   .flow-card {
-    width: 260px;
-    height: 52px;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    padding: 12px 14px;
+    align-items: flex-start;
   }
+  .card-content .status-dot { transform: translateY(-6px); }
   .card-content img {
     width: 32px !important;
     height: 32px !important;
@@ -488,6 +552,53 @@ onMounted(() => {
   .card-content span {
     font-size: 13px;
   }
+}
+.background-image {
+  position: fixed;
+  top: 55%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 1400px;
+  height: auto;
+  opacity: 0.3;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .background-image { display: none; }
+  .marquee { min-width: 200%; animation-duration: 20s; }
+}
+
+/* Extra small screens tweaks */
+@media (max-width: 420px) {
+  .scroll-reveal { margin-top: 0.5rem !important; padding-left: 8px; padding-right: 8px; }
+  .running-text {
+    border-width: 2px;
+    padding: 8px 10px;
+    font-size: 0.65rem;
+    border-radius: 14px;
+  }
+  .marquee { min-width: 150%; animation-duration: 14s; }
+  .marquee-content { margin-right: 0.8rem; }
+  .marquee span { padding: 0.25rem 0.6rem; font-size: 0.62rem; margin-right: 0.4rem; }
+  .tree-container { padding: 12px 12px 28px; padding-left: 12px; gap: 18px; justify-content: center; }
+  .root-bg { padding-top: 3rem; }
+  .parent-box { width: 100%; max-width: 100%; padding: 16px 18px; }
+  .spline-link-card, .flow-card { padding: 0 12px; }
+  .card-content .status-dot { transform: translateY(-6px); }
+  .card-content { gap: 8px; }
+  .parent-sub { font-size: 15px; }
+  .parent-title { font-size: 14px; }
+  .parent-meta { font-size: 11px; }
+  .background-image { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .spline-link-card { max-width: 320px; min-height: 70px; }
+  .flow-card { max-width: 360px; }
+  .tree-container { gap: 96px; }
 }
 .flipbook-container {
   display: flex;
@@ -600,4 +711,13 @@ onMounted(() => {
   border: 1px solid #ddd;
   border-radius: 6px;
 }
+
+/* Status cards styling */
+.status-badge { display: inline-block; min-width: 34px; text-align: center; padding: 2px 8px; border-radius: 999px; background:#f3f3f3; color:#111; }
+.status-badge.status-online { background: #1db954; color: #fff; }
+.client-chip { display:flex; align-items:center; gap:8px; padding:6px 8px; background: #fffef8; border:1px solid #ddd; border-radius:8px; font-size:12px; }
+.client-id { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.status-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:6px; }
+.status-dot.online { background:#1db954; box-shadow:0 0 6px rgba(29,185,84,0.35); }
+.status-dot.offline { background:#bbb; }
 </style>

@@ -37,23 +37,58 @@ const getConnection = async (dbName: string) => {
 export default defineEventHandler(async (event) => {
   try {
     console.log('Fetching data from multiple databases...');
-    
+
     const results = await Promise.all(
       databases.map(async (db) => {
         try {
           const connection = await getConnection(db.name);
           const DailyUser = connection.models.DailyUser || connection.model('DailyUser', dailyUserSchema);
-          
+
+          // total visits and unique clients
           const totalVisits = await DailyUser.countDocuments();
           const uniqueClients = await DailyUser.distinct('client_id');
-          
-          console.log(`${db.name}: ${totalVisits} visits`);
-          
+
+          // Aggregate to get last seen per client (attempt to convert created_at to date)
+          const agg = await DailyUser.aggregate([
+            {
+              $group: {
+                _id: '$client_id',
+                lastCreatedAt: { $max: { $toDate: '$created_at' } }
+              }
+            }
+          ]).allowDiskUse(true);
+
+          const now = new Date();
+          const ONLINE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
+
+          const clients = agg.map((row: any) => {
+            let lastSeen: Date | null = null;
+            try {
+              lastSeen = row.lastCreatedAt ? new Date(row.lastCreatedAt) : null;
+            } catch (_) {
+              lastSeen = null;
+            }
+
+            const isOnline = lastSeen ? (now.getTime() - lastSeen.getTime() <= ONLINE_THRESHOLD_MS) : false;
+
+            return {
+              client_id: row._id,
+              lastSeen: lastSeen ? lastSeen.toISOString() : null,
+              status: isOnline ? 'online' : 'offline'
+            };
+          });
+
+          const onlineCount = clients.filter(c => c.status === 'online').length;
+
+          console.log(`${db.name}: ${totalVisits} visits, ${onlineCount} online`);
+
           return {
             dbName: db.name,
             label: db.label,
             totalVisits,
-            uniqueUserCount: uniqueClients.length
+            uniqueUserCount: uniqueClients.length,
+            onlineCount,
+            clients
           };
         } catch (err: any) {
           console.error(`Error fetching from ${db.name}:`, err.message);
@@ -61,12 +96,14 @@ export default defineEventHandler(async (event) => {
             dbName: db.name,
             label: db.label,
             totalVisits: 0,
-            uniqueUserCount: 0
+            uniqueUserCount: 0,
+            onlineCount: 0,
+            clients: []
           };
         }
       })
     );
-    
+
     return {
       success: true,
       data: results

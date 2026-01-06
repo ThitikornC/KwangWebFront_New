@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 // Income data
 const income = ref({
@@ -137,9 +137,12 @@ const fetchDailyUsers = async () => {
     if (response.success && response.data) {
       // Update counts from API data - data is an array of results
       response.data.forEach((item) => {
-        const expense = expenses.value.find(e => e.name === item.label)
+        // match expense by label included in name to tolerate numbering prefix
+        const expense = expenses.value.find(e => e.name.includes(item.label) || item.label.includes(e.name))
         if (expense) {
-          expense.count = item.totalVisits
+          expense.count = item.totalVisits || 0
+          expense.onlineCount = item.onlineCount || 0
+          expense.clients = item.clients || []
         }
       })
     }
@@ -151,9 +154,15 @@ const fetchDailyUsers = async () => {
   }
 }
 
-// Fetch data on mount
+let pollTimer = null
+// Fetch data on mount and poll every 5 minutes
 onMounted(() => {
   fetchDailyUsers()
+  pollTimer = setInterval(fetchDailyUsers, 5 * 60 * 1000)
+})
+
+onBeforeUnmount(() => {
+  if (pollTimer) clearInterval(pollTimer)
 })
 
 // Open expense link
