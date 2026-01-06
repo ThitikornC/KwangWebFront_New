@@ -62,7 +62,7 @@
         </div>
 
         <!-- Right Section - Chart -->
-        <div class="neon-btn p-4 flex flex-col justify-start items-center" style="height: auto;">
+        <div class="neon-btn p-4 flex flex-col justify-center items-center" style="min-height: 360px;">
           <h2 class="text-lg font-semibold text-center mb-2">จำนวนการเข้าใช้งาน</h2>
           
           <!-- Donut Chart -->
@@ -86,7 +86,7 @@
           </div>
 
           <!-- Legend -->
-          <div class="space-y-0.5">
+            <div class="space-y-0.5">
             <div 
               v-for="(expense, index) in expenses" 
               :key="index"
@@ -104,6 +104,8 @@
         </div>
       </div>
     </div>
+
+    
   </div>
 </template>
 
@@ -118,9 +120,9 @@ const income = ref({
 
 // Expense data with links and user count (for API)
 const expenses = ref([
-  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#22C8F7' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C55E' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#9CA3AF' },
+  { name: '1.ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#800080' },
+  { name: '2.ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7' },
+  { name: '3.ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700' },
 ])
 
 // Loading state
@@ -133,7 +135,7 @@ const fetchDailyUsers = async () => {
     const response = await $fetch('/api/daily-users')
     
     if (response.success && response.data) {
-      // Update counts from API data - data is now an array of results
+      // Update counts from API data - data is an array of results
       response.data.forEach((item) => {
         const expense = expenses.value.find(e => e.name === item.label)
         if (expense) {
@@ -159,13 +161,15 @@ const openExpenseLink = (link) => {
   if (link) window.open(link, '_blank')
 }
 
+
+
 // Computed values
 const totalIncome = computed(() => {
   return income.value.salary + income.value.additional
 })
 
 const totalUsers = computed(() => {
-  return expenses.value.reduce((sum, expense) => sum + expense.count, 0)
+  return expenses.value.reduce((sum, expense) => sum + (Number(expense.count) || 0), 0)
 })
 
 const totalExpenses = computed(() => {
@@ -180,10 +184,10 @@ const remaining = computed(() => {
 const chartSegments = computed(() => {
   const circumference = 2 * Math.PI * 40 // r = 40
   let cumulativeOffset = 0
-  const total = expenses.value.reduce((sum, e) => sum + e.count, 0)
-  
+  const total = expenses.value.reduce((sum, e) => sum + (Number(e.count) || 0), 0)
+
   return expenses.value.map((expense) => {
-    const percentage = expense.count / total
+    const percentage = total === 0 ? 1 / expenses.value.length : (Number(expense.count) || 0) / total
     const dashLength = percentage * circumference
     const dashArray = `${dashLength} ${circumference - dashLength}`
     const offset = -cumulativeOffset
@@ -385,4 +389,6 @@ const formatNumber = (num) => {
     padding: 8px 10px;
   }
 }
+
+/* Password modal styles removed */
 </style>
