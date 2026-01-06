@@ -47,6 +47,11 @@
                 class="expense-card"
               >
                 <div class="flex items-center gap-3">
+                  <span
+                    class="status-dot"
+                    :title="getStatusTitle(expense)"
+                    :style="{ backgroundColor: statusColor(expense) }"
+                  ></span>
                   <img :src="expense.icon" :alt="expense.name" class="w-10 h-10 object-contain" />
                   <span class="text-sm font-medium">{{ expense.name }}</span>
                 </div>
@@ -93,6 +98,11 @@
               @click="openExpenseLink(expense.link)"
               class="legend-item"
             >
+              <span
+                class="status-dot"
+                :title="getStatusTitle(expense)"
+                :style="{ backgroundColor: statusColor(expense) }"
+              ></span>
               <span 
                 class="w-3 h-3 rounded-full flex-shrink-0" 
                 :style="{ backgroundColor: expense.color }"
@@ -120,49 +130,130 @@ const income = ref({
 
 // Expense data with links and user count (for API)
 const expenses = ref([
-  { name: '1.ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#800080' },
-  { name: '2.ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7' },
-  { name: '3.ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700' },
+  { name: '1.ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#800080', dbSlug: 'Huroa2' },
+  { name: '2.ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7', dbSlug: 'Huroa3' },
+  { name: '3.ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700', dbSlug: 'Huroa4' },
 ])
 
 // Loading state
 const isLoading = ref(true)
 
-// Fetch daily users count from API
-const fetchDailyUsers = async () => {
+// Normalize string (lowercase, remove punctuation) for tolerant matching
+const normalize = (s) => {
+  if (!s) return ''
+  return String(s)
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-z0-9\u0E00-\u0E7F]/g, '')
+}
+
+// time window (ms) considered "recent" for page updates (5 minutes)
+const STATUS_WINDOW_MS = 5 * 60 * 1000
+// polling interval for fetching counts and status (3 minutes)
+const POLL_INTERVAL_MS = 3 * 60 * 1000
+
+// helper to parse various timestamp fields into epoch ms
+const parseTimestamp = (item) => {
+  const candidates = [item.lastUpdated, item.updatedAt, item.timestamp, item.time, item.lastSeen, item.ts, item.date]
+  for (const c of candidates) {
+    if (c === undefined || c === null) continue
+    if (typeof c === 'number' && !Number.isNaN(c)) return Number(c)
+    if (typeof c === 'string') {
+      const n = Date.parse(c)
+      if (!Number.isNaN(n)) return n
+      const maybeNum = Number(c)
+      if (!Number.isNaN(maybeNum)) return maybeNum
+    }
+  }
+  return null
+}
+
+// Fetch counts from daily_users endpoint per DB (ensure correct collection)
+const fetchCounts = async () => {
   try {
     isLoading.value = true
-    const response = await $fetch('/api/daily-users')
-    
-    if (response.success && response.data) {
-      // Update counts from API data - data is an array of results
-      response.data.forEach((item) => {
-        // match expense by label included in name to tolerate numbering prefix
-        const expense = expenses.value.find(e => e.name.includes(item.label) || item.label.includes(e.name))
-        if (expense) {
-          expense.count = item.totalVisits || 0
-          expense.onlineCount = item.onlineCount || 0
-          expense.clients = item.clients || []
+    // fetch per-expense by dbSlug to ensure counts come from the correct DB
+    await Promise.all(expenses.value.map(async (e) => {
+      const db = e.dbSlug || ''
+      try {
+        const url = `/api/daily-users${db ? `?db=${encodeURIComponent(db)}` : ''}`
+        const response = await $fetch(url)
+
+        if (response && response.success) {
+          // Response may be an aggregated object or an array of records
+          if (Array.isArray(response.data)) {
+            // Sum totalVisits (or visits/count) across returned records
+            const total = response.data.reduce((s, it) => s + Number(it.totalVisits ?? it.visits ?? it.count ?? 0), 0)
+            e.count = total
+          } else if (typeof response.data === 'object' && response.data !== null) {
+            e.count = Number(response.data.totalVisits ?? response.data.visits ?? response.data.count ?? e.count ?? 0)
+          }
+          // keep any client/online fields if present
+          e.onlineCount = Number(response.data?.onlineCount ?? response.data?.online ?? e.onlineCount ?? 0)
+          console.debug('[fetchCounts] db fetch', { db, name: e.name, count: e.count })
         }
-      })
-    }
+      } catch (inner) {
+        console.error('[fetchCounts] error for db', db, inner)
+      }
+    }))
   } catch (error) {
-    console.error('Error fetching daily users:', error)
-    // Keep default values on error
+    console.error('Error fetching daily users (counts):', error)
   } finally {
     isLoading.value = false
   }
 }
 
-let pollTimer = null
-// Fetch data on mount and poll every 5 minutes
+// Fetch status timestamps from daily_page_users endpoint and map last update times
+const fetchStatus = async () => {
+  try {
+    const pageResp = await $fetch('/api/daily-page-users')
+    if (pageResp && pageResp.success) {
+      // We'll fetch status per DB to avoid cross-collection mixing
+      await Promise.all(expenses.value.map(async (e) => {
+        const db = e.dbSlug || ''
+        try {
+          const url = `/api/daily-page-users${db ? `?db=${encodeURIComponent(db)}` : ''}`
+          const resp = await $fetch(url)
+          if (resp && resp.success) {
+            // If array, take the most recent timestamp across entries
+            if (Array.isArray(resp.data) && resp.data.length > 0) {
+              let latest = null
+              resp.data.forEach(it => {
+                const ts = parseTimestamp(it)
+                if (ts && (!latest || ts > latest)) latest = ts
+              })
+              e.lastPageUpdate = latest
+              console.debug('[fetchStatus] db fetch', { db, name: e.name, lastPageUpdate: latest })
+            } else if (resp.data && typeof resp.data === 'object') {
+              const ts = parseTimestamp(resp.data)
+              e.lastPageUpdate = ts
+              console.debug('[fetchStatus] db fetch obj', { db, name: e.name, lastPageUpdate: ts })
+            }
+          }
+        } catch (inner) {
+          console.error('[fetchStatus] error for db', db, inner)
+        }
+      }))
+    }
+  } catch (err) {
+    console.error('Error fetching daily page users (status):', err)
+  }
+}
+
+let pollTimerCounts = null
+let pollTimerStatus = null
+// Fetch data on mount and poll every 5 minutes (counts and status separated)
 onMounted(() => {
-  fetchDailyUsers()
-  pollTimer = setInterval(fetchDailyUsers, 5 * 60 * 1000)
+  fetchCounts()
+  fetchStatus()
+  pollTimerCounts = setInterval(fetchCounts, POLL_INTERVAL_MS)
+  pollTimerStatus = setInterval(fetchStatus, POLL_INTERVAL_MS)
 })
 
 onBeforeUnmount(() => {
-  if (pollTimer) clearInterval(pollTimer)
+  if (pollTimerCounts) clearInterval(pollTimerCounts)
+  if (pollTimerStatus) clearInterval(pollTimerStatus)
 })
 
 // Open expense link
@@ -214,6 +305,19 @@ const chartSegments = computed(() => {
 // Format number with commas
 const formatNumber = (num) => {
   return num.toLocaleString('th-TH')
+}
+
+// Determine status color based on most recent page update from daily_page_users
+const statusColor = (expense) => {
+  const ts = Number(expense.lastPageUpdate)
+  if (ts && (Date.now() - ts) <= STATUS_WINDOW_MS) return '#22c55e' // green = recent page update
+  return '#9ca3af' // gray = no recent update
+}
+
+const getStatusTitle = (expense) => {
+  const ts = Number(expense.lastPageUpdate)
+  if (ts) return `อัปเดตล่าสุด ${new Date(ts).toLocaleString('th-TH')}`
+  return 'ยังไม่มีข้อมูลล่าสุด'
 }
 </script>
 
@@ -323,6 +427,17 @@ const formatNumber = (num) => {
 .legend-item-selected {
   background: rgba(255, 200, 80, 0.4);
   font-weight: 600;
+}
+
+/* Status dot for online / visit indicators */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  display: inline-block;
+  box-shadow: 0 0 6px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+  margin-right: 6px;
 }
 
 /* Running Text */
