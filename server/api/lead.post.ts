@@ -142,7 +142,19 @@ async function createRailwayProject(lead: any, event: any) {
 
     // 4. Send Notification
     const requestUrl = getRequestURL(event);
-    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+    const config = useRuntimeConfig();
+    const configuredBase = (config.public && config.public.baseUrl) || config.baseUrl || process.env.PUBLIC_BASE_URL || process.env.BASE_URL;
+    let baseUrl = '';
+    if (configuredBase) {
+      baseUrl = configuredBase.toString().trim().replace(/\/$/, '');
+      if (!/^https?:\/\//i.test(baseUrl)) baseUrl = `https://${baseUrl}`;
+    } else {
+      baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+    }
+    if (/^http:/i.test(baseUrl)) baseUrl = baseUrl.replace(/^http:/i, 'https:');
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(baseUrl)) {
+      console.warn('Base URL resolves to localhost; LINE cannot access header images. Set PUBLIC_BASE_URL to a public HTTPS URL or use ngrok.');
+    }
     const approvalLink = `${baseUrl}/api/deploy/approve?leadId=${lead._id}`;
 
     // Attach timestamp (localized to Bangkok/Thailand)

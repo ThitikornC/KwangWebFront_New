@@ -29,7 +29,28 @@ export default defineEventHandler(async (event) => {
   // Generate a PNG summary image from lead data and send to LINE upon approval
   try {
     const requestUrl = getRequestURL(event);
-    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+    // Prefer an explicit public base URL from runtime config or env var so
+    // external services (like LINE) can reach generated images.
+    const config = useRuntimeConfig();
+    const configuredBase = (config.public && config.public.baseUrl) || config.baseUrl || process.env.PUBLIC_BASE_URL || process.env.BASE_URL;
+    let baseUrl = '';
+    if (configuredBase) {
+      baseUrl = configuredBase.toString().trim().replace(/\/$/, '');
+      // If user provided `example.com` without scheme, default to https
+      if (!/^https?:\/\//i.test(baseUrl)) {
+        baseUrl = `https://${baseUrl}`;
+      }
+    } else {
+      baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+    }
+
+    // Normalize to https for external access; LINE requires HTTPS URLs.
+    if (/^http:/i.test(baseUrl)) baseUrl = baseUrl.replace(/^http:/i, 'https:');
+
+    // Warn when using localhost as LINE servers can't reach it.
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(baseUrl)) {
+      console.warn('Base URL resolves to localhost; LINE cannot access images. Set PUBLIC_BASE_URL to a public HTTPS URL or use ngrok.');
+    }
 
     function escapeXml(unsafe: string) {
       return (unsafe || '').toString().replace(/[<>&'\"]/g, (c) => ({
