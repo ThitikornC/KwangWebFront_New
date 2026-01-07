@@ -18,6 +18,9 @@ const targets: Record<string, string> = {
   Mpmay_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
   '99/99': 'https://momaydoc-production.up.railway.app/'
 }
-const url = targets[String(route.params.slug)]
+
+const raw = route.params.slug
+const slug = Array.isArray(raw) ? raw.join('/') : String(raw)
+const url = targets[slug]
 if (!url) await navigateTo('/', { replace: true })
 </script>

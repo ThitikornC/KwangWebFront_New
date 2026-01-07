@@ -123,6 +123,16 @@
         <span class="font-thai">Naresuan University Library</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('99/99')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay 99/99" class="w-12 h-12 object-contain" />
+        <span class="font-thai">99/99</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -152,6 +162,9 @@ const splineLinks = {
   Momay_pharmacy: '/momay/Momay_pharmacy',
   Mpmay_human: '/momay/Mpmay_human'
 }
+
+// Add mapping for 99/99 document route
+splineLinks['99/99'] = '/momay/99/99'
 
 const pages = [
   '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0001.jpg',
