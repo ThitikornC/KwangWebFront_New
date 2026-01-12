@@ -43,19 +43,24 @@
               <div 
                 v-for="(expense, index) in expenses" 
                 :key="index"
-                @click="openExpenseLink(expense.link)"
+                @click="handleCardClick($event, expense.link)"
+                @keydown.enter.prevent="handleCardKeydown($event, expense.link)"
+                @keydown.space.prevent="handleCardKeydown($event, expense.link)"
                 class="expense-card"
+                tabindex="0"
+                role="button"
               >
                 <div class="flex items-center gap-3">
-                  <span
-                    class="status-dot"
-                    :title="getStatusTitle(expense)"
-                    :style="{ backgroundColor: statusColor(expense) }"
-                  ></span>
-                  <img :src="expense.icon" :alt="expense.name" class="w-10 h-10 object-contain" />
-                  <span class="text-sm font-medium">{{ expense.name }}</span>
-                </div>
-                <span class="text-sm font-semibold text-gray-600">{{ formatNumber(expense.count) }} ครั้ง</span>
+                    <span
+                      class="status-dot"
+                      :title="getStatusTitle(expense)"
+                      :style="{ backgroundColor: statusColor(expense) }"
+                    ></span>
+                    <span class="status-label">{{ Number(expense.onlineCount) > 0 ? 'Online' : 'Offline' }}</span>
+                    <img :src="expense.icon" :alt="expense.name" class="w-10 h-10 object-contain" />
+                    <span class="text-sm font-medium">{{ expense.name }}</span>
+                  </div>
+                <span class="text-sm font-semibold text-gray-600 count-badge">{{ formatNumber(expense.count) }} ครั้ง</span>
               </div>
               
               <div class="flex justify-between items-center px-3 py-2 bg-red-50 rounded-lg mt-2">
@@ -202,6 +207,47 @@ const openExpenseLink = (link) => {
   if (link) window.open(link, '_blank')
 }
 
+// Create ripple effect inside element
+const createRipple = (el, event) => {
+  if (!el) return
+  // remove old ripples
+  const old = el.querySelectorAll('.ripple')
+  old.forEach(o => o.remove())
+
+  const rect = el.getBoundingClientRect()
+  const size = Math.max(rect.width, rect.height) * 1.2
+  const ripple = document.createElement('span')
+  ripple.className = 'ripple'
+  ripple.style.width = ripple.style.height = `${size}px`
+
+  let x = (rect.width - size) / 2
+  let y = (rect.height - size) / 2
+  if (event && event.clientX != null) {
+    x = event.clientX - rect.left - size / 2
+    y = event.clientY - rect.top - size / 2
+  }
+  ripple.style.left = `${x}px`
+  ripple.style.top = `${y}px`
+
+  el.appendChild(ripple)
+  setTimeout(() => {
+    ripple.remove()
+  }, 700)
+}
+
+const handleCardClick = (event, link) => {
+  const el = event.currentTarget
+  createRipple(el, event)
+  // small delay so ripple visible before navigation
+  setTimeout(() => openExpenseLink(link), 120)
+}
+
+const handleCardKeydown = (event, link) => {
+  const el = event.currentTarget
+  createRipple(el, null)
+  setTimeout(() => openExpenseLink(link), 120)
+}
+
 
 // (no password modal — links open directly)
 
@@ -339,12 +385,40 @@ const getStatusTitle = (expense) => {
   border: 2px solid #74640a;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 300ms ease, box-shadow 300ms ease;
   box-shadow: 1px 1px 0 #000, -3px 2px #3b3305;
+  position: relative;
+  overflow: hidden;
+  /* continuous subtle motion to indicate interactivity */
+  animation: float-oscillate 3000ms ease-in-out infinite alternate,
+             pulse-shadow 4200ms ease-in-out infinite alternate;
 }
 .expense-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 1px 1px 0 #000, -4px 4px #3b3305, 0 0 12px rgba(255,230,160,0.5);
+  /* keep animation but slightly intensify on hover */
+  animation-duration: 1200ms, 1400ms;
+}
+.expense-card:active {
+  animation: none;
+  transform: translateY(0) scale(0.995);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.expense-card:focus-visible {
+  outline: none;
+  /* slightly stronger focus feedback */
+  animation-duration: 900ms, 1200ms;
+  box-shadow: 0 10px 30px rgba(255,200,80,0.18), 0 0 0 4px rgba(255,200,80,0.08);
+}
+
+@keyframes float-oscillate {
+  0% { transform: scale(0.995); }
+  50% { transform: scale(1.015); }
+  100% { transform: scale(1.03); }
+}
+
+@keyframes pulse-shadow {
+  0% { box-shadow: 0 6px 12px rgba(0,0,0,0.06), -3px 3px 0 rgba(59,51,5,0.06), 0 0 8px rgba(255,230,160,0.18); }
+  50% { box-shadow: 0 10px 20px rgba(0,0,0,0.09), -5px 5px 0 rgba(59,51,5,0.09), 0 0 16px rgba(255,230,160,0.3); }
+  100% { box-shadow: 0 14px 30px rgba(0,0,0,0.12), -6px 6px 0 rgba(59,51,5,0.12), 0 0 26px rgba(255,230,160,0.45); }
 }
 .expense-card-selected {
   background: linear-gradient(180deg, #ffe8a0 0%, #ffd54f 50%, #ffca28 100%);
@@ -379,6 +453,34 @@ const getStatusTitle = (expense) => {
   box-shadow: 0 0 6px rgba(0,0,0,0.12);
   flex-shrink: 0;
   margin-right: 6px;
+}
+
+.status-label {
+  margin-right: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #111;
+}
+
+.count-badge {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+/* Ripple effect */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(37, 31, 3, 0.12);
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple-anim 700ms ease-out forwards;
+}
+
+@keyframes ripple-anim {
+  to { transform: scale(1); opacity: 0; }
 }
 
 /* Running Text */

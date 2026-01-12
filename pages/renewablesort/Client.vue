@@ -35,8 +35,9 @@
                 <div class="parent-meta">Date Installed : 1-11-25</div>
                 <div class="parent-meta">Expiration Date : 1-12-25</div>
               </div>
-              <div class="w-full flex justify-end mt-3">
+              <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+                <span class="status-label">{{ isOnlineFor('หัวรอ') ? 'Online' : 'Offline' }}</span>
               </div>
             </div>
           </div>
@@ -56,8 +57,9 @@
                 <div class="parent-meta">Date Installed : 1-11-25</div>
                 <div class="parent-meta">Expiration Date : 1-12-25</div>
               </div>
-              <div class="w-full flex justify-end mt-3">
+              <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('แม่ฮ่องสอน') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+                <span class="status-label">{{ isOnlineFor('แม่ฮ่องสอน') ? 'Online' : 'Offline' }}</span>
               </div>
             </div>
           </div>
@@ -726,7 +728,9 @@ onMounted(() => {
 .status-badge.status-online { background: #1db954; color: #fff; }
 .client-chip { display:flex; align-items:center; gap:8px; padding:6px 8px; background: #fffef8; border:1px solid #ddd; border-radius:8px; font-size:12px; }
 .client-id { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.status-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:6px; }
+.status-dot { width:14px; height:14px; border-radius:50%; display:inline-block; margin-left:8px; }
 .status-dot.online { background:#1db954; box-shadow:0 0 6px rgba(29,185,84,0.35); }
 .status-dot.offline { background:#bbb; }
+
+.status-label { margin-left:8px; font-weight:700; font-size:14px; color:#111; }
 </style>
