@@ -146,10 +146,12 @@ async function createRailwayProject(lead: any, event: any) {
     // 4. Send Notification
     const requestUrl = getRequestURL(event);
     const config = useRuntimeConfig();
-    // Prefer configured public app URL (env override) to build links for external messages
+    // Build approval link using configured backend API URL when available (ensures /api routes resolve)
+    const backendApi = (config.public && config.public.apiURL) || process.env.API_BASE_URL || null;
     const publicAppUrl = (config.public && config.public.appURL) || config.baseUrl || process.env.APP_URL || `${requestUrl.protocol}//${requestUrl.host}`;
     const baseUrl = String(publicAppUrl).replace(/\/$/, '');
-    const approvalLink = `${baseUrl}/api/deploy/approve?leadId=${lead._id}`;
+    const apiBase = backendApi ? String(backendApi).replace(/\/$/, '') : baseUrl;
+    const approvalLink = `${apiBase}/api/deploy/approve?leadId=${lead._id}`;
 
     // Prepare logo URL for LINE: must be https and not localhost
     let logoUrl = `${baseUrl}/ESPRESSO_logo.png`;
