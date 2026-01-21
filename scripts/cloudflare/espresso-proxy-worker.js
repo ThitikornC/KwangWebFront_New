@@ -47,23 +47,40 @@ async function handle(request) {
   // Debug mode (query param ?debug=1 or header X-Debug: 1)
   const isDebug = url.searchParams.get('debug') === '1' || request.headers.get('X-Debug') === '1';
 
-  // Cache lead mapping per runNo
+   // Cache lead mapping per runNo
   const cacheKey = `espresso-lead-${runNo}`;
   let lead = null;
+  let data = null;
+  let lookupUrl = null;
 
   try {
     const cache = caches.default;
-    const cached = await cache.match(cacheKey);
+    // Use a synthetic URL for cache keys to avoid Invalid URL errors
+    const cacheReqUrl = `${BACKEND_API || BACKEND_BASE}/__cache__/${cacheKey}`;
+    const cacheReq = new Request(cacheReqUrl);
+    const cached = await cache.match(cacheReq);
     if (cached) {
-      lead = await cached.json();
-    } else {
+      try {
+        lead = await cached.json();
+      } catch (err) {
+        console.warn('Failed to parse cached lead JSON', err);
+        lead = null;
+      }
+    }
+
+    if (!lead) {
       // Fetch list of leads and find the one with matching runNumber
-      // Use BACKEND_API for backend API calls (may be different from public site)
-      const backendLookup = (typeof BACKEND_API !== 'undefined' && BACKEND_API) ? BACKEND_API : BACKEND_BASE;
-      const lookupUrl = `${backendLookup.replace(/\/$/, '')}/api/espresso`;
+      const backendLookup = (typeof BACKEND_API !== 'undefined' && BACKEND_API) ? BACKEND_API : null;
+      if (!backendLookup) {
+        if (isDebug) {
+          return new Response(JSON.stringify({ error: 'BACKEND_API not configured in Worker runtime', runNo }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        }
+        return new Response('Server misconfiguration', { status: 500 });
+      }
+
+      lookupUrl = `${backendLookup.replace(/\/$/, '')}/api/espresso`;
       const res = await fetch(lookupUrl, { method: 'GET' });
       const dataText = await res.text();
-      let data = null;
       try { data = JSON.parse(dataText); } catch(e) { data = null; }
       if (!res.ok) {
         if (isDebug) {
@@ -71,26 +88,29 @@ async function handle(request) {
         }
         return new Response('Backend lookup failed', { status: 502 });
       }
+
       const list = data && data.list ? data.list : [];
       lead = list.find((l) => String(l.runNumber).padStart(3,'0') === runNo || String(l.runNumber) === runNoRaw) || null;
       if (lead) {
-        // store in cache
+        // store in cache using same request key
         const body = new Response(JSON.stringify(lead), { status: 200, headers: { 'Content-Type': 'application/json' } });
-        // caches.default.put requires a Request; create a synthetic one
-        const req = new Request(`${BACKEND_BASE}/__cache__/${cacheKey}`);
-        await cache.put(req, body.clone());
+        await cache.put(cacheReq, body.clone());
       }
     }
   } catch (e) {
-    console.warn('Worker lookup error', e);
+    console.error('Worker lookup error', e);
+    if (isDebug) {
+      return new Response(JSON.stringify({ error: 'Worker lookup exception', message: (e && e.message) || String(e), stack: (e && e.stack) || null, lookupUrl, runNo }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    return new Response('Internal Worker error', { status: 500 });
   }
 
-    if (!lead) {
-      if (isDebug) {
-        return new Response(JSON.stringify({ error: 'Lead not found', runNo, runNoRaw, lookupUrl: `${BACKEND_API.replace(/\/$/, '')}/api/espresso`, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-      }
-      return new Response('Lead not found', { status: 404 });
+  if (!lead) {
+    if (isDebug) {
+      return new Response(JSON.stringify({ error: 'Lead not found', runNo, runNoRaw, lookupUrl, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
     }
+    return new Response('Lead not found', { status: 404 });
+  }
 
   // Prefer the real deployed URL (Railway). Fallback to lead.url if deployedUrl missing.
   const preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;

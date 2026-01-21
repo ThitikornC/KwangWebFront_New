@@ -10,3 +10,14 @@ zone_id = "${ZONE_ID}"
 BACKEND_BASE = "https://www.kwangunlimit.com"
 CACHE_TTL = "60"
 BACKEND_API = "https://kwangwebfrontnew-production.up.railway.app"
+
+[env.production]
+name = "espresso-proxy"
+account_id = "40aeb9efd28c988900b12c543422ed54"
+zone_id = "db45e8bf2414f345a20464ade8d6670b"
+route = "www.kwangunlimit.com/espresso/*"
+
+[env.production.vars]
+BACKEND_API = "https://kwangwebfrontnew-production.up.railway.app"
+BACKEND_BASE = "https://www.kwangunlimit.com"
+CACHE_TTL = "60"
