@@ -170,7 +170,7 @@ function openProject(key: string) {
 }
 
 function openLead(lead: any) {
-  const url = lead.deployedUrl || lead.url || ('/Espresso/' + lead.runNumber)
+  const url = lead.url || lead.deployedUrl || ('/Espresso/' + lead.runNumber)
   if (url) window.open(url, '_blank')
 }
 

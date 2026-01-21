@@ -364,13 +364,14 @@ async function deployProject(lead: any) {
               contents: [
                 {
                   type: "text",
-                  text: deployedUrl,
+                  // show the public canonical URL (kwangunlimit) to encourage using proxied domain
+                  text: lead.url || deployedUrl,
                   wrap: true,
                   color: "#007bff",
                   size: "sm",
                   action: {
                     type: "uri",
-                    uri: deployedUrl
+                    uri: lead.url || deployedUrl
                   }
                 }
               ]
@@ -389,7 +390,8 @@ async function deployProject(lead: any) {
               action: {
                 type: "uri",
                 label: "Open Website",
-                uri: deployedUrl
+                // open the canonical public URL so users hit the kwangunlimit domain (Worker will proxy to deployedUrl)
+                uri: lead.url || deployedUrl
               },
               color: "#1DB446"
             }
