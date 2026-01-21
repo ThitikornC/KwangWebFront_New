@@ -9,3 +9,4 @@ zone_id = "db45e8bf2414f345a20464ade8d6670b"
 [vars]
 BACKEND_BASE = "https://www.kwangunlimit.com"
 CACHE_TTL = "60"
+BACKEND_API = "https://kwangwebfrontnew-production.up.railway.app"

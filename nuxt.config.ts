@@ -40,7 +40,7 @@ export default defineNuxtConfig({
   baseUrl: process.env.BASE_URL || 'https://www.kwangunlimit.com',
   public: {
     appURL: process.env.APP_URL || 'https://www.kwangunlimit.com',
-    apiURL: process.env.API_BASE_URL || "https://kwangwebbacknew-production.up.railway.app",
+    apiURL: process.env.API_BASE_URL || "https://kwangwebfrontnew-production.up.railway.app",
     firebaseApiKey: process.env.FIREBASE_API_KEY || "",
     firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || "",
     firebaseProjectId: process.env.FIREBASE_PROJECT_ID || "",
