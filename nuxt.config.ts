@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
-    baseURL: '/espresso/clientno/',
+    baseURL: '/',
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
@@ -37,9 +37,9 @@ export default defineNuxtConfig({
   railwayApiKey: process.env.RAILWAY_API_KEY,
   lineChannelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   lineUserId: process.env.LINE_USER_ID,
-  baseUrl: process.env.BASE_URL || 'https://www.kwangunlimit.com/espresso/clientno',
+  baseUrl: process.env.BASE_URL || 'https://www.kwangunlimit.com',
   public: {
-    appURL: process.env.APP_URL || 'https://www.kwangunlimit.com/espresso/clientno',
+    appURL: process.env.APP_URL || 'https://www.kwangunlimit.com',
     apiURL: process.env.API_BASE_URL || "https://kwangwebbacknew-production.up.railway.app",
     firebaseApiKey: process.env.FIREBASE_API_KEY || "",
     firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || "",
