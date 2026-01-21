@@ -23,13 +23,29 @@ export default defineEventHandler(async (event) => {
     const lastLead = await Lead.findOne().sort({ runNumber: -1 });
     const nextRunNumber = (lastLead && lastLead.runNumber) ? lastLead.runNumber + 1 : 1;
 
+    // compute start and expiry dates
+    const createdAt = new Date();
+    const startDate = createdAt;
+    // expiry = +1 month (preserve day; handle month overflow)
+    const expiryDate = new Date(startDate.getTime());
+    expiryDate.setMonth(expiryDate.getMonth() + 1);
+
+    // compute contactno from Buddhist year (last 2 digits), month, day, and runNumber
+    const buddhistYear = startDate.getFullYear() + 543;
+    const yy = String(buddhistYear % 100).padStart(2, '0');
+    const mm = String(startDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(startDate.getDate()).padStart(2, '0');
+    const contactNoGenerated = `${yy}${mm}${dd}${String(nextRunNumber).padStart(3, '0')}`;
+
     const newLead = new Lead({
       name: body.name,
       phone: body.phone,
-      contactno: body.phone,
+      contactno: body.contactno || contactNoGenerated,
       company: body.company || body.org || '',
       type: body.type || '',
       runNumber: nextRunNumber,
+      startDate,
+      expiryDate,
       status: 'creating_project'
     });
 

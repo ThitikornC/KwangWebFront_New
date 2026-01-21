@@ -43,10 +43,12 @@ wrangler publish
 
 6) ตรวจสอบ
 - เปิด https://www.kwangunlimit.com/espresso/001 (หรือ runNo ที่มี) เพื่อตรวจสอบการทำงาน
+ - เปิด https://www.kwangunlimit.com/espresso/001 (หรือ runNo ที่มี) เพื่อตรวจสอบการทำงาน
 
 หมายเหตุและข้อควรระวัง:
 - หาก `BACKEND_BASE` ชี้ไปยัง `https://www.kwangunlimit.com` และ backend ตัวเดียวกันเป็นที่เก็บ `/api/espresso` จะต้องแน่ใจว่า endpoint นั้นเข้าถึงได้สาธารณะหรือ Worker มีสิทธิ์เข้าถึง
 - ถ้า target app (lead.url) ใช้ absolute paths อาจต้องปรับ app ให้รองรับการใช้งานภายใต้ path `/espresso/<id>` หรือ Worker ต้อง rewrite HTML (ซับซ้อนขึ้น)
 - สำหรับการตั้ง route แบบ production แนะนำตั้งใน Cloudflare Dashboard ให้มั่นใจว่า `www.kwangunlimit.com/espresso/*` เชื่อมกับ Worker ที่ deploy
+ - คำสั่ง deploy (ใหม่ของ Wrangler): `wrangler deploy` (แทน `wrangler publish` ในรุ่นล่าสุด)
 
 ต้องการให้ผมสร้างตัวอย่าง `wrangler` GitHub Action workflow ด้วยไหม (เพื่อ deploy อัตโนมัติเมื่อ push)?

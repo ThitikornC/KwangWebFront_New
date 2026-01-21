@@ -170,8 +170,10 @@ function openProject(key: string) {
 }
 
 function openLead(lead: any) {
-  const url = lead.url || lead.deployedUrl || ('/Espresso/' + lead.runNumber)
-  if (url) window.open(url, '_blank')
+  // Always open the canonical public URL so address stays under kwangunlimit.com
+  const run = pad(lead.runNumber || 0)
+  const canonical = `https://www.kwangunlimit.com/espresso/${run}`
+  window.open(canonical, '_blank')
 }
 
 function isOnlineLead(lead: any) {

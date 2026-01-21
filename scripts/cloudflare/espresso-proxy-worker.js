@@ -8,6 +8,8 @@
  */
 
 const BACKEND_BASE = (typeof BACKEND_BASE !== 'undefined') ? BACKEND_BASE : 'https://www.kwangunlimit.com';
+// BACKEND_API should point to your backend API server (e.g. https://kwangwebbacknew-production.up.railway.app)
+const BACKEND_API = (typeof BACKEND_API !== 'undefined') ? BACKEND_API : (typeof BACKEND_BASE !== 'undefined' ? BACKEND_BASE : '');
 const CACHE_TTL = (typeof CACHE_TTL !== 'undefined') ? Number(CACHE_TTL) : 60;
 
 addEventListener('fetch', (event) => {
@@ -18,6 +20,22 @@ async function handle(request) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
+  // If this is an API request, forward to backend API
+  if (pathname.startsWith('/api/')) {
+    // Build target API URL
+    const target = `${BACKEND_API.replace(/\/$/, '')}${pathname}${url.search}`;
+    const headers = new Headers(request.headers);
+    headers.delete('host');
+    const proxyReq = new Request(target, {
+      method: request.method,
+      headers,
+      body: request.body,
+      redirect: 'follow'
+    });
+    const resp = await fetch(proxyReq);
+    return resp;
+  }
+
   // Match /espresso/:runNo and optional trailing path
   const m = pathname.match(/^\/espresso\/(\d{1,})\/?(.*)$/);
   if (!m) return new Response('Not Found', { status: 404 });
@@ -25,6 +43,9 @@ async function handle(request) {
   const runNoRaw = m[1];
   const suffix = m[2] || '';
   const runNo = runNoRaw.padStart(3, '0');
+
+  // Debug mode (query param ?debug=1 or header X-Debug: 1)
+  const isDebug = url.searchParams.get('debug') === '1' || request.headers.get('X-Debug') === '1';
 
   // Cache lead mapping per runNo
   const cacheKey = `espresso-lead-${runNo}`;
@@ -37,10 +58,20 @@ async function handle(request) {
       lead = await cached.json();
     } else {
       // Fetch list of leads and find the one with matching runNumber
-      const res = await fetch(`${BACKEND_BASE}/api/espresso` , { method: 'GET' });
-      if (!res.ok) return new Response('Backend lookup failed', { status: 502 });
-      const data = await res.json();
-      const list = data.list || [];
+      // Use BACKEND_API for backend API calls (may be different from public site)
+      const backendLookup = (typeof BACKEND_API !== 'undefined' && BACKEND_API) ? BACKEND_API : BACKEND_BASE;
+      const lookupUrl = `${backendLookup.replace(/\/$/, '')}/api/espresso`;
+      const res = await fetch(lookupUrl, { method: 'GET' });
+      const dataText = await res.text();
+      let data = null;
+      try { data = JSON.parse(dataText); } catch(e) { data = null; }
+      if (!res.ok) {
+        if (isDebug) {
+          return new Response(JSON.stringify({ error: 'Backend lookup failed', status: res.status, body: dataText, lookupUrl }), { status: 502, headers: { 'Content-Type': 'application/json' } });
+        }
+        return new Response('Backend lookup failed', { status: 502 });
+      }
+      const list = data && data.list ? data.list : [];
       lead = list.find((l) => String(l.runNumber).padStart(3,'0') === runNo || String(l.runNumber) === runNoRaw) || null;
       if (lead) {
         // store in cache
@@ -54,7 +85,12 @@ async function handle(request) {
     console.warn('Worker lookup error', e);
   }
 
-  if (!lead) return new Response('Lead not found', { status: 404 });
+    if (!lead) {
+      if (isDebug) {
+        return new Response(JSON.stringify({ error: 'Lead not found', runNo, runNoRaw, lookupUrl: `${BACKEND_API.replace(/\/$/, '')}/api/espresso`, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response('Lead not found', { status: 404 });
+    }
 
   // Prefer the real deployed URL (Railway). Fallback to lead.url if deployedUrl missing.
   const preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;
