@@ -64,9 +64,18 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
               <input v-model="trialForm.phone" type="tel" required class="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition" placeholder="08x-xxx-xxxx" />
             </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ประเภทผู้ใช้งาน</label>
+                <select v-model="trialForm.type" required class="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition">
+                  <option value="" disabled>เลือกประเภทผู้ใช้งาน</option>
+                  <option value="1">หน่วยงานราชการ</option>
+                  <option value="2">บริษัทเอกชน</option>
+                  <option value="3">ลูกค้าทั่วไป</option>
+                </select>
+              </div>
             <div class="flex justify-end gap-3 pt-4">
               <button type="button" @click="showTrialModal = false" class="px-5 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl transition font-medium">ยกเลิก</button>
-              <button type="submit" :disabled="isSubmittingTrial" class="px-8 py-2.5 bg-gradient-to-r from-[#74640a] to-[#9e8c1a] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+              <button type="submit" :disabled="isSubmittingTrial || !trialForm.type" class="px-8 py-2.5 bg-gradient-to-r from-[#74640a] to-[#9e8c1a] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                 <span v-if="isSubmittingTrial" class="animate-spin">⏳</span>
                 {{ isSubmittingTrial ? 'กำลังส่งข้อมูล...' : '✨ ยืนยันการลงทะเบียน' }}
               </button>
@@ -96,7 +105,8 @@ const testProjectUrl = 'https://magazine-espresso-demo.example.com/';
 const showTrialModal = ref(false);
 const trialForm = reactive({
   name: '',
-  phone: ''
+  phone: '',
+  type: ''
 });
 const isSubmittingTrial = ref(false);
 

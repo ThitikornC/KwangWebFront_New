@@ -1,3 +1,4 @@
+
 <template>
   <div class="root-bg p-4 sm:p-8 min-h-screen">
     <!-- Logo ลายน้ำ -->
@@ -20,7 +21,9 @@
       </div>
     </div>
 
-    <!-- Parent boxes styled like the child cards (group header) -->
+      
+
+      <!-- Parent boxes styled like the child cards (group header) -->
     <div class="tree-container">
       <!-- เทศบาลตำบลหัวรอ -->
       <div class="tree-wrapper">
@@ -60,6 +63,31 @@
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('แม่ฮ่องสอน') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
                 <span class="status-label">{{ isOnlineFor('แม่ฮ่องสอน') ? 'Online' : 'Offline' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dynamic leads: render after the static parent cards -->
+      <div v-if="leadsLoading" class="text-gray-600 ml-4">Loading customers...</div>
+      <div v-else>
+        <div v-for="lead in leads" :key="lead.id" class="tree-wrapper">
+          <div class="tree-parent">
+            <div @click="openLead(lead)" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
+              <div class="card-content parent-card-content">
+                <div>
+                  <div class="parent-sub">{{ lead.name }}</div>
+                  <div class="parent-title">Usernumber : {{ pad(lead.runNumber) }}</div>
+                  <div class="parent-meta">Contractnumber : {{ lead.contractNumber || '-' }}</div>
+                  <div class="parent-meta">Date Installed : {{ formatDate(lead.startDate || lead.createdAt) }}</div>
+                  <div class="parent-meta">Expiration Date : {{ formatDate(lead.expiryDate) }}</div>
+                  <div class="parent-meta">Contact : {{ lead.contactno || '-' }}</div>
+                  <div class="parent-meta">ประเภทผู้ใช้งาน : {{ typeLabel(lead.type) }}</div>
+                </div>
+                <div class="w-full flex justify-end items-center mt-3">
+                  <span :class="['status-dot', isOnlineLead(lead) ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+                  <span class="status-label">{{ isOnlineLead(lead) ? 'Online' : 'Offline' }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -141,10 +169,47 @@ function openProject(key: string) {
   if (url) window.open(url, '_blank')
 }
 
+function openLead(lead: any) {
+  const url = lead.deployedUrl || lead.url || ('/Espresso/' + lead.runNumber)
+  if (url) window.open(url, '_blank')
+}
+
+function isOnlineLead(lead: any) {
+  return !!(lead && lead.status && String(lead.status).includes('deployed'))
+}
+
 // ----- Online status polling -----
 const statusData = ref<any[]>([])
 const statusLoading = ref(false)
 let statusTimer: any = null
+
+// ----- Leads (clients) -----
+const leads = ref<any[]>([])
+const leadsLoading = ref(true)
+
+function pad(n: number) { return String(n).padStart(3, '0') }
+function formatDate(d: string) { try { return new Date(d).toLocaleDateString('th-TH') } catch { return '-' } }
+function statusDot(s: string) { return s && String(s).includes('deployed') ? 'bg-green-500' : 'bg-gray-400' }
+
+function typeLabel(t: string) {
+  if (!t) return '-'
+  if (t === '1') return 'หน่วยงานราชการ'
+  if (t === '2') return 'บริษัทเอกชน'
+  if (t === '3') return 'ลูกค้าทั่วไป'
+  return t
+}
+
+const fetchLeads = async () => {
+  try {
+    leadsLoading.value = true
+    const res: any = await $fetch('/api/espresso')
+    if (res && res.success) leads.value = res.list || []
+  } catch (e) {
+    console.error('fetchLeads error', e)
+  } finally {
+    leadsLoading.value = false
+  }
+}
 
 // Fetch status from daily_page_users endpoint (per-DB online counts)
 const fetchStatus = async () => {
@@ -179,6 +244,7 @@ const fetchStatus = async () => {
 onMounted(() => {
   // start polling (3 minutes)
   fetchStatus()
+  fetchLeads()
   statusTimer = setInterval(fetchStatus, 3 * 60 * 1000)
 })
 
@@ -421,7 +487,7 @@ onMounted(() => {
   display: flex; 
   flex-wrap: wrap;
   justify-content: flex-start; 
-  gap: 80px;
+  gap: 40px;
   margin-top: 20px;
   padding: 20px 20px 40px;
   padding-left: clamp(16px, 4vw, 60px);
@@ -441,7 +507,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   position: relative;
 }
 
@@ -486,7 +552,7 @@ onMounted(() => {
   width: 100%;
   max-width: 360px;
   height: auto; 
-  padding: 16px 20px; 
+  padding: 12px 16px; 
   border-radius: 10px;
   border: 2px solid #74640a;
 }
@@ -526,7 +592,7 @@ onMounted(() => {
     padding: 15px 10px;
     padding-left: 20px;
     justify-content: center;
-    gap: 24px;
+    gap: 16px;
   }
 
   /* increase top spacing on mobile */
@@ -543,7 +609,7 @@ onMounted(() => {
   .parent-box {
     width: 90%;
     max-width: 340px;
-    padding: 22px 24px;
+    padding: 14px 18px;
   }
   .parent-title { font-size: 15px; }
   .parent-sub { font-size: 14px; }
@@ -609,7 +675,7 @@ onMounted(() => {
 @media (min-width: 1024px) {
   .spline-link-card { max-width: 320px; min-height: 70px; }
   .flow-card { max-width: 360px; }
-  .tree-container { gap: 96px; }
+  .tree-container { gap: 48px; }
 }
 .flipbook-container {
   display: flex;

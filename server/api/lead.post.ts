@@ -26,6 +26,9 @@ export default defineEventHandler(async (event) => {
     const newLead = new Lead({
       name: body.name,
       phone: body.phone,
+      contactno: body.phone,
+      company: body.company || body.org || '',
+      type: body.type || '',
       runNumber: nextRunNumber,
       status: 'creating_project'
     });
@@ -142,8 +145,20 @@ async function createRailwayProject(lead: any, event: any) {
 
     // 4. Send Notification
     const requestUrl = getRequestURL(event);
-    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+    const config = useRuntimeConfig();
+    // Prefer configured public app URL (env override) to build links for external messages
+    const publicAppUrl = (config.public && config.public.appURL) || config.baseUrl || process.env.APP_URL || `${requestUrl.protocol}//${requestUrl.host}`;
+    const baseUrl = String(publicAppUrl).replace(/\/$/, '');
     const approvalLink = `${baseUrl}/api/deploy/approve?leadId=${lead._id}`;
+
+    // Prepare logo URL for LINE: must be https and not localhost
+    let logoUrl = `${baseUrl}/ESPRESSO_logo.png`;
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)/i.test(logoUrl)) {
+      // Do not use localhost URLs in LINE payload (invalid scheme for LINE). Remove image.
+      logoUrl = '';
+    } else {
+      logoUrl = logoUrl.replace(/^http:/i, 'https:');
+    }
 
     // Attach timestamp (localized to Bangkok/Thailand)
     const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
@@ -162,14 +177,8 @@ async function createRailwayProject(lead: any, event: any) {
           type: "box",
           layout: "vertical",
           contents: [
-            {
-              type: "image",
-              url: `${baseUrl}/ESPRESSO_logo.png`,
-              size: "xxs",
-              align: "start",
-              aspectMode: "fit",
-              margin: "none"
-            },
+            // include image only when logoUrl is valid (non-empty)
+            ...(logoUrl ? [{ type: 'image', url: logoUrl, size: 'xxs', align: 'start', aspectMode: 'fit', margin: 'none' }] : []),
             {
               type: "text",
               text: "ลูกค้าส่งคำขอมาใหม่",

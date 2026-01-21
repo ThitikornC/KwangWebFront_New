@@ -25,13 +25,25 @@ export const sendLineNotification = async (message: any) => {
   }
 
   // Determine message type (String -> Text Message, Object -> Flex/Other Message)
-  const messagesPayload = typeof message === 'string' 
-    ? [{ type: 'text', text: message }] 
+  const messagesPayload = typeof message === 'string'
+    ? [{ type: 'text', text: message }]
     : [message];
 
+  // Debug logging (do not log full token)
   try {
+    console.log('[LINE] Preparing to send message');
+    console.log('[LINE] Target user count:', userIds.length);
+    // Show partial token for debugging (first/last 4 chars)
+    try {
+      const t = cleanToken;
+      console.log('[LINE] Token preview:', `${t.slice(0,4)}...${t.slice(-4)}`);
+    } catch (e) {
+      // ignore
+    }
+    console.log('[LINE] Payload preview:', JSON.stringify(messagesPayload).slice(0, 300));
+
     // Use multicast to send to multiple users
-    await $fetch('https://api.line.me/v2/bot/message/multicast', {
+    const res = await $fetch('https://api.line.me/v2/bot/message/multicast', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +54,9 @@ export const sendLineNotification = async (message: any) => {
         messages: messagesPayload
       }
     });
+    console.log('[LINE] multicast response:', typeof res === 'object' ? JSON.stringify(res).slice(0,300) : String(res));
   } catch (error: any) {
-    console.error('Error sending LINE Messaging API notification:', error.data || error);
+    console.error('Error sending LINE Messaging API notification:', error?.data || error?.message || error);
+    throw error;
   }
 };

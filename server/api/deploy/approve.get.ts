@@ -116,11 +116,12 @@ export default defineEventHandler(async (event) => {
     expiryObj.setMonth(expiryObj.getMonth() + 1);
     const expiryDisplay = expiryObj.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
 
-    // Build contract number: YYYYMMDD + padded runNumber
+    // Build contract number: Buddhist YYYYMMDD + padded runNumber
     const y = startDateObj.getFullYear();
+    const buddhistYear = y + 543;
     const m = String(startDateObj.getMonth() + 1).padStart(2, '0');
     const d = String(startDateObj.getDate()).padStart(2, '0');
-    const datePart = `${y}${m}${d}`;
+    const datePart = `${buddhistYear}${m}${d}`;
     const runNoPart = String(lead.runNumber || 0).padStart(3, '0');
     const contractNumber = `${datePart}${runNoPart}`;
 
@@ -284,7 +285,31 @@ async function deployProject(lead: any) {
 
     // 5. Update DB
     lead.status = 'deployed';
-    lead.url = deployedUrl;
+    // Save both the public canonical URL and the actual deployed target URL
+    try {
+      const runNoPart = String(lead.runNumber || 0).padStart(3, '0');
+      lead.url = `https://www.kwangunlimit.com/espresso/${runNoPart}`; // public path
+    } catch (e) {
+      lead.url = '';
+    }
+    // Always store the real deployed URL returned by Railway
+    try {
+      lead.deployedUrl = deployedUrl;
+    } catch (e) {
+      console.warn('Failed to set deployedUrl on lead:', e);
+    }
+    // Set start/expiry/installer info
+    try {
+      const now = new Date();
+      const expiry = new Date(now);
+      // default expiry: +1 month (can be adjusted)
+      expiry.setMonth(expiry.getMonth() + 1);
+      lead.startDate = now;
+      lead.expiryDate = expiry;
+      lead.installer = process.env.INSTALLER_NAME || 'Installer';
+    } catch (e) {
+      console.warn('Failed to set start/expiry/installer:', e);
+    }
     await lead.save();
 
     // 6. Notify Admin
