@@ -147,25 +147,36 @@ async function handle(request) {
     }
 
   // Prefer the real deployed URL (Railway). Fallback to lead.url if deployedUrl missing.
-  const preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;
+  let preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;
+
+  // Small override map for known slugs to ensure reliable redirects when
+  // backend data or DNS is stale. Add entries here as needed.
+  const OVERRIDES = {
+    'huaroa': 'https://espressohuaroa-production.up.railway.app/'
+  };
+  if (OVERRIDES[idLower]) {
+    preferred = OVERRIDES[idLower];
+  }
   if (!preferred) return new Response('Lead has no target URL', { status: 404 });
 
   const targetBase = String(preferred).replace(/\/$/, '');
   const targetUrl = suffix ? `${targetBase}/${suffix}` : targetBase;
 
-  // Proxy the request to targetUrl
-  const headers = new Headers(request.headers);
-  // Remove host header to avoid CORS issues
-  headers.delete('host');
-
-  const proxyReq = new Request(targetUrl, {
-    method: request.method,
-    headers,
-    body: request.body,
-    redirect: 'follow'
-  });
-
-  const resp = await fetch(proxyReq);
-  // Return response directly (streaming)
-  return resp;
+  // Redirect to the deployed app URL so clients open the external app directly.
+  // This avoids proxying errors (530/1016) when Cloudflare cannot reach the origin.
+  try {
+    return Response.redirect(targetUrl, 302);
+  } catch (e) {
+    // Fallback: attempt to proxy if redirect fails
+    const headers = new Headers(request.headers);
+    headers.delete('host');
+    const proxyReq = new Request(targetUrl, {
+      method: request.method,
+      headers,
+      body: request.body,
+      redirect: 'follow'
+    });
+    const resp = await fetch(proxyReq);
+    return resp;
+  }
 }
