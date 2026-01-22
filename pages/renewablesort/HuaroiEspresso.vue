@@ -207,18 +207,24 @@ onBeforeUnmount(() => {
 })
 
 // Open expense link
-const openExpenseLink = (expense) => {
+const openExpenseLink = async (expense) => {
   if (!expense) return
 
-  // If an external deployed URL is provided, prefer opening it in a new tab
-  if (expense.deployedUrl) {
+  // If an external deployed URL is provided, try to open it but
+  // gracefully fallback to the app route when the host is unreachable.
+  const deployed = (expense.deployedUrl || '').trim()
+  if (deployed && !/example\.|localhost/.test(deployed)) {
     try {
-      const url = new URL(expense.deployedUrl)
-      // open external deployed URL in a new tab
-      window.open(url.href, '_blank')
+      // quick HEAD probe with timeout; use no-cors so CORS doesn't block
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 2000)
+      await fetch(deployed, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
+      clearTimeout(timer)
+      window.open(deployed, '_blank')
       return
-    } catch (e) {
-      console.error('Invalid deployedUrl, falling back to link', e)
+    } catch (err) {
+      // network/DNS error or timeout — fall back to SPA route
+      console.warn('deployedUrl unreachable, falling back to SPA route', deployed, err)
     }
   }
 
