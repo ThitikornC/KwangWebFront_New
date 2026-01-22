@@ -36,13 +36,16 @@ async function handle(request) {
     return resp;
   }
 
-  // Match /espresso/:runNo and optional trailing path
-  const m = pathname.match(/^\/espresso\/(\d{1,})\/?(.*)$/);
+  // Match /espresso/:id (numeric runNo or slug) and optional trailing path
+  const m = pathname.match(/^\/espresso\/([^\/]+)\/?(.*)$/);
   if (!m) return new Response('Not Found', { status: 404 });
 
-  const runNoRaw = m[1];
+  const idRaw = m[1];
   const suffix = m[2] || '';
-  const runNo = runNoRaw.padStart(3, '0');
+  const idLower = String(idRaw).toLowerCase();
+  // If idRaw is numeric, normalize to padded runNo for legacy matching
+  const isNumeric = /^\d+$/.test(idRaw);
+  const runNo = isNumeric ? idRaw.padStart(3, '0') : null;
 
   // Debug mode (query param ?debug=1 or header X-Debug: 1)
   const isDebug = url.searchParams.get('debug') === '1' || request.headers.get('X-Debug') === '1';
@@ -90,7 +93,19 @@ async function handle(request) {
       }
 
       const list = data && data.list ? data.list : [];
-      lead = list.find((l) => String(l.runNumber).padStart(3,'0') === runNo || String(l.runNumber) === runNoRaw) || null;
+      lead = list.find((l) => {
+        // match by numeric runNumber (padded or raw)
+        if (isNumeric) {
+          if (String(l.runNumber).padStart(3,'0') === runNo) return true;
+          if (String(l.runNumber) === idRaw) return true;
+        }
+        // match by common slug/name fields (case-insensitive)
+        const slug = (l.slug || '').toString().toLowerCase();
+        const dbSlug = (l.dbSlug || '').toString().toLowerCase();
+        const name = (l.name || '').toString().toLowerCase();
+        const deployed = (l.deployedUrl || '').toString().toLowerCase();
+        return slug === idLower || dbSlug === idLower || name === idLower || deployed.endsWith('/' + idLower);
+      }) || null;
       if (lead) {
         // store in cache using same request key
         const body = new Response(JSON.stringify(lead), { status: 200, headers: { 'Content-Type': 'application/json' } });
