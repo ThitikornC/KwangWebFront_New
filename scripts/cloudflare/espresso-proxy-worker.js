@@ -162,21 +162,54 @@ async function handle(request) {
   const targetBase = String(preferred).replace(/\/$/, '');
   const targetUrl = suffix ? `${targetBase}/${suffix}` : targetBase;
 
-  // Redirect to the deployed app URL so clients open the external app directly.
-  // This avoids proxying errors (530/1016) when Cloudflare cannot reach the origin.
+  // Proxy the request to targetUrl and stream the response back to client
+  // so the browser address bar remains as the kwangunlimit URL.
   try {
-    return Response.redirect(targetUrl, 302);
-  } catch (e) {
-    // Fallback: attempt to proxy if redirect fails
     const headers = new Headers(request.headers);
     headers.delete('host');
+
     const proxyReq = new Request(targetUrl, {
       method: request.method,
       headers,
+      // allow streaming body if present
       body: request.body,
-      redirect: 'follow'
+      // use manual redirect handling so we can rewrite Location headers
+      redirect: 'manual'
     });
-    const resp = await fetch(proxyReq);
-    return resp;
+
+    const upstream = await fetch(proxyReq);
+
+    // Clone and rewrite headers where necessary
+    const resHeaders = new Headers(upstream.headers);
+    // If upstream issues a Location pointing to the upstream origin, rewrite
+    // it to keep the client on the kwangunlimit domain.
+    if (resHeaders.has('location')) {
+      try {
+        const loc = resHeaders.get('location');
+        if (loc && String(loc).startsWith(targetBase)) {
+          // Map upstream base to our public path
+          const mapped = loc.replace(targetBase, `${BACKEND_BASE.replace(/\/$/, '')}/espresso/${idRaw}`);
+          resHeaders.set('location', mapped);
+        }
+      } catch (e) {
+        // ignore rewrite errors
+      }
+    }
+
+    // Remove hop-by-hop headers that might interfere
+    resHeaders.delete('transfer-encoding');
+
+    return new Response(upstream.body, { status: upstream.status, headers: resHeaders });
+  } catch (e) {
+    if (isDebug) {
+      return new Response(JSON.stringify({ error: 'Proxy failed', message: e && e.message }), { status: 502, headers: { 'Content-Type': 'application/json' } });
+    }
+    // As a final fallback, return the SPA index
+    try {
+      const indexResp = await fetch(String(BACKEND_BASE).replace(/\/$/, '') + '/');
+      return indexResp;
+    } catch (err) {
+      return new Response('Upstream proxy error', { status: 502 });
+    }
   }
 }
