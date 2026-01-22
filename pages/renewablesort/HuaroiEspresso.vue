@@ -122,6 +122,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 
 // Income data
 const income = ref({
@@ -131,9 +132,9 @@ const income = ref({
 
 // Expense data with links and user count (for API)
 const expenses = ref([
-  { name: '1.ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#800080', dbSlug: 'Huroa2' },
-  { name: '2.ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7', dbSlug: 'Huroa3' },
-  { name: '3.ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700', dbSlug: 'Huroa4' },
+  { name: '1.ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#800080', slug: 'Huaroa', dbSlug: 'Huroa2' },
+  { name: '2.ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7', slug: 'huaroa3', dbSlug: 'Huroa3' },
+  { name: '3.ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700', slug: 'huaroa4', dbSlug: 'Huroa4' },
 ])
 
 // Loading state
@@ -158,11 +159,14 @@ const POLL_INTERVAL_MS = 3 * 60 * 1000
 const fetchCounts = async () => {
   try {
     isLoading.value = true
-    // fetch per-expense by dbSlug to ensure counts come from the correct DB
+    // fetch per-expense by `slug` (preferred) or `dbSlug` (fallback)
     await Promise.all(expenses.value.map(async (e) => {
-      const db = e.dbSlug || ''
+      const slugParam = e.slug || ''
+      const dbParam = e.dbSlug || ''
       try {
-        const url = `/api/daily-users${db ? `?db=${encodeURIComponent(db)}` : ''}`
+        let url = '/api/daily-users'
+        if (slugParam) url += `?slug=${encodeURIComponent(slugParam)}`
+        else if (dbParam) url += `?db=${encodeURIComponent(dbParam)}`
         const response = await $fetch(url)
 
         if (response && response.success) {
@@ -204,8 +208,21 @@ onBeforeUnmount(() => {
 
 // Open expense link
 const openExpenseLink = (link) => {
-  if (link) window.open(link, '_blank')
+  if (!link) return
+  try {
+    // Prefer client-side navigation for internal espresso routes to avoid
+    // external DOM injectors hijacking absolute hrefs/open in new tab.
+    if (link.startsWith('/espresso')) {
+      router.push(link)
+      return
+    }
+  } catch (e) {
+    console.error('router navigation failed', e)
+  }
+  window.open(link, '_blank')
 }
+
+const router = useRouter()
 
 // Create ripple effect inside element
 const createRipple = (el, event) => {
