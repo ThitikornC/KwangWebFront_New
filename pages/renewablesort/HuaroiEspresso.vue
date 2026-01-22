@@ -180,10 +180,10 @@ const fetchCounts = async () => {
           }
           // keep any client/online fields if present
           e.onlineCount = Number(response.data?.onlineCount ?? response.data?.online ?? e.onlineCount ?? 0)
-          console.debug('[fetchCounts] db fetch', { db, name: e.name, count: e.count })
+          console.debug('[fetchCounts] db fetch', { id: slugParam || dbParam, name: e.name, count: e.count })
         }
       } catch (inner) {
-        console.error('[fetchCounts] error for db', db, inner)
+        console.error('[fetchCounts] error for', slugParam || dbParam, inner)
       }
     }))
   } catch (error) {
