@@ -210,15 +210,28 @@ onBeforeUnmount(() => {
 const openExpenseLink = (link) => {
   if (!link) return
   try {
-    // Prefer client-side navigation for internal espresso routes to avoid
-    // external DOM injectors hijacking absolute hrefs/open in new tab.
-    if (link.startsWith('/espresso')) {
-      router.push(link)
+    // Normalize and parse absolute or relative URLs. If the path is an
+    // internal `/espresso` route, use client-side navigation so the page
+    // loads via the app (prevents direct absolute-load issues).
+    const url = new URL(link, window.location.origin)
+    const path = url.pathname + (url.search || '') + (url.hash || '')
+
+    if (path.startsWith('/espresso')) {
+      router.push(path)
+      return
+    }
+
+    // If same-origin but not an espresso path, perform a full location
+    // navigation so the browser handles it normally.
+    if (url.origin === window.location.origin) {
+      window.location.href = url.href
       return
     }
   } catch (e) {
-    console.error('router navigation failed', e)
+    console.error('router/navigation parse failed', e)
   }
+
+  // Fallback: open external links in a new tab
   window.open(link, '_blank')
 }
 
