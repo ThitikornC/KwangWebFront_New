@@ -43,9 +43,9 @@
               <div 
                 v-for="(expense, index) in expenses" 
                 :key="index"
-                @click="handleCardClick($event, expense.link)"
-                @keydown.enter.prevent="handleCardKeydown($event, expense.link)"
-                @keydown.space.prevent="handleCardKeydown($event, expense.link)"
+                @click="handleCardClick($event, expense)"
+                @keydown.enter.prevent="handleCardKeydown($event, expense)"
+                @keydown.space.prevent="handleCardKeydown($event, expense)"
                 class="expense-card"
                 tabindex="0"
                 role="button"
@@ -207,12 +207,25 @@ onBeforeUnmount(() => {
 })
 
 // Open expense link
-const openExpenseLink = (link) => {
+const openExpenseLink = (expense) => {
+  if (!expense) return
+
+  // If an external deployed URL is provided, prefer opening it in a new tab
+  if (expense.deployedUrl) {
+    try {
+      const url = new URL(expense.deployedUrl)
+      // open external deployed URL in a new tab
+      window.open(url.href, '_blank')
+      return
+    } catch (e) {
+      console.error('Invalid deployedUrl, falling back to link', e)
+    }
+  }
+
+  // otherwise use the configured `link` (relative or absolute)
+  const link = expense.link || expense.url || ''
   if (!link) return
   try {
-    // Normalize and parse absolute or relative URLs. If the path is an
-    // internal `/espresso` route, use client-side navigation so the page
-    // loads via the app (prevents direct absolute-load issues).
     const url = new URL(link, window.location.origin)
     const path = url.pathname + (url.search || '') + (url.hash || '')
 
@@ -221,8 +234,6 @@ const openExpenseLink = (link) => {
       return
     }
 
-    // If same-origin but not an espresso path, perform a full location
-    // navigation so the browser handles it normally.
     if (url.origin === window.location.origin) {
       window.location.href = url.href
       return
@@ -231,7 +242,6 @@ const openExpenseLink = (link) => {
     console.error('router/navigation parse failed', e)
   }
 
-  // Fallback: open external links in a new tab
   window.open(link, '_blank')
 }
 
@@ -265,17 +275,17 @@ const createRipple = (el, event) => {
   }, 700)
 }
 
-const handleCardClick = (event, link) => {
+const handleCardClick = (event, expense) => {
   const el = event.currentTarget
   createRipple(el, event)
   // small delay so ripple visible before navigation
-  setTimeout(() => openExpenseLink(link), 120)
+  setTimeout(() => openExpenseLink(expense), 120)
 }
 
-const handleCardKeydown = (event, link) => {
+const handleCardKeydown = (event, expense) => {
   const el = event.currentTarget
   createRipple(el, null)
-  setTimeout(() => openExpenseLink(link), 120)
+  setTimeout(() => openExpenseLink(expense), 120)
 }
 
 
