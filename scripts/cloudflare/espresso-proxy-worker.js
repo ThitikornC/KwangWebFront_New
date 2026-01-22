@@ -38,7 +38,17 @@ async function handle(request) {
 
   // Match /espresso/:id (numeric runNo or slug) and optional trailing path
   const m = pathname.match(/^\/espresso\/([^\/]+)\/?(.*)$/);
-  if (!m) return new Response('Not Found', { status: 404 });
+  if (!m) {
+    // If the path doesn't match /espresso/:id, fall back to serving the
+    // site's SPA index so client-side routing can handle it (avoids 404
+    // when user opens URL directly).
+    try {
+      const indexResp = await fetch(String(BACKEND_BASE).replace(/\/$/, '') + '/');
+      return indexResp;
+    } catch (err) {
+      return new Response('Not Found', { status: 404 });
+    }
+  }
 
   const idRaw = m[1];
   const suffix = m[2] || '';
@@ -120,12 +130,21 @@ async function handle(request) {
     return new Response('Internal Worker error', { status: 500 });
   }
 
-  if (!lead) {
-    if (isDebug) {
-      return new Response(JSON.stringify({ error: 'Lead not found', runNo, runNoRaw, lookupUrl, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+    if (!lead) {
+      if (isDebug) {
+        return new Response(JSON.stringify({ error: 'Lead not found', idRaw, runNo, lookupUrl, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      }
+
+      // Fallback: return the SPA index HTML so the app can handle the route
+      // client-side (this restores previous behavior where opening the
+      // URL directly shows the app instead of a 404).
+      try {
+        const indexResp = await fetch(String(BACKEND_BASE).replace(/\/$/, '') + '/');
+        return indexResp;
+      } catch (err) {
+        return new Response('Lead not found', { status: 404 });
+      }
     }
-    return new Response('Lead not found', { status: 404 });
-  }
 
   // Prefer the real deployed URL (Railway). Fallback to lead.url if deployedUrl missing.
   const preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;
