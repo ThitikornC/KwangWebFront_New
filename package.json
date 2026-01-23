@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prepare-env": "node ./deploy/railway/select-env.js",
-    "start": "node ./deploy/railway/select-env.js && node server.js"
+    "start": "npm run prepare-env && nuxt dev"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",

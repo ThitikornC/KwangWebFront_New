@@ -46,25 +46,26 @@ jobs:
             echo ".env not found — using GitHub Secrets"
           fi
 
-        - name: Inject environment values into wrangler.toml
-          run: |
-            echo "Injecting environment values into wrangler.toml"
-            # Replace placeholders like ${CF_ACCOUNT_ID}, ${ZONE_ID}, ${WRANGLER_ROUTE}
-            if [ -n "$CF_ACCOUNT_ID" ]; then
-              sed -i "s/\${CF_ACCOUNT_ID}/$CF_ACCOUNT_ID/g" wrangler.toml || true
-            fi
-            if [ -n "$ZONE_ID" ]; then
-              sed -i "s/\${ZONE_ID}/$ZONE_ID/g" wrangler.toml || true
-            fi
-            if [ -n "$WRANGLER_ROUTE" ]; then
-              sed -i "s#\${WRANGLER_ROUTE}#$WRANGLER_ROUTE#g" wrangler.toml || true
-            fi
-            if [ -n "$BACKEND_API" ]; then
-              sed -i "s#\${BACKEND_API}#$BACKEND_API#g" wrangler.toml || true
-            fi
-            if [ -n "$BACKEND_BASE" ]; then
-              sed -i "s#\${BACKEND_BASE}#$BACKEND_BASE#g" wrangler.toml || true
-            fi
+
+      - name: Inject environment values into wrangler.toml
+        run: |
+          echo "Injecting environment values into wrangler.toml"
+          # Replace placeholders like ${CF_ACCOUNT_ID}, ${ZONE_ID}, ${WRANGLER_ROUTE}
+          if [ -n "$CF_ACCOUNT_ID" ]; then
+            sed -i "s/\${CF_ACCOUNT_ID}/$CF_ACCOUNT_ID/g" wrangler.toml || true
+          fi
+          if [ -n "$ZONE_ID" ]; then
+            sed -i "s/\${ZONE_ID}/$ZONE_ID/g" wrangler.toml || true
+          fi
+          if [ -n "$WRANGLER_ROUTE" ]; then
+            sed -i "s#\${WRANGLER_ROUTE}#$WRANGLER_ROUTE#g" wrangler.toml || true
+          fi
+          if [ -n "$BACKEND_API" ]; then
+            sed -i "s#\${BACKEND_API}#$BACKEND_API#g" wrangler.toml || true
+          fi
+          if [ -n "$BACKEND_BASE" ]; then
+            sed -i "s#\${BACKEND_BASE}#$BACKEND_BASE#g" wrangler.toml || true
+          fi
 
       - name: Deploy Cloudflare Worker
         run: |
