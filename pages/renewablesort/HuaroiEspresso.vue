@@ -43,9 +43,9 @@
               <div 
                 v-for="(expense, index) in expenses" 
                 :key="index"
-                @click="handleCardClick($event, expense)"
-                @keydown.enter.prevent="handleCardKeydown($event, expense)"
-                @keydown.space.prevent="handleCardKeydown($event, expense)"
+                @click="handleCardClick($event, expense.link)"
+                @keydown.enter.prevent="handleCardKeydown($event, expense.link)"
+                @keydown.space.prevent="handleCardKeydown($event, expense.link)"
                 class="expense-card"
                 tabindex="0"
                 role="button"
@@ -122,7 +122,6 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
 
 // Income data
 const income = ref({
@@ -132,9 +131,9 @@ const income = ref({
 
 // Expense data with links and user count (for API)
 const expenses = ref([
-  { name: '1.ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', deployedUrl: 'https://www.kwangunlimit.com/espresso/Huaroa', count: 0, color: '#800080', slug: 'Huaroa', dbSlug: 'Huroa2' },
-  { name: '2.ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7', slug: 'huaroa3', dbSlug: 'Huroa3' },
-  { name: '3.ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700', slug: 'huaroa4', dbSlug: 'Huroa4' },
+  { name: '1.ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#800080', dbSlug: 'Huroa2' },
+  { name: '2.ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7', dbSlug: 'Huroa3' },
+  { name: '3.ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700', dbSlug: 'Huroa4' },
 ])
 
 // Loading state
@@ -159,14 +158,11 @@ const POLL_INTERVAL_MS = 3 * 60 * 1000
 const fetchCounts = async () => {
   try {
     isLoading.value = true
-    // fetch per-expense by `slug` (preferred) or `dbSlug` (fallback)
+    // fetch per-expense by dbSlug to ensure counts come from the correct DB
     await Promise.all(expenses.value.map(async (e) => {
-      const slugParam = e.slug || ''
-      const dbParam = e.dbSlug || ''
+      const db = e.dbSlug || ''
       try {
-        let url = '/api/daily-users'
-        if (slugParam) url += `?slug=${encodeURIComponent(slugParam)}`
-        else if (dbParam) url += `?db=${encodeURIComponent(dbParam)}`
+        const url = `/api/daily-users${db ? `?db=${encodeURIComponent(db)}` : ''}`
         const response = await $fetch(url)
 
         if (response && response.success) {
@@ -180,10 +176,10 @@ const fetchCounts = async () => {
           }
           // keep any client/online fields if present
           e.onlineCount = Number(response.data?.onlineCount ?? response.data?.online ?? e.onlineCount ?? 0)
-          console.debug('[fetchCounts] db fetch', { id: slugParam || dbParam, name: e.name, count: e.count })
+          console.debug('[fetchCounts] db fetch', { db, name: e.name, count: e.count })
         }
       } catch (inner) {
-        console.error('[fetchCounts] error for', slugParam || dbParam, inner)
+        console.error('[fetchCounts] error for db', db, inner)
       }
     }))
   } catch (error) {
@@ -207,45 +203,9 @@ onBeforeUnmount(() => {
 })
 
 // Open expense link
-const openExpenseLink = (expense) => {
-  if (!expense) return
-
-  // If an external deployed URL is provided, prefer opening it in a new tab
-  if (expense.deployedUrl) {
-    try {
-      const url = new URL(expense.deployedUrl)
-      // open external deployed URL in a new tab
-      window.open(url.href, '_blank')
-      return
-    } catch (e) {
-      console.error('Invalid deployedUrl, falling back to link', e)
-    }
-  }
-
-  // otherwise use the configured `link` (relative or absolute)
-  const link = expense.link || expense.url || ''
-  if (!link) return
-  try {
-    const url = new URL(link, window.location.origin)
-    const path = url.pathname + (url.search || '') + (url.hash || '')
-
-    if (path.startsWith('/espresso')) {
-      router.push(path)
-      return
-    }
-
-    if (url.origin === window.location.origin) {
-      window.location.href = url.href
-      return
-    }
-  } catch (e) {
-    console.error('router/navigation parse failed', e)
-  }
-
-  window.open(link, '_blank')
+const openExpenseLink = (link) => {
+  if (link) window.open(link, '_blank')
 }
-
-const router = useRouter()
 
 // Create ripple effect inside element
 const createRipple = (el, event) => {
@@ -275,17 +235,17 @@ const createRipple = (el, event) => {
   }, 700)
 }
 
-const handleCardClick = (event, expense) => {
+const handleCardClick = (event, link) => {
   const el = event.currentTarget
   createRipple(el, event)
   // small delay so ripple visible before navigation
-  setTimeout(() => openExpenseLink(expense), 120)
+  setTimeout(() => openExpenseLink(link), 120)
 }
 
-const handleCardKeydown = (event, expense) => {
+const handleCardKeydown = (event, link) => {
   const el = event.currentTarget
   createRipple(el, null)
-  setTimeout(() => openExpenseLink(expense), 120)
+  setTimeout(() => openExpenseLink(link), 120)
 }
 
 

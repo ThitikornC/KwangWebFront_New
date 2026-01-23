@@ -34,7 +34,7 @@
               <div>
                 <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
                 <div class="parent-title">Usernumber : 001</div>
-                <div class="parent-meta">Contractnumber : 25690122001</div>
+                <div class="parent-meta">Contractnumber :</div>
                 <div class="parent-meta">Date Installed : 1-11-25</div>
                 <div class="parent-meta">Expiration Date : 1-12-25</div>
               </div>
@@ -78,7 +78,7 @@
                 <div>
                   <div class="parent-sub">{{ lead.name }}</div>
                   <div class="parent-title">Usernumber : {{ pad(lead.runNumber) }}</div>
-                  <div class="parent-meta">Contractnumber : {{ sanitizeContract(lead.contractNumber) }}</div>
+                  <div class="parent-meta">Contractnumber : {{ lead.contractNumber || '-' }}</div>
                   <div class="parent-meta">Date Installed : {{ formatDate(lead.startDate || lead.createdAt) }}</div>
                   <div class="parent-meta">Expiration Date : {{ formatDate(lead.expiryDate) }}</div>
                   <div class="parent-meta">Contact : {{ lead.contactno || '-' }}</div>
@@ -199,13 +199,6 @@ function typeLabel(t: string) {
   if (t === '2') return 'บริษัทเอกชน'
   if (t === '3') return 'ลูกค้าทั่วไป'
   return t
-}
-
-// Ensure we don't display a duplicated label if the stored value already contains it
-function sanitizeContract(v: any) {
-  if (!v) return '-'
-  const s = String(v).trim()
-  return s.replace(/^\s*Contractnumber\s*:?\s*/i, '').trim() || '-'
 }
 
 const fetchLeads = async () => {
@@ -491,26 +484,31 @@ onMounted(() => {
 /* arrows removed - keep styles if needed later */
 .arrow { display: none; }
 
-/* Tree Structure Styles (grid: 4 columns desktop, responsive) */
-.tree-container {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 24px;
+/* Tree Structure Styles */
+.tree-container { 
+  display: flex; 
+  flex-wrap: wrap;
+  justify-content: flex-start; 
+  gap: 40px;
   margin-top: 20px;
-  padding: 20px;
-  max-width: min(1400px, 95vw);
+  padding: 20px 20px 40px;
+  padding-left: clamp(16px, 4vw, 60px);
+  max-width: min(1200px, 95vw);
   margin-left: auto;
   margin-right: auto;
-  justify-items: start;
 }
 
 .tree-wrapper {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   position: relative;
 }
 
 .tree-parent {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 12px;
   position: relative;
 }
@@ -593,13 +591,10 @@ onMounted(() => {
     font-size: 0.7rem;
   }
   .tree-container {
-    /* switch to 2 columns on tablet */
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
     padding: 15px 10px;
     padding-left: 20px;
-    justify-items: center;
+    justify-content: center;
+    gap: 16px;
   }
 
   /* increase top spacing on mobile */
@@ -667,7 +662,7 @@ onMounted(() => {
   .marquee { min-width: 150%; animation-duration: 14s; }
   .marquee-content { margin-right: 0.8rem; }
   .marquee span { padding: 0.25rem 0.6rem; font-size: 0.62rem; margin-right: 0.4rem; }
-  .tree-container { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); padding: 12px 12px 28px; padding-left: 12px; gap: 18px; justify-items: center; }
+  .tree-container { padding: 12px 12px 28px; padding-left: 12px; gap: 18px; justify-content: center; }
   .root-bg { padding-top: 3rem; }
   .parent-box { width: 100%; max-width: 100%; padding: 16px 18px; }
   .spline-link-card, .flow-card { padding: 0 12px; }

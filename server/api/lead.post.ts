@@ -5,6 +5,7 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { getEffectiveRequestURL } from '~/server/utils/request';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -77,6 +78,80 @@ async function createRailwayProject(lead: any, event: any) {
     ...process.env, 
     RAILWAY_API_TOKEN: apiKey 
   };
+
+  // Try using Railway HTTP/GraphQL API first (if configured). If it fails or not configured,
+  // fall back to the existing CLI-based init below.
+  // Official Railway public API GraphQL endpoint from docs
+  const railwayApiEndpoint = config.railwayApiEndpoint || process.env.RAILWAY_API_ENDPOINT || 'https://backboard.railway.com/graphql/v2';
+  const useRailwayApi = Boolean(apiKey && railwayApiEndpoint);
+  if (useRailwayApi) {
+    try {
+      console.log('Attempting to create Railway project via API...');
+      // Basic GraphQL mutation to create a project. Depending on Railway's schema this
+      // mutation name/shape may need to be updated to match the current Railway API.
+      const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
+      const projectName = `Espresso-${projectRunNumber}`;
+
+      const graphqlQuery = {
+        query: `mutation CreateProject($name: String!) { createProject(input: { name: $name }) { id name } }`,
+        variables: { name: projectName }
+      };
+
+      const resp = await fetch(railwayApiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(graphqlQuery)
+      });
+
+      // Protect against non-JSON responses (404/Not Found etc.)
+      if (!resp.ok) {
+        const text = await resp.text();
+        console.warn(`Railway API HTTP ${resp.status}:`, text);
+        throw new Error(`Railway API returned HTTP ${resp.status}`);
+      }
+
+      const result = await resp.json();
+      if (result && result.data) {
+        // Attempt several common shapes for the response
+        const created = result.data.createProject || result.data.project || null;
+        const projectId = created && (created.id || created.projectId || created._id);
+        if (projectId) {
+          lead.railwayProjectId = projectId;
+          lead.status = 'project_created';
+          await lead.save();
+          console.log(`Project created via API with ID: ${projectId}`);
+          // Send notification and return early to avoid CLI path
+          const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+          const requestUrl = getEffectiveRequestURL(event);
+          const conf = useRuntimeConfig();
+          const backendApi = (conf.public && conf.public.apiURL) || process.env.API_BASE_URL || null;
+          const publicAppUrl = (conf.public && conf.public.appURL) || conf.baseUrl || process.env.APP_URL || `${requestUrl.protocol}//${requestUrl.host}`;
+          const baseUrl = String(publicAppUrl).replace(/\/$/, '');
+          const apiBase = backendApi ? String(backendApi).replace(/\/$/, '') : baseUrl;
+          const approvalLink = `${apiBase}/api/deploy/approve?leadId=${lead._id}`;
+          const logoUrl = baseUrl.replace(/^http:/i, 'https:') + '/ESPRESSO_logo.png';
+          const flexMessage = {
+            type: "flex",
+            altText: `New Lead: ${lead.name}`,
+            contents: {
+              type: "bubble",
+              header: { type: "box", layout: "vertical", contents: [ { type: "text", text: "ลูกค้าส่งคำขอมาใหม่", weight: "bold", color: "#1DB446", size: "lg" } ] },
+              body: { type: "box", layout: "vertical", contents: [ { type: "box", layout: "baseline", margin: "md", contents: [ { type: "text", text: "No.", color: "#a89993", size: "sm", flex: 2 }, { type: "text", text: `${lead.runNumber}`, wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" } ] }, { type: "box", layout: "baseline", margin: "md", contents: [ { type: "text", text: "NAME", color: "#a89993", size: "sm", flex: 2 }, { type: "text", text: lead.name, wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" } ] }, { type: "box", layout: "baseline", margin: "md", contents: [ { type: "text", text: "PROJECT", color: "#a89993", size: "sm", flex: 2 }, { type: "text", text: projectName, wrap: true, color: "#3b2b28", size: "sm", flex: 5 } ] }, { type: "box", layout: "baseline", margin: "md", contents: [ { type: "text", text: "DATE", color: "#a89993", size: "sm", flex: 2 }, { type: "text", text: timestamp, wrap: true, color: "#3b2b28", size: "sm", flex: 5 } ] } ] },
+              footer: { type: "box", layout: "vertical", spacing: "sm", contents: [ { type: "button", style: "primary", height: "sm", action: { type: "uri", label: "Approve & Deploy", uri: approvalLink }, color: "#4b2f2a" } ], flex: 0 }
+            }
+          };
+          await sendLineNotification(flexMessage);
+          return;
+        }
+      }
+      console.warn('Railway API responded but no project ID found; falling back to CLI. Response:', result);
+    } catch (apiErr) {
+      console.warn('Railway API project creation failed, falling back to CLI:', apiErr);
+    }
+  }
 
   console.log(`Starting project creation (CLI) for ${lead.name} (No. ${lead.runNumber})`);
   // Prepare timestamp early so it's available in the catch block too
@@ -160,14 +235,22 @@ async function createRailwayProject(lead: any, event: any) {
     }
 
     // 4. Send Notification
-    const requestUrl = getRequestURL(event);
+    const requestUrl = getEffectiveRequestURL(event);
     const config = useRuntimeConfig();
     // Build approval link using configured backend API URL when available (ensures /api routes resolve)
     const backendApi = (config.public && config.public.apiURL) || process.env.API_BASE_URL || null;
     const publicAppUrl = (config.public && config.public.appURL) || config.baseUrl || process.env.APP_URL || `${requestUrl.protocol}//${requestUrl.host}`;
     const baseUrl = String(publicAppUrl).replace(/\/$/, '');
     const apiBase = backendApi ? String(backendApi).replace(/\/$/, '') : baseUrl;
-    const approvalLink = `${apiBase}/api/deploy/approve?leadId=${lead._id}`;
+    // Build approval link using proxy domain so LINE shows a friendly proxied URL
+    // Format: https://www.kwangunlimit.com/espresso/<NO>
+    const proxyBase = process.env.PROXY_BASE_URL || 'https://www.kwangunlimit.com';
+    const proxyPrefix = process.env.PROXY_PREFIX || 'espresso';
+    const noForPath = String(lead.runNumber || '').padStart(3, '0');
+    // include leadId as query parameter so the proxy/target can identify the lead
+    const proxyApprovalLink = `${String(proxyBase).replace(/\/$/, '')}/${proxyPrefix}/${noForPath}?leadId=${lead._id}`;
+    // API approval link must call our backend so the approve action triggers deployment
+    const approvalApiLink = `${apiBase}/api/deploy/approve?leadId=${lead._id}`;
 
     // Prepare logo URL for LINE: must be https and not localhost
     let logoUrl = `${baseUrl}/ESPRESSO_logo.png`;
@@ -182,8 +265,10 @@ async function createRailwayProject(lead: any, event: any) {
     const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
 
     console.log('---------------------------------------------------');
-    console.log('🚀 APPROVAL LINK (Click to Deploy):');
-    console.log(approvalLink);
+    console.log('🚀 APPROVAL LINK (API) (Click to Deploy):');
+    console.log(approvalApiLink);
+    console.log('🚀 APPROVAL LINK (Public Proxy) (preview):');
+    console.log(proxyApprovalLink);
     console.log('---------------------------------------------------');
 
     const flexMessage = {
@@ -266,10 +351,10 @@ async function createRailwayProject(lead: any, event: any) {
               type: "button",
               style: "primary",
               height: "sm",
-              action: {
+                action: {
                 type: "uri",
                 label: "Approve & Deploy",
-                uri: approvalLink
+                uri: approvalApiLink
               },
               color: "#4b2f2a"
             }

@@ -162,6 +162,21 @@ async function handle(request) {
   const targetBase = String(preferred).replace(/\/$/, '');
   const targetUrl = suffix ? `${targetBase}/${suffix}` : targetBase;
 
+  // If configured, allow redirecting directly to the target instead of proxying.
+  // This enables opening the external URL (deployedUrl) directly in user's browser.
+  // Set REDIRECT_BY_DEFAULT=true in Worker env to always redirect, or add ?direct=1 to the request.
+  const REDIRECT_BY_DEFAULT = (typeof REDIRECT_BY_DEFAULT !== 'undefined') ? (String(REDIRECT_BY_DEFAULT) === 'true') : false;
+  const wantsDirect = url.searchParams.get('direct') === '1' || request.headers.get('X-Direct') === '1' || REDIRECT_BY_DEFAULT;
+
+  // If wantsDirect, return a 302 redirect to the target URL so browser location becomes the external domain.
+  if (wantsDirect) {
+    try {
+      return Response.redirect(targetUrl, 302);
+    } catch (e) {
+      console.warn('Direct redirect failed, falling back to proxy:', e);
+    }
+  }
+
   // Proxy the request to targetUrl and stream the response back to client
   // so the browser address bar remains as the kwangunlimit URL.
   try {
