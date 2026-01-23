@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const fs = require('fs');
+import fs from 'fs';
 const path = require('path');
 
 // Select an environment file based on CUSTOMER_ENV (set in Railway environment variables)
