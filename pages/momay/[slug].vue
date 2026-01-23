@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ name: 'momay-slug' })
 const route = useRoute()
 const targets: Record<string, string> = {
   momay_BanKlongResort: 'https://momaysukhothai.web.app/',
