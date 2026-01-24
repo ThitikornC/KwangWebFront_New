@@ -36,64 +36,34 @@ async function handle(request) {
     return resp;
   }
 
-  // Match /espresso/:id (numeric runNo or slug) and optional trailing path
-  const m = pathname.match(/^\/espresso\/([^\/]+)\/?(.*)$/);
-  if (!m) {
-    // If the path doesn't match /espresso/:id, fall back to serving the
-    // site's SPA index so client-side routing can handle it (avoids 404
-    // when user opens URL directly).
-    try {
-      const indexResp = await fetch(String(BACKEND_BASE).replace(/\/$/, '') + '/');
-      return indexResp;
-    } catch (err) {
-      return new Response('Not Found', { status: 404 });
-    }
-  }
+  // Match /espresso/:runNo and optional trailing path
+  const m = pathname.match(/^\/espresso\/(\d{1,})\/?(.*)$/);
+  if (!m) return new Response('Not Found', { status: 404 });
 
-  const idRaw = m[1];
+  const runNoRaw = m[1];
   const suffix = m[2] || '';
-  const idLower = String(idRaw).toLowerCase();
-  // If idRaw is numeric, normalize to padded runNo for legacy matching
-  const isNumeric = /^\d+$/.test(idRaw);
-  const runNo = isNumeric ? idRaw.padStart(3, '0') : null;
+  const runNo = runNoRaw.padStart(3, '0');
 
   // Debug mode (query param ?debug=1 or header X-Debug: 1)
   const isDebug = url.searchParams.get('debug') === '1' || request.headers.get('X-Debug') === '1';
 
-   // Cache lead mapping per runNo
+  // Cache lead mapping per runNo
   const cacheKey = `espresso-lead-${runNo}`;
   let lead = null;
-  let data = null;
-  let lookupUrl = null;
 
   try {
     const cache = caches.default;
-    // Use a synthetic URL for cache keys to avoid Invalid URL errors
-    const cacheReqUrl = `${BACKEND_API || BACKEND_BASE}/__cache__/${cacheKey}`;
-    const cacheReq = new Request(cacheReqUrl);
-    const cached = await cache.match(cacheReq);
+    const cached = await cache.match(cacheKey);
     if (cached) {
-      try {
-        lead = await cached.json();
-      } catch (err) {
-        console.warn('Failed to parse cached lead JSON', err);
-        lead = null;
-      }
-    }
-
-    if (!lead) {
+      lead = await cached.json();
+    } else {
       // Fetch list of leads and find the one with matching runNumber
-      const backendLookup = (typeof BACKEND_API !== 'undefined' && BACKEND_API) ? BACKEND_API : null;
-      if (!backendLookup) {
-        if (isDebug) {
-          return new Response(JSON.stringify({ error: 'BACKEND_API not configured in Worker runtime', runNo }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-        }
-        return new Response('Server misconfiguration', { status: 500 });
-      }
-
-      lookupUrl = `${backendLookup.replace(/\/$/, '')}/api/espresso`;
+      // Use BACKEND_API for backend API calls (may be different from public site)
+      const backendLookup = (typeof BACKEND_API !== 'undefined' && BACKEND_API) ? BACKEND_API : BACKEND_BASE;
+      const lookupUrl = `${backendLookup.replace(/\/$/, '')}/api/espresso`;
       const res = await fetch(lookupUrl, { method: 'GET' });
       const dataText = await res.text();
+      let data = null;
       try { data = JSON.parse(dataText); } catch(e) { data = null; }
       if (!res.ok) {
         if (isDebug) {
@@ -101,130 +71,47 @@ async function handle(request) {
         }
         return new Response('Backend lookup failed', { status: 502 });
       }
-
       const list = data && data.list ? data.list : [];
-      lead = list.find((l) => {
-        // match by numeric runNumber (padded or raw)
-        if (isNumeric) {
-          if (String(l.runNumber).padStart(3,'0') === runNo) return true;
-          if (String(l.runNumber) === idRaw) return true;
-        }
-        // match by common slug/name fields (case-insensitive)
-        const slug = (l.slug || '').toString().toLowerCase();
-        const dbSlug = (l.dbSlug || '').toString().toLowerCase();
-        const name = (l.name || '').toString().toLowerCase();
-        const deployed = (l.deployedUrl || '').toString().toLowerCase();
-        return slug === idLower || dbSlug === idLower || name === idLower || deployed.endsWith('/' + idLower);
-      }) || null;
+      lead = list.find((l) => String(l.runNumber).padStart(3,'0') === runNo || String(l.runNumber) === runNoRaw) || null;
       if (lead) {
-        // store in cache using same request key
+        // store in cache
         const body = new Response(JSON.stringify(lead), { status: 200, headers: { 'Content-Type': 'application/json' } });
-        await cache.put(cacheReq, body.clone());
+        // caches.default.put requires a Request; create a synthetic one
+        const req = new Request(`${BACKEND_BASE}/__cache__/${cacheKey}`);
+        await cache.put(req, body.clone());
       }
     }
   } catch (e) {
-    console.error('Worker lookup error', e);
-    if (isDebug) {
-      return new Response(JSON.stringify({ error: 'Worker lookup exception', message: (e && e.message) || String(e), stack: (e && e.stack) || null, lookupUrl, runNo }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    }
-    return new Response('Internal Worker error', { status: 500 });
+    console.warn('Worker lookup error', e);
   }
 
     if (!lead) {
       if (isDebug) {
-        return new Response(JSON.stringify({ error: 'Lead not found', idRaw, runNo, lookupUrl, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ error: 'Lead not found', runNo, runNoRaw, lookupUrl: `${BACKEND_API.replace(/\/$/, '')}/api/espresso`, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
       }
-
-      // Fallback: return the SPA index HTML so the app can handle the route
-      // client-side (this restores previous behavior where opening the
-      // URL directly shows the app instead of a 404).
-      try {
-        const indexResp = await fetch(String(BACKEND_BASE).replace(/\/$/, '') + '/');
-        return indexResp;
-      } catch (err) {
-        return new Response('Lead not found', { status: 404 });
-      }
+      return new Response('Lead not found', { status: 404 });
     }
 
   // Prefer the real deployed URL (Railway). Fallback to lead.url if deployedUrl missing.
-  let preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;
-
-  // Small override map for known slugs to ensure reliable redirects when
-  // backend data or DNS is stale. Add entries here as needed.
-  const OVERRIDES = {
-    'huaroa': 'https://espressohuaroa-production.up.railway.app/'
-  };
-  if (OVERRIDES[idLower]) {
-    preferred = OVERRIDES[idLower];
-  }
+  const preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;
   if (!preferred) return new Response('Lead has no target URL', { status: 404 });
 
   const targetBase = String(preferred).replace(/\/$/, '');
   const targetUrl = suffix ? `${targetBase}/${suffix}` : targetBase;
 
-  // If configured, allow redirecting directly to the target instead of proxying.
-  // This enables opening the external URL (deployedUrl) directly in user's browser.
-  // Set REDIRECT_BY_DEFAULT=true in Worker env to always redirect, or add ?direct=1 to the request.
-  const REDIRECT_BY_DEFAULT = (typeof REDIRECT_BY_DEFAULT !== 'undefined') ? (String(REDIRECT_BY_DEFAULT) === 'true') : false;
-  const wantsDirect = url.searchParams.get('direct') === '1' || request.headers.get('X-Direct') === '1' || REDIRECT_BY_DEFAULT;
+  // Proxy the request to targetUrl
+  const headers = new Headers(request.headers);
+  // Remove host header to avoid CORS issues
+  headers.delete('host');
 
-  // If wantsDirect, return a 302 redirect to the target URL so browser location becomes the external domain.
-  if (wantsDirect) {
-    try {
-      return Response.redirect(targetUrl, 302);
-    } catch (e) {
-      console.warn('Direct redirect failed, falling back to proxy:', e);
-    }
-  }
+  const proxyReq = new Request(targetUrl, {
+    method: request.method,
+    headers,
+    body: request.body,
+    redirect: 'follow'
+  });
 
-  // Proxy the request to targetUrl and stream the response back to client
-  // so the browser address bar remains as the kwangunlimit URL.
-  try {
-    const headers = new Headers(request.headers);
-    headers.delete('host');
-
-    const proxyReq = new Request(targetUrl, {
-      method: request.method,
-      headers,
-      // allow streaming body if present
-      body: request.body,
-      // use manual redirect handling so we can rewrite Location headers
-      redirect: 'manual'
-    });
-
-    const upstream = await fetch(proxyReq);
-
-    // Clone and rewrite headers where necessary
-    const resHeaders = new Headers(upstream.headers);
-    // If upstream issues a Location pointing to the upstream origin, rewrite
-    // it to keep the client on the kwangunlimit domain.
-    if (resHeaders.has('location')) {
-      try {
-        const loc = resHeaders.get('location');
-        if (loc && String(loc).startsWith(targetBase)) {
-          // Map upstream base to our public path
-          const mapped = loc.replace(targetBase, `${BACKEND_BASE.replace(/\/$/, '')}/espresso/${idRaw}`);
-          resHeaders.set('location', mapped);
-        }
-      } catch (e) {
-        // ignore rewrite errors
-      }
-    }
-
-    // Remove hop-by-hop headers that might interfere
-    resHeaders.delete('transfer-encoding');
-
-    return new Response(upstream.body, { status: upstream.status, headers: resHeaders });
-  } catch (e) {
-    if (isDebug) {
-      return new Response(JSON.stringify({ error: 'Proxy failed', message: e && e.message }), { status: 502, headers: { 'Content-Type': 'application/json' } });
-    }
-    // As a final fallback, return the SPA index
-    try {
-      const indexResp = await fetch(String(BACKEND_BASE).replace(/\/$/, '') + '/');
-      return indexResp;
-    } catch (err) {
-      return new Response('Upstream proxy error', { status: 502 });
-    }
-  }
+  const resp = await fetch(proxyReq);
+  // Return response directly (streaming)
+  return resp;
 }
