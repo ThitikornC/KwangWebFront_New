@@ -4,16 +4,9 @@ compatibility_date = "2026-01-21"
 account_id = "40aeb9efd28c988900b12c543422ed54"
 workers_dev = false
 
+# Single wildcard route - Worker will decide what to proxy based on cookie
 [[routes]]
-pattern = "www.kwangunlimit.com/espresso/*"
-zone_id = "db45e8bf2414f345a20464ade8d6670b"
-
-[[routes]]
-pattern = "www.kwangunlimit.com/api/*"
-zone_id = "db45e8bf2414f345a20464ade8d6670b"
-
-[[routes]]
-pattern = "www.kwangunlimit.com/status/*"
+pattern = "www.kwangunlimit.com/*"
 zone_id = "db45e8bf2414f345a20464ade8d6670b"
 
 [vars]

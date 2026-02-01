@@ -24,13 +24,21 @@ async function handle(request) {
   const referer = request.headers.get('Referer') || '';
   const espressoRefererMatch = referer.match(/\/espresso\/(\d{1,})/);
   
-  // If this is an API/status request AND comes from an Espresso page, proxy to Espresso site
-  if (espressoRefererMatch && (pathname.startsWith('/api/') || pathname.startsWith('/status/') || pathname.startsWith('/socket.io/'))) {
-    const runNoRaw = espressoRefererMatch[1];
-    const runNo = runNoRaw.padStart(3, '0');
+  // Check cookie for espresso session (set when visiting /espresso/:runNo)
+  const cookies = request.headers.get('Cookie') || '';
+  const espressoCookieMatch = cookies.match(/espresso_runno=(\d{1,})/);
+  
+  // Determine runNo from referer or cookie
+  const runNoFromReferer = espressoRefererMatch ? espressoRefererMatch[1] : null;
+  const runNoFromCookie = espressoCookieMatch ? espressoCookieMatch[1] : null;
+  const activeRunNo = runNoFromReferer || runNoFromCookie;
+  
+  // If request comes from Espresso context (any path), proxy to Espresso site
+  if (activeRunNo && !pathname.startsWith('/espresso/')) {
+    const runNo = activeRunNo.padStart(3, '0');
     
     // Look up the Espresso site URL for this runNo
-    const lead = await lookupLead(runNo, runNoRaw);
+    const lead = await lookupLead(runNo, activeRunNo);
     if (lead) {
       const targetBase = (lead.deployedUrl && lead.deployedUrl.length > 0) ? lead.deployedUrl : lead.url;
       if (targetBase) {
@@ -66,7 +74,16 @@ async function handle(request) {
 
   // Match /espresso/:runNo and optional trailing path
   const m = pathname.match(/^\/espresso\/(\d{1,})\/?(.*)$/);
-  if (!m) return new Response('Not Found', { status: 404 });
+  
+  // If not /espresso/* and no espresso cookie, pass through to origin (don't proxy)
+  if (!m && !activeRunNo) {
+    return fetch(request);
+  }
+  
+  if (!m) {
+    // Not an espresso path but has cookie - this shouldn't happen, pass through
+    return fetch(request);
+  }
 
   const runNoRaw = m[1];
   const suffix = m[2] || '';
@@ -104,8 +121,12 @@ async function handle(request) {
   });
 
   const resp = await fetch(proxyReq);
-  // Return response directly (streaming)
-  return resp;
+  
+  // Set cookie to remember espresso context for subsequent requests
+  const newResp = new Response(resp.body, resp);
+  newResp.headers.append('Set-Cookie', `espresso_runno=${runNoRaw}; Path=/; Max-Age=3600; SameSite=Lax`);
+  
+  return newResp;
 }
 
 // Helper function to lookup lead by runNo
