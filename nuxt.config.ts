@@ -1,10 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   nitro: {
-    preset: 'node',
+    preset: 'node-server',
     prerender: {
       autoSubfolderIndex: false
     }
+  },
+
+  // Server config for Railway
+  devServer: {
+    host: '0.0.0.0',
+    port: Number(process.env.PORT) || 3000
   },
 
   app: {
