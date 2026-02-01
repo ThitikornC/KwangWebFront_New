@@ -19,8 +19,36 @@ addEventListener('fetch', (event) => {
 async function handle(request) {
   const url = new URL(request.url);
   const pathname = url.pathname;
+  
+  // Check Referer header to see if request comes from an Espresso page
+  const referer = request.headers.get('Referer') || '';
+  const espressoRefererMatch = referer.match(/\/espresso\/(\d{1,})/);
+  
+  // If this is an API/status request AND comes from an Espresso page, proxy to Espresso site
+  if (espressoRefererMatch && (pathname.startsWith('/api/') || pathname.startsWith('/status/') || pathname.startsWith('/socket.io/'))) {
+    const runNoRaw = espressoRefererMatch[1];
+    const runNo = runNoRaw.padStart(3, '0');
+    
+    // Look up the Espresso site URL for this runNo
+    const lead = await lookupLead(runNo, runNoRaw);
+    if (lead) {
+      const targetBase = (lead.deployedUrl && lead.deployedUrl.length > 0) ? lead.deployedUrl : lead.url;
+      if (targetBase) {
+        const target = `${String(targetBase).replace(/\/$/, '')}${pathname}${url.search}`;
+        const headers = new Headers(request.headers);
+        headers.delete('host');
+        const proxyReq = new Request(target, {
+          method: request.method,
+          headers,
+          body: request.body,
+          redirect: 'follow'
+        });
+        return fetch(proxyReq);
+      }
+    }
+  }
 
-  // If this is an API request, forward to backend API
+  // If this is an API request (not from Espresso), forward to backend API
   if (pathname.startsWith('/api/')) {
     // Build target API URL
     const target = `${BACKEND_API.replace(/\/$/, '')}${pathname}${url.search}`;
@@ -47,50 +75,14 @@ async function handle(request) {
   // Debug mode (query param ?debug=1 or header X-Debug: 1)
   const isDebug = url.searchParams.get('debug') === '1' || request.headers.get('X-Debug') === '1';
 
-  // Cache lead mapping per runNo
-  const cacheKey = `espresso-lead-${runNo}`;
-  let lead = null;
-
-  try {
-    const cache = caches.default;
-    const cached = await cache.match(cacheKey);
-    if (cached) {
-      lead = await cached.json();
-    } else {
-      // Fetch list of leads and find the one with matching runNumber
-      // Use BACKEND_API for backend API calls (may be different from public site)
-      const backendLookup = (typeof BACKEND_API !== 'undefined' && BACKEND_API) ? BACKEND_API : BACKEND_BASE;
-      const lookupUrl = `${backendLookup.replace(/\/$/, '')}/api/espresso`;
-      const res = await fetch(lookupUrl, { method: 'GET' });
-      const dataText = await res.text();
-      let data = null;
-      try { data = JSON.parse(dataText); } catch(e) { data = null; }
-      if (!res.ok) {
-        if (isDebug) {
-          return new Response(JSON.stringify({ error: 'Backend lookup failed', status: res.status, body: dataText, lookupUrl }), { status: 502, headers: { 'Content-Type': 'application/json' } });
-        }
-        return new Response('Backend lookup failed', { status: 502 });
-      }
-      const list = data && data.list ? data.list : [];
-      lead = list.find((l) => String(l.runNumber).padStart(3,'0') === runNo || String(l.runNumber) === runNoRaw) || null;
-      if (lead) {
-        // store in cache
-        const body = new Response(JSON.stringify(lead), { status: 200, headers: { 'Content-Type': 'application/json' } });
-        // caches.default.put requires a Request; create a synthetic one
-        const req = new Request(`${BACKEND_BASE}/__cache__/${cacheKey}`);
-        await cache.put(req, body.clone());
-      }
+  const lead = await lookupLead(runNo, runNoRaw, isDebug);
+  
+  if (!lead) {
+    if (isDebug) {
+      return new Response(JSON.stringify({ error: 'Lead not found', runNo, runNoRaw }), { status: 404, headers: { 'Content-Type': 'application/json' } });
     }
-  } catch (e) {
-    console.warn('Worker lookup error', e);
+    return new Response('Lead not found', { status: 404 });
   }
-
-    if (!lead) {
-      if (isDebug) {
-        return new Response(JSON.stringify({ error: 'Lead not found', runNo, runNoRaw, lookupUrl: `${BACKEND_API.replace(/\/$/, '')}/api/espresso`, listLength: Array.isArray(data && data.list) ? data.list.length : undefined, sample: (data && data.list && data.list.slice && data.list.slice(0,5)) || null }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-      }
-      return new Response('Lead not found', { status: 404 });
-    }
 
   // Prefer the real deployed URL (Railway). Fallback to lead.url if deployedUrl missing.
   const preferred = lead.deployedUrl && lead.deployedUrl.length > 0 ? lead.deployedUrl : lead.url;
@@ -114,4 +106,42 @@ async function handle(request) {
   const resp = await fetch(proxyReq);
   // Return response directly (streaming)
   return resp;
+}
+
+// Helper function to lookup lead by runNo
+async function lookupLead(runNo, runNoRaw, isDebug = false) {
+  const cacheKey = `espresso-lead-${runNo}`;
+  let lead = null;
+
+  try {
+    const cache = caches.default;
+    const cacheReq = new Request(`${BACKEND_BASE}/__cache__/${cacheKey}`);
+    const cached = await cache.match(cacheReq);
+    if (cached) {
+      lead = await cached.json();
+      return lead;
+    }
+    
+    // Fetch list of leads and find the one with matching runNumber
+    const backendLookup = (typeof BACKEND_API !== 'undefined' && BACKEND_API) ? BACKEND_API : BACKEND_BASE;
+    const lookupUrl = `${backendLookup.replace(/\/$/, '')}/api/espresso`;
+    const res = await fetch(lookupUrl, { method: 'GET' });
+    const dataText = await res.text();
+    let data = null;
+    try { data = JSON.parse(dataText); } catch(e) { data = null; }
+    if (!res.ok) {
+      return null;
+    }
+    const list = data && data.list ? data.list : [];
+    lead = list.find((l) => String(l.runNumber).padStart(3,'0') === runNo || String(l.runNumber) === runNoRaw) || null;
+    if (lead) {
+      // store in cache
+      const body = new Response(JSON.stringify(lead), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': `max-age=${CACHE_TTL}` } });
+      await cache.put(cacheReq, body.clone());
+    }
+    return lead;
+  } catch (e) {
+    console.warn('Worker lookup error', e);
+    return null;
+  }
 }
