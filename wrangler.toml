@@ -1,10 +1,20 @@
 name = "espresso-proxy"
 main = "scripts/cloudflare/espresso-proxy-worker.js"
 compatibility_date = "2026-01-21"
-account_id = "${CF_ACCOUNT_ID}"
+account_id = "40aeb9efd28c988900b12c543422ed54"
 workers_dev = false
-route = "${WRANGLER_ROUTE}"
-zone_id = "${ZONE_ID}"
+
+[[routes]]
+pattern = "www.kwangunlimit.com/espresso/*"
+zone_id = "db45e8bf2414f345a20464ade8d6670b"
+
+[[routes]]
+pattern = "www.kwangunlimit.com/api/*"
+zone_id = "db45e8bf2414f345a20464ade8d6670b"
+
+[[routes]]
+pattern = "www.kwangunlimit.com/status/*"
+zone_id = "db45e8bf2414f345a20464ade8d6670b"
 
 [vars]
 BACKEND_BASE = "https://www.kwangunlimit.com"
