@@ -210,151 +210,16 @@ async function deployProject(lead: any) {
     }
     await lead.save();
 
-    // 8. Generate contract image now that deployment is done, upload to public storage
-    // Prefer Cloudinary unsigned upload using CLOUDINARY_CLOUD_NAME + CLOUDINARY_UPLOAD_PRESET.
-    let contractImageUrl: string | null = null;
-    try {
-      // Build display dates and contract number
-      const now = new Date();
-      const startDisplay = (lead.startDate ? new Date(lead.startDate) : now).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
-      const expiryDate = lead.expiryDate ? new Date(lead.expiryDate) : new Date(now.getTime());
-      if (!lead.expiryDate) expiryDate.setMonth(expiryDate.getMonth() + 1);
-      const expiryDisplay = expiryDate.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
-      const y = (lead.startDate ? new Date(lead.startDate).getFullYear() : now.getFullYear());
-      const buddhistYear = y + 543;
-      const m = String((lead.startDate ? new Date(lead.startDate).getMonth() + 1 : now.getMonth() + 1)).padStart(2, '0');
-      const d = String((lead.startDate ? new Date(lead.startDate).getDate() : now.getDate())).padStart(2, '0');
-      const datePart = `${buddhistYear}${m}${d}`;
-      const runNoPart2 = String(lead.runNumber || 0).padStart(3, '0');
-      const contractNumber = `${datePart}${runNoPart2}`;
-
-      // Read logo if available
-      let logoBase64 = '';
-      try {
-        const logoPath = path.join(process.cwd(), 'public', 'kwang_logo.png');
-        if (fs.existsSync(logoPath)) {
-          const buf = fs.readFileSync(logoPath);
-          logoBase64 = buf.toString('base64');
-        }
-      } catch (e) { /* ignore */ }
-
-      const svg = `<?xml version="1.0" encoding="UTF-8"?>\n` +
-        `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720">\n` +
-        `  <rect width="100%" height="100%" fill="#fff" rx="16"/>\n` +
-        `  <rect x="24" y="24" width="552" height="112" rx="12" fill="#4b2f2a"/>\n` +
-        `  <image x="36" y="36" width="56" height="56" href="data:image/png;base64,${logoBase64}" />\n` +
-        `  <text x="300" y="84" font-family="'Helvetica Neue', Arial" font-size="24" fill="#fff" text-anchor="middle" font-weight="700">ESPRESSO Contract</text>\n` +
-        `  <g transform="translate(40,160)">\n` +
-        `    <style> .label { fill: #a89993; font-size: 14px; font-family: 'Helvetica Neue', Arial; } .value { fill: #3b2b28; font-size: 18px; font-family: 'Helvetica Neue', Arial; font-weight:700; } .contract { fill: #3b2b28; font-size:18px; font-family: 'Helvetica Neue', Arial; font-weight:700; } </style>\n` +
-        `    <text x="0" y="0" class="label">NAME</text>\n` +
-        `    <text x="220" y="0" class="value">${escapeXml(lead.name || '')}</text>\n` +
-        `    <text x="0" y="56" class="label">CONTRACT NO.</text>\n` +
-        `    <text x="220" y="56" class="contract">${escapeXml(contractNumber)}</text>\n` +
-        `    <text x="0" y="112" class="label">START</text>\n` +
-        `    <text x="220" y="112" class="value">${escapeXml(startDisplay)}</text>\n` +
-        `    <text x="0" y="168" class="label">EXPIRY</text>\n` +
-        `    <text x="220" y="168" class="value">${escapeXml(expiryDisplay)}</text>\n` +
-        `  </g>\n` +
-        `  <g transform="translate(40,260)">\n` +
-        `    <rect x="0" y="0" width="520" height="140" rx="8" fill="#fff" stroke="#e6e2df" stroke-width="1"/>\n` +
-        `    <text x="12" y="22" class="label">Signature</text>\n` +
-        `    <line x1="12" y1="104" x2="508" y2="104" stroke="#3b2b28" stroke-width="1" stroke-linecap="round"/>\n` +
-        `  </g>\n` +
-        `</svg>`;
-
-      let pngBuffer: Buffer | null = null;
-      try {
-        const sharpModule = await import('sharp');
-        const sharp = (sharpModule && (sharpModule.default || sharpModule)) as any;
-        pngBuffer = await sharp(Buffer.from(svg)).png({ quality: 90 }).toBuffer();
-      } catch (e) {
-        // sharp not available; keep svg as fallback
-        pngBuffer = null;
-      }
-
-      // Attempt Cloudinary unsigned upload if configured
-      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-      const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
-      if (cloudName && uploadPreset) {
-        try {
-          const formData = new FormData();
-          if (pngBuffer) {
-            // upload binary as data URI
-            formData.append('file', `data:image/png;base64,${pngBuffer.toString('base64')}`);
-          } else {
-            formData.append('file', `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`);
-          }
-          formData.append('upload_preset', uploadPreset);
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData as any });
-          if (res.ok) {
-            const jd = await res.json();
-            contractImageUrl = jd.secure_url || jd.url || null;
-          } else {
-            console.warn('Cloudinary upload failed', await res.text());
-          }
-        } catch (e) {
-          console.warn('Cloudinary upload error', e);
-        }
-      }
-
-      // Fallback: write into this backend public dir and expose via FRONTEND_URL
-      if (!contractImageUrl) {
-        const svgFilename = `contract-${contractNumber}.svg`;
-        const pngFilename = `contract-${contractNumber}.png`;
-        const possiblePublicDirs = [path.join(process.cwd(), '.output', 'public'), path.join(process.cwd(), 'public')];
-        const publicDir = possiblePublicDirs.find((d) => fs.existsSync(d)) || possiblePublicDirs[1];
-        try {
-          if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
-          // Use FRONTEND_URL for public accessible URL (Railway deployed URL)
-          const frontendBase = process.env.FRONTEND_URL || (config.public && config.public.appURL) || process.env.APP_URL || '';
-          if (pngBuffer) {
-            const pngPath = path.join(publicDir, pngFilename);
-            fs.writeFileSync(pngPath, pngBuffer);
-            if (frontendBase) contractImageUrl = `${String(frontendBase).replace(/\/$/, '')}/${pngFilename}`;
-            lead.contractImage = `/${pngFilename}`;
-          } else {
-            const svgPath = path.join(publicDir, svgFilename);
-            fs.writeFileSync(svgPath, svg, 'utf-8');
-            if (frontendBase) contractImageUrl = `${String(frontendBase).replace(/\/$/, '')}/${svgFilename}`;
-            lead.contractImage = `/${svgFilename}`;
-          }
-          lead.contractNumber = contractNumber;
-          await lead.save();
-          console.log(`[Contract] Image saved: ${contractImageUrl}`);
-        } catch (e) {
-          console.warn('Failed to write contract image to public dir fallback', e);
-        }
-      }
-
-      // If contractImageUrl is ready and is an https URL, send as image message first
-      try {
-        if (contractImageUrl && String(contractImageUrl).startsWith('http')) {
-          await sendLineNotification({ type: 'image', originalContentUrl: String(contractImageUrl), previewImageUrl: String(contractImageUrl) });
-        }
-      } catch (e) {
-        console.warn('Failed to send contract image to LINE', e);
-      }
-    } catch (e) {
-      console.warn('Contract image generation/upload failed:', e);
-    }
-
     // 6. Notify Admin
-    // helper to escape XML text in SVG
-    function escapeXml(unsafe: string) {
-      return unsafe.replace(/[<>&'\"]+/g, (c) => ({
-        '<': '&lt;',
-        '>': '&gt;',
-        '&': '&amp;',
-        "'": '&apos;',
-        '"': '&quot;'
-      } as any)[c]);
-    }
-
-    // Build a public proxy URL to show as primary link (use lead.url if set, otherwise construct)
+    // Build a public proxy URL to show as primary link
     const runNoPartForMsg = String(lead.runNumber || 0).padStart(3, '0');
     const proxyBaseForMsg = process.env.PROXY_BASE_URL || 'https://www.kwangunlimit.com';
     const proxyPrefixForMsg = process.env.PROXY_PREFIX || 'espresso';
-    const publicProxyUrl = (lead.url && String(lead.url).trim()) ? String(lead.url) : `${String(proxyBaseForMsg).replace(/\/$/, '')}/${proxyPrefixForMsg}/${runNoPartForMsg}`;
+    const publicProxyUrl = `${String(proxyBaseForMsg).replace(/\/$/, '')}/${proxyPrefixForMsg}/${runNoPartForMsg}`;
+    
+    // Format dates for display
+    const startDateDisplay = lead.startDate ? new Date(lead.startDate).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }) : '-';
+    const expiryDateDisplay = lead.expiryDate ? new Date(lead.expiryDate).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }) : '-';
 
     const flexMessage = {
       type: "flex",
@@ -379,24 +244,62 @@ async function deployProject(lead: any) {
           layout: "vertical",
           contents: [
             {
-              type: "text",
-              text: `Project for ${lead.name} is now live.`,
-              wrap: true,
-              color: "#666666",
-              size: "md"
-            },
-            {
-              type: "separator",
-              margin: "md"
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "NAME", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: String(lead.name || '-'), wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" }
+              ]
             },
             {
               type: "box",
-              layout: "vertical",
+              layout: "baseline",
               margin: "md",
               contents: [
-                { type: "text", text: publicProxyUrl, wrap: true, color: "#007bff", size: "sm", action: { type: "uri", uri: publicProxyUrl } },
-                ...(deployedUrl ? [{ type: "text", text: String(deployedUrl), wrap: true, color: "#555555", size: "xs", margin: "sm", action: { type: "uri", uri: String(deployedUrl) } }] : [])
+                { type: "text", text: "No.", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: runNoPartForMsg, wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" }
               ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "CONTRACT", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: String(lead.contactno || '-'), wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "START", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: startDateDisplay, wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "EXPIRY", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: expiryDateDisplay, wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "separator",
+              margin: "lg"
+            },
+            {
+              type: "text",
+              text: publicProxyUrl,
+              wrap: true,
+              color: "#007bff",
+              size: "sm",
+              margin: "md",
+              action: { type: "uri", uri: publicProxyUrl }
             }
           ]
         },
@@ -405,8 +308,7 @@ async function deployProject(lead: any) {
           layout: "vertical",
           spacing: "sm",
           contents: [
-            { type: "button", style: "primary", height: "sm", action: { type: "uri", label: "Open (Proxy)", uri: publicProxyUrl }, color: "#1DB446" },
-            ...(deployedUrl ? [{ type: "button", style: "secondary", height: "sm", action: { type: "uri", label: "Open (Direct)", uri: String(deployedUrl) } }] : [])
+            { type: "button", style: "primary", height: "sm", action: { type: "uri", label: "Open", uri: publicProxyUrl }, color: "#1DB446" }
           ],
           flex: 0
         }
@@ -414,7 +316,7 @@ async function deployProject(lead: any) {
     };
 
     await sendLineNotification(flexMessage);
-    console.log(`Deployment finished. URL: ${deployedUrl}`);
+    console.log(`Deployment finished. URL: ${publicProxyUrl}`);
 
   } catch (error: any) {
     console.error('Deployment error:', error);
