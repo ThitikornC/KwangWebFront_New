@@ -84,6 +84,15 @@ async function deployProject(lead: any) {
       const service = await RailwayAPI.createServiceFromRepo(projectId, projectName, repoFullName, 'main', apiToken);
       serviceId = service.id;
       console.log(`[Railway API] Service created: ${serviceId}`);
+      
+      // 3.5 Connect environment to branch (auto-deploy on push)
+      console.log(`[Railway API] Connecting environment to branch main for auto-deploy...`);
+      try {
+        await RailwayAPI.connectEnvironmentToBranch(serviceId, environmentId, 'main', apiToken);
+        console.log(`[Railway API] Branch connected to production environment`);
+      } catch (branchErr) {
+        console.warn('[Railway API] Could not connect branch to environment:', branchErr);
+      }
     } else {
       console.log(`[Railway API] Using existing service: ${serviceId}`);
       // Trigger redeploy for existing service

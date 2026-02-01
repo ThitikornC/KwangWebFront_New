@@ -189,6 +189,36 @@ export async function connectServiceToRepo(
 }
 
 /**
+ * Connect environment to a branch (auto-deploy on push)
+ * This links the production environment to a specific branch for auto-deployment
+ */
+export async function connectEnvironmentToBranch(
+  serviceId: string,
+  environmentId: string,
+  branch: string = 'main',
+  apiToken?: string
+) {
+  const query = `
+    mutation serviceInstanceUpdate($serviceId: String!, $environmentId: String!, $input: ServiceInstanceUpdateInput!) {
+      serviceInstanceUpdate(serviceId: $serviceId, environmentId: $environmentId, input: $input) {
+        id
+      }
+    }
+  `;
+
+  return railwayQuery(query, {
+    serviceId,
+    environmentId,
+    input: {
+      source: {
+        repo: null,  // Keep existing repo
+        branch      // Set branch to watch
+      }
+    }
+  }, apiToken);
+}
+
+/**
  * Get environment ID for a project (usually "production")
  */
 export async function getEnvironmentId(projectId: string, envName: string = 'production', apiToken?: string): Promise<string | null> {
@@ -477,6 +507,7 @@ export default {
   createService,
   createServiceFromRepo,
   connectServiceToRepo,
+  connectEnvironmentToBranch,
   getEnvironmentId,
   getServiceId,
   getVariables,
