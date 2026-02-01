@@ -1,12 +1,11 @@
 import { connectToDatabase } from '~/server/utils/mongo';
 import { Lead } from '~/server/utils/models';
 import { sendLineNotification } from '~/server/utils/line';
-import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import JSZip from 'jszip';
 import { getEffectiveRequestURL } from '~/server/utils/request';
+import * as RailwayAPI from '~/server/utils/railway-api';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -40,59 +39,131 @@ export default defineEventHandler(async (event) => {
 async function deployProject(lead: any) {
   const tempDir = path.join(os.tmpdir(), `deploy-${lead._id}`);
   const config = useRuntimeConfig();
-  // Use RAILWAY_API_TOKEN for Account Tokens (required for 'railway init' / 'railway link')
-  const env = { 
-    ...process.env, 
-    RAILWAY_API_TOKEN: config.railwayApiKey || process.env.RAILWAY_API_KEY 
-  };
+  const apiToken = config.railwayApiKey || process.env.RAILWAY_API_TOKEN || process.env.RAILWAY_API_KEY;
 
-  console.log(`Starting deployment for ${lead.name} in ${tempDir}`);
+  console.log(`Starting deployment for ${lead.name} (using Railway API)`);
 
   try {
-    // 1. Download and Extract Repo (Avoid git clone)
-    if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
+    // =====================================================
+    // DEPLOYMENT USING RAILWAY API (NO CLI REQUIRED)
+    // =====================================================
     
-    // Use JSZip to download and extract
-    await downloadAndExtractRepo('https://github.com/ThitikornC/EspressoHuaroa/archive/refs/heads/main.zip', tempDir);
+    const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
+    const projectName = `Espresso-${projectRunNumber}`;
     
-    // 2. Railway Link or Init
-    // If we have a project ID, link to it. Otherwise, fallback to init (safety net).
-    if (lead.railwayProjectId) {
-      console.log(`Linking to existing project ID: ${lead.railwayProjectId}`);
-      try {
-        await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'link', '--project', lead.railwayProjectId], { cwd: tempDir, env });
-      } catch (err) {
-        console.warn('railway link with --project failed, retrying positional arg:', err);
-        await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'link', lead.railwayProjectId], { cwd: tempDir, env });
-      }
-    } else {
-        console.warn('No Project ID found. Falling back to Railway Init.');
-        const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
-        const projectName = `Espresso-${projectRunNumber}`;
-        await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName], { cwd: tempDir, env });
-    }
-
-    // 3. Railway Up
-    // Since it's an empty project initially, we need to make sure we are deploying the code we cloned.
-    // 'railway up' inside the cloned directory should do this.
-    // However, if the project on Railway is empty, 'railway up' will upload the local code.
-    await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'up', '--detach'], { cwd: tempDir, env });
-
-    // 4. Generate Domain
-    // Try to get the domain. If it fails, we might need to wait or use 'railway domain' to generate one.
+    let projectId = lead.railwayProjectId;
+    let serviceId = '';
+    let environmentId = '';
     let deployedUrl = 'URL not found';
-    try {
-        const domainOutput = await runCommandWithOutput('npx', ['-y', '-p', '@railway/cli', 'railway', 'domain'], { cwd: tempDir, env });
-        const urlMatch = domainOutput.match(/(https?:\/\/[^\s]+)|([a-zA-Z0-9-]+\.up\.railway\.app)/);
-        deployedUrl = urlMatch ? (urlMatch[0].startsWith('http') ? urlMatch[0] : `https://${urlMatch[0]}`) : 'URL not found';
-    } catch (e) {
-        console.warn('Could not fetch domain immediately:', e);
-        deployedUrl = 'Deployment successful, but domain generation pending. Check Railway Dashboard.';
+
+    // 1. Create project if not exists
+    if (!projectId) {
+      console.log(`[Railway API] Creating new project: ${projectName}`);
+      const project = await RailwayAPI.createProject(projectName, apiToken);
+      projectId = project.id;
+      lead.railwayProjectId = projectId;
+      await lead.save();
+      console.log(`[Railway API] Project created: ${projectId}`);
     }
 
-    // 5. Update DB
+    // 2. Get production environment ID
+    environmentId = await RailwayAPI.getEnvironmentId(projectId, 'production', apiToken) || '';
+    if (!environmentId) {
+      throw new Error('Failed to get production environment ID');
+    }
+    console.log(`[Railway API] Environment ID: ${environmentId}`);
+
+    // 3. Create service from GitHub repo (or get existing)
+    const repoFullName = 'ThitikornC/EspressoTemplate';
+    
+    // Check if service already exists
+    serviceId = await RailwayAPI.getServiceId(projectId, projectName, apiToken) || '';
+    
+    if (!serviceId) {
+      console.log(`[Railway API] Creating service from repo: ${repoFullName}`);
+      const service = await RailwayAPI.createServiceFromRepo(projectId, projectName, repoFullName, 'main', apiToken);
+      serviceId = service.id;
+      console.log(`[Railway API] Service created: ${serviceId}`);
+    } else {
+      console.log(`[Railway API] Using existing service: ${serviceId}`);
+      // Trigger redeploy for existing service
+      await RailwayAPI.redeploy(environmentId, serviceId, apiToken);
+    }
+
+    // 4. Set environment variables (ครบตาม template .env ของ repo)
+    const runNoPart = String(lead.runNumber || 0).padStart(3, '0');
+    
+    // Format dates for .env
+    const now = new Date();
+    const installDate = lead.startDate ? new Date(lead.startDate) : now;
+    const expiryDateCalc = lead.expiryDate ? new Date(lead.expiryDate) : new Date(now.getTime());
+    if (!lead.expiryDate) expiryDateCalc.setMonth(expiryDateCalc.getMonth() + 1);
+    
+    // Format as Thai locale string
+    const installDateStr = installDate.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
+    const expiryDateStr = expiryDateCalc.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
+
+    const envVars: Record<string, string> = {
+      // Database config
+      MONGODB_URI: process.env.MONGODB_URI || 'mongodb+srv://nippit62:ohm0966477158@testing.hgxbz.mongodb.net/?retryWrites=true&w=majority',
+      PORT: '3000',
+      NODE_ENV: 'production',
+      MONGODB_DB: `Espresso_${runNoPart}`,
+      MONGODB_BMI_DB: `BMI_${runNoPart}`,
+      
+      // Railway API config (สำหรับระบบสร้างเว็บอัตโนมัติ)
+      RAILWAY_API_TOKEN: apiToken || '',
+      RAILWAY_PROJECT_ID: projectId,
+      RAILWAY_TEMPLATE_ENV_ID: environmentId,
+      RAILWAY_PROJECT_NAME: projectName,
+      
+      // Customer / client configuration
+      CUSTOMER_NAME: String(lead.name || ''),
+      CLIENT_RUN_NUMBER: runNoPart,
+      CLIENT_CONTRACT_NO: String(lead.contactno || ''),
+      CLIENT_INSTALL_DATE: installDateStr,
+      CLIENT_EXPIRY_DATE: expiryDateStr
+    };
+
+    // Add optional env vars if available from main server
+    if (process.env.BACKEND_API) envVars.BACKEND_API = process.env.BACKEND_API;
+    if (process.env.API_BASE_URL) envVars.API_BASE_URL = process.env.API_BASE_URL;
+
+    console.log(`[Railway API] Setting ${Object.keys(envVars).length} environment variables`);
+    console.log(`[Railway API] Customer: ${envVars.CUSTOMER_NAME}, DB: ${envVars.MONGODB_DB}`);
+    await RailwayAPI.setVariables(projectId, environmentId, serviceId, envVars, apiToken);
+
+    // 5. Create domain if not exists
+    try {
+      const domains = await RailwayAPI.getDomains(projectId, environmentId, serviceId, apiToken);
+      if (domains.serviceDomains && domains.serviceDomains.length > 0) {
+        deployedUrl = `https://${domains.serviceDomains[0].domain}`;
+        console.log(`[Railway API] Using existing domain: ${deployedUrl}`);
+      } else {
+        console.log(`[Railway API] Creating new domain...`);
+        const domainResult = await RailwayAPI.createServiceDomain(environmentId, serviceId, apiToken);
+        deployedUrl = `https://${domainResult.domain}`;
+        console.log(`[Railway API] Domain created: ${deployedUrl}`);
+      }
+    } catch (e) {
+      console.warn('[Railway API] Could not get/create domain:', e);
+      deployedUrl = 'Deployment successful, check Railway Dashboard for URL';
+    }
+
+    // 6. Wait for deployment to complete (optional, with timeout)
+    console.log(`[Railway API] Waiting for deployment...`);
+    const deployResult = await RailwayAPI.waitForDeployment(
+      projectId, serviceId, environmentId, 
+      180000, // 3 minutes timeout
+      10000,  // poll every 10 seconds
+      apiToken
+    );
+    console.log(`[Railway API] Deployment status: ${deployResult.status}`);
+
+    if (!deployResult.success && deployResult.status !== 'TIMEOUT') {
+      throw new Error(`Deployment failed with status: ${deployResult.status}`);
+    }
+    // 7. Update DB
     lead.status = 'deployed';
     // Save both the public canonical URL and the actual deployed target URL
     try {
@@ -124,101 +195,7 @@ async function deployProject(lead: any) {
     }
     await lead.save();
 
-    // 6a. Set Railway project variables from current process.env when available
-    // Priority: ENV_FILE_CONTENT (raw .env text) > ENV_KEYS (comma list) > defaultKeys
-    async function setRailwayProjectVariables(projectId: string, envObj: any) {
-      if (!projectId) return;
-      // Parse ENV_FILE_CONTENT if present
-      const vars: Record<string,string> = {};
-      const raw = envObj.ENV_FILE_CONTENT || envObj.RAW_ENV_CONTENT || '';
-      if (raw && raw.length > 0) {
-        raw.split(/\r?\n/).forEach((ln: string) => {
-          const line = ln.trim();
-          if (!line || line.startsWith('#')) return;
-          const idx = line.indexOf('=');
-          if (idx === -1) return;
-          const k = line.slice(0, idx).trim();
-          const v = line.slice(idx+1).trim().replace(/^"|"$/g, '').replace(/^'|'$/g, '');
-          if (k) vars[k] = v;
-        });
-      } else if (envObj.ENV_KEYS) {
-        const keys = String(envObj.ENV_KEYS).split(',').map((s:any)=>String(s).trim()).filter(Boolean);
-        keys.forEach((k:any) => { if (Object.prototype.hasOwnProperty.call(envObj, k)) vars[k] = String(envObj[k]); });
-      } else {
-        const defaultKeys = [
-          'MONGODB_URI','PORT','NODE_ENV','MONGODB_DB','MONGODB_BMI_DB',
-          'BACKEND_API','API_BASE_URL','RAILWAY_API_TOKEN','RAILWAY_PROJECT_ID','RAILWAY_TEMPLATE_ENV_ID','RAILWAY_PROJECT_NAME',
-          // Customer/client config keys
-          'CUSTOMER_NAME','CLIENT_RUN_NUMBER','CLIENT_CONTRACT_NO','CLIENT_INSTALL_DATE','CLIENT_EXPIRY_DATE'
-        ];
-        defaultKeys.forEach((k) => { if (Object.prototype.hasOwnProperty.call(envObj, k)) vars[k] = String(envObj[k]); });
-      }
-
-      // If no vars found, nothing to do
-      const keys = Object.keys(vars);
-      if (!keys.length) {
-        console.log('No variables found to set for Railway project');
-        return;
-      }
-
-      console.log(`Setting ${keys.length} Railway variables for project ${projectId} (keys: ${keys.join(',')})`);
-      for (const k of keys) {
-        try {
-          // use CLI to set variable for the project
-          // Prefer capture output so we can log errors for debugging
-          const envFlag = envObj.RAILWAY_TEMPLATE_ENV_ID || envObj.RAILWAY_ENVIRONMENT_ID || process.env.RAILWAY_TEMPLATE_ENV_ID || process.env.RAILWAY_ENVIRONMENT_ID || '';
-          const args = ['-y','-p','@railway/cli','railway','variables','set', `${k}=${vars[k]}`, '--project', projectId];
-          if (envFlag) args.push('--environment', String(envFlag));
-          try {
-            const out = await runCommandWithOutput('npx', args, { cwd: tempDir, env: envObj });
-            console.log(`railway variables set ${k}:`, out);
-          } catch (err:any) {
-            console.warn(`railway variables set ${k} failed:`, err && err.message ? err.message : err);
-            // retry without environment flag if it failed with env
-            if (envFlag) {
-              try {
-                const out2 = await runCommandWithOutput('npx', ['-y','-p','@railway/cli','railway','variables','set', `${k}=${vars[k]}`, '--project', projectId], { cwd: tempDir, env: envObj });
-                console.log(`railway variables set ${k} (retry w/o env):`, out2);
-              } catch (err2:any) {
-                console.error(`railway variables set ${k} retry failed:`, err2 && err2.message ? err2.message : err2);
-              }
-            }
-          }
-        } catch (e) {
-          console.warn(`Failed to set variable ${k} on project ${projectId}:`, e);
-        }
-      }
-    }
-
-    try {
-      const projectIdToUse = lead.railwayProjectId || '';
-      if (projectIdToUse) {
-        // Build per-customer env overrides so DB names and client info are unique per deploy
-        const runNoPart = String(lead.runNumber || 0).padStart(3, '0');
-        const perCustomerEnv: Record<string,string> = {
-          // preserve provided environment values but override DB names per-customer
-          MONGODB_DB: process.env.MONGODB_DB ? process.env.MONGODB_DB.replace(/_template$/i, `_${runNoPart}`) : `Espresso_${runNoPart}`,
-          MONGODB_BMI_DB: process.env.MONGODB_BMI_DB ? process.env.MONGODB_BMI_DB.replace(/_template$/i, `_${runNoPart}`) : `BMI_${runNoPart}`,
-          CUSTOMER_NAME: String(lead.name || ''),
-          CLIENT_RUN_NUMBER: runNoPart,
-          CLIENT_CONTRACT_NO: String(lead.contactno || '-'),
-          CLIENT_INSTALL_DATE: (lead.startDate ? new Date(lead.startDate).toISOString() : ''),
-          CLIENT_EXPIRY_DATE: (lead.expiryDate ? new Date(lead.expiryDate).toISOString() : ''),
-          RAILWAY_PROJECT_NAME: process.env.RAILWAY_PROJECT_NAME || 'espresso',
-          RAILWAY_PROJECT_ID: process.env.RAILWAY_PROJECT_ID || '',
-          RAILWAY_TEMPLATE_ENV_ID: process.env.RAILWAY_TEMPLATE_ENV_ID || ''
-        };
-
-        const envToSet = { ...env, ...perCustomerEnv };
-        await setRailwayProjectVariables(projectIdToUse, envToSet);
-      } else {
-        console.warn('No projectId available to set Railway variables');
-      }
-    } catch (e) {
-      console.warn('Failed to set Railway project variables:', e);
-    }
-
-    // 6a. Generate contract image now that deployment is done, upload to public storage
+    // 8. Generate contract image now that deployment is done, upload to public storage
     // Prefer Cloudinary unsigned upload using CLOUDINARY_CLOUD_NAME + CLOUDINARY_UPLOAD_PRESET.
     let contractImageUrl: string | null = null;
     try {
@@ -432,71 +409,3 @@ async function deployProject(lead: any) {
   }
 }
 
-async function downloadAndExtractRepo(url: string, dest: string) {
-  console.log(`Downloading repo from ${url}...`);
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to download repo: ${response.statusText}`);
-  
-  const arrayBuffer = await response.arrayBuffer();
-  const zip = await JSZip.loadAsync(arrayBuffer);
-  
-  console.log(`Extracting to ${dest}...`);
-  fs.mkdirSync(dest, { recursive: true });
-
-  for (const filename of Object.keys(zip.files)) {
-      // Skip node_modules and .git to avoid issues and save time
-      if (filename.includes('node_modules/') || filename.includes('.git/')) continue;
-
-      const file = zip.files[filename];
-      if (file.dir) continue;
-
-      const destPath = path.join(dest, filename);
-      fs.mkdirSync(path.dirname(destPath), { recursive: true });
-      const content = await file.async('nodebuffer');
-      fs.writeFileSync(destPath, content);
-  }
-  
-  // Handle root folder if exists (e.g. EspressoHuaroa-main/)
-  const items = fs.readdirSync(dest);
-  if (items.length === 1 && fs.statSync(path.join(dest, items[0])).isDirectory()) {
-      const rootDir = path.join(dest, items[0]);
-      const files = fs.readdirSync(rootDir);
-      for (const f of files) {
-          fs.renameSync(path.join(rootDir, f), path.join(dest, f));
-      }
-      fs.rmdirSync(rootDir);
-  }
-}
-
-function runCommand(command: string, args: string[], options: any = {}) {
-  return new Promise((resolve, reject) => {
-    console.log(`Running: ${command} ${args.join(' ')}`);
-    const proc = spawn(command, args, { stdio: 'inherit', shell: true, ...options });
-    
-    proc.on('close', (code) => {
-      if (code === 0) resolve(true);
-      else reject(new Error(`Command failed with code ${code}`));
-    });
-    
-    proc.on('error', (err) => reject(err));
-  });
-}
-
-function runCommandWithOutput(command: string, args: string[], options: any = {}): Promise<string> {
-  return new Promise((resolve, reject) => {
-    console.log(`Running (capture): ${command} ${args.join(' ')}`);
-    const proc = spawn(command, args, { ...options, shell: true });
-    let stdout = '';
-    let stderr = '';
-
-    proc.stdout?.on('data', (data) => stdout += data.toString());
-    proc.stderr?.on('data', (data) => stderr += data.toString());
-
-    proc.on('close', (code) => {
-      if (code === 0) resolve(stdout.trim());
-      else reject(new Error(`Command failed with code ${code}: ${stderr}`));
-    });
-    
-    proc.on('error', (err) => reject(err));
-  });
-}
