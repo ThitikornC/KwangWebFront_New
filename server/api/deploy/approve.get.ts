@@ -86,10 +86,10 @@ async function deployProject(lead: any) {
       console.log(`[Railway API] Service created: ${serviceId}`);
       
       // 3.5 Connect environment to branch (auto-deploy on push)
-      console.log(`[Railway API] Connecting environment to branch main for auto-deploy...`);
+      console.log(`[Railway API] Connecting branch main for auto-deploy...`);
       try {
-        await RailwayAPI.connectEnvironmentToBranch(serviceId, environmentId, 'main', apiToken);
-        console.log(`[Railway API] Branch connected to production environment`);
+        await RailwayAPI.connectEnvironmentToBranch(serviceId, environmentId, 'main', repoFullName, apiToken);
+        console.log(`[Railway API] Branch main connected to service`);
       } catch (branchErr) {
         console.warn('[Railway API] Could not connect branch to environment:', branchErr);
       }
@@ -416,9 +416,21 @@ async function deployProject(lead: any) {
     await sendLineNotification(flexMessage);
     console.log(`Deployment finished. URL: ${deployedUrl}`);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Deployment error:', error);
-    await sendLineNotification(`Deployment Failed for ${lead.name}. Check server logs.`);
+    console.error('Deployment error stack:', error?.stack);
+    console.error('Deployment error message:', error?.message);
+    
+    // Update lead status to failed
+    try {
+      lead.status = 'deploy_failed';
+      lead.deployError = error?.message || String(error);
+      await lead.save();
+    } catch (e) {
+      console.error('Failed to update lead status:', e);
+    }
+    
+    await sendLineNotification(`Deployment Failed for ${lead.name}. Error: ${error?.message || 'Unknown error'}. Check server logs.`);
   }
 }
 

@@ -190,30 +190,29 @@ export async function connectServiceToRepo(
 
 /**
  * Connect environment to a branch (auto-deploy on push)
- * This links the production environment to a specific branch for auto-deployment
+ * Uses serviceConnect to ensure branch is linked properly
  */
 export async function connectEnvironmentToBranch(
   serviceId: string,
   environmentId: string,
   branch: string = 'main',
+  repoFullName: string = 'ThitikornC/EspressoTemplate',
   apiToken?: string
 ) {
+  // Use serviceConnect mutation to set branch
   const query = `
-    mutation serviceInstanceUpdate($serviceId: String!, $environmentId: String!, $input: ServiceInstanceUpdateInput!) {
-      serviceInstanceUpdate(serviceId: $serviceId, environmentId: $environmentId, input: $input) {
+    mutation serviceConnect($id: String!, $input: ServiceConnectInput!) {
+      serviceConnect(id: $id, input: $input) {
         id
       }
     }
   `;
 
   return railwayQuery(query, {
-    serviceId,
-    environmentId,
+    id: serviceId,
     input: {
-      source: {
-        repo: null,  // Keep existing repo
-        branch      // Set branch to watch
-      }
+      repo: repoFullName,
+      branch
     }
   }, apiToken);
 }
