@@ -1,14 +1,16 @@
 /**
  * Cloudflare Worker
- * Proxy requests to /espresso/:runNo/* to the corresponding lead.url stored in your backend.
+ * Proxy requests to /espresso/:runNo/* to the corresponding lead's deployed site.
+ * 
+ * URL Format: /espresso/:runNo/:path
+ * Example: /espresso/001/catagoly -> proxy to Espresso-001's /catagoly
  *
  * Configuration:
- * - Set `BACKEND_BASE` environment variable in Cloudflare to the public URL of your backend (e.g. https://www.kwangunlimit.com)
+ * - Set `BACKEND_API` to your backend API server for lead lookup
  * - Optionally set `CACHE_TTL` (seconds) for lead lookup caching (default 60)
  */
 
 const BACKEND_BASE = (typeof BACKEND_BASE !== 'undefined') ? BACKEND_BASE : 'https://www.kwangunlimit.com';
-// BACKEND_API should point to your backend API server (e.g. https://kwangwebbacknew-production.up.railway.app)
 const BACKEND_API = (typeof BACKEND_API !== 'undefined') ? BACKEND_API : (typeof BACKEND_BASE !== 'undefined' ? BACKEND_BASE : '');
 const CACHE_TTL = (typeof CACHE_TTL !== 'undefined') ? Number(CACHE_TTL) : 60;
 
@@ -20,68 +22,11 @@ async function handle(request) {
   const url = new URL(request.url);
   const pathname = url.pathname;
   
-  // Check Referer header to see if request comes from an Espresso page
-  const referer = request.headers.get('Referer') || '';
-  const espressoRefererMatch = referer.match(/\/espresso\/(\d{1,})/);
-  
-  // Check cookie for espresso session (set when visiting /espresso/:runNo)
-  const cookies = request.headers.get('Cookie') || '';
-  const espressoCookieMatch = cookies.match(/espresso_runno=(\d{1,})/);
-  
-  // Determine runNo from referer or cookie
-  const runNoFromReferer = espressoRefererMatch ? espressoRefererMatch[1] : null;
-  const runNoFromCookie = espressoCookieMatch ? espressoCookieMatch[1] : null;
-  const activeRunNo = runNoFromReferer || runNoFromCookie;
-  
-  // If request comes from Espresso context (any path), proxy to Espresso site
-  if (activeRunNo && !pathname.startsWith('/espresso/')) {
-    const runNo = activeRunNo.padStart(3, '0');
-    
-    // Look up the Espresso site URL for this runNo
-    const lead = await lookupLead(runNo, activeRunNo);
-    if (lead) {
-      const targetBase = (lead.deployedUrl && lead.deployedUrl.length > 0) ? lead.deployedUrl : lead.url;
-      if (targetBase) {
-        const target = `${String(targetBase).replace(/\/$/, '')}${pathname}${url.search}`;
-        const headers = new Headers(request.headers);
-        headers.delete('host');
-        const proxyReq = new Request(target, {
-          method: request.method,
-          headers,
-          body: request.body,
-          redirect: 'follow'
-        });
-        return fetch(proxyReq);
-      }
-    }
-  }
-
-  // If this is an API request (not from Espresso), forward to backend API
-  if (pathname.startsWith('/api/')) {
-    // Build target API URL
-    const target = `${BACKEND_API.replace(/\/$/, '')}${pathname}${url.search}`;
-    const headers = new Headers(request.headers);
-    headers.delete('host');
-    const proxyReq = new Request(target, {
-      method: request.method,
-      headers,
-      body: request.body,
-      redirect: 'follow'
-    });
-    const resp = await fetch(proxyReq);
-    return resp;
-  }
-
   // Match /espresso/:runNo and optional trailing path
   const m = pathname.match(/^\/espresso\/(\d{1,})\/?(.*)$/);
   
-  // If not /espresso/* and no espresso cookie, pass through to origin (don't proxy)
-  if (!m && !activeRunNo) {
-    return fetch(request);
-  }
-  
+  // If not /espresso/* path, pass through to origin
   if (!m) {
-    // Not an espresso path but has cookie - this shouldn't happen, pass through
     return fetch(request);
   }
 
@@ -106,11 +51,11 @@ async function handle(request) {
   if (!preferred) return new Response('Lead has no target URL', { status: 404 });
 
   const targetBase = String(preferred).replace(/\/$/, '');
-  const targetUrl = suffix ? `${targetBase}/${suffix}` : targetBase;
+  // Proxy to target with the suffix path (e.g., /espresso/001/catagoly -> targetBase/catagoly)
+  const targetUrl = suffix ? `${targetBase}/${suffix}${url.search}` : `${targetBase}${url.search}`;
 
   // Proxy the request to targetUrl
   const headers = new Headers(request.headers);
-  // Remove host header to avoid CORS issues
   headers.delete('host');
 
   const proxyReq = new Request(targetUrl, {
@@ -122,11 +67,30 @@ async function handle(request) {
 
   const resp = await fetch(proxyReq);
   
-  // Set cookie to remember espresso context for subsequent requests
-  const newResp = new Response(resp.body, resp);
-  newResp.headers.append('Set-Cookie', `espresso_runno=${runNoRaw}; Path=/; Max-Age=3600; SameSite=Lax`);
+  // Rewrite HTML to fix relative links (add /espresso/:runNo prefix)
+  const contentType = resp.headers.get('Content-Type') || '';
+  if (contentType.includes('text/html')) {
+    let html = await resp.text();
+    // Rewrite absolute paths to include /espresso/:runNo prefix
+    // e.g., href="/catagoly" -> href="/espresso/001/catagoly"
+    // e.g., src="/js/app.js" -> src="/espresso/001/js/app.js"
+    const prefix = `/espresso/${runNoRaw}`;
+    html = html.replace(/(href|src|action)=["']\/(?!espresso\/|https?:\/\/|\/\/)/gi, `$1="${prefix}/`);
+    html = html.replace(/(href|src|action)=["'](?!\/|https?:\/\/|\/\/|#|javascript:)([^"']+)["']/gi, `$1="${prefix}/$2"`);
+    
+    // Also rewrite fetch/axios calls that use absolute paths
+    html = html.replace(/fetch\(["']\/(?!espresso\/)/gi, `fetch("${prefix}/`);
+    html = html.replace(/["']\/api\//gi, `"${prefix}/api/`);
+    html = html.replace(/["']\/status\//gi, `"${prefix}/status/`);
+    html = html.replace(/["']\/socket\.io\//gi, `"${prefix}/socket.io/`);
+    
+    return new Response(html, {
+      status: resp.status,
+      headers: resp.headers
+    });
+  }
   
-  return newResp;
+  return resp;
 }
 
 // Helper function to lookup lead by runNo
