@@ -169,8 +169,14 @@ async function deployProject(lead: any) {
     );
     console.log(`[Railway API] Deployment status: ${deployResult.status}`);
 
-    if (!deployResult.success && deployResult.status !== 'TIMEOUT') {
+    // Only fail if deployment explicitly failed (not timeout - deployment may still be in progress)
+    if (!deployResult.success && !['TIMEOUT', 'BUILDING', 'DEPLOYING'].includes(deployResult.status)) {
       throw new Error(`Deployment failed with status: ${deployResult.status}`);
+    }
+    
+    // If timeout or still building, deployment is in progress - continue with success flow
+    if (deployResult.status === 'TIMEOUT') {
+      console.log(`[Railway API] Deployment still in progress after timeout - continuing with success flow`);
     }
     // 7. Update DB
     lead.status = 'deployed';
@@ -291,7 +297,7 @@ async function deployProject(lead: any) {
         }
       }
 
-      // Fallback: write into this backend public dir and expose via API_BASE_URL or BACKEND_API
+      // Fallback: write into this backend public dir and expose via FRONTEND_URL
       if (!contractImageUrl) {
         const svgFilename = `contract-${contractNumber}.svg`;
         const pngFilename = `contract-${contractNumber}.png`;
@@ -299,21 +305,22 @@ async function deployProject(lead: any) {
         const publicDir = possiblePublicDirs.find((d) => fs.existsSync(d)) || possiblePublicDirs[1];
         try {
           if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
+          // Use FRONTEND_URL for public accessible URL (Railway deployed URL)
+          const frontendBase = process.env.FRONTEND_URL || (config.public && config.public.appURL) || process.env.APP_URL || '';
           if (pngBuffer) {
             const pngPath = path.join(publicDir, pngFilename);
             fs.writeFileSync(pngPath, pngBuffer);
-            const backendBase = (config.public && config.public.apiURL) || process.env.API_BASE_URL || process.env.BACKEND_API || process.env.APP_URL || '';
-            if (backendBase) contractImageUrl = `${String(backendBase).replace(/\/$/, '')}/${pngFilename}`;
+            if (frontendBase) contractImageUrl = `${String(frontendBase).replace(/\/$/, '')}/${pngFilename}`;
             lead.contractImage = `/${pngFilename}`;
           } else {
             const svgPath = path.join(publicDir, svgFilename);
             fs.writeFileSync(svgPath, svg, 'utf-8');
-            const backendBase = (config.public && config.public.apiURL) || process.env.API_BASE_URL || process.env.BACKEND_API || process.env.APP_URL || '';
-            if (backendBase) contractImageUrl = `${String(backendBase).replace(/\/$/, '')}/${svgFilename}`;
+            if (frontendBase) contractImageUrl = `${String(frontendBase).replace(/\/$/, '')}/${svgFilename}`;
             lead.contractImage = `/${svgFilename}`;
           }
           lead.contractNumber = contractNumber;
           await lead.save();
+          console.log(`[Contract] Image saved: ${contractImageUrl}`);
         } catch (e) {
           console.warn('Failed to write contract image to public dir fallback', e);
         }
@@ -367,7 +374,7 @@ async function deployProject(lead: any) {
             }
           ]
         },
-            body: {
+        body: {
           type: "box",
           layout: "vertical",
           contents: [
@@ -387,8 +394,7 @@ async function deployProject(lead: any) {
               layout: "vertical",
               margin: "md",
               contents: [
-                // Show proxy/public URL first (if available) and the direct deployed URL below
-                [{ type: "text", text: publicProxyUrl, wrap: true, color: "#007bff", size: "sm", action: { type: "uri", uri: publicProxyUrl } }],
+                { type: "text", text: publicProxyUrl, wrap: true, color: "#007bff", size: "sm", action: { type: "uri", uri: publicProxyUrl } },
                 ...(deployedUrl ? [{ type: "text", text: String(deployedUrl), wrap: true, color: "#555555", size: "xs", margin: "sm", action: { type: "uri", uri: String(deployedUrl) } }] : [])
               ]
             }
@@ -399,10 +405,8 @@ async function deployProject(lead: any) {
           layout: "vertical",
           spacing: "sm",
           contents: [
-            // Primary proxy button (if available)
-            [{ type: "button", style: "primary", height: "sm", action: { type: "uri", label: "Open (Proxy)", uri: publicProxyUrl }, color: "#1DB446" }],
-            // Secondary direct button (deployed URL)
-            ...(deployedUrl ? [{ type: "button", style: "secondary", height: "sm", action: { type: "uri", label: "Open (Direct)", uri: String(deployedUrl) }, color: "#4b2f2a" }] : [])
+            { type: "button", style: "primary", height: "sm", action: { type: "uri", label: "Open (Proxy)", uri: publicProxyUrl }, color: "#1DB446" },
+            ...(deployedUrl ? [{ type: "button", style: "secondary", height: "sm", action: { type: "uri", label: "Open (Direct)", uri: String(deployedUrl) } }] : [])
           ],
           flex: 0
         }
