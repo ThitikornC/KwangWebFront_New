@@ -23,9 +23,9 @@
 
     <div class="max-w-4xl mx-auto mt-4">
       
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
         <!-- Left Section - Tables -->
-        <div class="space-y-3">
+        <div class="flex flex-col space-y-3">
           <!-- Info Section -->
           <div class="neon-btn overflow-hidden" style="height: auto; padding: 16px 20px;">
             <div class="space-y-1">
@@ -38,8 +38,8 @@
           </div>
 
           <!-- Expense Section - Card Buttons -->
-          <div class="neon-btn overflow-hidden" style="height: auto; padding: 0;">
-            <div class="p-3 space-y-2">
+          <div class="neon-btn overflow-hidden flex-1" style="padding: 0;">
+            <div class="p-3 space-y-2 h-full flex flex-col justify-center">
               <div 
                 v-for="(expense, index) in expenses" 
                 :key="index"
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Right Section - Chart -->
-        <div class="neon-btn p-4 flex flex-col justify-center items-center" style="min-height: 360px;">
+        <div class="neon-btn p-4 flex flex-col justify-center items-center">
           <h2 class="text-lg font-semibold text-center mb-6">จำนวนการเข้าใช้งาน</h2>
           
           <!-- Donut Chart -->
