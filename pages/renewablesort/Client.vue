@@ -119,7 +119,7 @@ import { watchEffect } from 'vue'
 
 const projectLinks: Record<string, string> = {
   huaroaDashboard: '/renewablesort/HuaroiEspresso',
-  maehongson: '/renewablesort/MaeHongson'
+  maehongson: '/renewablesort/MaehongsonEspresso'
 }
 
 // Per-item passwords (updated by user)

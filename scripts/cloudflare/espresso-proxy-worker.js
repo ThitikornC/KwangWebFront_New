@@ -67,26 +67,53 @@ async function handle(request) {
 
   const resp = await fetch(proxyReq);
   
-  // Rewrite HTML to fix relative links (add /espresso/:runNo prefix)
   const contentType = resp.headers.get('Content-Type') || '';
+  const prefix = `/espresso/${runNoRaw}`;
+  
+  // Rewrite HTML to fix relative links (add /espresso/:runNo prefix)
   if (contentType.includes('text/html')) {
     let html = await resp.text();
     // Rewrite absolute paths to include /espresso/:runNo prefix
     // e.g., href="/catagoly" -> href="/espresso/001/catagoly"
     // e.g., src="/js/app.js" -> src="/espresso/001/js/app.js"
-    const prefix = `/espresso/${runNoRaw}`;
-    html = html.replace(/(href|src|action)=["']\/(?!espresso\/|https?:\/\/|\/\/)/gi, `$1="${prefix}/`);
-    html = html.replace(/(href|src|action)=["'](?!\/|https?:\/\/|\/\/|#|javascript:)([^"']+)["']/gi, `$1="${prefix}/$2"`);
     
-    // Also rewrite fetch/axios calls that use absolute paths
-    html = html.replace(/fetch\(["']\/(?!espresso\/)/gi, `fetch("${prefix}/`);
-    html = html.replace(/["']\/api\//gi, `"${prefix}/api/`);
-    html = html.replace(/["']\/status\//gi, `"${prefix}/status/`);
-    html = html.replace(/["']\/socket\.io\//gi, `"${prefix}/socket.io/`);
+    // Rewrite href, src, action attributes - preserve original quote type
+    html = html.replace(/(href|src|action)=(["'])\/(?!espresso\/|https?:\/\/|\/\/)/gi, `$1=$2${prefix}/`);
+    html = html.replace(/(href|src|action)=(["'])(?!\/|https?:\/\/|\/\/|#|javascript:)([^"']+)\2/gi, `$1=$2${prefix}/$3$2`);
+    
+    // Rewrite fetch/axios calls - preserve original quote type
+    html = html.replace(/fetch\((["'])\/(?!espresso\/)/gi, `fetch($1${prefix}/`);
+    
+    // Rewrite string literals for API paths - preserve quote type
+    html = html.replace(/(["'])\/api\//gi, `$1${prefix}/api/`);
+    html = html.replace(/(["'])\/status\//gi, `$1${prefix}/status/`);
+    html = html.replace(/(["'])\/socket\.io\//gi, `$1${prefix}/socket.io/`);
     
     return new Response(html, {
       status: resp.status,
       headers: resp.headers
+    });
+  }
+  
+  // Rewrite JavaScript files to fix API paths
+  if (contentType.includes('javascript') || contentType.includes('application/js') || suffix.endsWith('.js')) {
+    let js = await resp.text();
+    
+    // Rewrite fetch calls
+    js = js.replace(/fetch\((["'])\/(?!espresso\/|https?:\/\/)/gi, `fetch($1${prefix}/`);
+    
+    // Rewrite API paths
+    js = js.replace(/(["'])\/api\//gi, `$1${prefix}/api/`);
+    js = js.replace(/(["'])\/status\//gi, `$1${prefix}/status/`);
+    js = js.replace(/(["'])\/socket\.io\//gi, `$1${prefix}/socket.io/`);
+    
+    // Clone headers and set correct content-type
+    const newHeaders = new Headers(resp.headers);
+    newHeaders.set('Content-Type', 'application/javascript; charset=utf-8');
+    
+    return new Response(js, {
+      status: resp.status,
+      headers: newHeaders
     });
   }
   
