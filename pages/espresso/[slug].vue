@@ -14,16 +14,16 @@ const slug = String(route.params.slug || '')
 const targets: Record<string, string> = {
   espresso_pharmacy: 'https://my.spline.design/espresopharmacy-a21edee004531a425af1c2768331add8/',
   espresso_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
-  espresso: 'https://huaroa-production.up.railway.app/',
-  MaeHongSon: 'https://huaroa-production.up.railway.app/',
-  maehongson3: 'https://espressotemplate-production-cf70.up.railway.app/',
-  Huaroa: 'https://espressohuaroa-production.up.railway.app/',
-  huaroa2: 'https://espressohuaroa-production.up.railway.app/',
-  huaroa3: 'https://espressohuaroa2-production.up.railway.app/',
-  huaroa4: 'https://espressohuaroa3-production.up.railway.app/',
-  huaroa5: 'https://espressohuaroa4-production.up.railway.app/',
-  huaroa6: 'https://espressohuaroa5-production.up.railway.app/',
-  naresuan_library: 'https://momaylib-production.up.railway.app/'
+  espresso: 'https://espresso.kwangunlimit.com/',
+  MaeHongSon: 'https://espresso.kwangunlimit.com/',
+  maehongson3: 'https://espresso3.kwangunlimit.com/',
+  Huaroa: 'https://huaroa.kwangunlimit.com/',
+  huaroa2: 'https://huaroa.kwangunlimit.com/',
+  huaroa3: 'https://huaroa2.kwangunlimit.com/',
+  huaroa4: 'https://huaroa3.kwangunlimit.com/',
+  huaroa5: 'https://huaroa4.kwangunlimit.com/',
+  huaroa6: 'https://huaroa5.kwangunlimit.com/',
+  naresuan_library: 'https://library.kwangunlimit.com/'
 }
 
 const url = ref<string | null>(null)

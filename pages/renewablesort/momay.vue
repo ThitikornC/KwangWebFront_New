@@ -133,6 +133,16 @@
         <span class="font-thai">99/99</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('momayBUU')"
+      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="momayBUU" class="w-12 h-12 object-contain" />
+        <span class="font-thai">momayBUU</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -160,7 +170,8 @@ const splineLinks = {
   momay2:'/momay/momay02',
   naresuan_library: '/momay/naresuan_library',
   Momay_pharmacy: '/momay/Momay_pharmacy',
-  Mpmay_human: '/momay/Mpmay_human'
+  Mpmay_human: '/momay/Mpmay_human',
+  momayBUU: '/momay/momayBUU'
 }
 
 // Add mapping for 99/99 document route
