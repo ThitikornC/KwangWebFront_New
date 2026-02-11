@@ -16,7 +16,7 @@ const targets: Record<string, string> = {
   espresso_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
   espresso: 'https://huaroa-production.up.railway.app/',
   MaeHongSon: 'https://huaroa-production.up.railway.app/',
-  maehongson3: 'https://espresso3-production.up.railway.app/',
+  maehongson3: 'https://espressotemplate-production-cf70.up.railway.app/',
   Huaroa: 'https://espressohuaroa-production.up.railway.app/',
   huaroa2: 'https://espressohuaroa-production.up.railway.app/',
   huaroa3: 'https://espressohuaroa2-production.up.railway.app/',
