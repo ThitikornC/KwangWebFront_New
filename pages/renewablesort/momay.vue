@@ -143,6 +143,26 @@
         <span class="font-thai">MomayBUU</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('momay_88_31_khun_deer')"
+      class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณเดียร์" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณเดียร์</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_khun_sand')"
+      class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณแซน" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณแซน</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -171,7 +191,9 @@ const splineLinks = {
   naresuan_library: '/momay/naresuan_library',
   Momay_pharmacy: '/momay/Momay_pharmacy',
   Mpmay_human: '/momay/Mpmay_human',
-  MomayBUU: '/momay/MomayBUU'
+  MomayBUU: '/momay/MomayBUU',
+  momay_88_31_khun_deer: '/momay/momay_88_31_khun_deer',
+  momay_khun_sand: '/momay/momay_khun_sand'
 }
 
 // Add mapping for 99/99 document route
