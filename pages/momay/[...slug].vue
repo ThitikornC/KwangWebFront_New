@@ -18,7 +18,9 @@ const targets: Record<string, string> = {
   naresuan_library: 'https://momaylib-production.up.railway.app/',
   Momay_pharmacy: 'https://my.spline.design/espresopharmacy-a21edee004531a425af1c2768331add8/',
   Mpmay_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
-  '99/99': 'https://momaydoc-production.up.railway.app/'
+  '99/99': 'https://momaydoc-production.up.railway.app/',
+  momay_88_31_khun_deer: 'https://momaydeer-production.up.railway.app/',
+  momay_khun_sand: 'https://momaysand-production.up.railway.app/'
 }
 
 const raw = route.params.slug
