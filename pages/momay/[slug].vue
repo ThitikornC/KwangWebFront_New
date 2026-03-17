@@ -20,7 +20,8 @@ const targets: Record<string, string> = {
   Mpmay_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
   '99/99': 'https://momaydoc-production.up.railway.app/',
   momay_88_31_khun_deer: 'https://momaydeer-production.up.railway.app/',
-  momay_khun_sand: 'https://momaysand-production.up.railway.app/'
+  momay_khun_sand: 'https://momaysand-production.up.railway.app/',
+  momaynew: 'https://momaynew-production.up.railway.app/'
 }
 const url = targets[String(route.params.slug)]
 if (!url) await navigateTo('/', { replace: true })

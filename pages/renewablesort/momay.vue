@@ -125,7 +125,7 @@
     </div>
 
     <div
-      @click="openSplineDesign('99/99')"
+      @click="openSplineDesign('momay_doc_99_99')"
       class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
     >
       <div class="card-content">
@@ -163,6 +163,16 @@
         <span class="font-thai">คุณแซน</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('momaynew')"
+      class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณนิว" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณนิว</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -181,7 +191,7 @@ import MobileFlipbook from '~/components/MobileFlipbook.vue'
 import PageFlipBook from '~/components/PageFlipBook.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const splineLinks = {
+const splineLinks: Record<string, string> = {
   momay_BanKlongResort: '/momay/momay_BanKlongResort',
   wongpanit_sukhothai: '/momay/wongpanit_sukhothai',
   hospital_Noenmaprang: '/momay/hospital_Noenmaprang',
@@ -193,11 +203,10 @@ const splineLinks = {
   Mpmay_human: '/momay/Mpmay_human',
   momayBUU: '/momay/momayBUU',
   momay_88_31_khun_deer: '/momay/momay_88_31_khun_deer',
-  momay_khun_sand: '/momay/momay_khun_sand'
+  momay_khun_sand: '/momay/momay_khun_sand',
+  momaynew: '/momay/momaynew',
+  momay_doc_99_99: '/momay/99/99'
 }
-
-// Add mapping for 99/99 document route
-splineLinks['99/99'] = '/momay/99/99'
 
 const pages = [
   '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0001.jpg',
@@ -257,7 +266,7 @@ onMounted(() => {
   })
 })
 
-function openSplineDesign(key: keyof typeof splineLinks) {
+function openSplineDesign(key: string) {
   const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
 
   // ถ้าเป็น hospital ให้ตรวจรหัสเฉพาะ
