@@ -173,6 +173,16 @@
         <span class="font-thai">คุณนิว</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('momay_bangkrong')"
+      class="neon-btn spline-link-card hover:from-teal-100 hover:to-teal-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="บ้านคลองรีสอร์ท" class="w-12 h-12 object-contain" />
+        <span class="font-thai">บ้านคลองรีสอร์ท</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -205,7 +215,8 @@ const splineLinks: Record<string, string> = {
   momay_88_31_khun_deer: '/momay/momay_88_31_khun_deer',
   momay_khun_sand: '/momay/momay_khun_sand',
   momaynew: '/momay/momaynew',
-  momay_doc_99_99: '/momay/99/99'
+  momay_doc_99_99: '/momay/99/99',
+  momay_bangkrong: '/momay/momay_bangkrong'
 }
 
 const pages = [
