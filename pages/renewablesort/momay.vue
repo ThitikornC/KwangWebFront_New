@@ -183,6 +183,26 @@
         <span class="font-thai">บ้านคลองรีสอร์ท</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('demo')"
+      class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Demo Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Demo Momay</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('dashboard')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay Dashboard" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay Dashboard</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -216,7 +236,9 @@ const splineLinks: Record<string, string> = {
   momay_khun_sand: '/momay/momay_khun_sand',
   momaynew: '/momay/momaynew',
   momay_doc_99_99: '/momay/99/99',
-  momay_bangkrong: '/momay/momay_bangkrong'
+  momay_bangkrong: '/momay/momay_bangkrong',
+  demo: '/momay/demo',
+  dashboard: '/momay/dashboard'
 }
 
 const pages = [
