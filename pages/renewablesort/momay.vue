@@ -125,7 +125,7 @@
     </div>
 
     <div
-      @click="openSplineDesign('99/99')"
+      @click="openSplineDesign('momay_doc_99_99')"
       class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
     >
       <div class="card-content">
@@ -135,12 +135,12 @@
     </div>
 
     <div
-      @click="openSplineDesign('MomayBUU')"
-      class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
+      @click="openSplineDesign('momayBUU')"
+      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="MomayBUU" class="w-12 h-12 object-contain" />
-        <span class="font-thai">MomayBUU</span>
+        <img src="/MOMAY_logo.png" alt="momayBUU" class="w-12 h-12 object-contain" />
+        <span class="font-thai">momayBUU</span>
       </div>
     </div>
 
@@ -163,6 +163,56 @@
         <span class="font-thai">คุณแซน</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('momay_khun_nak')"
+      class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay คุณนัก" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay คุณนัก</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momaynew')"
+      class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณนิว" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณนิว</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_bangkrong')"
+      class="neon-btn spline-link-card hover:from-teal-100 hover:to-teal-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="บ้านคลองรีสอร์ท" class="w-12 h-12 object-contain" />
+        <span class="font-thai">บ้านคลองรีสอร์ท</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('demo')"
+      class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Demo Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Demo Momay</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('dashboard')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay Dashboard" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay Dashboard</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -181,7 +231,7 @@ import MobileFlipbook from '~/components/MobileFlipbook.vue'
 import PageFlipBook from '~/components/PageFlipBook.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const splineLinks = {
+const splineLinks: Record<string, string> = {
   momay_BanKlongResort: '/momay/momay_BanKlongResort',
   wongpanit_sukhothai: '/momay/wongpanit_sukhothai',
   hospital_Noenmaprang: '/momay/hospital_Noenmaprang',
@@ -191,13 +241,16 @@ const splineLinks = {
   naresuan_library: '/momay/naresuan_library',
   Momay_pharmacy: '/momay/Momay_pharmacy',
   Mpmay_human: '/momay/Mpmay_human',
-  MomayBUU: '/momay/MomayBUU',
+  momayBUU: '/momay/momayBUU',
   momay_88_31_khun_deer: '/momay/momay_88_31_khun_deer',
-  momay_khun_sand: '/momay/momay_khun_sand'
+  momay_khun_sand: '/momay/momay_khun_sand',
+  momay_khun_nak: '/momay/momay_khun_nak',
+  momaynew: '/momay/momaynew',
+  momay_doc_99_99: '/momay/99/99',
+  momay_bangkrong: '/momay/momay_bangkrong',
+  demo: '/momay/demo',
+  dashboard: '/momay/dashboard'
 }
-
-// Add mapping for 99/99 document route
-splineLinks['99/99'] = '/momay/99/99'
 
 const pages = [
   '/Sale%20Kit%20Momay181125%20_pages-to-jpg-0001.jpg',
@@ -257,7 +310,7 @@ onMounted(() => {
   })
 })
 
-function openSplineDesign(key: keyof typeof splineLinks) {
+function openSplineDesign(key: string) {
   const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
 
   // ถ้าเป็น hospital ให้ตรวจรหัสเฉพาะ
@@ -280,7 +333,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   }
 
   const url = splineLinks[key]
-  if (url) window.open(url, '_blank')
+  if (url) navigateTo(url)
 }
 </script>
 
@@ -410,7 +463,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
   background: transparent !important;
 }
 

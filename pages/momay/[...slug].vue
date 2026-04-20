@@ -14,17 +14,23 @@ const targets: Record<string, string> = {
   hospital_Noenmaprang_v1: 'https://momay-4a073.web.app/',
   clinic: 'https://momayclinic.web.app/',
   momay02:'https://momay02-production.up.railway.app/',
+  momayBUU: 'https://momaybuu-production.up.railway.app/',
   naresuan_library: 'https://momaylib-production.up.railway.app/',
   Momay_pharmacy: 'https://my.spline.design/espresopharmacy-a21edee004531a425af1c2768331add8/',
   Mpmay_human: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/',
   '99/99': 'https://momaydoc-production.up.railway.app/',
-  MomayBUU: 'https://momaybuu-production.up.railway.app/',
   momay_88_31_khun_deer: 'https://momaydeer-production.up.railway.app/',
-  momay_khun_sand: 'https://momaysand-production.up.railway.app/'
+  momay_khun_sand: 'https://momaysand-production.up.railway.app/',
+  momay_khun_nak: 'https://momaynug-production.up.railway.app/',
+  momaynew: 'https://momaynew-production.up.railway.app/',
+  momay_bangkrong: 'https://momaybangkrong-production.up.railway.app/',
+  demo: 'https://momaydemo-production.up.railway.app/',
+  dashboard: 'https://momaydashboard-production.up.railway.app/'
 }
 
 const raw = route.params.slug
 const slug = Array.isArray(raw) ? raw.join('/') : String(raw)
 const url = targets[slug]
+console.log('[momay slug debug]', { raw, slug, url, found: !!url })
 if (!url) await navigateTo('/', { replace: true })
 </script>

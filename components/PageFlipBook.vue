@@ -1,6 +1,6 @@
 
 <template>
-  <div class="flipbook-pageflip-wrapper">
+  <div ref="wrapper" class="flipbook-pageflip-wrapper">
     <div ref="container" class="flipbook-pageflip" />
   </div>
 </template>
@@ -11,6 +11,7 @@ import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { PageFlip } from 'page-flip'
 const props = defineProps<{ pages: string[] }>()
 const container = ref<HTMLElement | null>(null)
+const wrapper = ref<HTMLElement | null>(null)
 let pageFlip: any = null
 const currentPage = ref(0)
 const totalPages = ref(0)
@@ -54,6 +55,7 @@ onMounted(() => {
       useMouseEvents: true,
       showCover: false,
       mobileScrollSupport: true,
+      swipeDistance: 30,
       backgroundColor: 'transparent',
     })
     pageFlip.loadFromImages(props.pages)
@@ -62,6 +64,11 @@ onMounted(() => {
     pageFlip.on('flip', (e: any) => {
       currentPage.value = e.data
     })
+
+    // ให้ scroll ผ่าน flipbook ได้ ไม่ดักจับ wheel event
+    wrapper.value?.addEventListener('wheel', (e: WheelEvent) => {
+      window.scrollBy({ top: e.deltaY, behavior: 'auto' })
+    }, { passive: true })
   }
 })
 
@@ -134,5 +141,9 @@ onBeforeUnmount(() => {
     max-width: 600px;
     height: 400px;
   }
+}
+
+.flipbook-pageflip-wrapper {
+  touch-action: pan-y;
 }
 </style>
