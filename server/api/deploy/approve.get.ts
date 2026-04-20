@@ -1,12 +1,11 @@
 import { connectToDatabase } from '~/server/utils/mongo';
 import { Lead } from '~/server/utils/models';
 import { sendLineNotification } from '~/server/utils/line';
-import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import JSZip from 'jszip';
 import { getEffectiveRequestURL } from '~/server/utils/request';
+import * as RailwayAPI from '~/server/utils/railway-api';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -40,59 +39,146 @@ export default defineEventHandler(async (event) => {
 async function deployProject(lead: any) {
   const tempDir = path.join(os.tmpdir(), `deploy-${lead._id}`);
   const config = useRuntimeConfig();
-  // Use RAILWAY_API_TOKEN for Account Tokens (required for 'railway init' / 'railway link')
-  const env = { 
-    ...process.env, 
-    RAILWAY_API_TOKEN: config.railwayApiKey || process.env.RAILWAY_API_KEY 
-  };
+  const apiToken = config.railwayApiKey || process.env.RAILWAY_API_TOKEN || process.env.RAILWAY_API_KEY;
 
-  console.log(`Starting deployment for ${lead.name} in ${tempDir}`);
+  console.log(`Starting deployment for ${lead.name} (using Railway API)`);
 
   try {
-    // 1. Download and Extract Repo (Avoid git clone)
-    if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
+    // =====================================================
+    // DEPLOYMENT USING RAILWAY API (NO CLI REQUIRED)
+    // =====================================================
+    
+    const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
+    const projectName = `Espresso-${projectRunNumber}`;
+    
+    let projectId = lead.railwayProjectId;
+    let serviceId = '';
+    let environmentId = '';
+    let deployedUrl = 'URL not found';
+
+    // 1. Create project if not exists
+    if (!projectId) {
+      console.log(`[Railway API] Creating new project: ${projectName}`);
+      const project = await RailwayAPI.createProject(projectName, apiToken);
+      projectId = project.id;
+      lead.railwayProjectId = projectId;
+      await lead.save();
+      console.log(`[Railway API] Project created: ${projectId}`);
     }
+
+    // 2. Get production environment ID
+    environmentId = await RailwayAPI.getEnvironmentId(projectId, 'production', apiToken) || '';
+    if (!environmentId) {
+      throw new Error('Failed to get production environment ID');
+    }
+    console.log(`[Railway API] Environment ID: ${environmentId}`);
+
+    // 3. Create service from GitHub repo (or get existing)
+    const repoFullName = 'ThitikornC/EspressoTemplate';
     
-    // Use JSZip to download and extract
-    await downloadAndExtractRepo('https://github.com/ThitikornC/EspressoHuaroa/archive/refs/heads/main.zip', tempDir);
+    // Check if service already exists
+    serviceId = await RailwayAPI.getServiceId(projectId, projectName, apiToken) || '';
     
-    // 2. Railway Link or Init
-    // If we have a project ID, link to it. Otherwise, fallback to init (safety net).
-    if (lead.railwayProjectId) {
-      console.log(`Linking to existing project ID: ${lead.railwayProjectId}`);
+    if (!serviceId) {
+      console.log(`[Railway API] Creating service from repo: ${repoFullName}`);
+      const service = await RailwayAPI.createServiceFromRepo(projectId, projectName, repoFullName, 'main', apiToken);
+      serviceId = service.id;
+      console.log(`[Railway API] Service created: ${serviceId}`);
+      
+      // 3.5 Connect environment to branch (auto-deploy on push)
+      console.log(`[Railway API] Connecting branch main for auto-deploy...`);
       try {
-        await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'link', '--project', lead.railwayProjectId], { cwd: tempDir, env });
-      } catch (err) {
-        console.warn('railway link with --project failed, retrying positional arg:', err);
-        await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'link', lead.railwayProjectId], { cwd: tempDir, env });
+        await RailwayAPI.connectEnvironmentToBranch(serviceId, environmentId, 'main', repoFullName, apiToken);
+        console.log(`[Railway API] Branch main connected to service`);
+      } catch (branchErr) {
+        console.warn('[Railway API] Could not connect branch to environment:', branchErr);
       }
     } else {
-        console.warn('No Project ID found. Falling back to Railway Init.');
-        const projectRunNumber = String(lead.runNumber || '0').padStart(3, '0');
-        const projectName = `Espresso-${projectRunNumber}`;
-        await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'init', '--name', projectName], { cwd: tempDir, env });
+      console.log(`[Railway API] Using existing service: ${serviceId}`);
+      // Trigger redeploy for existing service
+      await RailwayAPI.redeploy(environmentId, serviceId, apiToken);
     }
 
-    // 3. Railway Up
-    // Since it's an empty project initially, we need to make sure we are deploying the code we cloned.
-    // 'railway up' inside the cloned directory should do this.
-    // However, if the project on Railway is empty, 'railway up' will upload the local code.
-    await runCommand('npx', ['-y', '-p', '@railway/cli', 'railway', 'up', '--detach'], { cwd: tempDir, env });
+    // 4. Set environment variables (ครบตาม template .env ของ repo)
+    const runNoPart = String(lead.runNumber || 0).padStart(3, '0');
+    
+    // Format dates for .env
+    const now = new Date();
+    const installDate = lead.startDate ? new Date(lead.startDate) : now;
+    const expiryDateCalc = lead.expiryDate ? new Date(lead.expiryDate) : new Date(now.getTime());
+    if (!lead.expiryDate) expiryDateCalc.setMonth(expiryDateCalc.getMonth() + 1);
+    
+    // Format as Thai locale string
+    const installDateStr = installDate.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
+    const expiryDateStr = expiryDateCalc.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
 
-    // 4. Generate Domain
-    // Try to get the domain. If it fails, we might need to wait or use 'railway domain' to generate one.
-    let deployedUrl = 'URL not found';
+    const envVars: Record<string, string> = {
+      // Database config
+      MONGODB_URI: process.env.MONGODB_URI || 'mongodb+srv://nippit62:ohm0966477158@testing.hgxbz.mongodb.net/?retryWrites=true&w=majority',
+      PORT: '3000',
+      NODE_ENV: 'production',
+      MONGODB_DB: `Espresso_${runNoPart}`,
+      MONGODB_BMI_DB: `BMI_${runNoPart}`,
+      
+      // Railway API config (สำหรับระบบสร้างเว็บอัตโนมัติ)
+      RAILWAY_API_TOKEN: apiToken || '',
+      RAILWAY_PROJECT_ID: projectId,
+      RAILWAY_TEMPLATE_ENV_ID: environmentId,
+      RAILWAY_PROJECT_NAME: projectName,
+      
+      // Customer / client configuration
+      CUSTOMER_NAME: String(lead.name || ''),
+      CLIENT_RUN_NUMBER: runNoPart,
+      CLIENT_CONTRACT_NO: String(lead.contactno || ''),
+      CLIENT_INSTALL_DATE: installDateStr,
+      CLIENT_EXPIRY_DATE: expiryDateStr
+    };
+
+    // Add optional env vars if available from main server
+    if (process.env.BACKEND_API) envVars.BACKEND_API = process.env.BACKEND_API;
+    if (process.env.API_BASE_URL) envVars.API_BASE_URL = process.env.API_BASE_URL;
+
+    console.log(`[Railway API] Setting ${Object.keys(envVars).length} environment variables`);
+    console.log(`[Railway API] Customer: ${envVars.CUSTOMER_NAME}, DB: ${envVars.MONGODB_DB}`);
+    await RailwayAPI.setVariables(projectId, environmentId, serviceId, envVars, apiToken);
+
+    // 5. Create domain if not exists
     try {
-        const domainOutput = await runCommandWithOutput('npx', ['-y', '-p', '@railway/cli', 'railway', 'domain'], { cwd: tempDir, env });
-        const urlMatch = domainOutput.match(/(https?:\/\/[^\s]+)|([a-zA-Z0-9-]+\.up\.railway\.app)/);
-        deployedUrl = urlMatch ? (urlMatch[0].startsWith('http') ? urlMatch[0] : `https://${urlMatch[0]}`) : 'URL not found';
+      const domains = await RailwayAPI.getDomains(projectId, environmentId, serviceId, apiToken);
+      if (domains.serviceDomains && domains.serviceDomains.length > 0) {
+        deployedUrl = `https://${domains.serviceDomains[0].domain}`;
+        console.log(`[Railway API] Using existing domain: ${deployedUrl}`);
+      } else {
+        console.log(`[Railway API] Creating new domain...`);
+        const domainResult = await RailwayAPI.createServiceDomain(environmentId, serviceId, apiToken);
+        deployedUrl = `https://${domainResult.domain}`;
+        console.log(`[Railway API] Domain created: ${deployedUrl}`);
+      }
     } catch (e) {
-        console.warn('Could not fetch domain immediately:', e);
-        deployedUrl = 'Deployment successful, but domain generation pending. Check Railway Dashboard.';
+      console.warn('[Railway API] Could not get/create domain:', e);
+      deployedUrl = 'Deployment successful, check Railway Dashboard for URL';
     }
 
-    // 5. Update DB
+    // 6. Wait for deployment to complete (optional, with timeout)
+    console.log(`[Railway API] Waiting for deployment...`);
+    const deployResult = await RailwayAPI.waitForDeployment(
+      projectId, serviceId, environmentId, 
+      180000, // 3 minutes timeout
+      10000,  // poll every 10 seconds
+      apiToken
+    );
+    console.log(`[Railway API] Deployment status: ${deployResult.status}`);
+
+    // Only fail if deployment explicitly failed (not timeout - deployment may still be in progress)
+    if (!deployResult.success && !['TIMEOUT', 'BUILDING', 'DEPLOYING'].includes(deployResult.status)) {
+      throw new Error(`Deployment failed with status: ${deployResult.status}`);
+    }
+    
+    // If timeout or still building, deployment is in progress - continue with success flow
+    if (deployResult.status === 'TIMEOUT') {
+      console.log(`[Railway API] Deployment still in progress after timeout - continuing with success flow`);
+    }
+    // 7. Update DB
     lead.status = 'deployed';
     // Save both the public canonical URL and the actual deployed target URL
     try {
@@ -124,244 +210,16 @@ async function deployProject(lead: any) {
     }
     await lead.save();
 
-    // 6a. Set Railway project variables from current process.env when available
-    // Priority: ENV_FILE_CONTENT (raw .env text) > ENV_KEYS (comma list) > defaultKeys
-    async function setRailwayProjectVariables(projectId: string, envObj: any) {
-      if (!projectId) return;
-      // Parse ENV_FILE_CONTENT if present
-      const vars: Record<string,string> = {};
-      const raw = envObj.ENV_FILE_CONTENT || envObj.RAW_ENV_CONTENT || '';
-      if (raw && raw.length > 0) {
-        raw.split(/\r?\n/).forEach((ln: string) => {
-          const line = ln.trim();
-          if (!line || line.startsWith('#')) return;
-          const idx = line.indexOf('=');
-          if (idx === -1) return;
-          const k = line.slice(0, idx).trim();
-          const v = line.slice(idx+1).trim().replace(/^"|"$/g, '').replace(/^'|'$/g, '');
-          if (k) vars[k] = v;
-        });
-      } else if (envObj.ENV_KEYS) {
-        const keys = String(envObj.ENV_KEYS).split(',').map((s:any)=>String(s).trim()).filter(Boolean);
-        keys.forEach((k:any) => { if (Object.prototype.hasOwnProperty.call(envObj, k)) vars[k] = String(envObj[k]); });
-      } else {
-        const defaultKeys = [
-          'MONGODB_URI','PORT','NODE_ENV','MONGODB_DB','MONGODB_BMI_DB',
-          'BACKEND_API','API_BASE_URL','RAILWAY_API_TOKEN','RAILWAY_PROJECT_ID','RAILWAY_TEMPLATE_ENV_ID','RAILWAY_PROJECT_NAME',
-          // Customer/client config keys
-          'CUSTOMER_NAME','CLIENT_RUN_NUMBER','CLIENT_CONTRACT_NO','CLIENT_INSTALL_DATE','CLIENT_EXPIRY_DATE'
-        ];
-        defaultKeys.forEach((k) => { if (Object.prototype.hasOwnProperty.call(envObj, k)) vars[k] = String(envObj[k]); });
-      }
-
-      // If no vars found, nothing to do
-      const keys = Object.keys(vars);
-      if (!keys.length) {
-        console.log('No variables found to set for Railway project');
-        return;
-      }
-
-      console.log(`Setting ${keys.length} Railway variables for project ${projectId} (keys: ${keys.join(',')})`);
-      for (const k of keys) {
-        try {
-          // use CLI to set variable for the project
-          // Prefer capture output so we can log errors for debugging
-          const envFlag = envObj.RAILWAY_TEMPLATE_ENV_ID || envObj.RAILWAY_ENVIRONMENT_ID || process.env.RAILWAY_TEMPLATE_ENV_ID || process.env.RAILWAY_ENVIRONMENT_ID || '';
-          const args = ['-y','-p','@railway/cli','railway','variables','set', `${k}=${vars[k]}`, '--project', projectId];
-          if (envFlag) args.push('--environment', String(envFlag));
-          try {
-            const out = await runCommandWithOutput('npx', args, { cwd: tempDir, env: envObj });
-            console.log(`railway variables set ${k}:`, out);
-          } catch (err:any) {
-            console.warn(`railway variables set ${k} failed:`, err && err.message ? err.message : err);
-            // retry without environment flag if it failed with env
-            if (envFlag) {
-              try {
-                const out2 = await runCommandWithOutput('npx', ['-y','-p','@railway/cli','railway','variables','set', `${k}=${vars[k]}`, '--project', projectId], { cwd: tempDir, env: envObj });
-                console.log(`railway variables set ${k} (retry w/o env):`, out2);
-              } catch (err2:any) {
-                console.error(`railway variables set ${k} retry failed:`, err2 && err2.message ? err2.message : err2);
-              }
-            }
-          }
-        } catch (e) {
-          console.warn(`Failed to set variable ${k} on project ${projectId}:`, e);
-        }
-      }
-    }
-
-    try {
-      const projectIdToUse = lead.railwayProjectId || '';
-      if (projectIdToUse) {
-        // Build per-customer env overrides so DB names and client info are unique per deploy
-        const runNoPart = String(lead.runNumber || 0).padStart(3, '0');
-        const perCustomerEnv: Record<string,string> = {
-          // preserve provided environment values but override DB names per-customer
-          MONGODB_DB: process.env.MONGODB_DB ? process.env.MONGODB_DB.replace(/_template$/i, `_${runNoPart}`) : `Espresso_${runNoPart}`,
-          MONGODB_BMI_DB: process.env.MONGODB_BMI_DB ? process.env.MONGODB_BMI_DB.replace(/_template$/i, `_${runNoPart}`) : `BMI_${runNoPart}`,
-          CUSTOMER_NAME: String(lead.name || ''),
-          CLIENT_RUN_NUMBER: runNoPart,
-          CLIENT_CONTRACT_NO: String(lead.contactno || '-'),
-          CLIENT_INSTALL_DATE: (lead.startDate ? new Date(lead.startDate).toISOString() : ''),
-          CLIENT_EXPIRY_DATE: (lead.expiryDate ? new Date(lead.expiryDate).toISOString() : ''),
-          RAILWAY_PROJECT_NAME: process.env.RAILWAY_PROJECT_NAME || 'espresso',
-          RAILWAY_PROJECT_ID: process.env.RAILWAY_PROJECT_ID || '',
-          RAILWAY_TEMPLATE_ENV_ID: process.env.RAILWAY_TEMPLATE_ENV_ID || ''
-        };
-
-        const envToSet = { ...env, ...perCustomerEnv };
-        await setRailwayProjectVariables(projectIdToUse, envToSet);
-      } else {
-        console.warn('No projectId available to set Railway variables');
-      }
-    } catch (e) {
-      console.warn('Failed to set Railway project variables:', e);
-    }
-
-    // 6a. Generate contract image now that deployment is done, upload to public storage
-    // Prefer Cloudinary unsigned upload using CLOUDINARY_CLOUD_NAME + CLOUDINARY_UPLOAD_PRESET.
-    let contractImageUrl: string | null = null;
-    try {
-      // Build display dates and contract number
-      const now = new Date();
-      const startDisplay = (lead.startDate ? new Date(lead.startDate) : now).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
-      const expiryDate = lead.expiryDate ? new Date(lead.expiryDate) : new Date(now.getTime());
-      if (!lead.expiryDate) expiryDate.setMonth(expiryDate.getMonth() + 1);
-      const expiryDisplay = expiryDate.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
-      const y = (lead.startDate ? new Date(lead.startDate).getFullYear() : now.getFullYear());
-      const buddhistYear = y + 543;
-      const m = String((lead.startDate ? new Date(lead.startDate).getMonth() + 1 : now.getMonth() + 1)).padStart(2, '0');
-      const d = String((lead.startDate ? new Date(lead.startDate).getDate() : now.getDate())).padStart(2, '0');
-      const datePart = `${buddhistYear}${m}${d}`;
-      const runNoPart2 = String(lead.runNumber || 0).padStart(3, '0');
-      const contractNumber = `${datePart}${runNoPart2}`;
-
-      // Read logo if available
-      let logoBase64 = '';
-      try {
-        const logoPath = path.join(process.cwd(), 'public', 'kwang_logo.png');
-        if (fs.existsSync(logoPath)) {
-          const buf = fs.readFileSync(logoPath);
-          logoBase64 = buf.toString('base64');
-        }
-      } catch (e) { /* ignore */ }
-
-      const svg = `<?xml version="1.0" encoding="UTF-8"?>\n` +
-        `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="720">\n` +
-        `  <rect width="100%" height="100%" fill="#fff" rx="16"/>\n` +
-        `  <rect x="24" y="24" width="552" height="112" rx="12" fill="#4b2f2a"/>\n` +
-        `  <image x="36" y="36" width="56" height="56" href="data:image/png;base64,${logoBase64}" />\n` +
-        `  <text x="300" y="84" font-family="'Helvetica Neue', Arial" font-size="24" fill="#fff" text-anchor="middle" font-weight="700">ESPRESSO Contract</text>\n` +
-        `  <g transform="translate(40,160)">\n` +
-        `    <style> .label { fill: #a89993; font-size: 14px; font-family: 'Helvetica Neue', Arial; } .value { fill: #3b2b28; font-size: 18px; font-family: 'Helvetica Neue', Arial; font-weight:700; } .contract { fill: #3b2b28; font-size:18px; font-family: 'Helvetica Neue', Arial; font-weight:700; } </style>\n` +
-        `    <text x="0" y="0" class="label">NAME</text>\n` +
-        `    <text x="220" y="0" class="value">${escapeXml(lead.name || '')}</text>\n` +
-        `    <text x="0" y="56" class="label">CONTRACT NO.</text>\n` +
-        `    <text x="220" y="56" class="contract">${escapeXml(contractNumber)}</text>\n` +
-        `    <text x="0" y="112" class="label">START</text>\n` +
-        `    <text x="220" y="112" class="value">${escapeXml(startDisplay)}</text>\n` +
-        `    <text x="0" y="168" class="label">EXPIRY</text>\n` +
-        `    <text x="220" y="168" class="value">${escapeXml(expiryDisplay)}</text>\n` +
-        `  </g>\n` +
-        `  <g transform="translate(40,260)">\n` +
-        `    <rect x="0" y="0" width="520" height="140" rx="8" fill="#fff" stroke="#e6e2df" stroke-width="1"/>\n` +
-        `    <text x="12" y="22" class="label">Signature</text>\n` +
-        `    <line x1="12" y1="104" x2="508" y2="104" stroke="#3b2b28" stroke-width="1" stroke-linecap="round"/>\n` +
-        `  </g>\n` +
-        `</svg>`;
-
-      let pngBuffer: Buffer | null = null;
-      try {
-        const sharpModule = await import('sharp');
-        const sharp = (sharpModule && (sharpModule.default || sharpModule)) as any;
-        pngBuffer = await sharp(Buffer.from(svg)).png({ quality: 90 }).toBuffer();
-      } catch (e) {
-        // sharp not available; keep svg as fallback
-        pngBuffer = null;
-      }
-
-      // Attempt Cloudinary unsigned upload if configured
-      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-      const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
-      if (cloudName && uploadPreset) {
-        try {
-          const formData = new FormData();
-          if (pngBuffer) {
-            // upload binary as data URI
-            formData.append('file', `data:image/png;base64,${pngBuffer.toString('base64')}`);
-          } else {
-            formData.append('file', `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`);
-          }
-          formData.append('upload_preset', uploadPreset);
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData as any });
-          if (res.ok) {
-            const jd = await res.json();
-            contractImageUrl = jd.secure_url || jd.url || null;
-          } else {
-            console.warn('Cloudinary upload failed', await res.text());
-          }
-        } catch (e) {
-          console.warn('Cloudinary upload error', e);
-        }
-      }
-
-      // Fallback: write into this backend public dir and expose via API_BASE_URL or BACKEND_API
-      if (!contractImageUrl) {
-        const svgFilename = `contract-${contractNumber}.svg`;
-        const pngFilename = `contract-${contractNumber}.png`;
-        const possiblePublicDirs = [path.join(process.cwd(), '.output', 'public'), path.join(process.cwd(), 'public')];
-        const publicDir = possiblePublicDirs.find((d) => fs.existsSync(d)) || possiblePublicDirs[1];
-        try {
-          if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
-          if (pngBuffer) {
-            const pngPath = path.join(publicDir, pngFilename);
-            fs.writeFileSync(pngPath, pngBuffer);
-            const backendBase = (config.public && config.public.apiURL) || process.env.API_BASE_URL || process.env.BACKEND_API || process.env.APP_URL || '';
-            if (backendBase) contractImageUrl = `${String(backendBase).replace(/\/$/, '')}/${pngFilename}`;
-            lead.contractImage = `/${pngFilename}`;
-          } else {
-            const svgPath = path.join(publicDir, svgFilename);
-            fs.writeFileSync(svgPath, svg, 'utf-8');
-            const backendBase = (config.public && config.public.apiURL) || process.env.API_BASE_URL || process.env.BACKEND_API || process.env.APP_URL || '';
-            if (backendBase) contractImageUrl = `${String(backendBase).replace(/\/$/, '')}/${svgFilename}`;
-            lead.contractImage = `/${svgFilename}`;
-          }
-          lead.contractNumber = contractNumber;
-          await lead.save();
-        } catch (e) {
-          console.warn('Failed to write contract image to public dir fallback', e);
-        }
-      }
-
-      // If contractImageUrl is ready and is an https URL, send as image message first
-      try {
-        if (contractImageUrl && String(contractImageUrl).startsWith('http')) {
-          await sendLineNotification({ type: 'image', originalContentUrl: String(contractImageUrl), previewImageUrl: String(contractImageUrl) });
-        }
-      } catch (e) {
-        console.warn('Failed to send contract image to LINE', e);
-      }
-    } catch (e) {
-      console.warn('Contract image generation/upload failed:', e);
-    }
-
     // 6. Notify Admin
-    // helper to escape XML text in SVG
-    function escapeXml(unsafe: string) {
-      return unsafe.replace(/[<>&'\"]+/g, (c) => ({
-        '<': '&lt;',
-        '>': '&gt;',
-        '&': '&amp;',
-        "'": '&apos;',
-        '"': '&quot;'
-      } as any)[c]);
-    }
-
-    // Build a public proxy URL to show as primary link (use lead.url if set, otherwise construct)
+    // Build a public proxy URL to show as primary link
     const runNoPartForMsg = String(lead.runNumber || 0).padStart(3, '0');
     const proxyBaseForMsg = process.env.PROXY_BASE_URL || 'https://www.kwangunlimit.com';
     const proxyPrefixForMsg = process.env.PROXY_PREFIX || 'espresso';
-    const publicProxyUrl = (lead.url && String(lead.url).trim()) ? String(lead.url) : `${String(proxyBaseForMsg).replace(/\/$/, '')}/${proxyPrefixForMsg}/${runNoPartForMsg}`;
+    const publicProxyUrl = `${String(proxyBaseForMsg).replace(/\/$/, '')}/${proxyPrefixForMsg}/${runNoPartForMsg}`;
+    
+    // Format dates for display
+    const startDateDisplay = lead.startDate ? new Date(lead.startDate).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }) : '-';
+    const expiryDateDisplay = lead.expiryDate ? new Date(lead.expiryDate).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }) : '-';
 
     const flexMessage = {
       type: "flex",
@@ -381,30 +239,67 @@ async function deployProject(lead: any) {
             }
           ]
         },
-            body: {
+        body: {
           type: "box",
           layout: "vertical",
           contents: [
             {
-              type: "text",
-              text: `Project for ${lead.name} is now live.`,
-              wrap: true,
-              color: "#666666",
-              size: "md"
-            },
-            {
-              type: "separator",
-              margin: "md"
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "NAME", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: String(lead.name || '-'), wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" }
+              ]
             },
             {
               type: "box",
-              layout: "vertical",
+              layout: "baseline",
               margin: "md",
               contents: [
-                // Show proxy/public URL first (if available) and the direct deployed URL below
-                [{ type: "text", text: publicProxyUrl, wrap: true, color: "#007bff", size: "sm", action: { type: "uri", uri: publicProxyUrl } }],
-                ...(deployedUrl ? [{ type: "text", text: String(deployedUrl), wrap: true, color: "#555555", size: "xs", margin: "sm", action: { type: "uri", uri: String(deployedUrl) } }] : [])
+                { type: "text", text: "No.", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: runNoPartForMsg, wrap: true, color: "#3b2b28", size: "sm", flex: 5, weight: "bold" }
               ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "CONTRACT", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: String(lead.contactno || '-'), wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "START", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: startDateDisplay, wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              margin: "md",
+              contents: [
+                { type: "text", text: "EXPIRY", color: "#a89993", size: "sm", flex: 2 },
+                { type: "text", text: expiryDateDisplay, wrap: true, color: "#3b2b28", size: "sm", flex: 5 }
+              ]
+            },
+            {
+              type: "separator",
+              margin: "lg"
+            },
+            {
+              type: "text",
+              text: publicProxyUrl,
+              wrap: true,
+              color: "#007bff",
+              size: "sm",
+              margin: "md",
+              action: { type: "uri", uri: publicProxyUrl }
             }
           ]
         },
@@ -413,10 +308,7 @@ async function deployProject(lead: any) {
           layout: "vertical",
           spacing: "sm",
           contents: [
-            // Primary proxy button (if available)
-            [{ type: "button", style: "primary", height: "sm", action: { type: "uri", label: "Open (Proxy)", uri: publicProxyUrl }, color: "#1DB446" }],
-            // Secondary direct button (deployed URL)
-            ...(deployedUrl ? [{ type: "button", style: "secondary", height: "sm", action: { type: "uri", label: "Open (Direct)", uri: String(deployedUrl) }, color: "#4b2f2a" }] : [])
+            { type: "button", style: "primary", height: "sm", action: { type: "uri", label: "Open", uri: publicProxyUrl }, color: "#1DB446" }
           ],
           flex: 0
         }
@@ -424,79 +316,23 @@ async function deployProject(lead: any) {
     };
 
     await sendLineNotification(flexMessage);
-    console.log(`Deployment finished. URL: ${deployedUrl}`);
+    console.log(`Deployment finished. URL: ${publicProxyUrl}`);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Deployment error:', error);
-    await sendLineNotification(`Deployment Failed for ${lead.name}. Check server logs.`);
+    console.error('Deployment error stack:', error?.stack);
+    console.error('Deployment error message:', error?.message);
+    
+    // Update lead status to failed
+    try {
+      lead.status = 'deploy_failed';
+      lead.deployError = error?.message || String(error);
+      await lead.save();
+    } catch (e) {
+      console.error('Failed to update lead status:', e);
+    }
+    
+    await sendLineNotification(`Deployment Failed for ${lead.name}. Error: ${error?.message || 'Unknown error'}. Check server logs.`);
   }
 }
 
-async function downloadAndExtractRepo(url: string, dest: string) {
-  console.log(`Downloading repo from ${url}...`);
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to download repo: ${response.statusText}`);
-  
-  const arrayBuffer = await response.arrayBuffer();
-  const zip = await JSZip.loadAsync(arrayBuffer);
-  
-  console.log(`Extracting to ${dest}...`);
-  fs.mkdirSync(dest, { recursive: true });
-
-  for (const filename of Object.keys(zip.files)) {
-      // Skip node_modules and .git to avoid issues and save time
-      if (filename.includes('node_modules/') || filename.includes('.git/')) continue;
-
-      const file = zip.files[filename];
-      if (file.dir) continue;
-
-      const destPath = path.join(dest, filename);
-      fs.mkdirSync(path.dirname(destPath), { recursive: true });
-      const content = await file.async('nodebuffer');
-      fs.writeFileSync(destPath, content);
-  }
-  
-  // Handle root folder if exists (e.g. EspressoHuaroa-main/)
-  const items = fs.readdirSync(dest);
-  if (items.length === 1 && fs.statSync(path.join(dest, items[0])).isDirectory()) {
-      const rootDir = path.join(dest, items[0]);
-      const files = fs.readdirSync(rootDir);
-      for (const f of files) {
-          fs.renameSync(path.join(rootDir, f), path.join(dest, f));
-      }
-      fs.rmdirSync(rootDir);
-  }
-}
-
-function runCommand(command: string, args: string[], options: any = {}) {
-  return new Promise((resolve, reject) => {
-    console.log(`Running: ${command} ${args.join(' ')}`);
-    const proc = spawn(command, args, { stdio: 'inherit', shell: true, ...options });
-    
-    proc.on('close', (code) => {
-      if (code === 0) resolve(true);
-      else reject(new Error(`Command failed with code ${code}`));
-    });
-    
-    proc.on('error', (err) => reject(err));
-  });
-}
-
-function runCommandWithOutput(command: string, args: string[], options: any = {}): Promise<string> {
-  return new Promise((resolve, reject) => {
-    console.log(`Running (capture): ${command} ${args.join(' ')}`);
-    const proc = spawn(command, args, { ...options, shell: true });
-    let stdout = '';
-    let stderr = '';
-
-    proc.stdout?.on('data', (data) => stdout += data.toString());
-    proc.stderr?.on('data', (data) => stderr += data.toString());
-
-    proc.on('close', (code) => {
-      if (code === 0) resolve(stdout.trim());
-      else reject(new Error(`Command failed with code ${code}: ${stderr}`));
-    });
-    
-    proc.on('error', (err) => reject(err));
-  });
-}

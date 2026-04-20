@@ -19,6 +19,7 @@ const databases = [
   { name: 'Huroa2', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ' },
   { name: 'Huroa3', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่' },
   { name: 'Huroa4', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
+  { name: 'Espresso_template', label: 'โรงเรียนเทศบาล3 แม่ฮ่องสอน' },
 ];
 
 // Store connections
