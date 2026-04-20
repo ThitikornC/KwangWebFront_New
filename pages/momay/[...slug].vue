@@ -21,6 +21,7 @@ const targets: Record<string, string> = {
   '99/99': 'https://momaydoc-production.up.railway.app/',
   momay_88_31_khun_deer: 'https://momaydeer-production.up.railway.app/',
   momay_khun_sand: 'https://momaysand-production.up.railway.app/',
+  momay_khun_nak: 'https://momaynug-production.up.railway.app/',
   momaynew: 'https://momaynew-production.up.railway.app/',
   momay_bangkrong: 'https://momaybangkrong-production.up.railway.app/',
   demo: 'https://momaydemo-production.up.railway.app/',
