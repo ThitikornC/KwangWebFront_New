@@ -213,6 +213,16 @@
         <span class="font-thai">Momay Dashboard</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('momay_khun_taeng')"
+      class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay คุณเท้ง" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay คุณเท้ง</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -249,7 +259,8 @@ const splineLinks: Record<string, string> = {
   momay_doc_99_99: '/momay/99/99',
   momay_bangkrong: '/momay/momay_bangkrong',
   demo: '/momay/demo',
-  dashboard: '/momay/dashboard'
+  dashboard: '/momay/dashboard',
+  momay_khun_taeng: '/momay/momay_khun_taeng'
 }
 
 const pages = [
