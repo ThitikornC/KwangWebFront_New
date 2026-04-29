@@ -115,32 +115,12 @@
     </div>
 
     <div
-      @click="openSplineDesign('naresuan_library')"
-      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
-    >
-      <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Naresuan Library" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Naresuan University Library</span>
-      </div>
-    </div>
-
-    <div
       @click="openSplineDesign('momay_doc_99_99')"
       class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
     >
       <div class="card-content">
         <img src="/MOMAY_logo.png" alt="Momay 99/99" class="w-12 h-12 object-contain" />
         <span class="font-thai">99/99</span>
-      </div>
-    </div>
-
-    <div
-      @click="openSplineDesign('momayBUU')"
-      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
-    >
-      <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="momayBUU" class="w-12 h-12 object-contain" />
-        <span class="font-thai">momayBUU</span>
       </div>
     </div>
 
@@ -205,6 +185,16 @@
     </div>
 
     <div
+      @click="openSplineDesign('momay_khun_taeng')"
+      class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay คุณเท้ง" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay คุณเท้ง</span>
+      </div>
+    </div>
+
+    <div
       @click="openSplineDesign('dashboard')"
       class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
     >
@@ -215,12 +205,22 @@
     </div>
 
     <div
-      @click="openSplineDesign('momay_khun_taeng')"
-      class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
+      @click="openSplineDesign('naresuan_library')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Momay คุณเท้ง" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Momay คุณเท้ง</span>
+        <img src="/MOMAY_logo.png" alt="Naresuan Library" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Naresuan University Library</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momayBUU')"
+      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="momayBUU" class="w-12 h-12 object-contain" />
+        <span class="font-thai">momayBUU</span>
       </div>
     </div>
   </div>
@@ -331,7 +331,7 @@ function openSplineDesign(key: string) {
       return
     }
   } else if (key === 'naresuan_library') {
-    if (password !== '1608') {
+    if (password !== '240124') {
       alert("รหัสสำหรับ Naresuan Library ไม่ถูกต้อง ❌")
       return
     }
