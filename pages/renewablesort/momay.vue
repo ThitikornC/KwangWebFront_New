@@ -474,7 +474,7 @@ function openSplineDesign(key: string) {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: transparent !important;
 }
 

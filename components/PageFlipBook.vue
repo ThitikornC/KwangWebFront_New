@@ -143,7 +143,8 @@ onBeforeUnmount(() => {
   }
 }
 
-.flipbook-pageflip-wrapper {
+.flipbook-pageflip-wrapper,
+.flipbook-pageflip-wrapper * {
   touch-action: pan-y;
 }
 </style>
