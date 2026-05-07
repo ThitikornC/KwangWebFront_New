@@ -195,6 +195,16 @@
     </div>
 
     <div
+      @click="openSplineDesign('momay_khun_eat')"
+      class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay คุณอิ๊ด" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay คุณอิ๊ด</span>
+      </div>
+    </div>
+
+    <div
       @click="openSplineDesign('dashboard')"
       class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
     >
@@ -260,7 +270,8 @@ const splineLinks: Record<string, string> = {
   momay_bangkrong: '/momay/momay_bangkrong',
   demo: '/momay/demo',
   dashboard: '/momay/dashboard',
-  momay_khun_taeng: '/momay/momay_khun_taeng'
+  momay_khun_taeng: '/momay/momay_khun_taeng',
+  momay_khun_eat: '/momay/momay_khun_eat'
 }
 
 const pages = [
