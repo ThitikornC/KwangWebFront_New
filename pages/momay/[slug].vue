@@ -27,7 +27,9 @@ const targets: Record<string, string> = {
   demo: 'https://momaydemo-production.up.railway.app/',
   dashboard: 'https://dasaut-production.up.railway.app/',
   momay_khun_taeng: 'https://momaytang-production.up.railway.app/',
-  momay_khun_eat: 'https://momayeat-production.up.railway.app/'
+  momay_khun_eat: 'https://momayeat-production.up.railway.app/',
+  momay_mom: 'https://momaymom-production.up.railway.app/',
+  momay_kae: 'https://momaykae-production.up.railway.app/'
 
 }
 const url = targets[String(route.params.slug)]
