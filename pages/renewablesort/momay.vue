@@ -255,12 +255,12 @@
     </div>
 
     <div
-      @click="openSplineDesign('MomayHM')"
+      @click="openSplineDesign('MomayHMV1')"
       class="neon-btn spline-link-card hover:from-cyan-100 hover:to-cyan-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="MomayHM" class="w-12 h-12 object-contain" />
-        <span class="font-thai">MomayHM</span>
+        <img src="/MOMAY_logo.png" alt="MomayHMV1" class="w-12 h-12 object-contain" />
+        <span class="font-thai">MomayHMV1</span>
       </div>
     </div>
 
@@ -281,6 +281,16 @@
       <div class="card-content">
         <img src="/MOMAY_logo.png" alt="MomayDP" class="w-12 h-12 object-contain" />
         <span class="font-thai">MomayDP</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('MomayModel')"
+      class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="MomayModel" class="w-12 h-12 object-contain" />
+        <span class="font-thai">MomayModel</span>
       </div>
     </div>
   </div>
@@ -324,9 +334,10 @@ const splineLinks: Record<string, string> = {
   momay_khun_eat: '/momay/momay_khun_eat',
   momay_mom: '/momay/momay_mom',
   momay_kae: '/momay/momay_kae',
-  MomayHM: '/momay/MomayHM',
+  MomayHMV1: '/momay/MomayHMV1',
   MomayGreedy: '/momay/MomayGreedy',
-  MomayDP: '/momay/MomayDP'
+  MomayDP: '/momay/MomayDP',
+  MomayModel: '/momay/MomayModel'
 }
 
 const pages = [
