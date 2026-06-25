@@ -320,7 +320,7 @@
     >
       <div class="card-content">
         <img src="/MOMAY_logo.png" alt="Momay_Top soccer club & P.R.G Car สุโขทัย" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Momay_Top soccer club &amp; P.R.G Car สุโขทัย</span>
+        <span class="font-thai card-label-sm">Momay_Top soccer club &amp; P.R.G Car สุโขทัย</span>
       </div>
     </div>
   </div>
@@ -577,6 +577,20 @@ function openSplineDesign(key: string) {
 @media (min-width: 640px) {
   .card-content span {
     font-size: 16px;
+  }
+}
+
+/* Compact label for long card titles so they fit without overflowing */
+.card-content span.card-label-sm {
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .card-content span.card-label-sm {
+    font-size: 12px;
   }
 }
 
