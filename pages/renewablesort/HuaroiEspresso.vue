@@ -31,8 +31,15 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
-// พื้นหลังเมือง (4:3)
-const BG_CITY = '/espresso/Esprestopia_main.png'
+// พื้นหลังเมือง — ใช้ WebP (เล็กกว่า PNG ~92%) เพื่อโหลดไว
+const BG_CITY = '/espresso/Esprestopia_main.webp'
+
+// preload รูป BG ตั้งแต่ต้น + ความสำคัญสูง ให้ขึ้นเร็วที่สุด
+useHead({
+  link: [
+    { rel: 'preload', as: 'image', href: BG_CITY, fetchpriority: 'high' },
+  ],
+})
 
 // ── 3 ศูนย์ + URL + ตำแหน่งปุ่มบนตึก (top/left เป็น % ปรับให้ตรงตึกได้) ──
 const centers = [
