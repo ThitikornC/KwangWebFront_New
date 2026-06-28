@@ -323,6 +323,16 @@
         <span class="font-thai card-label-sm">Momay_Top soccer club &amp; P.R.G Car สุโขทัย</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('MomayAnan')"
+      class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณอนัน" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณอนัน</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -370,7 +380,8 @@ const splineLinks: Record<string, string> = {
   MomayModel: '/momay/MomayModel',
   MomayChamp: '/momay/MomayChamp',
   MomayHMModel: '/momay/MomayHMModel',
-  MomayTopSoccer: '/momay/MomayTopSoccer'
+  MomayTopSoccer: '/momay/MomayTopSoccer',
+  MomayAnan: '/momay/MomayAnan'
 }
 
 const pages = [
