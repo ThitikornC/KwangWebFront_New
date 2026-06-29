@@ -229,7 +229,11 @@ const fetchLeads = async () => {
   try {
     leadsLoading.value = true
     const res: any = await $fetch('/api/espresso')
-    if (res && res.success) leads.value = res.list || []
+    if (res && res.success) {
+      leads.value = (res.list || []).slice().sort(
+        (a: any, b: any) => Number(a.runNumber || 0) - Number(b.runNumber || 0)
+      )
+    }
   } catch (e) {
     console.error('fetchLeads error', e)
   } finally {
