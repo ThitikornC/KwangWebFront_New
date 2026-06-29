@@ -92,7 +92,7 @@
       </div>
       <!-- Dynamic leads: render after the static parent cards -->
       <div v-if="leadsLoading" class="text-gray-600 ml-4">Loading customers...</div>
-      <div v-else>
+      <template v-else>
         <div v-for="lead in leads" :key="lead.id" class="tree-wrapper">
           <div class="tree-parent">
             <div @click="openLead(lead)" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
@@ -114,7 +114,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
 
     <!-- PDF download removed -->
@@ -525,8 +525,10 @@ onMounted(() => {
 .tree-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   position: relative;
+  width: 320px;
+  max-width: 100%;
 }
 
 .tree-parent {
@@ -535,6 +537,7 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 12px;
   position: relative;
+  flex: 1 1 auto;
 }
 
 /* เอาเส้นออก */
@@ -574,18 +577,28 @@ onMounted(() => {
 }
 
 /* Parent header */
-.parent-box { 
+.parent-box {
   width: 100%;
   max-width: 360px;
-  height: auto; 
-  padding: 12px 16px; 
+  height: 100%;
+  min-height: 200px;
+  padding: 12px 16px;
   border-radius: 10px;
   border: 2px solid #74640a;
+  align-items: stretch;
 }
-.parent-card-content { 
-  flex-direction: column; 
-  align-items: flex-start; 
-  gap: 4px; 
+.parent-card-content {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  height: 100%;
+}
+/* High-specificity width lock so all cards are equal regardless of content */
+.spline-link-card.parent-box {
+  width: 100%;
+  max-width: 320px;
+  min-height: 200px;
 }
 .parent-title { font-weight: 700; font-size: 16px; }
 .parent-sub { font-weight: 800; font-size: 20px; }
