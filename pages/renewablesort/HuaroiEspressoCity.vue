@@ -49,7 +49,10 @@ const centers = [
 ]
 
 const openLink = (link) => {
-  if (link) window.open(link, '_blank')
+  if (!link) return
+  // Same-tab navigation so the browser Back button works
+  if (/^https?:\/\//i.test(link)) navigateTo(link, { external: true })
+  else navigateTo(link)
 }
 
 // ── Weather sky (ไดนามิกตามเวลา/อากาศจริงของพิษณุโลก) ──

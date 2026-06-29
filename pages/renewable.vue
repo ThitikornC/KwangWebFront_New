@@ -66,11 +66,11 @@ const swapLogo = (newLogo: string) => {
   }, 700)
 }
 
-// Open spline design in new tab
+// Open spline design in the same tab so the browser Back button works
 const openSplineDesign = (key: keyof typeof splineLinks) => {
   const url = splineLinks[key]
   if (url) {
-    window.open(url, '_blank')
+    window.location.href = url
   } else {
     console.warn(`No spline link found for “${key}”`)
   }

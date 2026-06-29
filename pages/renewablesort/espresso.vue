@@ -187,7 +187,10 @@ onMounted(() => {
 
 function openSplineDesign(key: keyof typeof splineLinks) {
   const url = splineLinks[key]
-  if (url) window.open(url, '_blank')
+  if (!url) return
+  // Same-tab navigation so the browser Back button works
+  if (/^https?:\/\//i.test(url)) navigateTo(url, { external: true })
+  else navigateTo(url)
 }
 
 

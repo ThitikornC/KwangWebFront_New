@@ -200,9 +200,11 @@ onBeforeUnmount(() => {
   if (pollTimerCounts) clearInterval(pollTimerCounts)
 })
 
-// Open expense link
+// Open expense link (same-tab so the browser Back button works)
 const openExpenseLink = (link) => {
-  if (link) window.open(link, '_blank')
+  if (!link) return
+  if (/^https?:\/\//i.test(link)) navigateTo(link, { external: true })
+  else navigateTo(link)
 }
 
 // Create ripple effect inside element

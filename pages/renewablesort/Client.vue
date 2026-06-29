@@ -190,14 +190,14 @@ function cancelPassword() {
 
 function openProject(key: string) {
   const url = projectLinks[key]
-  if (url) window.open(url, '_blank')
+  if (url) navigateTo(url)
 }
 
 function openLead(lead: any) {
   // Always open the canonical public URL so address stays under kwangunlimit.com
   const run = pad(lead.runNumber || 0)
   const canonical = `https://www.kwangunlimit.com/espresso/${run}`
-  window.open(canonical, '_blank')
+  navigateTo(canonical, { external: true })
 }
 
 function isOnlineLead(lead: any) {
