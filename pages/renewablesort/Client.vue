@@ -57,8 +57,8 @@
                 <div class="parent-sub">เทศบาลตำบลหัวรอ (City View)</div>
                 <div class="parent-title">Usernumber : 001</div>
                 <div class="parent-meta">Contractnumber :</div>
-                <div class="parent-meta">Date Installed : 1-11-25</div>
-                <div class="parent-meta">Expiration Date : 1-12-25</div>
+                <div class="parent-meta">Date Installed : 29-06-26</div>
+                <div class="parent-meta">Expiration Date : </div>
               </div>
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
