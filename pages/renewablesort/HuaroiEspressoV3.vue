@@ -14,52 +14,16 @@
           <div class="flex flex-col gap-0.5">
             <div class="text-xs" style="color:#e5e7eb;">Usernumber : 001</div>
             <div class="text-xs" style="color:#e5e7eb;">Contractnumber :</div>
-            <div class="text-xs" style="color:#e5e7eb;">Date Installed : 29-06-26</div>
+            <div class="text-xs" style="color:#e5e7eb;">Date Installed :</div>
             <div class="text-xs" style="color:#e5e7eb;">Expiration Date :</div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-          <!-- Left Section - Ranking (ครึ่งล่าง) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
+          <!-- Left Section - Ranking -->
           <div class="greedy-card p-4 flex flex-col">
-            <!-- บน: Gauge -->
-            <div style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 0 8px;">
-              <div class="text-xs font-bold tracking-wider mb-1" style="color:#e5e7eb;">ชั่วโมงการใช้งาน</div>
-              <svg viewBox="0 0 200 130" style="width: 100%; max-width: 160px;">
-                <defs>
-                  <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#10b981" />
-                    <stop offset="50%" stop-color="#f59e0b" />
-                    <stop offset="100%" stop-color="#ef4444" />
-                  </linearGradient>
-                  <filter id="needle-glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                  </filter>
-                </defs>
-                <!-- track bg -->
-                <path d="M 20 110 A 80 80 0 0 1 180 110" fill="none" stroke="#3A2410" stroke-width="16" stroke-linecap="round" />
-                <!-- colored arc -->
-                <path d="M 20 110 A 80 80 0 0 1 180 110" fill="none" stroke="url(#gauge-grad)" stroke-width="14" stroke-linecap="round" />
-                <!-- tick labels -->
-                <text x="24"  y="124" fill="#9A7B4A" font-size="11" text-anchor="middle">0</text>
-                <text x="57"  y="77"  fill="#9A7B4A" font-size="11" text-anchor="middle">25</text>
-                <text x="100" y="50"  fill="#9A7B4A" font-size="11" text-anchor="middle">50</text>
-                <text x="143" y="77"  fill="#9A7B4A" font-size="11" text-anchor="middle">75</text>
-                <text x="176" y="124" fill="#9A7B4A" font-size="11" text-anchor="middle">100</text>
-                <!-- needle -->
-                <g :transform="`rotate(${gaugeAngle}, 100, 110)`" filter="url(#needle-glow)">
-                  <line x1="100" y1="110" x2="22" y2="110" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
-                  <polygon points="20,110 30,107 30,113" fill="#ffffff" />
-                </g>
-                <circle cx="100" cy="110" r="7" fill="#2A1208" stroke="#ffffff" stroke-width="2.5" />
-              </svg>
-              <div class="text-lg font-black" :style="{ color: gaugeColor, textShadow: `0 0 12px ${gaugeColor}b3` }">{{ gaugeScore }}</div>
-              <div class="text-[10px] font-bold" :style="{ color: gaugeColor }">{{ gaugeScore === 0 ? 'ยังไม่มีข้อมูล' : 'ชั่วโมง' }}</div>
-            </div>
-
-            <!-- ล่าง: Ranking -->
-            <div style="flex: 0 0 auto; display: flex; flex-direction: column;">
+            <!-- Ranking -->
+            <div style="flex: 1; display: flex; flex-direction: column;">
             <div class="flex justify-between items-center mb-1 flex-shrink-0">
               <h2 class="text-xs font-bold text-gray-300 tracking-wider">จำนวนครั้งที่ใช้งาน</h2>
               <div class="w-1.5 h-1.5 rounded-full bg-[#E6B428] animate-pulse" />
@@ -118,8 +82,8 @@
                 <h2 class="text-xs font-bold tracking-wider" style="color:#e5e7eb;">จำนวนการเข้าใช้แต่ละโหมด</h2>
                 <div class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#E6B428;" />
               </div>
-              <!-- 5 rows — scrollable ครึ่งบน -->
-              <div style="flex: 0 0 auto; max-height: 45%; overflow-y: auto; scrollbar-width: none;">
+              <!-- rows — fill remaining space -->
+              <div style="flex: 1; overflow-y: auto; scrollbar-width: none;">
                 <div class="flex flex-col" style="gap:3px;">
                   <div
                     v-for="(exp, ci) in ranked"
@@ -132,14 +96,16 @@
                       <span class="font-bold flex-1 truncate" style="color:#e5e7eb; font-size:9px;">{{ centerShortName(exp.name) }}</span>
                       <span style="color:#9ca3af; font-size:8px;">▼</span>
                     </div>
-                    <div class="stacked-bar-track" style="height:7px;">
+                    <div class="stacked-bar-track" style="height:16px;">
                       <div
                         v-for="mode in modesForCenter(ci)"
                         :key="mode.name"
                         class="stacked-bar-segment"
                         :style="{ width: mode.pct + '%', background: mode.color }"
                         :title="`${mode.name}: ${mode.count} ครั้ง (${mode.pct}%)`"
-                      />
+                      >
+                        <span v-if="mode.pct >= 8" style="font-size:9px; font-weight:700; color:rgba(0,0,0,0.75); line-height:16px; padding:0 2px; pointer-events:none; user-select:none;">{{ mode.pct }}%</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -151,6 +117,7 @@
                   <span class="font-semibold" style="font-size:10px;" :style="{ color: m.color }">{{ m.name }}</span>
                 </div>
               </div>
+
             </template>
 
             <!-- VIEW B: detail ของศูนย์ที่เลือก -->
@@ -221,15 +188,61 @@ const centerModes = ref([
 
 const expandedCenter = ref(null)
 
-// ── Gauge (ครึ่งบนกรอบซ้าย) ──
-const gaugeScore = ref(0)
-const gaugeAngle = computed(() => (gaugeScore.value / 100) * 180)
-const gaugeColor = computed(() => {
-  if (gaugeScore.value >= 85) return '#ef4444'
-  if (gaugeScore.value >= 70) return '#f97316'
-  if (gaugeScore.value >= 40) return '#f59e0b'
-  return '#10b981'
+// ── BMI Line Chart ──
+const bmiChartW = 280
+const bmiChartH = 100
+const bmiPad = 28
+
+// placeholder data per center [หัวรอ1, หัวรอ2, สระโคล่1, สระโคล่2, มหาวนาราม] (ตามลำดับ ranked)
+const bmiLines = ref([
+  { label: 'สมส่วน',        color: '#10b981', data: [42, 38, 18, 14, 9] },
+  { label: 'เริ่มอ้วน/อ้วน', color: '#f59e0b', data: [12, 15,  5,  4, 2] },
+  { label: 'ผอม',           color: '#fb7185', data: [ 8,  7,  3,  5, 1] },
+])
+
+const bmiMax = computed(() => Math.max(10, ...bmiLines.value.flatMap(l => l.data)))
+const bmiYTicks = computed(() => {
+  const m = bmiMax.value
+  return [m, Math.round(m * 0.5), 0]
 })
+const bmiGridY = computed(() => bmiYTicks.value.map(v => bmiY(v)))
+const bmiX = (ci) => bmiPad + ci * ((bmiChartW - bmiPad - 10) / (ranked.value.length - 1 || 1))
+const bmiY = (v) => {
+  const m = bmiMax.value
+  return 10 + (1 - v / m) * (bmiChartH - 22)
+}
+
+// smooth bezier line path
+const bmiLinePath = (data) => {
+  const pts = data.map((v, i) => [bmiX(i), bmiY(v)])
+  if (pts.length < 2) return ''
+  let d = `M ${pts[0][0]} ${pts[0][1]}`
+  for (let i = 1; i < pts.length; i++) {
+    const cp1x = pts[i-1][0] + (pts[i][0] - pts[i-1][0]) * 0.45
+    const cp1y = pts[i-1][1]
+    const cp2x = pts[i][0] - (pts[i][0] - pts[i-1][0]) * 0.45
+    const cp2y = pts[i][1]
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${pts[i][0]} ${pts[i][1]}`
+  }
+  return d
+}
+// area fill path (line + close to bottom)
+const bmiAreaPath = (data) => {
+  const pts = data.map((v, i) => [bmiX(i), bmiY(v)])
+  const bottom = bmiChartH - 12
+  let d = `M ${pts[0][0]} ${pts[0][1]}`
+  for (let i = 1; i < pts.length; i++) {
+    const cp1x = pts[i-1][0] + (pts[i][0] - pts[i-1][0]) * 0.45
+    const cp1y = pts[i-1][1]
+    const cp2x = pts[i][0] - (pts[i][0] - pts[i-1][0]) * 0.45
+    const cp2y = pts[i][1]
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${pts[i][0]} ${pts[i][1]}`
+  }
+  d += ` L ${pts[pts.length-1][0]} ${bottom} L ${pts[0][0]} ${bottom} Z`
+  return d
+}
+
+
 const modeModal = ref(null)
 const openModeModal = (ci) => { modeModal.value = ci }
 
@@ -616,6 +629,9 @@ const getStatusTitle = (expense) => {
 .center-mode-row:hover { border-color: #E6B428; }
 .stacked-bar-segment {
   height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 2px;
 }
