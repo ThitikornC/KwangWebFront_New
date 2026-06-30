@@ -69,6 +69,28 @@
         </div>
       </div>
 
+      <!-- เทศบาลตำบลหัวรอ (V.3) -->
+      <div class="tree-wrapper">
+        <!-- Parent Node -->
+        <div class="tree-parent">
+          <div @click="requestPassword('huaroaV3')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
+            <div class="card-content parent-card-content">
+              <div>
+                <div class="parent-sub">เทศบาลตำบลหัวรอ (V.3)</div>
+                <div class="parent-title">Usernumber : 001</div>
+                <div class="parent-meta">Contractnumber :</div>
+                <div class="parent-meta">Date Installed : 29-06-26</div>
+                <div class="parent-meta">Expiration Date : </div>
+              </div>
+              <div class="w-full flex justify-end items-center mt-3">
+                <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+                <span class="status-label">{{ isOnlineFor('หัวรอ') ? 'Online' : 'Offline' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- เทศบาลแม่ฮ่องสอน -->
       <div class="tree-wrapper">
         <!-- Parent Node -->
@@ -142,6 +164,7 @@ import { watchEffect } from 'vue'
 const projectLinks: Record<string, string> = {
   huaroaDashboard: '/renewablesort/HuaroiEspresso',
   huaroaCity: '/renewablesort/HuaroiEspressoCity',
+  huaroaV3: '/renewablesort/HuaroiEspressoV3',
   maehongson: '/renewablesort/MaehongsonEspresso'
 }
 
@@ -149,6 +172,7 @@ const projectLinks: Record<string, string> = {
 const passwords: Record<string, string> = {
   huaroaDashboard: '240124',
   huaroaCity: '240124',
+  huaroaV3: '240124',
   maehongson: '240124'
 }
 
