@@ -61,10 +61,10 @@
                   >
                     <div class="relative z-10 flex flex-col justify-center min-w-0">
                       <div class="flex items-center gap-1.5">
-                        <span class="text-[12px] font-black flex-shrink-0" :style="{ color: coinColor(i) }">#{{ i + 1 }}</span>
-                        <span class="font-bold leading-tight line-clamp-2 text-[11px]" :style="{ color: coinColor(i), textShadow: `0 0 8px ${coinColor(i)}80` }">{{ expense.name }}</span>
+                        <span class="text-[14px] font-black flex-shrink-0" :style="{ color: coinColor(i) }">#{{ i + 1 }}</span>
+                        <span class="font-bold leading-tight line-clamp-2 text-[13px]" :style="{ color: coinColor(i), textShadow: `0 0 8px ${coinColor(i)}80` }">{{ expense.name }}</span>
                       </div>
-                      <span class="text-[9px] font-semibold tracking-wide mt-0.5" :style="{ color: `${coinColor(i)}cc` }">{{ formatNumber(expense.count) }} ครั้ง</span>
+                      <span class="text-[11px] font-semibold tracking-wide mt-0.5" :style="{ color: `${coinColor(i)}cc` }">{{ formatNumber(expense.count) }} ครั้ง</span>
                     </div>
                   </div>
                 </div>
@@ -93,10 +93,10 @@
                     @click="openModeModal(ci)"
                   >
                     <div class="flex items-center gap-1 mb-0.5">
-                      <span class="font-bold flex-1 truncate" style="color:#e5e7eb; font-size:9px;">{{ centerShortName(exp.name) }}</span>
-                      <span style="color:#9ca3af; font-size:8px;">▼</span>
+                      <span class="font-bold flex-1 truncate" style="color:#e5e7eb; font-size:12px;">{{ centerShortName(exp.name) }}</span>
+                      <span style="color:#9ca3af; font-size:10px;">▼</span>
                     </div>
-                    <div class="stacked-bar-track" style="height:16px;">
+                    <div class="stacked-bar-track" style="height:20px;">
                       <div
                         v-for="mode in modesForCenter(exp)"
                         :key="mode.name"
@@ -104,8 +104,8 @@
                         :style="{ width: mode.pct + '%', background: mode.color }"
                         :title="`${mode.name}: ${mode.count} ครั้ง (${mode.pct}%)`"
                       >
-                        <transition v-if="mode.pct >= 8" name="bar-flip" mode="out-in">
-                          <span :key="showPct" style="font-size:9px; font-weight:700; color:rgba(0,0,0,0.75); line-height:16px; padding:0 2px; pointer-events:none; user-select:none;">{{ showPct ? mode.pct + '%' : mode.count + ' ครั้ง' }}</span>
+                        <transition v-if="mode.pct >= 14" name="bar-flip" mode="out-in">
+                          <span :key="showPct" style="font-size:11px; font-weight:700; color:rgba(0,0,0,0.75); line-height:20px; padding:0 3px; white-space:nowrap; pointer-events:none; user-select:none;">{{ showPct ? mode.pct + '%' : mode.count + ' ครั้ง' }}</span>
                         </transition>
                       </div>
                     </div>
@@ -115,8 +115,8 @@
               <!-- Legend — อยู่ใต้ rows ไม่โดนซ่อน -->
               <div class="flex flex-wrap gap-x-2 gap-y-0.5 mt-1 pt-1" style="flex: 0 0 auto; border-top:1px solid rgba(74,42,16,0.5);">
                 <div v-for="m in MODE_DEFS" :key="m.name" class="flex items-center gap-1">
-                  <span class="rounded-full flex-shrink-0" style="width:6px;height:6px;" :style="{ background: m.color }"></span>
-                  <span class="font-semibold" style="font-size:10px;" :style="{ color: m.color }">{{ m.name }}</span>
+                  <span class="rounded-full flex-shrink-0" style="width:8px;height:8px;" :style="{ background: m.color }"></span>
+                  <span class="font-semibold" style="font-size:12px;" :style="{ color: m.color }">{{ m.name }}</span>
                 </div>
               </div>
 
@@ -125,20 +125,46 @@
             <!-- VIEW B: detail ของศูนย์ที่เลือก -->
             <template v-else>
               <div class="flex justify-between items-center mb-4 flex-shrink-0">
-                <div class="flex items-center gap-2">
-                  <button @click="modeModal = null" style="background:none;border:none;cursor:pointer;color:#E6B428;font-size:16px;font-weight:900;padding:0;line-height:1;">&lt;</button>
-                  <span class="text-sm font-bold" style="color:#e5e7eb;">{{ centerShortName(ranked[modeModal]?.name || '') }}</span>
+                <span class="text-sm font-bold" style="color:#e5e7eb;">{{ centerShortName(ranked[modeModal]?.name || '') }}</span>
+                <button @click="modeModal = null" title="ย้อนกลับ" style="background:none;border:none;cursor:pointer;color:#E6B428;font-size:16px;font-weight:900;padding:0 4px;line-height:1;">▲</button>
+              </div>
+              <div class="flex flex-col gap-1.5" style="flex: 0 0 auto;">
+                <div v-for="mode in modesForCenter(ranked[modeModal])" :key="mode.name">
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" :style="{ background: mode.color }"></span>
+                    <span class="text-[11px] font-semibold" :style="{ color: mode.color }">{{ mode.name }}</span>
+                    <span class="ml-auto text-[11px] font-bold" :style="{ color: mode.color }">{{ formatNumber(mode.count) }} ครั้ง · {{ mode.pct }}%</span>
+                  </div>
+                  <div class="mode-bar-track" style="height:6px;">
+                    <div class="mode-bar-fill" :style="{ width: mode.pct + '%', background: mode.color, boxShadow: `0 0 8px ${mode.color}80` }" />
+                  </div>
                 </div>
               </div>
-              <div class="flex flex-col gap-3" style="flex: 0 0 auto;">
-                <div v-for="mode in modesForCenter(ranked[modeModal])" :key="mode.name">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ background: mode.color }"></span>
-                    <span class="text-xs font-semibold" :style="{ color: mode.color }">{{ mode.name }}</span>
-                    <span class="ml-auto text-xs font-bold" :style="{ color: mode.color }">{{ formatNumber(mode.count) }} ครั้ง · {{ mode.pct }}%</span>
-                  </div>
-                  <div class="mode-bar-track">
-                    <div class="mode-bar-fill" :style="{ width: mode.pct + '%', background: mode.color, boxShadow: `0 0 8px ${mode.color}80` }" />
+
+              <!-- การ์ดรวมของศูนย์ถัดไป (สูงสุด 2 ที่) -->
+              <div v-if="nextCenters.length" class="mt-4" style="flex: 0 0 auto; border:1px solid rgba(200,152,44,0.4); border-radius:10px; padding:8px 10px; background:rgba(0,0,0,0.18);">
+                <div class="text-[10px] font-semibold mb-2" style="color:#9ca3af;">ถัดไป</div>
+                <div class="flex flex-col" style="gap:8px;">
+                  <div
+                    v-for="item in nextCenters"
+                    :key="item.idx"
+                    class="center-mode-row"
+                    style="padding: 4px 8px;"
+                    @click="openModeModal(item.idx)"
+                  >
+                    <div class="flex items-center gap-1 mb-0.5">
+                      <span class="font-bold flex-1 truncate" style="color:#e5e7eb; font-size:10px;">{{ centerShortName(item.center.name) }}</span>
+                      <span style="color:#9ca3af; font-size:8px;">▼</span>
+                    </div>
+                    <div class="stacked-bar-track" style="height:12px;">
+                      <div
+                        v-for="mode in modesForCenter(item.center)"
+                        :key="mode.name"
+                        class="stacked-bar-segment"
+                        :style="{ width: mode.pct + '%', background: mode.color }"
+                        :title="`${mode.name}: ${mode.count} ครั้ง (${mode.pct}%)`"
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -241,6 +267,18 @@ const bmiAreaPath = (data) => {
 
 const modeModal = ref(null)
 const openModeModal = (ci) => { modeModal.value = ci }
+
+// ศูนย์ถัดไปสูงสุด 2 ตัว (วนกลับไปตัวแรกเมื่อถึงตัวสุดท้าย) สำหรับการ์ดรวมด้านล่าง
+const nextCenters = computed(() => {
+  if (modeModal.value === null) return []
+  const n = ranked.value.length
+  const out = []
+  for (let k = 1; k <= 2 && k < n; k++) {
+    const idx = (modeModal.value + k) % n
+    out.push({ idx, center: ranked.value[idx] })
+  }
+  return out
+})
 
 
 // รับ expense object (จาก ranked) แล้วอ่าน modeCounts จริงของศูนย์นั้น
