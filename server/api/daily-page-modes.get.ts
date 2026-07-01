@@ -3,9 +3,9 @@ import mongoose from 'mongoose';
 // MongoDB connection string for Espresso
 const ESPRESSO_MONGO_URI = 'mongodb+srv://nippit62:ohm0966477158@testing.hgxbz.mongodb.net/?retryWrites=true&w=majority';
 
-// Define schema for daily_page_views (total entries per day+page — every visit counts).
-// NOTE: daily_page_counts counts unique users/day (undercount); daily_page_views is the
-// true "จำนวนการเข้าโหมด" (increments on every /api/usage/start in the Espresso app).
+// Define schema for daily_page_views (counts EVERY entry — exit & re-enter counts again).
+// This is the true "จำนวนการเข้าใช้/ครั้ง" (increments on every /api/usage/start in the
+// Espresso app). daily_page_counts only counts unique users/day, so it undercounts.
 const dailyPageSchema = new mongoose.Schema({
   page: String,
   day: String,
