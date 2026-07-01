@@ -104,7 +104,9 @@
                         :style="{ width: mode.pct + '%', background: mode.color }"
                         :title="`${mode.name}: ${mode.count} ครั้ง (${mode.pct}%)`"
                       >
-                        <span v-if="mode.pct >= 8" style="font-size:9px; font-weight:700; color:rgba(0,0,0,0.75); line-height:16px; padding:0 2px; pointer-events:none; user-select:none;">{{ mode.pct }}%</span>
+                        <transition v-if="mode.pct >= 8" name="bar-flip" mode="out-in">
+                          <span :key="showPct" style="font-size:9px; font-weight:700; color:rgba(0,0,0,0.75); line-height:16px; padding:0 2px; pointer-events:none; user-select:none;">{{ showPct ? mode.pct + '%' : mode.count + ' ครั้ง' }}</span>
+                        </transition>
                       </div>
                     </div>
                   </div>
@@ -345,6 +347,11 @@ const fetchModeCounts = async () => {
 // Status polling removed — this page no longer displays online status
 
 let pollTimerCounts = null
+
+// Toggle the stacked-bar label between % and จำนวนครั้ง every 2.5s
+const showPct = ref(true)
+let labelToggleTimer = null
+
 // Fetch data on mount and poll every POLL_INTERVAL_MS (counts + per-mode)
 onMounted(() => {
   fetchCounts()
@@ -353,10 +360,12 @@ onMounted(() => {
     fetchCounts()
     fetchModeCounts()
   }, POLL_INTERVAL_MS)
+  labelToggleTimer = setInterval(() => { showPct.value = !showPct.value }, 2500)
 })
 
 onBeforeUnmount(() => {
   if (pollTimerCounts) clearInterval(pollTimerCounts)
+  if (labelToggleTimer) clearInterval(labelToggleTimer)
 })
 
 // Open expense link (same-tab so the browser Back button works)
@@ -668,6 +677,20 @@ const getStatusTitle = (expense) => {
   overflow: hidden;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 2px;
+}
+
+/* สลับ %↔ครั้ง แบบ roll นุ่มๆ */
+.bar-flip-enter-active,
+.bar-flip-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.bar-flip-enter-from {
+  opacity: 0;
+  transform: translateY(100%);
+}
+.bar-flip-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
 }
 
 .mode-bar-row { display: flex; flex-direction: column; }
