@@ -58,8 +58,8 @@ const videoFile = ref<File | null>(null);
 const videoPreview = ref('');
 const isUploading = ref(false);
 
-// Auto-scroll intervals
-const autoScrollIntervals: { [key: string]: number | null } = {};
+// Auto-scroll animation frames (requestAnimationFrame ids)
+const autoScrollFrames: { [key: string]: number | null } = {};
 
 // Handle file selection
 function handleFileChange(event: Event) {
@@ -261,75 +261,83 @@ function resetForm() {
   videoPreview.value = '';
 }
 
-// Setup auto-scroll for a container (smooth continuous scroll)
-function setupAutoScroll(containerId: string) {
+// รายการการ์ดแบบซ้ำ 2 ชุดต่อกัน เพื่อให้เลื่อนวนได้แบบไร้รอยต่อ (marquee)
+function loopList(category: string) {
+  const arr = projectsByCategory.value[category] || [];
+  return [...arr, ...arr];
+}
+
+// ความเร็ว auto-scroll (px ต่อเฟรม ~60fps) — เลื่อนไปทางซ้ายอย่างต่อเนื่อง
+const AUTO_SCROLL_SPEED = 0.6;
+
+// Setup seamless auto-scroll for a container using requestAnimationFrame
+// resetToEnd = true เฉพาะตอนเริ่มครั้งแรก, ตอน resume ให้เลื่อนต่อจากตำแหน่งเดิม
+function setupAutoScroll(containerId: string, resetToEnd = false) {
   const container = document.getElementById(containerId);
   if (!container) {
     console.log('Container not found:', containerId);
     return;
   }
 
-  // ตรวจสอบว่ามีเนื้อหาเพียงพอที่จะเลื่อนหรือไม่
-  const hasScrollableContent = container.scrollWidth > container.clientWidth;
-  console.log(`${containerId} - scrollWidth: ${container.scrollWidth}, clientWidth: ${container.clientWidth}, hasScrollable: ${hasScrollableContent}`);
+  // ถ้าเนื้อหาแคบกว่าจอ ไม่ต้องเลื่อน
+  if (container.scrollWidth <= container.clientWidth) return;
 
-  if (!hasScrollableContent) {
-    console.log(`${containerId} has no scrollable content, skipping auto-scroll`);
-    return;
+  const children = container.children;
+  // ต้องมีการ์ดครบ 2 ชุด (จาก loopList) จึงจะวนแบบไร้รอยต่อได้
+  if (children.length < 2) return;
+
+  const half = Math.floor(children.length / 2);
+  const first = children[0] as HTMLElement;
+  const secondSetStart = children[half] as HTMLElement | undefined;
+  if (!secondSetStart) return;
+
+  // period = ระยะ 1 คาบ (จากการ์ดใบแรกของชุดที่ 1 ไปใบแรกของชุดที่ 2)
+  // การวนกลับด้วยระยะนี้จะทำให้ภาพตรงกันพอดี ไม่มีรอยต่อ
+  const period = secondSetStart.offsetLeft - first.offsetLeft;
+  if (period <= 0) return;
+
+  // Cancel existing frame if any
+  if (autoScrollFrames[containerId]) {
+    cancelAnimationFrame(autoScrollFrames[containerId]!);
   }
 
-  // Clear existing interval if any
-  if (autoScrollIntervals[containerId]) {
-    clearInterval(autoScrollIntervals[containerId]!);
+  // ตั้งตำแหน่งเริ่มต้นเฉพาะตอนโหลดครั้งแรก (ไม่ทำตอน resume เพื่อไม่ให้ดีดกลับ)
+  if (resetToEnd) {
+    container.scrollLeft = period;
   }
 
-  // Set initial scroll position to the end
-  const maxScroll = container.scrollWidth - container.clientWidth;
-  container.scrollLeft = maxScroll;
-  console.log(`${containerId} initial scroll set to:`, maxScroll);
-
-  // Smooth continuous scroll - update every 30ms (scrolling LEFT)
-  autoScrollIntervals[containerId] = window.setInterval(() => {
-    if (!container) return;
-    
-    const currentScroll = container.scrollLeft;
-    
-    // If reached the start, jump to end without animation
-    if (currentScroll <= 2) {
-      const maxScroll = container.scrollWidth - container.clientWidth;
-      container.scrollLeft = maxScroll;
-      console.log(`${containerId} looped back to end`);
+  const step = () => {
+    if (container.scrollLeft <= 0) {
+      // วนกลับ 1 คาบ — เนื้อหาซ้ำกันจึงเนียนสนิท
+      container.scrollLeft += period;
     } else {
-      // Scroll LEFT by 2px for smooth continuous effect
-      container.scrollLeft -= 2;
+      container.scrollLeft -= AUTO_SCROLL_SPEED;
     }
-  }, 30); // Update every 30ms
-  
-  console.log(`${containerId} auto-scroll started`);
+    autoScrollFrames[containerId] = requestAnimationFrame(step);
+  };
+  autoScrollFrames[containerId] = requestAnimationFrame(step);
 }
 
 // Cleanup function
 function cleanupAutoScroll() {
-  console.log('Cleaning up auto-scroll intervals');
-  Object.entries(autoScrollIntervals).forEach(([key, interval]) => {
-    if (interval !== null) {
-      clearInterval(interval);
-      console.log(`Cleared interval for ${key}`);
+  Object.entries(autoScrollFrames).forEach(([key, frame]) => {
+    if (frame !== null) {
+      cancelAnimationFrame(frame);
+      autoScrollFrames[key] = null;
     }
   });
 }
 
-// เพิ่มฟังก์ชันสำหรับหยุด/เริ่ม auto-scroll เมื่อ hover
+// หยุด/เริ่ม auto-scroll เมื่อ hover หรือเลื่อนเอง
 function pauseAutoScroll(containerId: string) {
-  if (autoScrollIntervals[containerId]) {
-    clearInterval(autoScrollIntervals[containerId]!);
-    autoScrollIntervals[containerId] = null;
-    console.log(`${containerId} auto-scroll paused`);
+  if (autoScrollFrames[containerId]) {
+    cancelAnimationFrame(autoScrollFrames[containerId]!);
+    autoScrollFrames[containerId] = null;
   }
 }
 
 function resumeAutoScroll(containerId: string) {
-  // เริ่ม auto-scroll ใหม่
+  // เริ่ม auto-scroll ใหม่ต่อจากตำแหน่งเดิม
   setupAutoScroll(containerId);
 }
 
@@ -344,9 +352,9 @@ onMounted(async () => {
   // Setup auto-scroll for each category with delay
   setTimeout(() => {
     console.log('Setting up auto-scroll after data load...');
-    setupAutoScroll('solarcell-container');
-    setupAutoScroll('network-container');
-    setupAutoScroll('software-container');
+    setupAutoScroll('solarcell-container', true);
+    setupAutoScroll('network-container', true);
+    setupAutoScroll('software-container', true);
   }, 1500);
 });
 
@@ -417,11 +425,11 @@ onBeforeUnmount(() => {
               style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
-                v-for="(project, i) in projectsByCategory['Solar cell']"
-                :key="project.id"
+                v-for="(project, i) in loopList('Solar cell')"
+                :key="project.id + '-' + i"
 class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
-                @click="togglePopup('Solar cell', i)"
+                @click="togglePopup('Solar cell', i % projectsByCategory['Solar cell'].length)"
               >
                 <video
                   class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
@@ -515,11 +523,11 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
-                v-for="(project, i) in projectsByCategory['Software']"
-                :key="project.id"
+                v-for="(project, i) in loopList('Software')"
+                :key="project.id + '-' + i"
 class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
-                @click="togglePopup('Software', i)"
+                @click="togglePopup('Software', i % projectsByCategory['Software'].length)"
               >
                 <video
                   class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
@@ -611,11 +619,11 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
-                v-for="(project, i) in projectsByCategory['Network']"
-                :key="project.id"
+                v-for="(project, i) in loopList('Network')"
+                :key="project.id + '-' + i"
 class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
-                @click="togglePopup('Network', i)"
+                @click="togglePopup('Network', i % projectsByCategory['Network'].length)"
               >
                 <video
                   class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"

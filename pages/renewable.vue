@@ -100,13 +100,13 @@ function closeImageModal() {
     <!-- Top nav -->
     <!-- Main logo -->
     <!-- Interactive area -->
-    <div class="flex-1 flex flex-col md:flex-row items-center justify-center px-4 md:px-20 relative overflow-hidden">
+    <div class="flex-1 flex flex-col md:flex-row items-center justify-center px-4 md:px-8 relative overflow-hidden">
       <!-- Step 1: show both logos sliding out/in with Spline links below -->
       <transition name="slide-dual" mode="out-in">
         <div v-if="!selectedLogo" key="dual" class="flex flex-col items-center">
-          <div class="flex flex-col sm:flex-row items-center space-y-8 sm:space-y-0 sm:space-x-12 md:space-x-16">
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 justify-items-center items-start gap-x-6 md:gap-x-8 lg:gap-x-10 gap-y-10 sm:gap-y-12 xl:gap-y-0">
             <!-- Espresso -->
-      <div class="espresso-container">
+      <div class="espresso-container shrink-0">
       <div
         @mouseenter="hoveredLogo = 'espresso'"
         @mouseleave="hoveredLogo = null"
@@ -117,7 +117,7 @@ function closeImageModal() {
         <img
           src="/ESPRESSO_logo.png"
           alt="Espresso Logo"
-          class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
+          class="w-24 h-24 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-52 lg:h-52 object-contain"
         />
         <transition-group name="dot" tag="div">
           <div v-if="hoveredLogo==='espresso'" key="e-top" class="dot dot-top bg-red-300"></div>
@@ -135,7 +135,7 @@ function closeImageModal() {
       </div>
     </div>
             <!-- Momay -->
-            <div class="momay-container">
+            <div class="momay-container shrink-0">
               <div
                 @mouseenter="hoveredLogo = 'momay'"
                 @mouseleave="hoveredLogo = null"
@@ -146,7 +146,7 @@ function closeImageModal() {
                 <img
                   src="/MOMAY_logo.png"
                   alt="Momay Logo"
-                  class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
+                  class="w-24 h-24 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-52 lg:h-52 object-contain"
                 />
                 <transition-group name="dot" tag="div">
                   <div v-if="hoveredLogo==='momay'" key="m-top" class="dot dot-top bg-pink-300"></div>
@@ -167,13 +167,13 @@ function closeImageModal() {
               @mouseenter="hoveredLogo = 'Collaborativesensing'"
               @mouseleave="hoveredLogo = null"
               @click="navigateTo('/renewablesort/collaborativesensing')"
-              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+              class="relative shrink-0 bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
               style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
             >
               <img
                 src="/datacityplatform.png"
                 alt="Collaborative sensing Logo"
-                class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
+                class="w-24 h-24 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-52 lg:h-52 object-contain"
               />
               <transition-group name="dot" tag="div">
                 <div v-if="hoveredLogo==='Collaborativesensing'" key="c-top" class="dot dot-top bg-red-300"></div>
@@ -188,13 +188,13 @@ function closeImageModal() {
               @mouseenter="hoveredLogo = 'dashboard'"
               @mouseleave="hoveredLogo = null"
               @click="navigateTo('/renewablesort/dashboard')"
-              class="relative bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
+              class="relative shrink-0 bg-gradient-to-b from-[#fffef8] via-[#e5e5e4] to-[#edeceb] rounded-full p-4 sm:p-6 border-8 border-[#9b7c3c] flex justify-center items-center transform transition-transform duration-500 hover:scale-110 cursor-pointer"
               style="box-shadow: 3px 3px 10px #000, -14px 3px #3b3305, 0 0 20px rgba(255,230,160,0.55);"
             >
               <img
                 src="/chart-logo.png"
                 alt="Dashboard Logo"
-                class="w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 object-contain"
+                class="w-24 h-24 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-52 lg:h-52 object-contain"
               />
               <transition-group name="dot" tag="div">
                 <div v-if="hoveredLogo==='dashboard'" key="d-top" class="dot dot-top bg-blue-300"></div>
