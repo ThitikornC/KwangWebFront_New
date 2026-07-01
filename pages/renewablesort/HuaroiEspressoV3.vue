@@ -98,7 +98,7 @@
                     </div>
                     <div class="stacked-bar-track" style="height:16px;">
                       <div
-                        v-for="mode in modesForCenter(ci)"
+                        v-for="mode in modesForCenter(exp)"
                         :key="mode.name"
                         class="stacked-bar-segment"
                         :style="{ width: mode.pct + '%', background: mode.color }"
@@ -129,7 +129,7 @@
                 </div>
               </div>
               <div class="flex flex-col gap-3" style="flex: 0 0 auto;">
-                <div v-for="mode in modesForCenter(modeModal)" :key="mode.name">
+                <div v-for="mode in modesForCenter(ranked[modeModal])" :key="mode.name">
                   <div class="flex items-center gap-2 mb-1">
                     <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ background: mode.color }"></span>
                     <span class="text-xs font-semibold" :style="{ color: mode.color }">{{ mode.name }}</span>
@@ -168,6 +168,9 @@ const expenses = ref([
   { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#00E5FF', dbSlug: 'Huroa3' },
 ])
 
+// per-mode counts per center (index ตรงกับ MODE_DEFS) — เริ่มที่ 0 แล้ว fetch มาเติม
+expenses.value.forEach((e) => { e.modeCounts = [0, 0, 0, 0, 0] })
+
 // 5 Espresso modes definition (สี + ชื่อ + path)
 const MODE_DEFS = [
   { name: 'สมาร์ทเช็ค',  color: '#10b981', path: 'teacherpicture' },
@@ -176,15 +179,6 @@ const MODE_DEFS = [
   { name: 'สตูดิโอ',    color: '#a78bfa', path: 'studio'         },
   { name: 'สมาร์ทแทรค', color: '#fb7185', path: 'bmi'            },
 ]
-
-// mode counts per center: centerModes[centerIdx][modeIdx]
-const centerModes = ref([
-  [0, 0, 0, 0, 0], // หัวรอ 1
-  [0, 0, 0, 0, 0], // สระโคล่ 1
-  [0, 0, 0, 0, 0], // มหาวนาราม
-  [0, 0, 0, 0, 0], // หัวรอ 2
-  [0, 0, 0, 0, 0], // สระโคล่ 2
-])
 
 const expandedCenter = ref(null)
 
@@ -247,16 +241,17 @@ const modeModal = ref(null)
 const openModeModal = (ci) => { modeModal.value = ci }
 
 
-const modesForCenter = (ci) => {
-  const counts = centerModes.value[ci] || [0, 0, 0, 0, 0]
+// รับ expense object (จาก ranked) แล้วอ่าน modeCounts จริงของศูนย์นั้น
+const modesForCenter = (expense) => {
+  const counts = (expense && expense.modeCounts) || [0, 0, 0, 0, 0]
   const total = counts.reduce((s, c) => s + c, 0)
   const equal = Math.floor(100 / MODE_DEFS.length)
   return MODE_DEFS.map((m, i) => ({
     ...m,
-    count: counts[i],
+    count: counts[i] || 0,
     pct: total === 0
       ? (i === MODE_DEFS.length - 1 ? 100 - equal * (MODE_DEFS.length - 1) : equal)
-      : Math.round((counts[i] / total) * 100)
+      : Math.round(((counts[i] || 0) / total) * 100)
   }))
 }
 
@@ -313,13 +308,51 @@ const fetchCounts = async () => {
   }
 }
 
+// Fetch per-mode counts from daily_page_users (grouped by page) per DB,
+// then map each page to one of the 5 MODE_DEFS via tolerant path matching.
+const fetchModeCounts = async () => {
+  try {
+    const uniqueDbs = [...new Set(expenses.value.map(e => e.dbSlug).filter(Boolean))]
+    const countsByDb = {}
+    await Promise.all(uniqueDbs.map(async (db) => {
+      try {
+        const res = await $fetch(`/api/daily-page-modes?db=${encodeURIComponent(db)}`)
+        if (res && res.success && res.data) {
+          countsByDb[db] = res.data.pageCounts || {}
+        }
+      } catch (inner) {
+        console.error('[fetchModeCounts] error for db', db, inner)
+      }
+    }))
+
+    // assign modeCounts to each expense (centers sharing a dbSlug get the same data)
+    expenses.value.forEach((e) => {
+      const pageCounts = countsByDb[e.dbSlug] || {}
+      e.modeCounts = MODE_DEFS.map((m) => {
+        const target = normalize(m.path)
+        let sum = 0
+        for (const [page, cnt] of Object.entries(pageCounts)) {
+          if (normalize(page).includes(target)) sum += Number(cnt) || 0
+        }
+        return sum
+      })
+    })
+  } catch (error) {
+    console.error('Error fetching mode counts:', error)
+  }
+}
+
 // Status polling removed — this page no longer displays online status
 
 let pollTimerCounts = null
-// Fetch data on mount and poll every POLL_INTERVAL_MS (counts only)
+// Fetch data on mount and poll every POLL_INTERVAL_MS (counts + per-mode)
 onMounted(() => {
   fetchCounts()
-  pollTimerCounts = setInterval(fetchCounts, POLL_INTERVAL_MS)
+  fetchModeCounts()
+  pollTimerCounts = setInterval(() => {
+    fetchCounts()
+    fetchModeCounts()
+  }, POLL_INTERVAL_MS)
 })
 
 onBeforeUnmount(() => {
@@ -631,6 +664,7 @@ const getStatusTitle = (expense) => {
   height: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 2px;
