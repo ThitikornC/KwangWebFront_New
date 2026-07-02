@@ -624,24 +624,39 @@ const getStatusTitle = (expense) => {
   font-weight: 800;
   letter-spacing: 0.3px;
   color: #2A1208;
-  background: linear-gradient(180deg, #FFDD5C 0%, #E6B428 55%, #D89A18 100%);
-  border: 2px solid #FFE896;
+  background: linear-gradient(180deg, #F0C13C 0%, #D8A82C 50%, #B0851C 100%);
+  border: 1px solid #F4D57A;
+  border-top-color: #FFE896;
   border-radius: 9999px;
   cursor: pointer;
-  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-  animation: cityBtnPulse 1.8s ease-in-out infinite;
+  /* เงาดรอปด้านล่าง + ไฮไลต์ขอบบนด้านใน = ปุ่มนูนกดได้ */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 4px rgba(120, 80, 0, 0.35),
+    0 4px 8px rgba(0, 0, 0, 0.45),
+    0 0 10px rgba(200, 152, 44, 0.25);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 .city-btn:hover {
-  background: linear-gradient(180deg, #FFE785 0%, #F4C842 55%, #E6B428 100%);
-  animation: none;
-  box-shadow: 0 0 26px rgba(255, 214, 90, 0.85), 0 0 8px rgba(255, 214, 90, 0.9);
-  transform: translateY(-50%) scale(1.05);
+  background: linear-gradient(180deg, #FFD24A 0%, #E6B428 50%, #C8982C 100%);
+  /* ยกตัวขึ้น เงาลึกขึ้น */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 4px rgba(120, 80, 0, 0.3),
+    0 7px 14px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(230, 180, 40, 0.5);
+  transform: translateY(calc(-50% - 2px));
 }
-.city-btn:active { transform: translateY(-50%) scale(0.97); }
-
-@keyframes cityBtnPulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(230, 180, 40, 0.45); }
-  50%      { box-shadow: 0 0 22px rgba(255, 214, 90, 0.85), 0 0 40px rgba(230, 180, 40, 0.4); }
+.city-btn:active {
+  /* กดยุบ เงาแบนลง */
+  transform: translateY(-50%);
+  box-shadow:
+    inset 0 2px 5px rgba(120, 80, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.city-btn:focus-visible {
+  outline: 2px solid #FFE896;
+  outline-offset: 2px;
 }
 
 /* การ์ดย่อย (info / ranking / chart) */
