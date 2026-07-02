@@ -13,7 +13,7 @@
           <div class="text-sm font-bold mb-1" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
           <button type="button" class="city-btn" @click="goToCity">
             <span>Espresso</span>
-            <span class="city-btn-arrow" aria-hidden="true">▶</span>
+            <span class="city-btn-arrow" aria-hidden="true"></span>
           </button>
           <div class="flex flex-col gap-0.5">
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสมาชิก : 001</div>
@@ -659,10 +659,13 @@ const getStatusTitle = (expense) => {
   outline: 2px solid #FFE896;
   outline-offset: 2px;
 }
-/* สามเหลี่ยมชี้ขวา (สไตล์เดียวกับ ▼ ฝั่งขวาล่าง) */
+/* สามเหลี่ยมชี้ขวา วาดด้วย CSS border — ไม่พึ่งฟอนต์ กัน iOS เรนเดอร์เป็นอิโมจิ */
 .city-btn-arrow {
-  font-size: 12px;
-  line-height: 1;
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 11px solid #2A1208;
   transition: transform 0.15s ease;
 }
 .city-btn:hover .city-btn-arrow { transform: translateX(3px); }
