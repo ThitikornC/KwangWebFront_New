@@ -13,7 +13,7 @@
           <div class="flex items-start justify-between gap-2 mb-1">
             <div class="text-sm font-bold" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
             <button type="button" class="city-btn" @click="goToCity">
-              <span>มุมมองเมือง</span>
+              <span>Espresso</span>
               <span aria-hidden="true">→</span>
             </button>
           </div>
