@@ -73,7 +73,7 @@ const centers = [
   { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1', link: '/espresso/huaroa3', top: '13%', left: '30.5%' },
   { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', link: '/espresso/huaroa4', top: '50%', left: '69%' },
   // 2 ตึกที่ยังว่าง — พิกัดโดยประมาณ ปรับ top/left ให้ตรงตึกได้
-  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', link: '/espresso/Huaroa', top: '35%', left: '14.5%' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', link: '/espresso/Huaroa', top: '35%', left: '14%' },
   { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', link: '/espresso/huaroa3', top: '35%', left: '88%' },
 ]
 
