@@ -34,11 +34,6 @@
                   v-for="(expense, i) in ranked"
                   :key="expense.name"
                   class="rank-row"
-                  @click="handleCardClick($event, expense.link)"
-                  @keydown.enter.prevent="handleCardKeydown($event, expense.link)"
-                  @keydown.space.prevent="handleCardKeydown($event, expense.link)"
-                  tabindex="0"
-                  role="button"
                 >
                   <!-- coin -->
                   <div class="rank-coin">
@@ -398,7 +393,7 @@ onMounted(() => {
     fetchCounts()
     fetchModeCounts()
   }, POLL_INTERVAL_MS)
-  labelToggleTimer = setInterval(() => { showPct.value = !showPct.value }, 2500)
+  labelToggleTimer = setInterval(() => { showPct.value = !showPct.value }, 5000)
 })
 
 onBeforeUnmount(() => {
@@ -629,7 +624,7 @@ const getStatusTitle = (expense) => {
   display: flex;
   align-items: center;
   height: 50px;
-  cursor: pointer;
+  cursor: default;
   position: relative;
 }
 .rank-coin {
