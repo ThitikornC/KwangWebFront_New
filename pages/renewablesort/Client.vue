@@ -539,9 +539,9 @@ onMounted(() => {
 /* Tree Structure Styles */
 .tree-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 320px);
+  grid-template-columns: repeat(3, minmax(0, 320px)); /* landscape/desktop: 3 columns */
   justify-content: center; /* center the whole grid block */
-  gap: 40px;
+  gap: 32px;
   margin-top: 20px;
   padding: 20px 20px 40px;
   max-width: min(1200px, 95vw);
@@ -554,7 +554,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: stretch;
   position: relative;
-  width: 320px;
+  width: 100%;
   max-width: 100%;
 }
 
@@ -636,6 +636,9 @@ onMounted(() => {
   min-height: calc(20px * 1.2 * 2 + 8px + 2px);
   box-sizing: border-box;
   width: 100%;
+  /* single-line names sit centered in the 2-line slot instead of hugging the top */
+  display: flex;
+  align-items: center;
   padding-bottom: 8px;
   margin-bottom: 6px;
   border-bottom: 2px solid #74640a; /* divider line under the name */
@@ -666,9 +669,8 @@ onMounted(() => {
     font-size: 0.7rem;
   }
   .tree-container {
-    grid-template-columns: minmax(0, 340px); /* single flexible column on mobile */
+    grid-template-columns: repeat(2, minmax(0, 340px)); /* portrait tablet: 2 columns */
     padding: 15px 10px;
-    padding-left: 20px;
     justify-content: center;
     gap: 16px;
   }
@@ -687,15 +689,16 @@ onMounted(() => {
   }
   .parent-box,
   .spline-link-card.parent-box {
-    width: 90%;
+    width: 100%;
     max-width: 340px;
     padding: 14px 18px;
-    min-height: 0; /* single column on mobile: hug content, no fixed height */
+    min-height: 0; /* rows still stretch equal per grid row */
   }
   .parent-title { font-size: 15px; }
   .parent-sub {
     font-size: 14px;
-    min-height: 0; /* single column: no 2-line reservation, keep divider tight to title */
+    /* 2 columns: keep the 2-line reservation so dividers align across the row */
+    min-height: calc(14px * 1.2 * 2 + 6px + 2px);
     padding-bottom: 6px;
     margin-bottom: 4px;
   }
@@ -764,7 +767,18 @@ onMounted(() => {
 @media (min-width: 1024px) {
   .spline-link-card { max-width: 320px; min-height: 70px; }
   .flow-card { max-width: 360px; }
-  .tree-container { gap: 48px; }
+  .tree-container { gap: 32px; }
+}
+
+/* Portrait tablets (769px–1024px wide): 2 columns */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+  .tree-container { grid-template-columns: repeat(2, minmax(0, 340px)); }
+}
+
+/* Phones: back to a single column, no 2-line title reservation */
+@media (max-width: 560px) {
+  .tree-container { grid-template-columns: minmax(0, 340px); }
+  .parent-sub { min-height: 0; }
 }
 .flipbook-container {
   display: flex;
