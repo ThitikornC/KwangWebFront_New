@@ -537,14 +537,13 @@ onMounted(() => {
 .arrow { display: none; }
 
 /* Tree Structure Styles */
-.tree-container { 
-  display: flex; 
-  flex-wrap: wrap;
-  justify-content: flex-start; 
+.tree-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 320px);
+  justify-content: center; /* center the whole grid block */
   gap: 40px;
   margin-top: 20px;
   padding: 20px 20px 40px;
-  padding-left: clamp(16px, 4vw, 60px);
   max-width: min(1200px, 95vw);
   margin-left: auto;
   margin-right: auto;
@@ -667,11 +666,13 @@ onMounted(() => {
     font-size: 0.7rem;
   }
   .tree-container {
+    grid-template-columns: minmax(0, 340px); /* single flexible column on mobile */
     padding: 15px 10px;
     padding-left: 20px;
     justify-content: center;
     gap: 16px;
   }
+  .tree-wrapper { width: 100%; }
 
   /* increase top spacing on mobile */
   .root-bg {
