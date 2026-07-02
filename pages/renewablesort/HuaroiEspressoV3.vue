@@ -9,14 +9,11 @@
         <div class="greedy-blob greedy-blob--br" />
 
         <!-- Customer info — full width across both columns -->
-        <div class="greedy-card px-4 py-2 mb-3">
-          <div class="flex items-start justify-between gap-2 mb-1">
-            <div class="text-sm font-bold" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
-            <button type="button" class="city-btn" @click="goToCity">
-              <span>Espresso</span>
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
+        <div class="greedy-card px-4 py-2 mb-3 relative">
+          <div class="text-sm font-bold mb-1" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
+          <button type="button" class="city-btn" @click="goToCity">
+            <span>Espresso</span>
+          </button>
           <div class="flex flex-col gap-0.5">
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสมาชิก : 001</div>
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสัญญา :</div>
@@ -614,26 +611,38 @@ const getStatusTitle = (expense) => {
 
 /* ปุ่มไปหน้ามุมมองเมือง */
 .city-btn {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: 700;
+  gap: 8px;
+  padding: 9px 22px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
   color: #2A1208;
-  background: #E6B428;
-  border: 1px solid #E6B428;
+  background: linear-gradient(180deg, #FFDD5C 0%, #E6B428 55%, #D89A18 100%);
+  border: 2px solid #FFE896;
   border-radius: 9999px;
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 0 12px rgba(230, 180, 40, 0.35);
+  animation: cityBtnPulse 1.8s ease-in-out infinite;
 }
 .city-btn:hover {
-  background: #F4C842;
-  box-shadow: 0 0 18px rgba(230, 180, 40, 0.6);
+  background: linear-gradient(180deg, #FFE785 0%, #F4C842 55%, #E6B428 100%);
+  animation: none;
+  box-shadow: 0 0 26px rgba(255, 214, 90, 0.85), 0 0 8px rgba(255, 214, 90, 0.9);
+  transform: translateY(-50%) scale(1.05);
 }
-.city-btn:active { transform: scale(0.96); }
+.city-btn:active { transform: translateY(-50%) scale(0.97); }
+
+@keyframes cityBtnPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(230, 180, 40, 0.45); }
+  50%      { box-shadow: 0 0 22px rgba(255, 214, 90, 0.85), 0 0 40px rgba(230, 180, 40, 0.4); }
+}
 
 /* การ์ดย่อย (info / ranking / chart) */
 .greedy-card {
