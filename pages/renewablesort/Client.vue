@@ -91,9 +91,9 @@
         </div>
       </div>
 
-      <!-- เทศบาลแม่ฮ่องสอน -->
+      <!-- เทศบาลแม่ฮ่องสอน (ซ่อนไว้ชั่วคราว) -->
+      <!--
       <div class="tree-wrapper">
-        <!-- Parent Node -->
         <div class="tree-parent">
           <div @click="requestPassword('maehongson')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
@@ -112,6 +112,7 @@
           </div>
         </div>
       </div>
+      -->
       <!-- Dynamic leads: render after the static parent cards -->
       <div v-if="leadsLoading" class="text-gray-600 ml-4">Loading customers...</div>
       <template v-else>
