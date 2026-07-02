@@ -33,10 +33,10 @@
             <div class="card-content parent-card-content">
               <div>
                 <div class="parent-sub">เทศบาลตำบลหัวรอ</div>
-                <div class="parent-title">Usernumber : 001</div>
-                <div class="parent-meta">Contractnumber :</div>
-                <div class="parent-meta">Date Installed : 1-11-25</div>
-                <div class="parent-meta">Expiration Date : 1-12-25</div>
+                <div class="parent-title">หมายเลขสมาชิก : 001</div>
+                <div class="parent-meta">หมายเลขสัญญา :</div>
+                <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : 1-11-25</div>
+                <div class="parent-meta">วันที่สิ้นสุดสมาชิก : 1-12-25</div>
               </div>
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
@@ -55,10 +55,10 @@
             <div class="card-content parent-card-content">
               <div>
                 <div class="parent-sub">เทศบาลตำบลหัวรอ (City View)</div>
-                <div class="parent-title">Usernumber : 001</div>
-                <div class="parent-meta">Contractnumber :</div>
-                <div class="parent-meta">Date Installed : 29-06-26</div>
-                <div class="parent-meta">Expiration Date : </div>
+                <div class="parent-title">หมายเลขสมาชิก : 001</div>
+                <div class="parent-meta">หมายเลขสัญญา :</div>
+                <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : 29-06-26</div>
+                <div class="parent-meta">วันที่สิ้นสุดสมาชิก : </div>
               </div>
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
@@ -77,10 +77,10 @@
             <div class="card-content parent-card-content">
               <div>
                 <div class="parent-sub">เทศบาลตำบลหัวรอ (V.3)</div>
-                <div class="parent-title">Usernumber : 001</div>
-                <div class="parent-meta">Contractnumber :</div>
-                <div class="parent-meta">Date Installed : 29-06-26</div>
-                <div class="parent-meta">Expiration Date : </div>
+                <div class="parent-title">หมายเลขสมาชิก : 001</div>
+                <div class="parent-meta">หมายเลขสัญญา :</div>
+                <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : 29-06-26</div>
+                <div class="parent-meta">วันที่สิ้นสุดสมาชิก : </div>
               </div>
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
@@ -99,10 +99,10 @@
             <div class="card-content parent-card-content">
               <div>
                 <div class="parent-sub">เทศบาลแม่ฮ่องสอน</div>
-                <div class="parent-title">Usernumber : 002</div>
-                <div class="parent-meta">Contractnumber :</div>
-                <div class="parent-meta">Date Installed : 1-11-25</div>
-                <div class="parent-meta">Expiration Date : 1-12-25</div>
+                <div class="parent-title">หมายเลขสมาชิก : 002</div>
+                <div class="parent-meta">หมายเลขสัญญา :</div>
+                <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : 1-11-25</div>
+                <div class="parent-meta">วันที่สิ้นสุดสมาชิก : 1-12-25</div>
               </div>
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('แม่ฮ่องสอน') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
@@ -121,11 +121,11 @@
               <div class="card-content parent-card-content">
                 <div>
                   <div class="parent-sub">{{ lead.name }}</div>
-                  <div class="parent-title">Usernumber : {{ pad(lead.runNumber) }}</div>
-                  <div class="parent-meta">Contractnumber : {{ lead.contractNumber || '-' }}</div>
-                  <div class="parent-meta">Date Installed : {{ formatDate(lead.startDate || lead.createdAt) }}</div>
-                  <div class="parent-meta">Expiration Date : {{ formatDate(lead.expiryDate) }}</div>
-                  <div class="parent-meta">Contact : {{ lead.contactno || '-' }}</div>
+                  <div class="parent-title">หมายเลขสมาชิก : {{ pad(lead.runNumber) }}</div>
+                  <div class="parent-meta">หมายเลขสัญญา : {{ lead.contractNumber || '-' }}</div>
+                  <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : {{ formatDate(lead.startDate || lead.createdAt) }}</div>
+                  <div class="parent-meta">วันที่สิ้นสุดสมาชิก : {{ formatDate(lead.expiryDate) }}</div>
+                  <div class="parent-meta">ติดต่อ : {{ lead.contactno || '-' }}</div>
                   <div class="parent-meta">ประเภทผู้ใช้งาน : {{ typeLabel(lead.type) }}</div>
                 </div>
                 <div class="w-full flex justify-end items-center mt-3">
@@ -629,7 +629,18 @@ onMounted(() => {
   min-height: 200px;
 }
 .parent-title { font-weight: 700; font-size: 16px; }
-.parent-sub { font-weight: 800; font-size: 20px; }
+.parent-sub {
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.2;
+  /* reserve 2 lines + padding + border so the divider aligns on every card */
+  min-height: calc(20px * 1.2 * 2 + 8px + 2px);
+  box-sizing: border-box;
+  width: 100%;
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+  border-bottom: 2px solid #74640a; /* divider line under the name */
+}
 .parent-meta { font-size: 14px; color: #2b2b2b; line-height: 1.4; }
 
 /* compact logo inside cards */

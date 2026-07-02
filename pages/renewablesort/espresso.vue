@@ -43,7 +43,7 @@
 
     <div class="pdf-download-bar">
       <div @click="openSplineDesign('espresso_Huaroa_page')" class="pdf-download-btn" role="button" tabindex="0">
-        <span class="font-thai">Clients</span>
+        <span class="font-thai">บัญชีผู้ใช้งาน</span>
       </div>
       <a href="/Sale Kit Espresso251125.pdf" download class="pdf-download-btn">
         Download Document
