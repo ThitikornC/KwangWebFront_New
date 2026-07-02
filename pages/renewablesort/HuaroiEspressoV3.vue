@@ -13,6 +13,7 @@
           <div class="text-sm font-bold mb-1" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
           <button type="button" class="city-btn" @click="goToCity">
             <span>Espresso</span>
+            <span class="city-btn-arrow" aria-hidden="true">▶</span>
           </button>
           <div class="flex flex-col gap-0.5">
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสมาชิก : 001</div>
@@ -658,6 +659,13 @@ const getStatusTitle = (expense) => {
   outline: 2px solid #FFE896;
   outline-offset: 2px;
 }
+/* สามเหลี่ยมชี้ขวา (สไตล์เดียวกับ ▼ ฝั่งขวาล่าง) */
+.city-btn-arrow {
+  font-size: 12px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.city-btn:hover .city-btn-arrow { transform: translateX(3px); }
 
 /* การ์ดย่อย (info / ranking / chart) */
 .greedy-card {
