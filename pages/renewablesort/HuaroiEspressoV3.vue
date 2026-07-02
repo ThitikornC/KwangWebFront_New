@@ -10,7 +10,13 @@
 
         <!-- Customer info — full width across both columns -->
         <div class="greedy-card px-4 py-2 mb-3">
-          <div class="text-sm font-bold mb-1" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <div class="text-sm font-bold" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
+            <button type="button" class="city-btn" @click="goToCity">
+              <span>มุมมองเมือง</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
           <div class="flex flex-col gap-0.5">
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสมาชิก : 001</div>
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสัญญา :</div>
@@ -401,6 +407,9 @@ onBeforeUnmount(() => {
   if (labelToggleTimer) clearInterval(labelToggleTimer)
 })
 
+// Jump to the City View dashboard for this center
+const goToCity = () => navigateTo('/renewablesort/HuaroiEspressoCity')
+
 // Open expense link (same-tab so the browser Back button works)
 const openExpenseLink = (link) => {
   if (!link) return
@@ -602,6 +611,29 @@ const getStatusTitle = (expense) => {
   0% { transform: scale(0.9); opacity: 0.8; }
   75%, 100% { transform: scale(1.6); opacity: 0; }
 }
+
+/* ปุ่มไปหน้ามุมมองเมือง */
+.city-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2A1208;
+  background: #E6B428;
+  border: 1px solid #E6B428;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 0 12px rgba(230, 180, 40, 0.35);
+}
+.city-btn:hover {
+  background: #F4C842;
+  box-shadow: 0 0 18px rgba(230, 180, 40, 0.6);
+}
+.city-btn:active { transform: scale(0.96); }
 
 /* การ์ดย่อย (info / ranking / chart) */
 .greedy-card {

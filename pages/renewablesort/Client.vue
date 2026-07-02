@@ -775,6 +775,16 @@ onMounted(() => {
   .tree-container { grid-template-columns: repeat(2, minmax(0, 340px)); }
 }
 
+/* Landscape phones / small tablets (769px–1023px): 3 cramped columns — shrink text */
+@media (min-width: 769px) and (max-width: 1023px) and (orientation: landscape) {
+  .parent-sub {
+    font-size: 16px;
+    min-height: calc(16px * 1.2 * 2 + 8px + 2px);
+  }
+  .parent-title { font-size: 13px; }
+  .parent-meta { font-size: 11px; }
+}
+
 /* Phones: back to a single column, no 2-line title reservation */
 @media (max-width: 560px) {
   .tree-container { grid-template-columns: minmax(0, 340px); }
