@@ -684,13 +684,20 @@ onMounted(() => {
     gap: 12px;
     padding-left: 25px;
   }
-  .parent-box {
+  .parent-box,
+  .spline-link-card.parent-box {
     width: 90%;
     max-width: 340px;
     padding: 14px 18px;
+    min-height: 0; /* single column on mobile: hug content, no fixed height */
   }
   .parent-title { font-size: 15px; }
-  .parent-sub { font-size: 14px; }
+  .parent-sub {
+    font-size: 14px;
+    min-height: 0; /* single column: no 2-line reservation, keep divider tight to title */
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+  }
   .parent-meta { font-size: 12px; }
   .flow-card {
     width: 100%;
@@ -744,7 +751,10 @@ onMounted(() => {
   .spline-link-card, .flow-card { padding: 0 12px; }
   .card-content .status-dot { transform: translateY(-6px); }
   .card-content { gap: 8px; }
-  .parent-sub { font-size: 15px; }
+  .parent-sub {
+    font-size: 15px;
+    min-height: 0;
+  }
   .parent-title { font-size: 14px; }
   .parent-meta { font-size: 11px; }
   .background-image { display: none; }
