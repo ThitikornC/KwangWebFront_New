@@ -24,8 +24,8 @@
           <div class="greedy-card p-4 flex flex-col">
             <!-- Ranking -->
             <div style="flex: 1; display: flex; flex-direction: column;">
-            <div class="flex justify-between items-center mb-1 flex-shrink-0">
-              <h2 class="text-xs font-bold text-gray-300 tracking-wider">จำนวนครั้งที่ใช้งาน</h2>
+            <div class="flex justify-between items-center mb-3 flex-shrink-0">
+              <h2 class="text-[16px] font-bold text-gray-300 tracking-wider">จำนวนครั้งที่ใช้งาน</h2>
               <div class="w-1.5 h-1.5 rounded-full bg-[#E6B428] animate-pulse" />
             </div>
 
@@ -74,7 +74,7 @@
             <!-- VIEW A: stacked bars (ครึ่งบน) -->
             <template v-if="modeModal === null">
               <div class="flex justify-between items-center mb-3 flex-shrink-0">
-                <h2 class="text-xs font-bold tracking-wider" style="color:#e5e7eb;">จำนวนการเข้าใช้แต่ละโหมด</h2>
+                <h2 class="text-[16px] font-bold tracking-wider" style="color:#e5e7eb;">จำนวนการเข้าใช้งานแต่ละโหมด</h2>
                 <div class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#E6B428;" />
               </div>
               <!-- rows — fill remaining space -->
