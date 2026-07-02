@@ -9,12 +9,14 @@
         <div class="greedy-blob greedy-blob--br" />
 
         <!-- Customer info — full width across both columns -->
-        <div class="greedy-card px-4 py-2 mb-3 relative">
-          <div class="text-sm font-bold mb-1" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
-          <button type="button" class="city-btn" @click="goToCity">
-            <span>Espresso</span>
-            <span class="city-btn-arrow" aria-hidden="true"></span>
-          </button>
+        <div class="greedy-card customer-card px-4 py-2 mb-3 relative">
+          <div class="city-head mb-1">
+            <div class="text-sm font-bold" style="color:#E6B428;">เทศบาลตำบลหัวรอ</div>
+            <button type="button" class="city-btn" @click="goToCity">
+              <span>Espresso</span>
+              <span class="city-btn-arrow" aria-hidden="true"></span>
+            </button>
+          </div>
           <div class="flex flex-col gap-0.5">
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสมาชิก : 001</div>
             <div class="text-xs" style="color:#e5e7eb;">หมายเลขสัญญา :</div>
@@ -663,12 +665,28 @@ const getStatusTitle = (expense) => {
 .city-btn-arrow {
   width: 0;
   height: 0;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
-  border-left: 11px solid #2A1208;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 15px solid #2A1208;
   transition: transform 0.15s ease;
 }
 .city-btn:hover .city-btn-arrow { transform: translateX(3px); }
+
+/* มือถือ: ปุ่มลอยกลางแนวตั้งเหมือนเดสก์ท็อป แต่ย่อเล็ก + กันที่ว่างไม่ให้ทับข้อความ */
+@media (max-width: 640px) {
+  .customer-card { padding-right: 124px; }
+  .city-btn {
+    right: 14px;
+    padding: 5px 14px;
+    font-size: 14px;
+    gap: 6px;
+  }
+  .city-btn-arrow {
+    border-top-width: 6px;
+    border-bottom-width: 6px;
+    border-left-width: 9px;
+  }
+}
 
 /* การ์ดย่อย (info / ranking / chart) */
 .greedy-card {
