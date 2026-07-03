@@ -123,10 +123,9 @@
                 <div>
                   <div class="parent-sub">{{ lead.name }}</div>
                   <div class="parent-title">หมายเลขสมาชิก : {{ pad(lead.runNumber) }}</div>
-                  <div class="parent-meta">หมายเลขสัญญา : {{ lead.contractNumber || '-' }}</div>
+                  <div class="parent-meta">หมายเลขสัญญา : {{ lead.contactno || '-' }}</div>
                   <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : {{ formatDate(lead.startDate || lead.createdAt) }}</div>
                   <div class="parent-meta">วันที่สิ้นสุดสมาชิก : {{ formatDate(lead.expiryDate) }}</div>
-                  <div class="parent-meta">ติดต่อ : {{ lead.contactno || '-' }}</div>
                   <div class="parent-meta">ประเภทผู้ใช้งาน : {{ typeLabel(lead.type) }}</div>
                 </div>
                 <div class="w-full flex justify-end items-center mt-3">
