@@ -47,9 +47,9 @@
         </div>
       </div>
 
-      <!-- เทศบาลตำบลหัวรอ (City View) -->
+      <!-- เทศบาลตำบลหัวรอ (City View) 
       <div class="tree-wrapper">
-        <!-- Parent Node -->
+
         <div class="tree-parent">
           <div @click="requestPassword('huaroaCity')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
             <div class="card-content parent-card-content">
@@ -68,7 +68,7 @@
           </div>
         </div>
       </div>
-
+-->
       <!-- เทศบาลตำบลหัวรอ (V.3) -->
       <div class="tree-wrapper">
         <!-- Parent Node -->
