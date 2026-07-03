@@ -37,6 +37,8 @@
                 <div class="parent-meta">หมายเลขสัญญา :</div>
                 <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : 1/11/2568</div>
                 <div class="parent-meta">วันที่สิ้นสุดสมาชิก : 1/12/2568</div>
+                <div class="parent-meta">ประเภทผู้ใช้งาน : หน่วยงานรัฐ</div>
+
               </div>
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
@@ -81,6 +83,8 @@
                 <div class="parent-meta">หมายเลขสัญญา :</div>
                 <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : 29/6/2569</div>
                 <div class="parent-meta">วันที่สิ้นสุดสมาชิก : </div>
+                <div class="parent-meta">ประเภทผู้ใช้งาน : หน่วยงานรัฐ</div>
+
               </div>
               <div class="w-full flex justify-end items-center mt-3">
                 <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
