@@ -114,10 +114,10 @@
                 </div>
               </div>
               <!-- Legend — อยู่ใต้ rows ไม่โดนซ่อน -->
-              <div class="flex flex-wrap gap-x-2 gap-y-0.5 mt-1 pt-1" style="flex: 0 0 auto; border-top:1px solid rgba(74,42,16,0.5);">
+              <div class="flex flex-wrap justify-center gap-x-2 gap-y-0.5 mt-1 pt-1" style="flex: 0 0 auto; border-top:1px solid rgba(74,42,16,0.5);">
                 <div v-for="m in MODE_DEFS" :key="m.name" class="flex items-center gap-1">
                   <span class="rounded-full flex-shrink-0" style="width:8px;height:8px;" :style="{ background: m.color }"></span>
-                  <span class="font-semibold" style="font-size:12px;" :style="{ color: m.color }">{{ m.name }}</span>
+                  <span class="font-semibold" style="font-size:14px;" :style="{ color: m.color }">{{ m.name }}</span>
                 </div>
               </div>
 
