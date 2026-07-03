@@ -23,6 +23,12 @@ const targets: Record<string, string> = {
   huaroa4: 'https://espressohuaroa3-production.up.railway.app/',
   huaroa5: 'https://espressohuaroa4-production.up.railway.app/',
   huaroa6: 'https://espressohuaroa5-production.up.railway.app/',
+  // ── 5 ศูนย์ในหน้า City — slug อ่านง่ายเป็นภาษาอังกฤษ ──
+  Huaroi1: 'https://espressohuaroa-production.up.railway.app/',       // หัวรอ 1
+  Huaroi2: 'https://espresso2-production.up.railway.app/',            // หัวรอ 2
+  Srakhlo1: 'https://espressohuaroa2-production.up.railway.app/',     // สระโคล่ 1
+  Srakhlo2: 'https://espresso2-production-1891.up.railway.app/',      // สระโคล่ 2
+  Mahawanaram: 'https://espressohuaroa3-production.up.railway.app/',  // มหาวนาราม
   naresuan_library: 'https://momaylib-production.up.railway.app/'
 }
 
