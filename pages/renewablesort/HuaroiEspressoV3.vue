@@ -193,8 +193,8 @@ const expenses = ref([
   { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#800080', dbSlug: 'Huroa2' },
   { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7', dbSlug: 'Huroa3' },
   { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700', dbSlug: 'Huroa4' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#E05CFF', dbSlug: 'Huroa2' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#00E5FF', dbSlug: 'Huroa3' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#E05CFF', dbSlug: 'Huroa5' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#00E5FF', dbSlug: 'Huroa6' },
 ])
 
 // per-mode counts per center (index ตรงกับ MODE_DEFS) — เริ่มที่ 0 แล้ว fetch มาเติม
@@ -627,9 +627,9 @@ const getStatusTitle = (expense) => {
   font-weight: 800;
   letter-spacing: 0.3px;
   color: #2A1208;
-  background: linear-gradient(180deg, #F0C13C 0%, #D8A82C 50%, #B0851C 100%);
-  border: 1px solid #F4D57A;
-  border-top-color: #FFE896;
+  background: linear-gradient(180deg, #f7f6f4 0%, #f7f6f4 50%, #f7f6f4 0%);
+  border: 1px solid #f7f6f4;
+  border-top-color: #f7f6f4;
   border-radius: 9999px;
   cursor: pointer;
   /* เงาดรอปด้านล่าง + ไฮไลต์ขอบบนด้านใน = ปุ่มนูนกดได้ */

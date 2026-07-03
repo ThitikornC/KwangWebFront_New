@@ -70,8 +70,8 @@ useHead({
 // ── 3 ศูนย์ + URL + ตำแหน่งปุ่มบนตึก (top/left เป็น % ปรับให้ตรงตึกได้) ──
 const centers = [
   { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1', link: '/espresso/Huaroi1', top: '50%', left: '31.5%', z: 40 },
-  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1', link: '/espresso/Srakhlo1', top: '13%', left: '30.5%' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', link: '/espresso/Mahawanaram', top: '50%', left: '69%' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1', link: '/espresso/Srakhlo1', top: '50%', left: '69%' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', link: '/espresso/Mahawanaram', top: '13%', left: '30.5%' },
   // 2 ตึกใหม่ — ชี้ route ภายใน /espresso/<slug> (แสดง Railway ใน iframe เหมือน 3 ศูนย์แรก)
   { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', link: '/espresso/Huaroi2', top: '35%', left: '14%' },
   { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', link: '/espresso/Srakhlo2', top: '35%', left: '88%' },
