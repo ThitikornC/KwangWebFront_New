@@ -95,6 +95,30 @@
         </div>
       </div>
 
+      <!-- เทศบาลตำบลหัวรอ (V.4) -->
+      <div class="tree-wrapper">
+        <!-- Parent Node -->
+        <div class="tree-parent">
+          <div @click="requestPassword('huaroaV4')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
+            <div class="card-content parent-card-content">
+              <div>
+                <div class="parent-sub">เทศบาลตำบลหัวรอ (V.4)</div>
+                <div class="parent-title">หมายเลขสมาชิก : 001</div>
+                <div class="parent-meta">หมายเลขสัญญา :</div>
+                <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : 4/7/2569</div>
+                <div class="parent-meta">วันที่สิ้นสุดสมาชิก : </div>
+                <div class="parent-meta">ประเภทผู้ใช้งาน : หน่วยงานราชการ</div>
+
+              </div>
+              <div class="w-full flex justify-end items-center mt-3">
+                <span :class="['status-dot', isOnlineFor('หัวรอ') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+                <span class="status-label">{{ isOnlineFor('หัวรอ') ? 'Online' : 'Offline' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- เทศบาลแม่ฮ่องสอน (ซ่อนไว้ชั่วคราว) -->
       <!--
       <div class="tree-wrapper">
@@ -169,6 +193,7 @@ const projectLinks: Record<string, string> = {
   huaroaDashboard: '/renewablesort/HuaroiEspresso',
   huaroaCity: '/renewablesort/HuaroiEspressoCity',
   huaroaV3: '/renewablesort/HuaroiEspressoV3',
+  huaroaV4: '/renewablesort/HuaroiEspressoV4',
   maehongson: '/renewablesort/MaehongsonEspresso'
 }
 
@@ -177,6 +202,7 @@ const passwords: Record<string, string> = {
   huaroaDashboard: '240124',
   huaroaCity: '240124',
   huaroaV3: '240124',
+  huaroaV4: '240124',
   maehongson: '240124'
 }
 
