@@ -563,10 +563,10 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   color: #e5e7eb;
   font-size: 14px;
+  line-height: 1.3;
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;   /* ขึ้นบรรทัดใหม่ได้ ให้เห็นชื่อเต็ม ไม่โดน ... ตัด */
+  word-break: break-word;
 }
 .cc-item:hover { background: #4A2A10; }
 .cc-item.active { background: #B5851F; color: #2A1208; font-weight: 700; }
