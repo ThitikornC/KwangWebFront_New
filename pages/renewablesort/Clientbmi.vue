@@ -116,9 +116,9 @@
                     class="flex items-center gap-1"
                     :style="{ opacity: item.count ? 1 : 0.45 }"
                   >
-                    <span class="rounded-full flex-shrink-0" style="width:7px;height:7px;" :style="{ background: item.color }"></span>
-                    <span class="text-[10px] font-semibold whitespace-nowrap" style="color:#e5e7eb;">{{ item.label }}</span>
-                    <span class="text-[10px] font-bold whitespace-nowrap" style="color:#9ca3af;">{{ item.count }} คน</span>
+                    <span class="rounded-full flex-shrink-0" style="width:9px;height:9px;" :style="{ background: item.color }"></span>
+                    <span class="text-[12px] font-semibold whitespace-nowrap" style="color:#e5e7eb;">{{ item.label }}</span>
+                    <span class="text-[12px] font-bold whitespace-nowrap" style="color:#9ca3af;">{{ item.count }} คน</span>
                   </div>
                 </div>
               </div>
@@ -251,10 +251,10 @@ const refFor = (key) => {
 // ── รายชื่อศูนย์ (custom dropdown แทน native select ที่ popup ล้นกรอบ) ──
 const CENTERS = [
   { value: 'BMI', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1' },
-  { value: 'BMI_center2', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1' },
-  { value: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
   { value: 'BMI_center4', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
+  { value: 'BMI_center2', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1' },
   { value: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2' },
+  { value: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
 ]
 const selectedCenter = ref('BMI')
 const dropdownOpen = ref(false)

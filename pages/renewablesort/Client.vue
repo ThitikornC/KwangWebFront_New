@@ -193,7 +193,7 @@ const projectLinks: Record<string, string> = {
   huaroaDashboard: '/renewablesort/HuaroiEspresso',
   huaroaCity: '/renewablesort/HuaroiEspressoCity',
   huaroaV3: '/renewablesort/HuaroiEspressoV3',
-  huaroaV4: '/renewablesort/HuaroiEspressoV4',
+  huaroaV4: '/renewablesort/HuaroiEspressoV4Dashboard',
   maehongson: '/renewablesort/MaehongsonEspresso'
 }
 

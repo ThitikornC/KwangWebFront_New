@@ -76,7 +76,7 @@ const centers = [
   { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', link: '/espresso/Huaroi2', top: '35%', left: '14%' },
   { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', link: '/espresso/Srakhlo2', top: '35%', left: '88%' },
   // ตึกซูเปอร์มาร์เก็ต (รูปจานอาหาร) = ศูนย์ติดตามการเจริญเติบโต → หน้า Clientbmi (สมาร์ทแทรค/BMI)
-  { name: 'ศูนย์ติดตามการเจริญเติบโต', link: '/renewablesort/Clientbmi', top: '13%', left: '74%' },
+  { name: 'ศูนย์ติดตามพัฒนาการของผู้เรียน', link: '/renewablesort/Clientbmi', top: '13%', left: '74%' },
 ]
 
 const openLink = (link) => {

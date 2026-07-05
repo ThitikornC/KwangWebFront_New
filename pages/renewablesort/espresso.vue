@@ -384,7 +384,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
 .ebook-badge {
   position: absolute;
   right: 40px;
-  top: 40px;
+  bottom: 40px;
   z-index: 120;
 }
 /* keep the trial badge compact (smaller than the default spline card) */
@@ -394,7 +394,7 @@ function openSplineDesign(key: keyof typeof splineLinks) {
 .ebook-badge .card-content span { font-size: 13px; }
 
 @media (max-width: 768px) {
-  .ebook-badge { right: 16px; top: 16px; }
+  .ebook-badge { right: 16px; bottom: 56px; }
   .ebook-badge .spline-link-card { width: 180px; height: 56px; padding: 0 12px; }
   .ebook-badge .card-content img { width: 32px; height: 32px; }
   .ebook-badge .card-content span { font-size: 13px; }
