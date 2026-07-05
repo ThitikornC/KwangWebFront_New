@@ -51,7 +51,7 @@
             </div>
 
             <div v-for="(ind, idx) in viewIndicators" :key="ind.key" class="indicator-block" :class="{ 'indicator-divider': idx > 0 }">
-              <div class="text-[13px] font-bold mb-1" style="color:#E6B428;">{{ ind.title }}</div>
+              <div class="text-[13px] font-bold mb-1 text-center" style="color:#E6B428;">{{ ind.title }}</div>
 
               <div v-if="!ind.items.length" class="text-[12px] py-4 text-center" style="color:#9ca3af;">
                 ยังไม่มีข้อมูล
@@ -113,12 +113,12 @@
                   <div
                     v-for="item in ind.items"
                     :key="item.label"
-                    class="flex items-center gap-1.5"
+                    class="flex items-center gap-1"
                     :style="{ opacity: item.count ? 1 : 0.45 }"
                   >
-                    <span class="rounded-full flex-shrink-0" style="width:8px;height:8px;" :style="{ background: item.color }"></span>
-                    <span class="text-[11px] font-semibold" style="color:#e5e7eb;">{{ item.label }}</span>
-                    <span class="text-[11px] font-bold" style="color:#9ca3af;">{{ item.count }} คน</span>
+                    <span class="rounded-full flex-shrink-0" style="width:7px;height:7px;" :style="{ background: item.color }"></span>
+                    <span class="text-[10px] font-semibold whitespace-nowrap" style="color:#e5e7eb;">{{ item.label }}</span>
+                    <span class="text-[10px] font-bold whitespace-nowrap" style="color:#9ca3af;">{{ item.count }} คน</span>
                   </div>
                 </div>
               </div>
@@ -292,8 +292,8 @@ const onCenterChange = () => {
   fetchSummary(selectedCenter.value)
 }
 
-// Jump to the City View dashboard for this center
-const goToCity = () => navigateTo('/renewablesort/HuaroiEspressoCity')
+// Jump back to the V4 city view (this page is entered from V4)
+const goToCity = () => navigateTo('/renewablesort/HuaroiEspressoV4')
 
 // ── โดนัท: แปลง items -> ส่วนโค้ง (r=40, C≈251.3) เว้นช่อง 2px ระหว่างชิ้น ──
 const C = 2 * Math.PI * 40
@@ -472,9 +472,9 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 4px 14px;
+  gap: 3px 10px;
   width: 100%;
-  padding-top: 4px;
+  padding-top: 8px;   /* = ระยะด้านล่าง (indicator-block padding) ให้ legend อยู่กึ่งกลางระหว่างเส้น */
   border-top: 1px solid rgba(181, 133, 31, 0.25);
 }
 /* ที่ว่างฝั่งขวา = ตารางเกณฑ์อ้างอิงกรมอนามัย */

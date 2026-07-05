@@ -57,8 +57,8 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
-// พื้นหลังเมือง V4 — PNG พื้นหลังโปร่งใส (ลบพื้นขาวออกแล้ว ให้ท้องฟ้าไดนามิกโชว์รอบเมือง)
-const BG_CITY = '/espresso/Esprestopia_main2.png'
+// พื้นหลังเมือง V4 — WebP พื้นหลังโปร่งใส (จาก espressopia-standalone) ให้ท้องฟ้าไดนามิกโชว์รอบเมือง
+const BG_CITY = '/espresso/Esprestopia_main2.webp'
 
 // preload รูป BG ตั้งแต่ต้น + ความสำคัญสูง ให้ขึ้นเร็วที่สุด
 useHead({
@@ -69,11 +69,14 @@ useHead({
 
 // ── 5 ศูนย์ + URL + ตำแหน่งปุ่มบนตึก (top/left เป็น % ปรับให้ตรงตึกได้) ──
 const centers = [
-  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1', link: '/espresso/Huaroi1', top: '30%', left: '28%', z: 40 },
-  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', link: '/espresso/Huaroi2', top: '52%', left: '10%' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1', link: '/espresso/Srakhlo1', top: '68%', left: '29%' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', link: '/espresso/Srakhlo2', top: '55%', left: '88%' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', link: '/espresso/Mahawanaram', top: '72%', left: '66%' },
+  // ตำแหน่งป้ายเหมือนหน้า City เป๊ะ
+  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1', link: '/espresso/Huaroi1', top: '50%', left: '31.5%', z: 40 },
+  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1', link: '/espresso/Srakhlo1', top: '50%', left: '69%' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', link: '/espresso/Mahawanaram', top: '13%', left: '30.5%' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', link: '/espresso/Huaroi2', top: '35%', left: '14%' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', link: '/espresso/Srakhlo2', top: '35%', left: '88%' },
+  // ตึกซูเปอร์มาร์เก็ต (รูปจานอาหาร) = ศูนย์ติดตามการเจริญเติบโต → หน้า Clientbmi (สมาร์ทแทรค/BMI)
+  { name: 'ศูนย์ติดตามการเจริญเติบโต', link: '/renewablesort/Clientbmi', top: '13%', left: '74%' },
 ]
 
 const openLink = (link) => {
@@ -188,19 +191,28 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* เวที — เต็มความกว้างจอเสมอ (ไม่มีแถบข้าง) ล็อกอัตราส่วน = ภาพ ยึดชิดขอบล่าง
-   จอที่กว้างกว่าภาพ → ส่วนเกินล้นตัดด้านบน (เป็นท้องฟ้าว่างของภาพ ไม่โดนตึก) */
+/* เวที (ค่าเริ่มต้น: desktop/มือถือ) — เต็มจอแบบ cover ตึกซ้าย-ขวาโดนครอปนิดหน่อยได้ (เหมือนหน้า City) */
 .city-stage {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 1889 / 1080;
-  height: auto;
+  height: 100%;
   z-index: 1;
 }
-.city-bg { background-size: 100% 100%; }
+.city-bg { background-size: cover; }
+
+/* จอที่แคบกว่าอัตราส่วนภาพ (เช่น iPad 4:3) → ล็อกอัตราส่วน = ภาพ แสดงตึกเต็มไม่ครอป */
+@media (max-aspect-ratio: 7/4) and (min-width: 768px) {
+  .city-stage {
+    margin: auto;
+    aspect-ratio: 1889 / 1080;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .city-bg { background-size: 100% 100%; }
+}
 
 /* ตัวยึดตำแหน่งปุ่ม — รับผิดชอบเฉพาะการจัดกลางบนพิกัดตึก (ไม่ทำ animation) */
 .center-anchor {
