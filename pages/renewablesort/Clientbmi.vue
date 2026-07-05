@@ -18,8 +18,7 @@
               class="flex-1 px-3 py-2 rounded-lg"
               style="background:#4A2A10; color:#e5e7eb; border:1px solid #B5851F; font-size:14px;"
             >
-              <option value="BMI">เทศบาลตำบลหัวรอ</option>
-              <option value="BMI_center1">ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1</option>
+              <option value="BMI">ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1</option>
               <option value="BMI_center2">ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1</option>
               <option value="BMI_center3">ศูนย์พัฒนาเด็กเล็กมหาวนาราม</option>
               <option value="BMI_center4">ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2</option>
@@ -38,13 +37,14 @@
             กำลังโหลดข้อมูล...
           </div>
 
-          <template v-else>
-            <div class="flex justify-between items-center px-1">
+          <!-- กรอบเดียว รวม 3 ตัวชี้วัด -->
+          <div v-else class="greedy-card px-4 py-3">
+            <div class="flex justify-between items-center mb-2">
               <h2 class="text-[13px] font-bold tracking-wider" style="color:#e5e7eb;">ภาวะโภชนาการ (สมาร์ทแทรค)</h2>
               <span class="text-[10px]" style="color:#9ca3af;">นักเรียน {{ total }} คน · ผลวัดล่าสุดต่อคน</span>
             </div>
 
-            <div v-for="ind in indicators" :key="ind.key" class="greedy-card px-4 py-2">
+            <div v-for="(ind, idx) in viewIndicators" :key="ind.key" class="indicator-block" :class="{ 'indicator-divider': idx > 0 }">
               <div class="text-[13px] font-bold mb-1" style="color:#E6B428;">{{ ind.title }}</div>
 
               <div v-if="!ind.items.length" class="text-[12px] py-4 text-center" style="color:#9ca3af;">
@@ -52,8 +52,8 @@
               </div>
 
               <div v-else class="donut-row">
-                <!-- ซ้าย: โดนัท (% อยู่บนชิ้นกราฟ) + legend ใต้กราฟ -->
-                <div class="donut-col">
+                <!-- บน: โดนัทฝั่งซ้าย · เว้นฝั่งขวาไว้ใส่คำแนะนำ -->
+                <div class="donut-top">
                   <svg class="donut" viewBox="0 0 100 100" role="img" :aria-label="ind.title">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="#4A2A10" stroke-width="14" />
                     <g transform="rotate(-90 50 50)">
@@ -78,24 +78,30 @@
                       fill="#ffffff" font-size="6" font-weight="800"
                       style="pointer-events:none; paint-order:stroke; stroke:rgba(0,0,0,0.45); stroke-width:1.6px;"
                     >{{ seg.pct }}%</text>
-                    <text x="50" y="47" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">{{ goodPct(ind.items) }}%</text>
-                    <text x="50" y="60" text-anchor="middle" fill="#9ca3af" font-size="7.5">อยู่ในเกณฑ์</text>
+                    <text x="50" y="46" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-size="15" font-weight="800">{{ goodPct(ind.items) }}%</text>
+                    <text x="50" y="60" text-anchor="middle" dominant-baseline="central" fill="#9ca3af" font-size="7.5">อยู่ในเกณฑ์</text>
                   </svg>
 
-                  <!-- legend ใต้กราฟ -->
-                  <div class="donut-legend">
-                    <div v-for="item in ind.items" :key="item.label" class="flex items-center gap-1.5">
-                      <span class="rounded-full flex-shrink-0" style="width:8px;height:8px;" :style="{ background: labelColor(item) }"></span>
-                      <span class="text-[11px] font-semibold" style="color:#e5e7eb;">{{ item.label }}</span>
-                    </div>
-                  </div>
+                  <!-- ขวา: เว้นไว้สำหรับคำแนะนำ -->
+                  <div class="advice-slot flex-1"></div>
                 </div>
 
-                <!-- ขวา: เว้นไว้สำหรับคำแนะนำ -->
-                <div class="advice-slot flex-1"></div>
+                <!-- legend กลางการ์ด (ใต้กราฟ) — โชว์ครบทุกระดับ + จำนวนคน -->
+                <div class="donut-legend">
+                  <div
+                    v-for="item in ind.items"
+                    :key="item.label"
+                    class="flex items-center gap-1.5"
+                    :style="{ opacity: item.count ? 1 : 0.45 }"
+                  >
+                    <span class="rounded-full flex-shrink-0" style="width:8px;height:8px;" :style="{ background: item.color }"></span>
+                    <span class="text-[11px] font-semibold" style="color:#e5e7eb;">{{ item.label }}</span>
+                    <span class="text-[11px] font-bold" style="color:#9ca3af;">{{ item.count }} คน</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </template>
+          </div>
         </div>
 
       </div>
@@ -104,41 +110,68 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 // ── สถานะข้อมูลจาก /api/bmi-summary (DB: BMI → bmi_records) ──
 const isLoading = ref(true)
 const total = ref(0)
 const indicators = ref([])
 
-// สีตามระดับ (fallback เมื่อเจอ label ใหม่ที่ไม่อยู่ในตาราง)
-const SEV_COLORS = { green: '#059669', orange: '#d97706', red: '#f43f5e' }
-const sevColor = (sev) => SEV_COLORS[sev] || '#8a8175'
-
-// สีแยกตามหมวด — ไม่ซ้ำกันในโดนัทเดียว (ตรวจ CVD/contrast บนพื้น #321609 แล้ว)
-// เขียว = ตามเกณฑ์ · ฝั่งเกินโทนร้อน (ส้ม→แดง) · ฝั่งต่ำโทนเย็น (ฟ้า→น้ำเงิน)
-const LABEL_COLORS = {
-  // ตามเกณฑ์
-  'น้ำหนักตามเกณฑ์': '#059669',
-  'สูงตามเกณฑ์': '#059669',
-  'สมส่วน': '#059669',
-  // ฝั่งเกินเกณฑ์ (โทนร้อน)
-  'น้ำหนักค่อนข้างมาก': '#d97706',
-  'น้ำหนักมาก': '#f43f5e',
-  'ท้วม': '#ca8a04',
-  'เริ่มอ้วน': '#d97706',
-  'อ้วน': '#f43f5e',
-  // ฝั่งต่ำกว่าเกณฑ์ (โทนเย็น)
-  'น้ำหนักค่อนข้างน้อย': '#0284c7',
-  'น้ำหนักน้อย': '#6366f1',
-  'ค่อนข้างผอม': '#0284c7',
-  'ผอม': '#6366f1',
-  // ส่วนสูง
-  'สูง': '#0284c7',
-  'ค่อนข้างเตี้ย': '#d97706',
-  'เตี้ย': '#f43f5e',
+// สี diverging (ตรวจ CVD ทุกคู่ ≥12 + contrast บนพื้น #321609 แล้ว)
+// เขียว = อยู่ในเกณฑ์ · ฝั่งน้อย เหลือง→ส้ม · ฝั่งมาก ชมพู→แดง
+const CLR = {
+  green:  '#10b981', // อยู่ในเกณฑ์
+  yellow: '#facc15', // ฝั่งน้อย (ค่อนข้าง)
+  orange: '#f97316', // ฝั่งน้อย (รุนแรง)
+  pinkLt: '#f472b6', // ฝั่งมาก (เบา = ท้วม)
+  pink:   '#ec4899', // ฝั่งมาก (ค่อนข้าง / เริ่มอ้วน)
+  red:    '#ef4444', // ฝั่งมาก (รุนแรง)
 }
-const labelColor = (item) => LABEL_COLORS[item.label] || sevColor(item.severity)
+
+// ลำดับเกณฑ์เต็มของแต่ละตัวชี้วัด (ต่ำ → ปกติ → สูง) ตามเกณฑ์กรมอนามัย
+// โชว์ครบทุกระดับเสมอ — ระดับที่ไม่มีเด็กจะขึ้น 0 คนใน legend
+const INDICATOR_DEFS = {
+  wa: [
+    { label: 'น้ำหนักค่อนข้างน้อย', color: CLR.yellow },
+    { label: 'น้ำหนักน้อย', color: CLR.orange },
+    { label: 'น้ำหนักตามเกณฑ์', color: CLR.green, normal: true },
+    { label: 'น้ำหนักค่อนข้างมาก', color: CLR.pink },
+    { label: 'น้ำหนักมาก', color: CLR.red },
+  ],
+  ha: [
+    { label: 'ค่อนข้างเตี้ย', color: CLR.yellow },
+    { label: 'เตี้ย', color: CLR.orange },
+    { label: 'สูงตามเกณฑ์', color: CLR.green, normal: true },
+    { label: 'ค่อนข้างสูง', color: CLR.pink },
+    { label: 'สูง', color: CLR.red },
+  ],
+  wh: [
+    { label: 'ค่อนข้างผอม', color: CLR.yellow },
+    { label: 'ผอม', color: CLR.orange },
+    { label: 'สมส่วน', color: CLR.green, normal: true },
+    { label: 'ท้วม', color: CLR.pinkLt },
+    { label: 'เริ่มอ้วน', color: CLR.pink },
+    { label: 'อ้วน', color: CLR.red },
+  ],
+}
+
+// รวมข้อมูลจาก API เข้ากับลำดับเกณฑ์เต็ม — เติม 0 ให้ระดับที่ไม่มีเด็ก
+const viewIndicators = computed(() =>
+  indicators.value.map((ind) => {
+    const defs = INDICATOR_DEFS[ind.key] || []
+    const counts = Object.fromEntries((ind.items || []).map(i => [i.label, i.count]))
+    const items = defs.map(d => ({
+      label: d.label, color: d.color, normal: !!d.normal, count: counts[d.label] || 0,
+    }))
+    // เผื่อ label แปลกที่ไม่อยู่ในเกณฑ์มาตรฐาน — ต่อท้ายด้วยสีเทา
+    for (const i of (ind.items || [])) {
+      if (!defs.find(d => d.label === i.label)) {
+        items.push({ label: i.label, color: '#8a8175', normal: false, count: i.count })
+      }
+    }
+    return { key: ind.key, title: ind.title, items }
+  })
+)
 
 const selectedCenter = ref('BMI')
 
@@ -181,7 +214,7 @@ const donutSegments = (items) => {
       label: item.label,
       count: item.count,
       pct: Math.round((item.count / totalCount) * 100),
-      color: labelColor(item),
+      color: item.color,
       dashArray: `${drawn} ${C - drawn}`,
       offset: -(pos + gap / 2),
       labelX: 50 + 40 * Math.cos(midAngle),
@@ -192,10 +225,10 @@ const donutSegments = (items) => {
   })
 }
 
-// สัดส่วน "อยู่ในเกณฑ์" (ระดับเขียว) โชว์กลางโดนัท
+// สัดส่วน "อยู่ในเกณฑ์" (ระดับปกติ สีเขียว) โชว์กลางโดนัท
 const goodPct = (items) => {
   const t = items.reduce((s, i) => s + i.count, 0)
-  const g = items.filter(i => i.severity === 'green').reduce((s, i) => s + i.count, 0)
+  const g = items.filter(i => i.normal).reduce((s, i) => s + i.count, 0)
   return t ? Math.round((g / t) * 100) : 0
 }
 
@@ -303,39 +336,47 @@ onBeforeUnmount(() => {
 }
 .city-btn:hover .city-btn-arrow { transform: translateX(3px); }
 
-/* ── แถวโดนัท: ซ้าย = กราฟ + legend ใต้กราฟ · ขวา = พื้นที่คำแนะนำ (เว้นไว้) ── */
+/* ── บล็อกตัวชี้วัดในกรอบเดียว: คั่นด้วยเส้นบางแทนการ์ดแยก ── */
+.indicator-block { padding: 8px 0; }
+.indicator-divider {
+  border-top: 1px solid rgba(181, 133, 31, 0.3);
+  margin-top: 2px;
+}
+
+/* ── การ์ดโดนัท: บน = กราฟซ้าย + พื้นที่คำแนะนำขวา · ล่าง = legend กลางการ์ด ── */
 .donut-row {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
 }
-.donut-col {
+.donut-top {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 8px;
-  flex-shrink: 0;
-  width: fit-content;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
 }
+/* ขนาดโดนัทล็อกเท่ากันทุกใบ (aspect-ratio 1 + flex 0 0 กันโดนยืด) */
 .donut {
   width: 120px;
   height: 120px;
-  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 120px;
+  display: block;
 }
-/* คำอธิบายสีใต้กราฟ — เรียงแนวนอนเต็มความกว้าง */
+/* คำอธิบายสี — จัดกึ่งกลางการ์ด เรียงต่อกัน ตัดขึ้นบรรทัดใหม่ได้ */
 .donut-legend {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 12px 16px;
-  width: fit-content;
+  justify-content: center;
   align-items: center;
+  gap: 4px 14px;
+  width: 100%;
+  padding-top: 4px;
+  border-top: 1px solid rgba(181, 133, 31, 0.25);
 }
 /* ที่ว่างฝั่งขวา สำหรับใส่คำแนะนำภายหลัง */
-.advice-slot { min-height: 10px; }
+.advice-slot { min-height: 10px; align-self: stretch; }
 @media (max-width: 768px) {
   .customer-card { flex-wrap: wrap; }
   .city-btn {
@@ -348,8 +389,7 @@ onBeforeUnmount(() => {
   }
 }
 @media (max-width: 480px) {
-  .donut-row { flex-direction: column; align-items: center; }
-  .donut-col { width: 180px; min-height: 260px; }
-  .donut { width: 140px; height: 140px; }
+  .donut-top { flex-direction: column; align-items: center; }
+  .donut { width: 140px; height: 140px; flex-basis: 140px; }
 }
 </style>
