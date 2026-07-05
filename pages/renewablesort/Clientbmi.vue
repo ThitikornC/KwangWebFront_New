@@ -1,5 +1,5 @@
 <template>
-  <div class="root-bg p-4 sm:p-8 min-h-screen flex items-center justify-center">
+  <div class="root-bg p-4 sm:p-8 min-h-screen flex items-start sm:items-center justify-center">
     <div class="max-w-2xl w-full mx-auto">
 
       <!-- Main card (greedy theme) -->
@@ -10,20 +10,27 @@
 
         <!-- Customer info / Center selector -->
         <div class="greedy-card customer-card px-4 py-3 mb-3 relative">
-          <div class="flex items-center gap-3">
+          <div class="selector-row flex flex-wrap items-center gap-3">
             <label class="text-sm font-bold" style="color:#E6B428; white-space:nowrap;">เลือกศูนย์:</label>
-            <select 
-              v-model="selectedCenter" 
-              @change="onCenterChange"
-              class="flex-1 px-3 py-2 rounded-lg"
-              style="background:#4A2A10; color:#e5e7eb; border:1px solid #B5851F; font-size:14px;"
-            >
-              <option value="BMI">ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1</option>
-              <option value="BMI_center2">ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1</option>
-              <option value="BMI_center3">ศูนย์พัฒนาเด็กเล็กมหาวนาราม</option>
-              <option value="BMI_center4">ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2</option>
-              <option value="BMI_center5">ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2</option>
-            </select>
+            <div ref="ddRef" class="cc-dropdown flex-1 min-w-0">
+              <button type="button" class="cc-trigger" @click="dropdownOpen = !dropdownOpen">
+                <span class="cc-trigger-label">{{ selectedLabel }}</span>
+                <span class="cc-caret" :class="{ open: dropdownOpen }" aria-hidden="true"></span>
+              </button>
+              <ul v-if="dropdownOpen" class="cc-menu">
+                <li
+                  v-for="c in CENTERS"
+                  :key="c.value"
+                  class="cc-item"
+                  :class="{ active: c.value === selectedCenter }"
+                  @click="selectCenter(c.value)"
+                >
+                  {{ c.label }}
+                </li>
+              </ul>
+            </div>
+            <!-- ตัวคั่น: บังคับปุ่มลงบรรทัดใหม่เฉพาะจอมือถือ -->
+            <div class="selector-break" aria-hidden="true"></div>
             <button type="button" class="city-btn" @click="goToCity">
               <span>Espresso</span>
               <span class="city-btn-arrow" aria-hidden="true"></span>
@@ -39,9 +46,8 @@
 
           <!-- กรอบเดียว รวม 3 ตัวชี้วัด -->
           <div v-else class="greedy-card px-4 py-3">
-            <div class="flex justify-between items-center mb-2">
-              <h2 class="text-[13px] font-bold tracking-wider" style="color:#e5e7eb;">ภาวะโภชนาการ (สมาร์ทแทรค)</h2>
-              <span class="text-[10px]" style="color:#9ca3af;">นักเรียน {{ total }} คน · ผลวัดล่าสุดต่อคน</span>
+            <div class="mb-2">
+              <h2 class="text-[13px] font-bold tracking-wider" style="color:#e5e7eb;">สมาร์ทแทรค(การติดตามการเจริญเติบโต)</h2>
             </div>
 
             <div v-for="(ind, idx) in viewIndicators" :key="ind.key" class="indicator-block" :class="{ 'indicator-divider': idx > 0 }">
@@ -82,8 +88,24 @@
                     <text x="50" y="60" text-anchor="middle" dominant-baseline="central" fill="#9ca3af" font-size="7.5">อยู่ในเกณฑ์</text>
                   </svg>
 
-                  <!-- ขวา: เว้นไว้สำหรับคำแนะนำ -->
-                  <div class="advice-slot flex-1"></div>
+                  <!-- ขวา: เกณฑ์อ้างอิงกรมอนามัย (ควรอยู่ที่เท่าไหร่) -->
+                  <div class="advice-slot">
+                    <div v-if="refFor(ind.key)" class="ref-box">
+                      <div class="ref-title">{{ refFor(ind.key).title }}</div>
+                      <table class="ref-table">
+                        <thead>
+                          <tr>
+                            <th v-for="(c, ci) in refFor(ind.key).cols" :key="c" :class="{ 'ref-head-cat': ci === 0 }">{{ c }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="row in refFor(ind.key).rows" :key="row[0]">
+                            <td v-for="(cell, ci) in row" :key="ci" :class="{ 'ref-cell-cat': ci === 0 }">{{ cell }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- legend กลางการ์ด (ใต้กราฟ) — โชว์ครบทุกระดับ + จำนวนคน -->
@@ -173,7 +195,83 @@ const viewIndicators = computed(() =>
   })
 )
 
+// ── เกณฑ์อ้างอิง "ค่ากลาง (median)" ตามมาตรฐาน WHO 2006 / กรมอนามัยไทย ──
+// ค่าโดยประมาณ ระดับใช้งานได้ — แก้ตัวเลขได้ง่ายถ้ามีตารางทางการ
+const REFERENCE = {
+  wa: {
+    title: 'เกณฑ์ที่เหมาะสม',
+    cols: ['อายุ', 'น้ำหนักควรอยู่ที่ (กก.)'],
+    // [ช่วงอายุ, ชาย, หญิง] — ยุบชาย/หญิงเป็นค่าเดียว/ช่วงตอนแสดง
+    rows: [
+      ['2 ปี', '12.2', '11.5'],
+      ['3 ปี', '14.3', '13.9'],
+      ['4 ปี', '16.3', '16.1'],
+      ['5 ปี', '18.3', '18.2'],
+    ],
+  },
+  ha: {
+    title: 'เกณฑ์ที่เหมาะสม',
+    cols: ['อายุ', 'ส่วนสูงควรอยู่ที่ (ซม.)'],
+    rows: [
+      ['2 ปี', '87', '86'],
+      ['3 ปี', '96', '95'],
+      ['4 ปี', '103', '103'],
+      ['5 ปี', '110', '109'],
+    ],
+  },
+  wh: {
+    title: 'เกณฑ์ที่เหมาะสม',
+    cols: ['ส่วนสูง', 'น้ำหนักควรอยู่ที่ (กก.)'],
+    rows: [
+      ['85 ซม.', '11.8', '11.9'],
+      ['90 ซม.', '13.0', '12.9'],
+      ['95 ซม.', '14.1', '14.2'],
+      ['100 ซม.', '15.6', '15.6'],
+      ['105 ซม.', '17.2', '17.2'],
+      ['110 ซม.', '19.0', '19.2'],
+    ],
+  },
+}
+// ยุบชาย/หญิงเป็นคอลัมน์เดียว — ต่างกันแสดงเป็นช่วง (ต่ำ–สูง) เท่ากันแสดงค่าเดียว
+const fmtRange = (a, b) => {
+  const x = parseFloat(a), y = parseFloat(b)
+  const lo = Math.min(x, y), hi = Math.max(x, y)
+  return lo === hi ? `${a}` : `${lo} - ${hi}`
+}
+const refFor = (key) => {
+  const r = REFERENCE[key]
+  if (!r) return null
+  return {
+    title: r.title,
+    cols: r.cols,
+    rows: r.rows.map(row => [row[0], fmtRange(row[1], row[2])]),
+  }
+}
+
+// ── รายชื่อศูนย์ (custom dropdown แทน native select ที่ popup ล้นกรอบ) ──
+const CENTERS = [
+  { value: 'BMI', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1' },
+  { value: 'BMI_center2', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1' },
+  { value: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
+  { value: 'BMI_center4', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
+  { value: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2' },
+]
 const selectedCenter = ref('BMI')
+const dropdownOpen = ref(false)
+const ddRef = ref(null)
+const selectedLabel = computed(() =>
+  CENTERS.find(c => c.value === selectedCenter.value)?.label || 'เลือกศูนย์'
+)
+const selectCenter = (value) => {
+  dropdownOpen.value = false
+  if (value !== selectedCenter.value) {
+    selectedCenter.value = value
+    onCenterChange()
+  }
+}
+const onDocClick = (e) => {
+  if (ddRef.value && !ddRef.value.contains(e.target)) dropdownOpen.value = false
+}
 
 const fetchSummary = async (dbName = selectedCenter.value) => {
   try {
@@ -242,10 +340,12 @@ let pollTimer = null
 onMounted(() => {
   fetchSummary()
   pollTimer = setInterval(fetchSummary, POLL_INTERVAL_MS)
+  document.addEventListener('click', onDocClick)
 })
 
 onBeforeUnmount(() => {
   if (pollTimer) clearInterval(pollTimer)
+  document.removeEventListener('click', onDocClick)
 })
 </script>
 
@@ -353,15 +453,17 @@ onBeforeUnmount(() => {
 .donut-top {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;   /* โดนัท + ตาราง จับคู่กันไว้กลาง */
+  flex-wrap: wrap;           /* แคบเกินไปก็ห่อบรรทัดเอง (มือถือ) */
+  gap: 16px 48px;
   width: 100%;
 }
 /* ขนาดโดนัทล็อกเท่ากันทุกใบ (aspect-ratio 1 + flex 0 0 กันโดนยืด) */
 .donut {
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   aspect-ratio: 1 / 1;
-  flex: 0 0 120px;
+  flex: 0 0 160px;
   display: block;
 }
 /* คำอธิบายสี — จัดกึ่งกลางการ์ด เรียงต่อกัน ตัดขึ้นบรรทัดใหม่ได้ */
@@ -375,21 +477,114 @@ onBeforeUnmount(() => {
   padding-top: 4px;
   border-top: 1px solid rgba(181, 133, 31, 0.25);
 }
-/* ที่ว่างฝั่งขวา สำหรับใส่คำแนะนำภายหลัง */
-.advice-slot { min-height: 10px; align-self: stretch; }
-@media (max-width: 768px) {
-  .customer-card { flex-wrap: wrap; }
+/* ที่ว่างฝั่งขวา = ตารางเกณฑ์อ้างอิงกรมอนามัย */
+.advice-slot { min-height: 10px; align-self: center; display: flex; justify-content: center; }
+.ref-box {
+  width: 260px;
+  max-width: 100%;
+  background: rgba(74, 42, 16, 0.35);
+  border: 1px solid rgba(181, 133, 31, 0.4);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+.ref-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #E6B428;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.ref-table th,
+.ref-table td {
+  padding: 2px 6px;
+  font-size: 11px;
+  text-align: right;
+  color: #e5e7eb;
+}
+.ref-table th {
+  font-weight: 700;
+  color: #9ca3af;
+  border-bottom: 1px solid rgba(181, 133, 31, 0.3);
+}
+.ref-head-cat,
+.ref-cell-cat { text-align: left; color: #cbb98f; }
+.ref-table tbody tr + tr td { border-top: 1px solid rgba(181, 133, 31, 0.12); }
+/* ── Custom dropdown เลือกศูนย์ (คุมความกว้าง/สี/ตำแหน่งเอง อยู่ในกรอบ) ── */
+.cc-dropdown { position: relative; }
+.cc-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  background: #4A2A10;
+  color: #e5e7eb;
+  border: 1px solid #B5851F;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.cc-trigger:hover { border-color: #E6B428; }
+.cc-trigger-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cc-caret {
+  flex-shrink: 0;
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #E6B428;
+  transition: transform 0.15s ease;
+}
+.cc-caret.open { transform: rotate(180deg); }
+.cc-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: #2A1208;
+  border: 1px solid #B5851F;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  max-height: 280px;
+  overflow-y: auto;
+}
+.cc-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: #e5e7eb;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-item:hover { background: #4A2A10; }
+.cc-item.active { background: #B5851F; color: #2A1208; font-weight: 700; }
+
+/* ตัวคั่นบังคับขึ้นบรรทัดใหม่ — โชว์เฉพาะจอมือถือ */
+.selector-break { display: none; }
+@media (max-width: 640px) {
+  .selector-break { display: block; flex-basis: 100%; height: 0; }
+  .selector-row { justify-content: center; }  /* ปุ่ม Espresso อยู่กลางเมื่อ wrap ลงบรรทัดใหม่ */
+  .cc-trigger, .cc-item { font-size: 12px; }   /* ย่อฟอนต์ให้เห็นชื่อเต็ม */
   .city-btn {
     padding: 6px 14px;
     font-size: 13px;
     gap: 4px;
-    order: 3;
-    width: 100%;
-    margin-top: 8px;
   }
 }
 @media (max-width: 480px) {
-  .donut-top { flex-direction: column; align-items: center; }
   .donut { width: 140px; height: 140px; flex-basis: 140px; }
+  .ref-box { max-width: 100%; }
 }
 </style>
