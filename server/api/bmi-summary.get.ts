@@ -29,7 +29,7 @@ const databases = [
   { name: 'BMI_center2', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1' },
   { name: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
   { name: 'BMI_center4', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
-  { name: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2' },
+  { name: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 3' },
 ];
 
 const connections: Map<string, mongoose.Connection> = new Map();

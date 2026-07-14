@@ -194,7 +194,7 @@ const expenses = ref([
   { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#22C8F7', dbSlug: 'Huroa3' },
   { name: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa4', count: 0, color: '#FFD700', dbSlug: 'Huroa4' },
   { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2', icon: '/ESPRESSO_logo.png', link: '/espresso/Huaroa', count: 0, color: '#E05CFF', dbSlug: 'Huroa5' },
-  { name: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#00E5FF', dbSlug: 'Huroa6' },
+  { name: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 3', icon: '/ESPRESSO_logo.png', link: '/espresso/huaroa3', count: 0, color: '#00E5FF', dbSlug: 'Huroa6' },
 ])
 
 // per-mode counts per center (index ตรงกับ MODE_DEFS) — เริ่มที่ 0 แล้ว fetch มาเติม
@@ -216,7 +216,7 @@ const bmiChartW = 280
 const bmiChartH = 100
 const bmiPad = 28
 
-// placeholder data per center [หัวรอ1, หัวรอ2, สระโคล่1, สระโคล่2, มหาวนาราม] (ตามลำดับ ranked)
+// placeholder data per center [หัวรอ1, หัวรอ2, สระโคล่1, หัวรอ3, มหาวนาราม] (ตามลำดับ ranked)
 const bmiLines = ref([
   { label: 'สมส่วน',        color: '#10b981', data: [42, 38, 18, 14, 9] },
   { label: 'เริ่มอ้วน/อ้วน', color: '#f59e0b', data: [12, 15,  5,  4, 2] },
@@ -521,8 +521,8 @@ const chartSegments = computed(() => {
 const centerShortName = (name) => {
   if (name.includes('มหาวนาราม')) return 'มหาวนาราม'
   if (name.includes('หัวรอ 2')) return 'หัวรอ 2'
+  if (name.includes('หัวรอ 3')) return 'หัวรอ 3'
   if (name.includes('หัวรอ')) return 'หัวรอ 1'
-  if (name.includes('สระโคล่ 2')) return 'สระโคล่ 2'
   if (name.includes('สระโคล่')) return 'สระโคล่ 1'
   return name
 }

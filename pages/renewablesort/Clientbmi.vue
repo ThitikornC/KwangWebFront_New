@@ -31,6 +31,10 @@
             </div>
             <!-- ตัวคั่น: บังคับปุ่มลงบรรทัดใหม่เฉพาะจอมือถือ -->
             <div class="selector-break" aria-hidden="true"></div>
+            <button type="button" class="city-btn" @click="goToBook">
+              <span>สมาร์ทแทรค</span>
+              <span class="city-btn-arrow" aria-hidden="true"></span>
+            </button>
             <button type="button" class="city-btn" @click="goToCity">
               <span>Espresso</span>
               <span class="city-btn-arrow" aria-hidden="true"></span>
@@ -60,7 +64,12 @@
               <div v-else class="donut-row">
                 <!-- บน: โดนัทฝั่งซ้าย · เว้นฝั่งขวาไว้ใส่คำแนะนำ -->
                 <div class="donut-top">
-                  <svg class="donut" viewBox="0 0 100 100" role="img" :aria-label="ind.title">
+                  <svg
+                    class="donut"
+                    :key="selectedCenter + '-' + ind.key"
+                    :style="{ animationDelay: (idx * 0.12) + 's' }"
+                    viewBox="0 0 100 100" role="img" :aria-label="ind.title"
+                  >
                     <circle cx="50" cy="50" r="40" fill="none" stroke="#4A2A10" stroke-width="14" />
                     <g transform="rotate(-90 50 50)">
                       <circle
@@ -253,7 +262,7 @@ const CENTERS = [
   { value: 'BMI', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1' },
   { value: 'BMI_center4', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
   { value: 'BMI_center2', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1' },
-  { value: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 2' },
+  { value: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 3' },
   { value: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
 ]
 const selectedCenter = ref('BMI')
@@ -294,6 +303,9 @@ const onCenterChange = () => {
 
 // Jump back to the V4 city view (this page is entered from V4)
 const goToCity = () => navigateTo('/renewablesort/HuaroiEspressoV4')
+
+// Open the online report book (สมุดพก) linked with this Smart Track data
+const goToBook = () => navigateTo('/renewablesort/Clientbook')
 
 // ── โดนัท: แปลง items -> ส่วนโค้ง (r=40, C≈251.3) เว้นช่อง 2px ระหว่างชิ้น ──
 const C = 2 * Math.PI * 40
