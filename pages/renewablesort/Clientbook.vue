@@ -252,6 +252,10 @@
                     <span class="stat-chip" :style="chipStyle(latestRecord.colorWA, latestRecord.statWA)">{{ latestRecord.statWA }}</span>
                     <span class="stat-chip" :style="chipStyle(latestRecord.colorHA, latestRecord.statHA)">{{ latestRecord.statHA }}</span>
                   </span>
+                  <!-- ข้ออื่น: ระดับคุณภาพที่ครูประจำชั้นกรอกจากแอปสมาร์ทแทรค -->
+                  <span v-else-if="devLevel(item)" class="dev-level" :style="devLevelStyle(devLevel(item))">
+                    {{ devLevelLabel(devLevel(item)) }}
+                  </span>
                   <span v-else class="dev-item-pending">รอประเมิน</span>
                 </div>
               </div>
@@ -265,8 +269,13 @@
               <div class="dev-domain">ภาคเรียนที่ {{ term }}</div>
               <div v-for="d in COMMENT_DOMAINS" :key="d" class="comment-row">
                 <span class="comment-label">{{ d }}</span>
-                <span class="comment-line">รอบันทึกจากครูประจำชั้น</span>
+                <span class="comment-line" :class="{ 'comment-line--filled': commentOf(term, d) }">
+                  {{ commentOf(term, d) || 'รอบันทึกจากครูประจำชั้น' }}
+                </span>
               </div>
+            </div>
+            <div v-if="currentBook && currentBook.teacher" class="text-[10.5px] text-right pr-2" style="color:#8a7355;">
+              ครูผู้บันทึก: {{ currentBook.teacher }}
             </div>
           </div>
           </div>
@@ -315,6 +324,8 @@ const isLoading = ref(true)
 const students = ref([])
 const selectedCenter = ref('BMI')
 const selectedStudentKey = ref(null)
+// สมุดพกที่ครูกรอกจากแอปสมาร์ทแทรค (bmi-dashboard) — map ตาม studentKey เดียวกับ students[].key
+const books = ref({})
 
 // มุมมอง: 'shelf' = ชั้นเก็บแฟ้มเด็กทุกคน · 'book' = สมุดพกของเด็กที่กดเลือก
 const view = ref('shelf')
@@ -335,6 +346,7 @@ const selectedCenterLabel = computed(() =>
 const selectedStudent = computed(() =>
   students.value.find(s => s.key === selectedStudentKey.value) || null
 )
+const currentBook = computed(() => books.value[selectedStudentKey.value] || null)
 const firstRecord = computed(() => selectedStudent.value?.records[0] || null)
 const latestRecord = computed(() => {
   const rs = selectedStudent.value?.records || []
@@ -428,6 +440,17 @@ const spineStyle = () => ({
   background: `linear-gradient(180deg, ${COVER_COLOR} 0%, ${COVER_COLOR} 68%, rgba(0,0,0,0.35) 100%), ${COVER_COLOR}`,
 })
 
+// สมุดพกที่ครูกรอก — ดึงแยกจากรายชื่อเด็ก ล้มก็ไม่กระทบหน้าหลัก (แค่ขึ้น "รอประเมิน" ตามเดิม)
+const fetchBooks = async () => {
+  try {
+    const res = await $fetch(`/api/bmi-book?db=${selectedCenter.value}`)
+    books.value = (res && res.success && res.data) ? (res.data.books || {}) : {}
+  } catch (e) {
+    console.error('[bmi-book] fetch error', e)
+    books.value = {}
+  }
+}
+
 const fetchStudents = async () => {
   try {
     isLoading.value = true
@@ -437,6 +460,7 @@ const fetchStudents = async () => {
     } else {
       students.value = []
     }
+    await fetchBooks()
   } catch (e) {
     console.error('[bmi-students] fetch error', e)
     students.value = []
@@ -812,6 +836,23 @@ const isGrowthItem = (item) => item.startsWith('๑.๑')
 
 const COMMENT_DOMAINS = ['ด้านร่างกาย', 'ด้านอารมณ์ - จิตใจ', 'ด้านสังคม', 'ด้านสติปัญญา']
 
+// ── ผลที่ครูกรอกในสมุดพก: ระดับคุณภาพรายข้อ + ความคิดเห็นรายภาคเรียน ──
+const DEV_LEVELS = {
+  3: { label: '๓ ดี', color: '#10b981' },
+  2: { label: '๒ พอใช้', color: '#f59e0b' },
+  1: { label: '๑ ควรส่งเสริม', color: '#ef4444' },
+}
+const devLevel = (item) => {
+  const v = currentBook.value?.dev?.[item]
+  return v ? String(v) : ''
+}
+const devLevelLabel = (v) => DEV_LEVELS[v]?.label || v
+const devLevelStyle = (v) => {
+  const c = DEV_LEVELS[v]?.color || '#8a7355'
+  return { background: c + '26', border: `1px solid ${c}`, color: c }
+}
+const commentOf = (term, domain) => currentBook.value?.comments?.[term]?.[domain] || ''
+
 // Poll ทุก 3 นาทีเหมือนหน้าอื่น
 const POLL_INTERVAL_MS = 3 * 60 * 1000
 let pollTimer = null
@@ -829,6 +870,8 @@ onMounted(() => {
         }
       }
     }).catch(() => {})
+    // ครูอาจกรอกสมุดพกระหว่างที่ผู้ปกครองเปิดหน้าค้างไว้ — รีเฟรชไปพร้อมกัน
+    fetchBooks()
   }, POLL_INTERVAL_MS)
   document.addEventListener('click', onDocClick)
 })
@@ -937,9 +980,10 @@ onBeforeUnmount(() => {
 /* คาบแถว = สูงเล่ม (--bh) + ไม้กระดาน 12 — พื้นหลังวาดกระดานซ้ำทุกแถวให้เล่มยืนบนชั้น */
 .bookshelf {
   --bh: 140px;   /* ความสูงเล่ม — จอมือถือปรับเพิ่มให้สัดส่วนยังเป็นปกหนังสือ */
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  /* Grid: คอลัมน์ยืดเต็มความกว้าง (ขอบซ้าย-ขวาเท่ากัน) · เรียงซ้าย→ขวา · แถวสุดท้ายชิดซ้าย */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  align-items: end;
   column-gap: 10px;
   row-gap: 0;
   padding: 6px 10px 0;
@@ -955,10 +999,9 @@ onBeforeUnmount(() => {
 /* ปกหนังสือ: สันซ้ายเข้ม + กรอบทองด้านใน แบบปกหนังเดินทอง */
 .book-cover {
   position: relative;
-  width: 104px;
-  min-width: 0;   /* กัน flex item ไม่ยอมหดตาม width ที่ตั้ง เพราะ .cover-room ใช้ white-space:nowrap */
+  min-width: 0;   /* กันล้นเมื่อ .cover-room ใช้ white-space:nowrap (grid track คุมความกว้าง) */
   height: var(--bh, 140px);
-  margin-bottom: 12px;   /* วางบนกระดาน */
+  margin-bottom: 12px;   /* วางบนกระดาน (สร้างช่องไม้กระดานใต้ทุกแถว) */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1087,10 +1130,14 @@ onBeforeUnmount(() => {
   font-size: 22px;
   font-weight: 800;
 }
-/* จอมือถือ: เรียงแถวละ 2 เล่ม กว้างเต็มชั้น และสูงขึ้นตามสัดส่วนปกหนังสือ */
+/* จอมือถือ: บังคับ 2 คอลัมน์ กว้างเต็มชั้น และสูงขึ้นตามสัดส่วนปกหนังสือ */
 @media (max-width: 480px) {
-  .bookshelf { --bh: 200px; column-gap: 8px; padding: 6px 6px 0; }
-  .book-cover { width: calc(50% - 4px); }
+  .bookshelf {
+    --bh: 200px;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 8px;
+    padding: 6px 6px 0;
+  }
   .cover-tag { font-size: 9px; }
   .cover-badge { width: 48px; height: 48px; font-size: 20px; }
   .cover-name { font-size: 12.5px; }
@@ -1326,6 +1373,15 @@ onBeforeUnmount(() => {
   padding: 1px 8px;
   white-space: nowrap;
 }
+/* ระดับคุณภาพที่ครูกรอก (๓/๒/๑) — สีมาจาก devLevelStyle */
+.dev-level {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
 
 /* ── ความคิดเห็นครู ── */
 .comment-row {
@@ -1347,6 +1403,11 @@ onBeforeUnmount(() => {
   color: #a08050;
   border-bottom: 1px dotted rgba(138, 115, 85, 0.45);
   padding-bottom: 2px;
+}
+/* กรอกแล้ว = ข้อความจริงของครู อ่านชัดกว่าบรรทัดว่าง */
+.comment-line--filled {
+  color: #4A2A10;
+  border-bottom-color: rgba(138, 115, 85, 0.7);
 }
 
 /* ── Custom dropdown (สไตล์เดียวกับ Clientbmi) ── */
