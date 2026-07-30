@@ -319,8 +319,8 @@
       class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Momay_Top soccer club & P.R.G Car สุโขทัย" class="w-12 h-12 object-contain" />
-        <span class="font-thai card-label-sm">Momay_Top soccer club &amp; P.R.G Car สุโขทัย</span>
+        <img src="/MOMAY_logo.png" alt="ปั้มแก๊ส" class="w-12 h-12 object-contain" />
+        <span class="font-thai">ปั้มแก๊ส</span>
       </div>
     </div>
 
@@ -329,8 +329,8 @@
       class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="คุณอนัน" class="w-12 h-12 object-contain" />
-        <span class="font-thai">คุณอนัน</span>
+        <img src="/MOMAY_logo.png" alt="top soccer" class="w-12 h-12 object-contain" />
+        <span class="font-thai">top soccer</span>
       </div>
     </div>
   </div>
