@@ -315,6 +315,16 @@
     </div>
 
     <div
+      @click="openSplineDesign('MomayHMByJob')"
+      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="MomayHM by Job" class="w-12 h-12 object-contain" />
+        <span class="font-thai">MomayHM by Job</span>
+      </div>
+    </div>
+
+    <div
       @click="openSplineDesign('MomayTopSoccer')"
       class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
     >
@@ -380,6 +390,7 @@ const splineLinks: Record<string, string> = {
   MomayModel: '/momay/MomayModel',
   MomayChamp: '/momay/MomayChamp',
   MomayHMModel: '/momay/MomayHMModel',
+  MomayHMByJob: '/momay/MomayHMByJob',
   MomayTopSoccer: '/momay/MomayTopSoccer',
   MomayAnan: '/momay/MomayAnan'
 }
