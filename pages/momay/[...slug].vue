@@ -35,8 +35,10 @@ const targets: Record<string, string> = {
   MomayDP: 'https://layerdp-production.up.railway.app/',
   MomayModel: 'https://momayhmmodel-production.up.railway.app/model',
   MomayChamp: 'https://momaychamp-production.up.railway.app/',
-  MomayHMModel: 'https://momaymodelbuu-production.up.railway.app/momaymodel',
-  MomayHMByJob: 'https://momaymodelbuu-production.up.railway.app/momaymodel-by-job',
+  'MomayBUU-Executive': 'https://momaymodelbuu-production.up.railway.app/momay-exec',
+  'MomayBUU-Student': 'https://momaymodelbuu-production.up.railway.app/momay-student',
+  'MomayBUU-ByJob': 'https://momaymodelbuu-production.up.railway.app/momaymodel-by-job',
+  MomayBUU: 'https://momaymodelbuu-production.up.railway.app/momaymodel',
   MomayTopSoccer: 'https://momaycastomertopsoccer-production.up.railway.app/momaymodel',
   MomayAnan: 'https://momaycastomeranan-production.up.railway.app/momaymodel'
 }

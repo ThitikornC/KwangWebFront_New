@@ -305,22 +305,42 @@
     </div>
 
     <div
-      @click="openSplineDesign('MomayHMModel')"
+      @click="openSplineDesign('MomayBUU-Executive')"
       class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="MomayHMModel" class="w-12 h-12 object-contain" />
-        <span class="font-thai">MomayHMModel</span>
+        <img src="/MOMAY_logo.png" alt="MomayBUU-Executive" class="w-12 h-12 object-contain" />
+        <span class="font-thai">MomayBUU-Executive</span>
       </div>
     </div>
 
     <div
-      @click="openSplineDesign('MomayHMByJob')"
+      @click="openSplineDesign('MomayBUU-Student')"
       class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="MomayHM by Job" class="w-12 h-12 object-contain" />
-        <span class="font-thai">MomayHM by Job</span>
+        <img src="/MOMAY_logo.png" alt="MomayBUU-Student" class="w-12 h-12 object-contain" />
+        <span class="font-thai">MomayBUU-Student</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('MomayBUU-ByJob')"
+      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="MomayBUU by Job" class="w-12 h-12 object-contain" />
+        <span class="font-thai">MomayBUU by Job</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('MomayBUU')"
+      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="MomayBUU" class="w-12 h-12 object-contain" />
+        <span class="font-thai">MomayBUU</span>
       </div>
     </div>
 
@@ -389,8 +409,10 @@ const splineLinks: Record<string, string> = {
   MomayDP: '/momay/MomayDP',
   MomayModel: '/momay/MomayModel',
   MomayChamp: '/momay/MomayChamp',
-  MomayHMModel: '/momay/MomayHMModel',
-  MomayHMByJob: '/momay/MomayHMByJob',
+  'MomayBUU-Executive': '/momay/MomayBUU-Executive',
+  'MomayBUU-Student': '/momay/MomayBUU-Student',
+  'MomayBUU-ByJob': '/momay/MomayBUU-ByJob',
+  MomayBUU: '/momay/MomayBUU',
   MomayTopSoccer: '/momay/MomayTopSoccer',
   MomayAnan: '/momay/MomayAnan'
 }
