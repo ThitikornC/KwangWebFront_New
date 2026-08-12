@@ -67,10 +67,10 @@ useHead({
   ],
 })
 
-// ── Demo: เหลือแค่ตึกหน้า (demo) + ตึกพัฒนาการ ──
+// ── Demo: เหลือแค่ตึกหน้า (Espresso) + ตึกพัฒนาการ ──
 const centers = [
   // ตึกหน้า — ตำแหน่งเดียวกับตึกแรกของหน้า V4
-  { name: 'demo', link: '/espresso/EspressoDemo', top: '50%', left: '31.5%', z: 40 },
+  { name: 'Espresso', link: '/espresso/EspressoDemo', top: '50%', left: '31.5%', z: 40 },
   // ตึกซูเปอร์มาร์เก็ต (รูปจานอาหาร) = ศูนย์ติดตามพัฒนาการของผู้เรียน → Clientbmi (สมาร์ทแทรค/BMI) ของ demo
   { name: 'ศูนย์ติดตามพัฒนาการของผู้เรียน', link: '/renewablesort/Clientbmi?db=BMI_templatedemo', top: '13%', left: '74%' },
 ]

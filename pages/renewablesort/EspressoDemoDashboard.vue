@@ -109,7 +109,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 // Demo — มีที่เดียว: อ่านข้อมูลจากฐาน Espresso_Demo (espressotemplate-production-94ae)
 const expenses = ref([
-  { name: 'demo', icon: '/ESPRESSO_logo.png', link: '/espresso/EspressoDemo', count: 0, color: '#800080', dbSlug: 'Espresso_Demo' },
+  { name: 'Espresso', icon: '/ESPRESSO_logo.png', link: '/espresso/EspressoDemo', count: 0, color: '#800080', dbSlug: 'Espresso_Demo' },
 ])
 
 // per-mode counts per center (index ตรงกับ MODE_DEFS) — เริ่มที่ 0 แล้ว fetch มาเติม
