@@ -21,6 +21,7 @@ const databases = [
   { name: 'Huroa4', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
   { name: 'Huroa5', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
   { name: 'Huroa6', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 3' },
+  { name: 'Espresso_Demo', label: 'Espresso demo' },
 ];
 
 // Store connections

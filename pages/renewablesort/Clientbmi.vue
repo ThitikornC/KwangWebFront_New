@@ -258,14 +258,25 @@ const refFor = (key) => {
 }
 
 // ── รายชื่อศูนย์ (custom dropdown แทน native select ที่ popup ล้นกรอบ) ──
-const CENTERS = [
+const HUAROI_CENTERS = [
   { value: 'BMI', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1' },
   { value: 'BMI_center4', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
   { value: 'BMI_center2', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1' },
   { value: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 3' },
   { value: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
 ]
-const selectedCenter = ref('BMI')
+// ศูนย์ที่เข้ามาจากหน้า demo (?db=BMI_templatedemo) — โชว์เฉพาะของ demo
+const DEMO_CENTERS = [
+  { value: 'BMI_templatedemo', label: 'Espresso demo' },
+]
+
+// อ่าน ?db= จาก URL: ถ้าเป็นของ demo ให้ใช้ชุด demo ทั้งหน้า
+const route = useRoute()
+const requestedDb = String(route.query.db || '')
+const isDemo = DEMO_CENTERS.some(c => c.value === requestedDb)
+
+const CENTERS = isDemo ? DEMO_CENTERS : HUAROI_CENTERS
+const selectedCenter = ref(isDemo ? requestedDb : 'BMI')
 const dropdownOpen = ref(false)
 const ddRef = ref(null)
 const selectedLabel = computed(() =>
@@ -301,11 +312,13 @@ const onCenterChange = () => {
   fetchSummary(selectedCenter.value)
 }
 
-// Jump back to the V4 city view (this page is entered from V4)
-const goToCity = () => navigateTo('/renewablesort/HuaroiEspressoV4')
+// Jump back to the city view this page was entered from (V4 หรือ demo)
+const goToCity = () => navigateTo(isDemo ? '/renewablesort/EspressoDemo' : '/renewablesort/HuaroiEspressoV4')
 
-// Open the online report book (สมุดพก) linked with this Smart Track data
-const goToBook = () => navigateTo('/renewablesort/Clientbook')
+// Open the online report book (สมุดพก) linked with this Smart Track data — คงศูนย์เดิมไว้
+const goToBook = () => navigateTo(
+  isDemo ? `/renewablesort/Clientbook?db=${encodeURIComponent(selectedCenter.value)}` : '/renewablesort/Clientbook'
+)
 
 // ── โดนัท: แปลง items -> ส่วนโค้ง (r=40, C≈251.3) เว้นช่อง 2px ระหว่างชิ้น ──
 const C = 2 * Math.PI * 40

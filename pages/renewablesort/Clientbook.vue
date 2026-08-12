@@ -312,17 +312,26 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 // ── รายชื่อศูนย์ (ชุดเดียวกับหน้า Clientbmi) ──
-const CENTERS = [
+const HUAROI_CENTERS = [
   { value: 'BMI', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 1' },
   { value: 'BMI_center4', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
   { value: 'BMI_center2', label: 'ศูนย์พัฒนาเด็กเล็กบ้านสระโคล่ 1' },
   { value: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 3' },
   { value: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
 ]
+// ศูนย์ที่เข้ามาจากหน้า demo (?db=BMI_templatedemo)
+const DEMO_CENTERS = [
+  { value: 'BMI_templatedemo', label: 'Espresso demo' },
+]
+
+const route = useRoute()
+const requestedDb = String(route.query.db || '')
+const isDemo = DEMO_CENTERS.some(c => c.value === requestedDb)
+const CENTERS = isDemo ? DEMO_CENTERS : HUAROI_CENTERS
 
 const isLoading = ref(true)
 const students = ref([])
-const selectedCenter = ref('BMI')
+const selectedCenter = ref(isDemo ? requestedDb : 'BMI')
 const selectedStudentKey = ref(null)
 // สมุดพกที่ครูกรอกจากแอปสมาร์ทแทรค (bmi-dashboard) — map ตาม studentKey เดียวกับ students[].key
 const books = ref({})
@@ -474,7 +483,9 @@ const fetchStudents = async () => {
   }
 }
 
-const goToDashboard = () => navigateTo('/renewablesort/Clientbmi')
+const goToDashboard = () => navigateTo(
+  isDemo ? `/renewablesort/Clientbmi?db=${encodeURIComponent(selectedCenter.value)}` : '/renewablesort/Clientbmi'
+)
 
 // ── ช่วงตามเกณฑ์ น้ำหนัก/ส่วนสูง รายเดือนอายุ (36–61 เดือน) แยกเพศ ──
 // คัดจากตาราง "บันทึกน้ำหนัก และส่วนสูง" ในสมุดพกกระดาษ (เกณฑ์กรมอนามัย)

@@ -35,6 +35,7 @@ const databases = [
   { name: 'BMI_center3', label: 'ศูนย์พัฒนาเด็กเล็กมหาวนาราม' },
   { name: 'BMI_center4', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 2' },
   { name: 'BMI_center5', label: 'ศูนย์พัฒนาเด็กเล็กเทศบาลหัวรอ 3' },
+  { name: 'BMI_templatedemo', label: 'Espresso demo' },
 ];
 
 const connections: Map<string, mongoose.Connection> = new Map();

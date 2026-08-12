@@ -119,6 +119,30 @@
         </div>
       </div>
 
+      <!-- Espresso demo -->
+      <div class="tree-wrapper">
+        <!-- Parent Node -->
+        <div class="tree-parent">
+          <div @click="requestPassword('espressoDemo')" class="neon-btn spline-link-card flow-card parent-box cursor-pointer">
+            <div class="card-content parent-card-content">
+              <div>
+                <div class="parent-sub">Espresso demo</div>
+                <div class="parent-title">หมายเลขสมาชิก : 000</div>
+                <div class="parent-meta">หมายเลขสัญญา :</div>
+                <div class="parent-meta">วันที่เริ่มเป็นสมาชิก : </div>
+                <div class="parent-meta">วันที่สิ้นสุดสมาชิก : </div>
+                <div class="parent-meta">ประเภทผู้ใช้งาน : ทดลองใช้งาน</div>
+
+              </div>
+              <div class="w-full flex justify-end items-center mt-3">
+                <span :class="['status-dot', isOnlineFor('Espresso demo') ? 'online' : 'offline']" title="สถานะออนไลน์"></span>
+                <span class="status-label">{{ isOnlineFor('Espresso demo') ? 'Online' : 'Offline' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- เทศบาลแม่ฮ่องสอน (ซ่อนไว้ชั่วคราว) -->
       <!--
       <div class="tree-wrapper">
@@ -194,6 +218,7 @@ const projectLinks: Record<string, string> = {
   huaroaCity: '/renewablesort/HuaroiEspressoCity',
   huaroaV3: '/renewablesort/HuaroiEspressoV3',
   huaroaV4: '/renewablesort/HuaroiEspressoV4Dashboard',
+  espressoDemo: '/renewablesort/EspressoDemoDashboard',
   maehongson: '/renewablesort/MaehongsonEspresso'
 }
 
@@ -203,6 +228,7 @@ const passwords: Record<string, string> = {
   huaroaCity: '240124',
   huaroaV3: '240124',
   huaroaV4: '240124',
+  espressoDemo: '240124',
   maehongson: '240124'
 }
 

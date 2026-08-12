@@ -29,7 +29,9 @@ const targets: Record<string, string> = {
   Srakhlo1: 'https://espressohuaroa2-production.up.railway.app/',     // สระโคล่ 1
   Srakhlo2: 'https://espresso2-production-1891.up.railway.app/',      // หัวรอ 3 (ชื่อเดิม สระโคล่ 2)
   Mahawanaram: 'https://espressohuaroa3-production.up.railway.app/',  // มหาวนาราม
-  naresuan_library: 'https://momaylib-production.up.railway.app/'
+  naresuan_library: 'https://momaylib-production.up.railway.app/',
+  // ── Espresso demo (ฐานข้อมูล Espresso_Demo) ──
+  EspressoDemo: 'https://espressotemplate-production-94ae.up.railway.app/'
 }
 
 const url = ref<string | null>(null)
