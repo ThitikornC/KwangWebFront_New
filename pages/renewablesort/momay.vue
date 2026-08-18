@@ -379,8 +379,8 @@
       class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Momay Prototype" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Momay Prototype</span>
+        <img src="/MOMAY_logo.png" alt="Momay-Enligtend-Executive-Student" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay-Enligtend-Executive-Student</span>
       </div>
     </div>
 
@@ -389,8 +389,8 @@
       class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
     >
       <div class="card-content">
-        <img src="/MOMAY_logo.png" alt="Smart Library" class="w-12 h-12 object-contain" />
-        <span class="font-thai">Smart Library</span>
+        <img src="/MOMAY_logo.png" alt="Borrow and Return Service" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Borrow and Return Service</span>
       </div>
     </div>
   </div>
