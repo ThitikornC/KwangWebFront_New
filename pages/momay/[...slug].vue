@@ -42,7 +42,9 @@ const targets: Record<string, string> = {
   MomayTopSoccer: 'https://momaycastomertopsoccer-production.up.railway.app/momaymodel',
   MomayAnan: 'https://momaycastomeranan-production.up.railway.app/momaymodel',
   MomayKorn: 'https://momaycastomerkorrn-production.up.railway.app/momaymodel',
-  qr: 'https://qr-production-a38b.up.railway.app/'
+  qr: 'https://qr-production-a38b.up.railway.app/',
+  MomayPrototype: 'https://momaymodelbuu-production.up.railway.app/allmomay',
+  SmartLibrary: 'https://smartlib-production-4aca.up.railway.app/'
 }
 
 const raw = route.params.slug

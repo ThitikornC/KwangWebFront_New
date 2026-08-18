@@ -373,6 +373,26 @@
         <span class="font-thai">คุณกร</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('MomayPrototype')"
+      class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay Prototype" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay Prototype</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('SmartLibrary')"
+      class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Smart Library" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Smart Library</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -425,7 +445,9 @@ const splineLinks: Record<string, string> = {
   MomayBUU: '/momay/MomayBUU',
   MomayTopSoccer: '/momay/MomayTopSoccer',
   MomayAnan: '/momay/MomayAnan',
-  MomayKorn: '/momay/MomayKorn'
+  MomayKorn: '/momay/MomayKorn',
+  MomayPrototype: '/momay/MomayPrototype',
+  SmartLibrary: '/momay/SmartLibrary'
 }
 
 const pages = [
