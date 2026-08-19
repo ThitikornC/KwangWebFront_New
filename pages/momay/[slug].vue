@@ -44,7 +44,8 @@ const targets: Record<string, string> = {
   MomayKorn: 'https://momaycastomerkorrn-production.up.railway.app/momaymodel',
   qr: 'https://qr-production-a38b.up.railway.app/',
   MomayPrototype: 'https://momaymodelbuu-production.up.railway.app/allmomay',
-  SmartLibrary: 'https://smartlib-production-4aca.up.railway.app/'
+  SmartLibrary: 'https://smartlib-production-4aca.up.railway.app/',
+  MomayInsights: 'https://momaymodelbuu-production.up.railway.app/usage'
 }
 const url = targets[String(route.params.slug)]
 if (!url) await navigateTo('/', { replace: true })

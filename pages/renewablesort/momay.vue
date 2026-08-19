@@ -393,6 +393,16 @@
         <span class="font-thai">Borrow and Return Service</span>
       </div>
     </div>
+
+    <div
+      @click="openSplineDesign('MomayInsights')"
+      class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay-Insights" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay-Insights</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
@@ -447,7 +457,8 @@ const splineLinks: Record<string, string> = {
   MomayAnan: '/momay/MomayAnan',
   MomayKorn: '/momay/MomayKorn',
   MomayPrototype: '/momay/MomayPrototype',
-  SmartLibrary: '/momay/SmartLibrary'
+  SmartLibrary: '/momay/SmartLibrary',
+  MomayInsights: '/momay/MomayInsights'
 }
 
 const pages = [
