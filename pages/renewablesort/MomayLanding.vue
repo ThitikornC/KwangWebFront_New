@@ -1,6 +1,24 @@
 <template>
   <!-- MOMAY Landing — hero + เล่าเรื่องตามการเลื่อนหน้า (ไอคอนทั้งหมดเป็น inline SVG ไม่ใช้ emoji) -->
   <div class="momay-landing">
+    <!-- นิยามไล่สีสำหรับเส้นคั่นแบบขอบฟ้า -->
+    <svg class="defs-only" aria-hidden="true">
+      <defs>
+        <linearGradient id="hrLine" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0" />
+          <stop offset="22%" stop-color="#ED1B2E" stop-opacity="0.35" />
+          <stop offset="50%" stop-color="#ff8a7a" stop-opacity="0.95" />
+          <stop offset="78%" stop-color="#ED1B2E" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
+        </linearGradient>
+        <radialGradient id="hrGlow" cx="50%" cy="100%" r="62%">
+          <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0.42" />
+          <stop offset="60%" stop-color="#7F181B" stop-opacity="0.14" />
+          <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+    </svg>
+
     <!-- แถบความคืบหน้าการเลื่อนหน้า -->
     <div class="scroll-progress" :style="{ transform: `scaleX(${scrollProgress})` }" />
 
@@ -249,12 +267,6 @@
         </div>
       </div>
 
-      <button type="button" class="scroll-hint" aria-label="เลื่อนลง" @click="goTo('#solutions')">
-        <svg viewBox="0 0 26 44" aria-hidden="true">
-          <rect x="1.5" y="1.5" width="23" height="41" rx="11.5" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
-          <circle class="scroll-hint__dot" cx="13" cy="13" r="3.2" fill="#ED1B2E" />
-        </svg>
-      </button>
     </section>
 
     <!-- ───────────────── แถบข้อความวิ่ง (คั่นระหว่าง hero กับเนื้อหา) ───────────────── -->
@@ -292,6 +304,19 @@
       </div>
     </section>
 
+
+    <!-- เส้นคั่นแบบขอบฟ้าอวกาศ -->
+    <div class="hr-space" aria-hidden="true">
+      <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
+        <ellipse cx="600" cy="104" rx="680" ry="84" fill="url(#hrGlow)" />
+        <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
+      </svg>
+      <span class="hr-space__star" style="--x:18%; --y:34%; --d:0s" />
+      <span class="hr-space__star" style="--x:37%; --y:20%; --d:1.4s" />
+      <span class="hr-space__star" style="--x:63%; --y:26%; --d:2.6s" />
+      <span class="hr-space__star" style="--x:81%; --y:16%; --d:3.7s" />
+    </div>
+
     <!-- ───────────────── FROM DATA TO AWARENESS ───────────────── -->
     <section id="approach" class="section section--flow">
       <svg class="flow__waves" viewBox="0 0 1200 260" preserveAspectRatio="none" aria-hidden="true">
@@ -325,6 +350,19 @@
         </ol>
       </div>
     </section>
+
+
+    <!-- เส้นคั่นแบบขอบฟ้าอวกาศ -->
+    <div class="hr-space" aria-hidden="true">
+      <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
+        <ellipse cx="600" cy="96" rx="620" ry="70" fill="url(#hrGlow)" />
+        <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
+      </svg>
+      <span class="hr-space__star" style="--x:18%; --y:34%; --d:0s" />
+      <span class="hr-space__star" style="--x:37%; --y:20%; --d:1.4s" />
+      <span class="hr-space__star" style="--x:63%; --y:26%; --d:2.6s" />
+      <span class="hr-space__star" style="--x:81%; --y:16%; --d:3.7s" />
+    </div>
 
     <!-- ───────────────── PRODUCTS ───────────────── -->
     <section id="products" class="section section--products">
@@ -403,6 +441,19 @@
         </div>
       </div>
     </section>
+
+
+    <!-- เส้นคั่นแบบขอบฟ้าอวกาศ -->
+    <div class="hr-space" aria-hidden="true">
+      <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
+        <ellipse cx="600" cy="96" rx="620" ry="70" fill="url(#hrGlow)" />
+        <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
+      </svg>
+      <span class="hr-space__star" style="--x:18%; --y:34%; --d:0s" />
+      <span class="hr-space__star" style="--x:37%; --y:20%; --d:1.4s" />
+      <span class="hr-space__star" style="--x:63%; --y:26%; --d:2.6s" />
+      <span class="hr-space__star" style="--x:81%; --y:16%; --d:3.7s" />
+    </div>
 
     <!-- ───────────────── CTA ───────────────── -->
     <section id="contact" class="section section--cta">
@@ -1513,19 +1564,30 @@ section {
 .chip__label small { font-size: 0.66rem; color: var(--muted); }
 .mm-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 30px; }
 
-.scroll-hint {
-  position: absolute;
-  left: 50%;
-  bottom: 22px;
-  transform: translateX(-50%);
-  background: none;
-  border: 0;
-  cursor: pointer;
-  z-index: 3;
-  padding: 4px;
+
+/* ══════════════ เส้นคั่นแบบขอบฟ้าอวกาศ ══════════════ */
+.defs-only { position: absolute; width: 0; height: 0; overflow: hidden; }
+.hr-space {
+  position: relative;
+  height: clamp(70px, 8vw, 120px);
+  margin-block: clamp(-24px, -2vw, -10px);
+  pointer-events: none;
 }
-.scroll-hint svg { width: 22px; height: 38px; }
-.scroll-hint__dot { animation: wheel 2s ease-in-out infinite; }
+.hr-space svg { display: block; width: 100%; height: 100%; }
+.hr-space path { filter: drop-shadow(0 0 9px rgba(237, 27, 46, 0.6)); }
+.hr-space__star {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  opacity: 0.25;
+  animation: twinkle 5.5s ease-in-out infinite;
+  animation-delay: var(--d);
+}
 
 /* ══════════════ แถบข้อความวิ่ง ══════════════ */
 .ticker {
@@ -1677,7 +1739,7 @@ section {
 .h2--left {
   text-align: left;
   font-weight: 800;
-  font-size: clamp(1.9rem, 4.2vw, 3.1rem);
+  font-size: clamp(1.3rem, 4.2vw, 3.1rem);
   letter-spacing: -0.01em;
   color: var(--txt);
 }
@@ -1940,22 +2002,35 @@ section {
   position: relative;
   overflow: hidden;
   background-color: var(--ink);
-  background-image:
-    linear-gradient(100deg, rgba(6, 6, 10, 0.95) 10%, rgba(6, 6, 10, 0.72) 44%, rgba(6, 6, 10, 0.45) 100%),
-    linear-gradient(180deg, rgba(6, 6, 10, 0.96) 0%, rgba(6, 6, 10, 0.25) 30%, rgba(6, 6, 10, 0.35) 62%, var(--ink) 100%),
-    url('/momay/cta-bg.webp');
-  background-size: cover, cover, cover;
-  background-position: center, center, center 58%;
-  background-repeat: no-repeat;
+}
+/* ชั้นภาพเมือง — ดันความสว่าง/ความอิ่มสีขึ้นให้ภาพแจ่ม */
+.section--cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('/momay/cta-bg.webp') center 58% / cover no-repeat;
+  filter: saturate(1.32) contrast(1.1) brightness(1.42);
+}
+/* ม่านบาง ๆ เฉพาะฝั่งข้อความ ให้อ่านออกแต่ยังเห็นเมืองชัด */
+.section--cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(100deg, rgba(6, 6, 10, 0.88) 6%, rgba(6, 6, 10, 0.44) 42%, rgba(6, 6, 10, 0.08) 100%),
+    linear-gradient(180deg, rgba(6, 6, 10, 0.86) 0%, transparent 24%, transparent 66%, var(--ink) 100%);
 }
 /* จอใหญ่: ตรึงภาพให้เลื่อนช้ากว่าเนื้อหาเล็กน้อย */
 @media (min-width: 976px) and (hover: hover) {
-  .section--cta { background-attachment: scroll, scroll, fixed; }
+  .section--cta::before { background-attachment: fixed; }
 }
-.cta__city { position: absolute; inset: auto 0 0 0; width: 100%; height: 62%; opacity: 0.75; }
+.cta__city { position: absolute; inset: auto 0 0 0; z-index: 1; width: 100%; height: 62%; opacity: 0.6; }
 .cta__ray { stroke-dasharray: 4 12; animation: waveRun 9s linear infinite; animation-delay: calc(var(--i) * -0.6s); }
-.cta { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(26px, 4vw, 56px); align-items: center; }
-.cta__thai { color: var(--muted); line-height: 1.9; font-size: clamp(0.82rem, 1.2vw, 0.96rem); margin: 20px 0 28px; }
+.cta { position: relative; z-index: 2; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(26px, 4vw, 56px); align-items: center; }
+.cta__copy { text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7); }
+.cta__thai { color: #c9c9d2; line-height: 1.9; font-size: clamp(0.82rem, 1.2vw, 0.96rem); margin: 20px 0 28px; }
 .cta__list {
   list-style: none;
   margin: 0;
@@ -1964,8 +2039,8 @@ section {
   gap: 16px;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: rgba(10, 10, 16, 0.72);
-  backdrop-filter: blur(8px);
+  background: rgba(10, 10, 16, 0.82);
+  backdrop-filter: blur(10px);
 }
 .cta__list li { display: flex; align-items: center; gap: 14px; }
 .cta__list b { display: block; font-size: 0.84rem; letter-spacing: 0.1em; }
@@ -2023,10 +2098,10 @@ section {
 @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: 0.55; } }
 @keyframes peakRing { 0% { r: 4; opacity: 0.9; } 100% { r: 13; opacity: 0; } }
 @keyframes ringOut { 0% { transform: scale(0.92); opacity: 0.5; } 70% { transform: scale(1.22); opacity: 0; } 100% { opacity: 0; } }
-@keyframes wheel { 0% { transform: translateY(0); opacity: 0; } 25% { opacity: 1; } 75% { transform: translateY(15px); opacity: 0; } 100% { opacity: 0; } }
 @keyframes driftUp { 0% { transform: translateY(14px); } 50% { transform: translateY(-16px); } 100% { transform: translateY(14px); } }
 @keyframes streamRun { to { stroke-dashoffset: -1160; } }
 @keyframes waveRun { to { stroke-dashoffset: -320; } }
+@keyframes twinkle { 0%, 100% { opacity: 0.18; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.6); } }
 @keyframes tickerRun { to { transform: translate3d(-50%, 0, 0); } }
 @keyframes shine { 0%, 100% { background-position: 130% 0; } 50% { background-position: -30% 0; } }
 
@@ -2075,7 +2150,6 @@ section {
   .brief__row { grid-template-columns: minmax(0, 1fr); }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mm-hero__chips { gap: 14px 18px; }
-  .scroll-hint { display: none; }
   .pcard { padding: 16px 10px 14px; }
   .pcard h3 { font-size: 0.74rem; }
   .pcard p, .flow__step p { font-size: 0.7rem; }
