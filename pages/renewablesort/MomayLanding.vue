@@ -407,8 +407,7 @@
     <!-- ───────────────── CTA ───────────────── -->
     <section id="contact" class="section section--cta">
       <svg class="cta__city" viewBox="0 0 1200 380" preserveAspectRatio="none" aria-hidden="true">
-        <path :d="skylineFar" fill="#0a0a11" transform="translate(0,40)" />
-        <g stroke="#ED1B2E" stroke-width="1" opacity="0.35">
+        <g stroke="#ED1B2E" stroke-width="1" opacity="0.28">
           <path v-for="(l, i) in 14" :key="`cl${l}`" class="cta__ray" :style="{ '--i': i }"
                 :d="`M${i * 92} 380 L${i * 92 + 60} 200`" />
         </g>
@@ -1786,14 +1785,12 @@ section {
 /* ══════════════ PRODUCTS ══════════════ */
 .section--products { background: linear-gradient(180deg, var(--ink2) 0%, var(--ink) 100%); }
 .products { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(30px, 4vw, 52px); }
-/* การ์ดแบบตัวอย่าง: ข้อความซ้าย ภาพขวา */
+/* การ์ด: ภาพใหญ่เต็มการ์ด ข้อความวางทับแบบอาร์ต ๆ */
 .product {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
-  gap: clamp(8px, 1.2vw, 16px);
-  align-items: center;
-  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;
   padding: clamp(20px, 2.2vw, 28px);
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -1802,6 +1799,18 @@ section {
   overflow: hidden;
   transition: transform 0.65s var(--ease), border-color 0.5s ease, box-shadow 0.65s var(--ease);
 }
+.product::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(102deg, rgba(6, 6, 10, 0.94) 20%, rgba(6, 6, 10, 0.66) 52%, rgba(6, 6, 10, 0.12) 86%),
+    linear-gradient(180deg, rgba(6, 6, 10, 0.8) 0%, transparent 34%);
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease);
+}
+.product:hover::before { opacity: 0.86; }
 .product::after {
   content: '';
   position: absolute;
@@ -1814,13 +1823,23 @@ section {
 }
 .product:hover { transform: translateY(-10px); border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 34px 70px rgba(0, 0, 0, 0.6); }
 .product:hover::after { opacity: 0.26; }
-.product__body { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; }
+.product__body { position: relative; z-index: 2; display: flex; flex-direction: column; flex: 1; }
 .product__note { flex: 1; }
 .product__name { font-family: 'Poppins', 'Inter', sans-serif; font-weight: 800; font-size: 0.94rem; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 12px; }
-.product__tag { font-size: 0.84rem; font-weight: 600; line-height: 1.55; margin: 0 0 10px; }
-.product__note { font-size: 0.79rem; line-height: 1.85; color: var(--muted); margin: 0; }
-.product__art { position: relative; z-index: 1; display: grid; place-items: center; margin-right: clamp(-26px, -1.6vw, -10px); }
-.product__art :deep(svg) { width: 100%; max-width: 260px; height: auto; }
+.product__tag { font-size: 0.84rem; font-weight: 600; line-height: 1.55; margin: 0 0 10px; max-width: 17ch; }
+.product__note { font-size: 0.79rem; line-height: 1.85; color: var(--muted); margin: 0; max-width: 24ch; }
+.product__art {
+  position: absolute;
+  right: -7%;
+  bottom: -4%;
+  width: 84%;
+  z-index: 0;
+  opacity: 0.92;
+  pointer-events: none;
+  transition: transform 0.7s var(--ease), opacity 0.5s var(--ease);
+}
+.product:hover .product__art { transform: scale(1.05) translateY(-6px); opacity: 1; }
+.product__art :deep(svg) { width: 100%; height: auto; }
 /* ปุ่ม VIEW DEMO — กรอบเด่น วางกึ่งกลางการ์ด */
 .product__link {
   position: relative;
@@ -1917,8 +1936,23 @@ section {
 .dot.is-active { background: var(--red); width: 20px; border-radius: 999px; }
 
 /* ══════════════ CTA ══════════════ */
-.section--cta { position: relative; overflow: hidden; background: linear-gradient(180deg, var(--ink) 0%, #120609 60%, var(--ink) 100%); }
-.cta__city { position: absolute; inset: auto 0 0 0; width: 100%; height: 62%; opacity: 0.9; }
+.section--cta {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--ink);
+  background-image:
+    linear-gradient(100deg, rgba(6, 6, 10, 0.95) 10%, rgba(6, 6, 10, 0.72) 44%, rgba(6, 6, 10, 0.45) 100%),
+    linear-gradient(180deg, rgba(6, 6, 10, 0.96) 0%, rgba(6, 6, 10, 0.25) 30%, rgba(6, 6, 10, 0.35) 62%, var(--ink) 100%),
+    url('/momay/cta-bg.webp');
+  background-size: cover, cover, cover;
+  background-position: center, center, center 58%;
+  background-repeat: no-repeat;
+}
+/* จอใหญ่: ตรึงภาพให้เลื่อนช้ากว่าเนื้อหาเล็กน้อย */
+@media (min-width: 976px) and (hover: hover) {
+  .section--cta { background-attachment: scroll, scroll, fixed; }
+}
+.cta__city { position: absolute; inset: auto 0 0 0; width: 100%; height: 62%; opacity: 0.75; }
 .cta__ray { stroke-dasharray: 4 12; animation: waveRun 9s linear infinite; animation-delay: calc(var(--i) * -0.6s); }
 .cta { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(26px, 4vw, 56px); align-items: center; }
 .cta__thai { color: var(--muted); line-height: 1.9; font-size: clamp(0.82rem, 1.2vw, 0.96rem); margin: 20px 0 28px; }
@@ -2022,52 +2056,40 @@ section {
   .mm-hero__inner { grid-template-columns: minmax(0, 1fr); }
   .mm-hero__figure { display: none; }
   .mm-hero__panel { transform: none !important; }
-  .product { min-height: 300px; }
+  .product { min-height: 350px; }
   .cta { grid-template-columns: minmax(0, 1fr); }
   .mm-footer__inner { justify-content: center; }
   .mm-footer__links { margin-inline: 0; justify-content: center; }
 }
-/* มือถือ: ยังเป็นแถวเดียวเรียงซ้าย→ขวาเหมือนคอม แต่เลื่อนดูตามแนวนอนได้ */
+/* มือถือ: ตัดเป็นหลายแถวให้เห็นครบทุกใบในจอเดียว ไม่ต้องเลื่อนซ้ายขวา */
 @media (max-width: 767px) {
-  .purpose-grid,
-  .flow,
-  .products,
-  .mm-stats {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
-    padding-bottom: 12px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(237, 27, 46, 0.55) rgba(255, 255, 255, 0.06);
-  }
-  .purpose-grid > *,
-  .flow > *,
-  .products > *,
-  .mm-stats > * { scroll-snap-align: center; }
-  .purpose-grid::-webkit-scrollbar,
-  .flow::-webkit-scrollbar,
-  .products::-webkit-scrollbar,
-  .mm-stats::-webkit-scrollbar { height: 4px; }
-  .purpose-grid::-webkit-scrollbar-thumb,
-  .flow::-webkit-scrollbar-thumb,
-  .products::-webkit-scrollbar-thumb,
-  .mm-stats::-webkit-scrollbar-thumb { background: rgba(237, 27, 46, 0.55); border-radius: 999px; }
-  .purpose-grid { grid-auto-columns: 46vw; }
-  .flow { grid-auto-columns: 44vw; gap: 14px; }
-  .products { grid-auto-columns: 84vw; }
-  .product { grid-template-columns: minmax(0, 1fr); min-height: auto; }
-  .product__art { margin-right: 0; }
-  .product__art :deep(svg) { max-width: 200px; }
-  .mm-stats { grid-auto-columns: 40vw; }
+  .purpose-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 10px; }
+  .flow__arrow { display: none; }
+  .products { grid-template-columns: minmax(0, 1fr); }
+  .product { min-height: 330px; }
+  .product__art { width: 76%; right: -6%; }
+  .mm-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 10px; }
+  .mm-stat + .mm-stat::before { left: -5px; }
+  .mm-stat:nth-child(3n + 1)::before { display: none; }
   .brief__row { grid-template-columns: minmax(0, 1fr); }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mm-hero__chips { gap: 14px 18px; }
   .scroll-hint { display: none; }
-  .pcard h3 { font-size: 0.8rem; }
-  .pcard p, .flow__step p { font-size: 0.74rem; }
-  .flow__step h3 { font-size: 0.78rem; }
+  .pcard { padding: 16px 10px 14px; }
+  .pcard h3 { font-size: 0.74rem; }
+  .pcard p, .flow__step p { font-size: 0.7rem; }
+  .flow__step h3 { font-size: 0.72rem; }
+}
+@media (max-width: 479px) {
+  .purpose-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mm-stat:nth-child(3n + 1)::before { display: block; }
+  .mm-stat:nth-child(2n + 1)::before { display: none; }
+  .product { min-height: 320px; }
+  .product__art { width: 82%; }
+  .mm-stat__num { font-size: 1.6rem; }
 }
 
 /* เคารพการตั้งค่า "ลดการเคลื่อนไหว" ของผู้ใช้ */
