@@ -110,16 +110,6 @@
           <path :d="skylineNear" fill="#0a0a12" />
         </svg>
 
-        <!-- เงาคน มองออกไปยังเมืองข้อมูล -->
-        <svg class="mm-hero__figure" viewBox="0 0 220 420" :style="{ transform: `translate3d(0, ${heroY * -0.1}px, 0)` }">
-          <g fill="#04040a">
-            <ellipse cx="110" cy="52" rx="30" ry="34" />
-            <path d="M110 84 C 66 92, 44 126, 40 176 L 34 300 C 32 344, 40 392, 44 420 L 176 420 C 180 392, 188 344, 186 300 L 180 176 C 176 126, 154 92, 110 84 Z" />
-          </g>
-          <path d="M110 84 C 66 92, 44 126, 40 176 L 34 300" fill="none" stroke="#ED1B2E" stroke-width="2" opacity="0.35" />
-          <path d="M110 84 C 154 92, 176 126, 180 176 L 186 300" fill="none" stroke="#ED1B2E" stroke-width="2" opacity="0.2" />
-        </svg>
-
         <div class="mm-hero__particles">
           <span v-for="p in particles" :key="p.id" class="particle"
                 :style="{ left: p.left, top: p.top, animationDelay: p.delay, animationDuration: p.duration, opacity: p.opacity }" />
@@ -1485,27 +1475,19 @@ section {
 .mm-hero__people {
   left: -3%;
   top: 4%;
-  width: min(76%, 1150px);
+  width: min(82%, 1250px);
   height: 90%;
   background: url('/momay/hero-people.webp') left 42% / cover no-repeat;
-  opacity: 0.45;
-  filter: brightness(0.85) contrast(0.95) saturate(1.05);
+  opacity: 0.68;
+  filter: brightness(1.05) contrast(1.02) saturate(1.1);
   mix-blend-mode: screen;
-  -webkit-mask-image: radial-gradient(72% 82% at 34% 48%, #000 10%, rgba(0, 0, 0, 0.5) 52%, transparent 84%);
+  -webkit-mask-image: radial-gradient(82% 92% at 36% 48%, #000 18%, rgba(0, 0, 0, 0.6) 60%, transparent 88%);
   mask-image: radial-gradient(72% 82% at 34% 48%, #000 10%, rgba(0, 0, 0, 0.5) 52%, transparent 84%);
 }
 .mm-hero__streams { inset: 0; width: 100%; height: 100%; }
 .mm-hero__city { left: 0; right: 0; bottom: 0; width: 100%; }
 .mm-hero__city--far { height: 46%; opacity: 0.9; }
 .mm-hero__city--near { height: 34%; }
-.mm-hero__figure {
-  left: 28%;
-  bottom: 0;
-  width: clamp(150px, 17vw, 250px);
-  height: auto;
-  transform-origin: 50% 100%;
-  opacity: 0.94;
-}
 .mm-hero__vignette {
   inset: 0;
   background:
@@ -2197,7 +2179,6 @@ section {
   .nav__mobile.is-open { max-height: 420px; padding-bottom: 18px; }
   .mm-hero { min-height: auto; }
   .mm-hero__inner { grid-template-columns: minmax(0, 1fr); }
-  .mm-hero__figure { display: none; }
   .mm-hero__panel { transform: none !important; }
   .product { min-height: 350px; }
   .cta { grid-template-columns: minmax(0, 1fr); }
