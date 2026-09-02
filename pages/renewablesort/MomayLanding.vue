@@ -311,10 +311,10 @@
         <ellipse cx="600" cy="104" rx="680" ry="84" fill="url(#hrGlow)" />
         <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
       </svg>
-      <span class="hr-space__star" style="--x:18%; --y:34%; --d:0s" />
-      <span class="hr-space__star" style="--x:37%; --y:20%; --d:1.4s" />
-      <span class="hr-space__star" style="--x:63%; --y:26%; --d:2.6s" />
-      <span class="hr-space__star" style="--x:81%; --y:16%; --d:3.7s" />
+      <span class="hr-space__star" style="--x:18%; --y:-34px; --d:0s" />
+      <span class="hr-space__star" style="--x:37%; --y:-52px; --d:1.4s" />
+      <span class="hr-space__star" style="--x:63%; --y:-44px; --d:2.6s" />
+      <span class="hr-space__star" style="--x:81%; --y:-58px; --d:3.7s" />
     </div>
 
     <!-- ───────────────── FROM DATA TO AWARENESS ───────────────── -->
@@ -358,10 +358,10 @@
         <ellipse cx="600" cy="96" rx="620" ry="70" fill="url(#hrGlow)" />
         <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
       </svg>
-      <span class="hr-space__star" style="--x:18%; --y:34%; --d:0s" />
-      <span class="hr-space__star" style="--x:37%; --y:20%; --d:1.4s" />
-      <span class="hr-space__star" style="--x:63%; --y:26%; --d:2.6s" />
-      <span class="hr-space__star" style="--x:81%; --y:16%; --d:3.7s" />
+      <span class="hr-space__star" style="--x:18%; --y:-34px; --d:0s" />
+      <span class="hr-space__star" style="--x:37%; --y:-52px; --d:1.4s" />
+      <span class="hr-space__star" style="--x:63%; --y:-44px; --d:2.6s" />
+      <span class="hr-space__star" style="--x:81%; --y:-58px; --d:3.7s" />
     </div>
 
     <!-- ───────────────── PRODUCTS ───────────────── -->
@@ -449,10 +449,10 @@
         <ellipse cx="600" cy="96" rx="620" ry="70" fill="url(#hrGlow)" />
         <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
       </svg>
-      <span class="hr-space__star" style="--x:18%; --y:34%; --d:0s" />
-      <span class="hr-space__star" style="--x:37%; --y:20%; --d:1.4s" />
-      <span class="hr-space__star" style="--x:63%; --y:26%; --d:2.6s" />
-      <span class="hr-space__star" style="--x:81%; --y:16%; --d:3.7s" />
+      <span class="hr-space__star" style="--x:18%; --y:-34px; --d:0s" />
+      <span class="hr-space__star" style="--x:37%; --y:-52px; --d:1.4s" />
+      <span class="hr-space__star" style="--x:63%; --y:-44px; --d:2.6s" />
+      <span class="hr-space__star" style="--x:81%; --y:-58px; --d:3.7s" />
     </div>
 
     <!-- ───────────────── CTA ───────────────── -->
@@ -1567,13 +1567,23 @@ section {
 
 /* ══════════════ เส้นคั่นแบบขอบฟ้าอวกาศ ══════════════ */
 .defs-only { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* กล่องสูง 0 + ลอยทับรอยต่อ เพื่อไม่ให้เกิดแถบสีดำคนละเฉดกับ section ข้างเคียง */
 .hr-space {
   position: relative;
-  height: clamp(70px, 8vw, 120px);
-  margin-block: clamp(-24px, -2vw, -10px);
+  z-index: 3;
+  height: 0;
   pointer-events: none;
 }
-.hr-space svg { display: block; width: 100%; height: 100%; }
+.hr-space svg {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(-62px, -5vw, -36px);
+  width: 100%;
+  height: clamp(72px, 8vw, 124px);
+  overflow: visible;
+}
 .hr-space path { filter: drop-shadow(0 0 9px rgba(237, 27, 46, 0.6)); }
 .hr-space__star {
   position: absolute;
