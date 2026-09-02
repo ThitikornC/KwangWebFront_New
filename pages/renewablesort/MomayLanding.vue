@@ -1478,8 +1478,8 @@ section {
   width: min(82%, 1250px);
   height: 90%;
   background: url('/momay/hero-people.webp') left 42% / cover no-repeat;
-  opacity: 0.68;
-  filter: brightness(1.05) contrast(1.02) saturate(1.1);
+  opacity: 0.88;
+  filter: brightness(1.3) contrast(1.04) saturate(1.12);
   mix-blend-mode: screen;
   -webkit-mask-image: radial-gradient(82% 92% at 36% 48%, #000 18%, rgba(0, 0, 0, 0.6) 60%, transparent 88%);
   mask-image: radial-gradient(72% 82% at 34% 48%, #000 10%, rgba(0, 0, 0, 0.5) 52%, transparent 84%);
@@ -1491,7 +1491,7 @@ section {
 .mm-hero__vignette {
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(6, 6, 10, 0.9) 4%, rgba(6, 6, 10, 0.42) 44%, rgba(6, 6, 10, 0.8) 100%),
+    linear-gradient(90deg, rgba(6, 6, 10, 0.72) 4%, rgba(6, 6, 10, 0.26) 44%, rgba(6, 6, 10, 0.72) 100%),
     linear-gradient(180deg, rgba(6, 6, 10, 0.9) 0%, transparent 26%, rgba(6, 6, 10, 0.94) 96%);
 }
 .mm-hero__particles { inset: 0; }
@@ -1537,6 +1537,7 @@ section {
   box-shadow: 0 0 0 5px rgba(237, 27, 46, 0.16);
   animation: pulseDot 2.4s ease-in-out infinite;
 }
+.mm-hero__copy { text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75); }
 .mm-hero__title {
   font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 800;
