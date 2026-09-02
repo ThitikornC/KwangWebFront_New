@@ -47,7 +47,9 @@ const targets: Record<string, string> = {
   SmartLibrary: 'https://smartlib-production-4aca.up.railway.app/',
   MomayInsights: 'https://momaymodelbuu-production.up.railway.app/usage',
   MomayBUUStudent: 'https://momaymodelbuu-production.up.railway.app/buustudent',
-  MomayTemplate: 'https://momaymodelbuu-production-dafb.up.railway.app/allmomay'
+  MomayTemplate: 'https://momaymodelbuu-production-dafb.up.railway.app/allmomay',
+  // หลังบ้านสำหรับควบคุมแอร์ (ไม่มีปุ่มบนหน้า momay)
+  MomayControl: 'https://momaymodelbuu-production.up.railway.app/settings'
 }
 
 const raw = route.params.slug
