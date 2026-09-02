@@ -12,8 +12,8 @@
           <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
         </linearGradient>
         <radialGradient id="hrGlow" cx="50%" cy="100%" r="62%">
-          <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0.42" />
-          <stop offset="60%" stop-color="#7F181B" stop-opacity="0.14" />
+          <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0.5" />
+          <stop offset="45%" stop-color="#7F181B" stop-opacity="0.12" />
           <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
         </radialGradient>
       </defs>
@@ -308,7 +308,7 @@
     <!-- เส้นคั่นแบบขอบฟ้าอวกาศ -->
     <div class="hr-space" aria-hidden="true">
       <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
-        <ellipse cx="600" cy="104" rx="680" ry="84" fill="url(#hrGlow)" />
+        <ellipse cx="600" cy="90" rx="300" ry="24" fill="url(#hrGlow)" />
         <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
       </svg>
       <span class="hr-space__star" style="--x:18%; --y:-34px; --d:0s" />
@@ -355,7 +355,7 @@
     <!-- เส้นคั่นแบบขอบฟ้าอวกาศ -->
     <div class="hr-space" aria-hidden="true">
       <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
-        <ellipse cx="600" cy="96" rx="620" ry="70" fill="url(#hrGlow)" />
+        <ellipse cx="600" cy="90" rx="300" ry="24" fill="url(#hrGlow)" />
         <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
       </svg>
       <span class="hr-space__star" style="--x:18%; --y:-34px; --d:0s" />
@@ -446,7 +446,7 @@
     <!-- เส้นคั่นแบบขอบฟ้าอวกาศ -->
     <div class="hr-space" aria-hidden="true">
       <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
-        <ellipse cx="600" cy="96" rx="620" ry="70" fill="url(#hrGlow)" />
+        <ellipse cx="600" cy="90" rx="300" ry="24" fill="url(#hrGlow)" />
         <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
       </svg>
       <span class="hr-space__star" style="--x:18%; --y:-34px; --d:0s" />
