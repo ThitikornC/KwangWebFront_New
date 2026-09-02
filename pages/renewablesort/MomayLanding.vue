@@ -78,7 +78,7 @@
              :style="{ transform: `translate3d(0, ${heroY * 0.12}px, 0)` }">
           <defs>
             <pattern id="gridPattern" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M60 0H0V60" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1" />
+              <path d="M60 0H0V60" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
             </pattern>
             <radialGradient id="gridFade" cx="50%" cy="45%" r="62%">
               <stop offset="0%" stop-color="#fff" stop-opacity="0.9" />
@@ -88,6 +88,9 @@
           </defs>
           <rect width="1200" height="700" fill="url(#gridPattern)" mask="url(#gridMask)" />
         </svg>
+
+        <!-- ภาพการไหลของผู้คนฝั่งซ้าย — จางและกลืนไปกับพื้นดำ -->
+        <div class="mm-hero__people" :style="{ transform: `translate3d(0, ${heroY * 0.08}px, 0)` }" />
 
         <svg class="mm-hero__streams" viewBox="0 0 1200 700" preserveAspectRatio="none"
              :style="{ transform: `translate3d(0, ${heroY * 0.18}px, 0)` }">
@@ -473,10 +476,20 @@
           <p class="font-thai cta__thai" v-reveal="140">
             พูดคุยกับทีมงานเพื่อค้นหาวิธีที่ MOMAY<br />สามารถช่วยองค์กรของคุณได้
           </p>
-          <button type="button" class="mm-btn mm-btn--solid mm-btn--lg" v-reveal="220" v-magnetic @click="requestDemo">
-            REQUEST DEMO
-            <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
-          </button>
+          <div class="cta__actions" v-reveal="220">
+            <button type="button" class="mm-btn mm-btn--solid mm-btn--lg" v-magnetic @click="requestDemo">
+              REQUEST DEMO
+              <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+            </button>
+            <button type="button" class="mm-btn mm-btn--ghost mm-btn--lg" v-magnetic @click="docOpen = true">
+              <svg class="mm-btn__doc" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 3H7.5A2.5 2.5 0 0 0 5 5.5v13A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5V8z" />
+                <path d="M14 3v5h5" />
+                <path d="M8.6 12.5h6.8M8.6 16h4.6" />
+              </svg>
+              DOCUMENT
+            </button>
+          </div>
         </div>
 
         <ul class="cta__list">
@@ -527,6 +540,22 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
         </button>
         <video class="lightbox__video" src="/video/animation_openweb.mp4" controls autoplay playsinline />
+      </div>
+    </Transition>
+
+    <!-- ───────────────── DOCUMENT LIGHTBOX ───────────────── -->
+    <Transition name="fade">
+      <div v-if="docOpen" class="lightbox lightbox--doc" @click.self="docOpen = false">
+        <button type="button" class="lightbox__close" aria-label="ปิด" @click="docOpen = false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
+        </button>
+        <div class="lightbox__doc" @click.self="docOpen = false">
+          <img :src="DOC_SRC" alt="MOMAY — Behavioral Intelligence Platform document" />
+        </div>
+        <a class="mm-btn mm-btn--ghost lightbox__open" :href="DOC_SRC" target="_blank" rel="noopener">
+          เปิดเต็มขนาด
+          <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+        </a>
       </div>
     </Transition>
   </div>
@@ -688,6 +717,8 @@ const heroY = ref(0)
 const heroReady = ref(false)
 const menuOpen = ref(false)
 const videoOpen = ref(false)
+const docOpen = ref(false)
+const DOC_SRC = '/momay/momay-doc.webp'
 const vw = ref(1280)
 let targetHeroY = 0
 let targetProgress = 0
@@ -897,7 +928,7 @@ const products = [
     </svg>`,
   },
   {
-    name: 'MOMAY + EXECUTIVE BRIEF',
+    name: 'MOMAY EXECUTIVE BRIEF',
     tagline: 'One Page. One Minute. One Better Decision.',
     note: 'สรุปข้อมูลสำคัญของพื้นที่ในหน้าเดียว เพื่อการตัดสินใจที่ดีกว่า',
     color: '#ED1B2E',
@@ -977,7 +1008,7 @@ const benefits = [
   {
     title: 'REAL EXPERIENCE',
     note: 'จากการใช้งานจริงในหลายองค์กร',
-    icon: `<svg viewBox="0 0 24 24"><path d="M12 2.6l2.8 1.7 3.2.3 1 3.1 2.1 2.5-1.6 2.8-.4 3.2-3.1.9-2.6 2-3-1.3-3 1.3-2.6-2-3.1-.9-.4-3.2L1.7 10.2 3.8 7.7l1-3.1 3.2-.3z"/><path d="M8.8 12.2l2.2 2.2 4.4-4.6"/></svg>`,
+    icon: `<svg viewBox="0 0 24 24"><path d="M2.6 20.6h18.8"/><path d="M5.4 20.6V6.4l6.4-2.8v17"/><path d="M11.8 11.2l6.8 2.4v7"/><path d="M7.8 8.4h1.8M7.8 11.6h1.8M7.8 14.8h1.8M14.6 15.4h1.6"/></svg>`,
   },
   {
     title: 'SECURE & PRIVATE',
@@ -1450,7 +1481,19 @@ section {
     radial-gradient(70% 60% at 50% 96%, rgba(237, 27, 46, 0.18), transparent 70%);
   filter: blur(6px);
 }
-.mm-hero__grid { inset: 0; width: 100%; height: 100%; }
+.mm-hero__grid { inset: 0; width: 100%; height: 100%; opacity: 0.75; }
+.mm-hero__people {
+  left: -3%;
+  top: 4%;
+  width: min(76%, 1150px);
+  height: 90%;
+  background: url('/momay/hero-people.webp') left 42% / cover no-repeat;
+  opacity: 0.45;
+  filter: brightness(0.85) contrast(0.95) saturate(1.05);
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(72% 82% at 34% 48%, #000 10%, rgba(0, 0, 0, 0.5) 52%, transparent 84%);
+  mask-image: radial-gradient(72% 82% at 34% 48%, #000 10%, rgba(0, 0, 0, 0.5) 52%, transparent 84%);
+}
 .mm-hero__streams { inset: 0; width: 100%; height: 100%; }
 .mm-hero__city { left: 0; right: 0; bottom: 0; width: 100%; }
 .mm-hero__city--far { height: 46%; opacity: 0.9; }
@@ -1902,9 +1945,9 @@ section {
 .product__note { font-size: 0.79rem; line-height: 1.85; color: var(--muted); margin: 0; max-width: 24ch; }
 .product__art {
   position: absolute;
-  right: -7%;
-  bottom: -8%;
-  width: 112%;
+  right: -6%;
+  bottom: -7%;
+  width: 92%;
   z-index: 0;
   opacity: 0.92;
   pointer-events: none;
@@ -2040,6 +2083,8 @@ section {
 .cta__ray { stroke-dasharray: 4 12; animation: waveRun 9s linear infinite; animation-delay: calc(var(--i) * -0.6s); }
 .cta { position: relative; z-index: 2; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(26px, 4vw, 56px); align-items: center; }
 .cta__copy { text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7); }
+.cta__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.mm-btn__doc { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .cta__thai { color: #c9c9d2; line-height: 1.9; font-size: clamp(0.82rem, 1.2vw, 0.96rem); margin: 20px 0 28px; }
 .cta__list {
   list-style: none;
@@ -2092,6 +2137,19 @@ section {
 /* ══════════════ LIGHTBOX ══════════════ */
 .lightbox { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(3, 3, 6, 0.92); backdrop-filter: blur(6px); padding: 5vw; }
 .lightbox__video { width: min(1000px, 92vw); max-height: 82vh; border-radius: 14px; border: 1px solid var(--line); background: #000; }
+/* เอกสาร MOMAY — เลื่อนดูได้ทั้งแนวตั้ง/แนวนอนบนจอเล็ก */
+.lightbox--doc { align-content: center; padding: clamp(48px, 6vw, 72px) 4vw clamp(70px, 8vw, 96px); }
+.lightbox__doc {
+  width: 100%;
+  max-height: 82vh;
+  overflow: auto;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #05050a;
+  overscroll-behavior: contain;
+}
+.lightbox__doc img { display: block; width: 100%; min-width: 680px; height: auto; margin-inline: auto; }
+.lightbox__open { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); text-decoration: none; }
 .lightbox__close { position: absolute; top: 22px; right: 26px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: #fff; cursor: pointer; }
 .lightbox__close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
@@ -2153,7 +2211,7 @@ section {
   .flow__arrow { display: none; }
   .products { grid-template-columns: minmax(0, 1fr); }
   .product { min-height: 340px; }
-  .product__art { width: 100%; right: -10%; }
+  .product__art { width: 88%; right: -6%; }
   .mm-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 10px; }
   .mm-stat + .mm-stat::before { left: -5px; }
   .mm-stat:nth-child(3n + 1)::before { display: none; }
@@ -2172,7 +2230,7 @@ section {
   .mm-stat:nth-child(3n + 1)::before { display: block; }
   .mm-stat:nth-child(2n + 1)::before { display: none; }
   .product { min-height: 330px; }
-  .product__art { width: 106%; right: -12%; }
+  .product__art { width: 92%; right: -6%; }
   .mm-stat__num { font-size: 1.6rem; }
 }
 
