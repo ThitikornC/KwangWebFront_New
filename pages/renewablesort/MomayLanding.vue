@@ -26,30 +26,24 @@
     <header class="nav" :class="{ 'nav--solid': scrolled }">
       <div class="wrap nav__inner">
         <a class="brand" href="#top" @click.prevent="goTo('#top')">
-          <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
-            <defs>
-              <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#ED1B2E" />
-                <stop offset="100%" stop-color="#7F181B" />
-              </linearGradient>
-            </defs>
-            <path d="M4 30 L20 6 L36 30 L28 30 L20 17 L12 30 Z" fill="url(#brandGrad)" />
-            <path d="M14 34 L20 25 L26 34 Z" fill="#ED1B2E" opacity="0.55" />
-          </svg>
           <span class="brand__text">
             <strong>MOMAY</strong>
             <small>BEHAVIORAL INTELLIGENCE PLATFORM</small>
           </span>
         </a>
 
-        <nav class="nav__links">
-          <!-- hover แล้วตัวหนังสือเลื่อนสลับชุดบน-ล่าง -->
-          <a v-for="item in navItems" :key="item.hash" :href="item.hash" @click.prevent="goTo(item.hash)">
-            <span class="mm-swap"><i>{{ item.label }}</i><i aria-hidden="true">{{ item.label }}</i></span>
-          </a>
-        </nav>
+        <!-- ตัวเลขสดจากหน้างาน — นับขึ้นตอนเข้าหน้า แล้ววิ่งตามค่าใหม่ทุกครั้งที่ข้อมูลขยับ -->
+        <div class="nav__live">
+          <span class="live nav__live-tag"><i /> LIVE</span>
+          <span v-for="k in kpis" :key="`nav-${k.label}`" class="navkpi">
+            <i class="navkpi__label">{{ k.label }}</i>
+            <b class="navkpi__value" :style="{ color: k.color }">
+              <span v-count="{ to: k.value, decimals: k.decimals }">0</span><em>{{ k.unit }}</em>
+            </b>
+          </span>
+        </div>
 
-        <button type="button" class="mm-btn mm-btn--ghost nav__cta" v-magnetic @click="requestDemo">REQUEST DEMO</button>
+        <button type="button" class="mm-btn mm-btn--ghost nav__cta" v-magnetic @click="goTo('#trusted')">SEE CUSTOMERS</button>
 
         <button type="button" class="nav__burger" :aria-expanded="menuOpen" aria-label="เมนู" @click="menuOpen = !menuOpen">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -64,7 +58,7 @@
         <a v-for="item in navItems" :key="`m-${item.hash}`" :href="item.hash" @click.prevent="goTo(item.hash)">
           {{ item.label }}
         </a>
-        <button type="button" class="mm-btn mm-btn--solid" @click="requestDemo">REQUEST DEMO</button>
+        <button type="button" class="mm-btn mm-btn--solid" @click="goTo('#trusted')">SEE CUSTOMERS</button>
       </div>
     </header>
 
@@ -149,153 +143,557 @@
             </li>
           </ul>
 
-          <div class="mm-hero__actions" v-reveal="860">
-            <button type="button" class="mm-btn mm-btn--solid mm-btn--lg" v-magnetic @click="exploreMomay">
-              EXPLORE MOMAY
-              <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
-            </button>
-            <button type="button" class="mm-btn mm-btn--play" @click="videoOpen = true">
-              <span class="mm-btn__play">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none" /></svg>
+          <!-- ทางลัดไปเดโมของทั้งสามผลิตภัณฑ์ -->
+          <div class="hero-demos">
+            <button v-for="(d, i) in demoLinks" :key="d.key" type="button" class="demolink"
+                    :style="{ '--accent': d.color }" v-reveal="820 + i * 90" @click="open(d.link)">
+              <span class="demolink__icon" v-html="d.icon" />
+              <span class="demolink__label">
+                <b>{{ d.label }}</b>
+                <small>
+                  VIEW DEMO
+                  <svg class="demolink__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+                </small>
               </span>
-              WATCH VIDEO
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- ขวา: การ์ด Executive Brief (เอียงตามเมาส์ + ตัวเลขนับขึ้น) -->
-        <div class="mm-hero__panel" v-reveal:right="240"
-             :style="{ transform: `translate3d(0, ${heroY * -0.05}px, 0) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }"
-             @mousemove="onTilt" @mouseleave="resetTilt">
-          <div class="brief">
-            <div class="brief__head">
-              <span class="brief__title">EXECUTIVE BRIEF</span>
-              <span class="brief__meta">
-                <em class="font-thai">{{ clock }}</em>
-                <span class="live"><i /> LIVE</span>
-              </span>
-            </div>
+    </section>
 
-            <div class="kpis">
-              <div v-for="k in kpis" :key="k.label" class="kpi">
-                <span class="kpi__label">{{ k.label }}</span>
-                <span class="kpi__value" :style="{ color: k.color }">
-                  <span v-count="{ to: k.value, decimals: k.decimals }">0</span><em>{{ k.unit }}</em>
-                </span>
-                <span class="kpi__delta" :class="`is-${k.dir}`">
-                  <svg v-if="k.dir !== 'flat'" viewBox="0 0 24 24" aria-hidden="true">
-                    <path v-if="k.dir === 'down'" d="M12 5v14M6 13l6 6 6-6" />
-                    <path v-else d="M12 19V5M6 11l6-6 6 6" />
-                  </svg>
-                  {{ k.delta }}
+    <!-- เส้นโค้งคั่นระหว่าง hero กับเนื้อหา -->
+    <div class="hr-space" aria-hidden="true">
+      <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
+        <ellipse cx="600" cy="90" rx="300" ry="24" fill="url(#hrGlow)" />
+        <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
+      </svg>
+      <span class="hr-space__star" style="--x:16%; --y:-32px; --d:0.2s" />
+      <span class="hr-space__star" style="--x:41%; --y:-50px; --d:1.5s" />
+      <span class="hr-space__star" style="--x:66%; --y:-40px; --d:2.4s" />
+      <span class="hr-space__star" style="--x:84%; --y:-54px; --d:3.4s" />
+    </div>
+
+    <!-- ───────────── สามผลิตภัณฑ์ เรียง ENLIGHTEN → STUDENT → EXECUTIVE BRIEF ───────────── -->
+    <template v-for="(sc, si) in showcases" :key="sc.id">
+      <section :id="sc.id" class="section section--purpose"
+               :class="{ 'section--panel': sc.panel, 'section--fit': sc.panel || sc.phone || sc.console }">
+        <div class="wrap">
+          <p class="kicker" v-reveal>{{ sc.kicker }}</p>
+          <h2 class="h2" v-split="24">{{ sc.title }}</h2>
+          <p class="lead font-thai" v-reveal="160">{{ sc.lead }}</p>
+
+          <div v-if="sc.panel" class="brief-showcase" v-reveal="140">
+            <div class="brief">
+              <div class="brief__head">
+                <span class="brief__title">EXECUTIVE BRIEF</span>
+                <span class="brief__meta">
+                  <em class="font-thai">{{ clock }}</em>
+                  <span class="live"><i /> LIVE</span>
                 </span>
               </div>
-            </div>
 
-            <div class="brief__row">
-              <!-- กราฟเส้น: ลากเส้นทีละนิดเมื่อเลื่อนมาถึง -->
-              <div class="panelbox">
-                <span class="panelbox__title">TODAY&apos;S STORY</span>
-                <div class="chart" v-reveal="200">
-                  <svg viewBox="0 0 320 132" preserveAspectRatio="none" aria-hidden="true">
-                    <defs>
-                      <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0.38" />
-                        <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <g stroke="rgba(255,255,255,0.07)" stroke-width="1">
-                      <line v-for="g in 4" :key="`g${g}`" x1="0" :y1="g * 26" x2="320" :y2="g * 26" />
-                    </g>
-                    <path class="chart__area" :d="areaPath" fill="url(#areaGrad)" />
-                    <path class="chart__line" :d="linePath" fill="none" stroke="#ED1B2E" stroke-width="2.4"
-                          stroke-linecap="round" stroke-linejoin="round" />
-                    <path class="chart__line chart__line--alt" :d="linePathAlt" fill="none" stroke="#56A0D3"
-                          stroke-width="1.6" stroke-dasharray="4 4" opacity="0.7" />
-                    <circle class="chart__peak" :cx="peak.x" :cy="peak.y" r="4" fill="#ED1B2E" />
-                    <circle class="chart__peak-ring" :cx="peak.x" :cy="peak.y" r="4" fill="none" stroke="#ED1B2E" stroke-width="1.5" />
-                  </svg>
-                  <span class="chart__badge font-thai">13:00 - 15:00<br /><b>HIGH USAGE</b></span>
-                  <div class="chart__axis">
-                    <span v-for="t in hourTicks" :key="t">{{ t }}</span>
-                  </div>
+              <div class="kpis">
+                <div v-for="k in kpis" :key="k.label" class="kpi">
+                  <span class="kpi__label">{{ k.label }}</span>
+                  <span class="kpi__value" :style="{ color: k.color }">
+                    <span v-count="{ to: k.value, decimals: k.decimals }">0</span><em>{{ k.unit }}</em>
+                  </span>
+                  <span class="kpi__delta" :class="`is-${k.dir}`">
+                    <svg v-if="k.dir !== 'flat'" viewBox="0 0 24 24" aria-hidden="true">
+                      <path v-if="k.dir === 'down'" d="M12 5v14M6 13l6 6 6-6" />
+                      <path v-else d="M12 19V5M6 11l6-6 6 6" />
+                    </svg>
+                    {{ k.delta }}
+                  </span>
                 </div>
               </div>
 
-              <!-- แถบการใช้พื้นที่รายชั้น -->
-              <div class="panelbox">
-                <span class="panelbox__title">SPACE UTILIZATION</span>
-                <ul class="bars">
-                  <li v-for="(b, i) in floors" :key="b.name" v-reveal="120 + i * 90">
-                    <span class="bars__name font-thai">{{ b.name }}</span>
-                    <span class="bars__track"><i class="bars__fill" :style="{ '--w': b.value + '%', background: b.color }" /></span>
-                    <span class="bars__val">{{ b.value }}%</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="brief__row">
-              <div class="panelbox panelbox--insight">
-                <span class="panelbox__title">AI INSIGHT</span>
-                <p class="font-thai">
-                  ช่วงเวลา 13:00 - 15:00 น. เป็นช่วงที่มีการใช้งานสูงที่สุด
-                  ควรเปิดพื้นที่ Collaboration Zone เพิ่มเติม
-                </p>
-              </div>
-              <div class="panelbox">
-                <span class="panelbox__title">RECOMMENDED ACTIONS</span>
-                <ul class="todo">
-                  <li v-for="(a, i) in actions" :key="a" v-reveal="150 + i * 120">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <rect x="3" y="3" width="18" height="18" rx="5" />
-                      <path class="todo__tick" d="M7.5 12.5l3 3 6-6.5" />
+              <div class="brief__row">
+                <!-- กราฟเส้น: ลากเส้นทีละนิดเมื่อเลื่อนมาถึง -->
+                <div class="panelbox">
+                  <span class="panelbox__title">TODAY&apos;S STORY</span>
+                  <div class="chart" v-reveal="200">
+                    <svg viewBox="0 0 320 132" preserveAspectRatio="none" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0.38" />
+                          <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <g stroke="rgba(255,255,255,0.07)" stroke-width="1">
+                        <line v-for="g in 4" :key="`g${g}`" x1="0" :y1="g * 26" x2="320" :y2="g * 26" />
+                      </g>
+                      <path class="chart__area" :d="areaPath" fill="url(#areaGrad)" />
+                      <path class="chart__line" :d="linePath" fill="none" stroke="#ED1B2E" stroke-width="2.4"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                      <path class="chart__line chart__line--alt" :d="linePathAlt" fill="none" stroke="#56A0D3"
+                            stroke-width="1.6" stroke-dasharray="4 4" opacity="0.7" />
                     </svg>
-                    <span class="font-thai">{{ a }}</span>
-                  </li>
-                </ul>
+                    <span class="chart__peakdot" :style="{ left: peakPos.left, top: peakPos.top }" />
+                    <span class="chart__badge font-thai">13:00 - 15:00<br /><b>HIGH USAGE</b></span>
+                    <div class="chart__axis">
+                      <span v-for="t in hourTicks" :key="t">{{ t }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- แถบการใช้พื้นที่รายชั้น -->
+                <div class="panelbox">
+                  <span class="panelbox__title">SPACE UTILIZATION</span>
+                  <ul class="bars">
+                    <li v-for="(b, i) in floors" :key="b.name" v-reveal="120 + i * 90">
+                      <span class="bars__name font-thai">{{ b.name }}</span>
+                      <span class="bars__track"><i class="bars__fill" :style="{ '--w': b.value + '%', background: b.color }" /></span>
+                      <span class="bars__val">{{ b.value }}%</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="brief__row">
+                <div class="panelbox panelbox--insight">
+                  <span class="panelbox__title">AI INSIGHT</span>
+                  <p class="font-thai">
+                    ช่วงเวลา 13:00 - 15:00 น. เป็นช่วงที่มีการใช้งานสูงที่สุด
+                    ควรเปิดพื้นที่ Collaboration Zone เพิ่มเติม
+                  </p>
+                </div>
+                <div class="panelbox">
+                  <span class="panelbox__title">RECOMMENDED ACTIONS</span>
+                  <ul class="todo">
+                    <li v-for="(a, i) in actions" :key="a" v-reveal="150 + i * 120">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="5" />
+                        <path class="todo__tick" d="M7.5 12.5l3 3 6-6.5" />
+                      </svg>
+                      <span class="font-thai">{{ a }}</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- คอนโซลจำลองของ MOMAY ENLIGHTENED — ผังเดียวกับแดชบอร์ดจริง -->
+          <div v-else-if="sc.console" class="brief-showcase" v-reveal="140">
+            <div class="brief brief--en">
+              <div class="brief__head">
+                <span class="brief__title">ENLIGHTENED</span>
+                <span class="brief__meta">
+                  <em class="font-thai">{{ clock }}</em>
+                  <span class="live"><i /> LIVE</span>
+                </span>
+              </div>
+
+              <div class="en__blocks">
+                <!-- ═══ LAYER 1 (ซ้าย) ═══ -->
+                <section class="en__block en__block--green">
+                  <div class="en__lhead">
+                    <span class="en__lmark">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 3L6 13.5h4.6L9.8 21l7.7-10.7h-4.7z" /></svg>
+                    </span>
+                    <span class="en__ltitle">
+                      <b>LAYER 1: Real-Time <em class="font-thai">· ทั้งอาคาร</em></b>
+                      <small class="font-thai">เห็นสิ่งที่เกิดขึ้น ณ เวลาปัจจุบัน เพื่อตอบสนองและแจ้งเตือนได้ทันที</small>
+                    </span>
+                  </div>
+
+                  <div class="en__row3">
+                    <div class="en__box">
+                      <span class="en__btitle font-thai">ความหนาแน่นของโซน</span>
+                      <ul class="en__zones font-thai">
+                        <li v-for="(z, i) in enZones" :key="z.code" :class="{ 'is-hot': z.hot }" v-reveal="120 + i * 60">
+                          <span class="en__ring" :style="{ '--p': z.pct, '--c': z.color }">
+                            <b><span v-count="{ to: z.people }">0</span><em>คน</em></b>
+                          </span>
+                          <span class="en__ring" :style="{ '--p': z.pct, '--c': z.color }">
+                            <b><span v-count="{ to: z.pct }">0</span><em>%</em></b>
+                          </span>
+                          <span class="en__zinfo">
+                            <b :style="{ color: z.hot ? z.color : '#e8e8ee' }">{{ z.code }}<i class="en__livetag">LIVE</i></b>
+                            <small>{{ z.note }}</small>
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div class="en__box en__box--center">
+                      <span class="en__btitle font-thai">ระดับความหนาแน่น</span>
+                      <svg class="en__gauge" viewBox="0 0 120 74" aria-hidden="true">
+                        <path d="M12 62 A48 48 0 0 1 108 62" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3.4" stroke-linecap="round" />
+                        <path d="M12 62 A48 48 0 0 1 108 62" fill="none" :stroke="enGaugeColor" stroke-width="3.4" stroke-linecap="round"
+                              stroke-dasharray="150.8" :stroke-dashoffset="150.8 * (1 - enDensity / 100)" class="en__gaugearc" />
+                        <circle :cx="enGaugePt.x" :cy="enGaugePt.y" r="3.4" :fill="enGaugeColor" />
+                      </svg>
+                      <b class="en__mpct"><span v-count="{ to: enDensity }">0</span>%</b>
+                      <small class="en__mcap font-thai"><span v-count="{ to: enPeople }">0</span> คน · {{ enLevel }}</small>
+                      <small class="en__mtrend font-thai">แนวโน้มเพิ่มขึ้น ↗</small>
+                    </div>
+
+                    <div class="en__box en__box--center">
+                      <span class="en__btitle font-thai">แผนที่ความหนาแน่น</span>
+                      <svg class="en__iso" viewBox="4 6 156 106" aria-hidden="true">
+                        <!-- ผนังด้านหลังสองด้าน -->
+                        <path d="M16 76 L76 46 L76 14 L16 44 Z" fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                        <path d="M76 46 L145 70 L145 38 L76 14 Z" fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
+                        <!-- ความหนาของพื้น -->
+                        <path d="M16 76 L85 100 L85 107 L16 83 Z" fill="rgba(255,255,255,0.07)" />
+                        <path d="M85 100 L145 70 L145 77 L85 107 Z" fill="rgba(255,255,255,0.035)" />
+                        <!-- พื้นแบ่งเป็นสามโซน -->
+                        <path d="M16 76 L76 46 L99 54 L39 84 Z" fill="rgba(63,163,77,0.85)" />
+                        <path d="M39 84 L99 54 L122 62 L62 92 Z" fill="rgba(236,183,49,0.85)" />
+                        <path d="M62 92 L122 62 L145 70 L85 100 Z" fill="rgba(237,27,46,0.85)" />
+                        <g fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="1">
+                          <path d="M16 76 L76 46 L145 70 L85 100 Z" />
+                          <path d="M39 84 L99 54M62 92 L122 62" />
+                        </g>
+                        <g fill="#08110b" font-size="7.5" font-weight="700">
+                          <text x="40" y="70" transform="rotate(-24 40 70)">Zone A</text>
+                          <text x="63" y="78" transform="rotate(-24 63 78)">Zone B</text>
+                          <text x="86" y="86" transform="rotate(-24 86 86)">Zone C</text>
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <span class="en__strip"><i />REAL-TIME ENTRY &amp; EXIT</span>
+
+                  <div class="en__row3 en__row3--gates">
+                    <div class="en__box">
+                      <ul class="en__doors font-thai">
+                        <li v-for="d in enDoors" :key="d.name">
+                          <span class="en__ring en__ring--sm" :style="{ '--p': 70, '--c': '#3FA34D' }">
+                            <b><span v-count="{ to: d.in }">0</span><em>เข้า</em></b>
+                          </span>
+                          <span class="en__ring en__ring--sm" :style="{ '--p': 45, '--c': '#56A0D3' }">
+                            <b><span v-count="{ to: d.out }">0</span><em>ออก</em></b>
+                          </span>
+                          <span class="en__zinfo">
+                            <b>{{ d.name }}<i class="en__livetag">LIVE</i></b>
+                            <small>ทางเข้า-ออก · เข้า {{ d.in }} · ออก {{ d.out }}</small>
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="en__box en__box--center">
+                      <span class="en__big"><b><span v-count="{ to: enIn }">0</span></b><em class="font-thai">เข้า</em></span>
+                    </div>
+                    <div class="en__box en__box--center">
+                      <span class="en__big en__big--out"><b><span v-count="{ to: enOut }">0</span></b><em class="font-thai">ออก</em></span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ═══ LAYER 2 (ขวา) ═══ -->
+                <section class="en__block en__block--blue">
+                  <div class="en__lhead">
+                    <span class="en__lmark en__lmark--blue">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.2a3 3 0 0 0-5.8 1 2.8 2.8 0 0 0-1.6 4.6 2.9 2.9 0 0 0 1.9 4.6A3 3 0 0 0 12 18.8z" /><path d="M12 5.2a3 3 0 0 1 5.8 1 2.8 2.8 0 0 1 1.6 4.6 2.9 2.9 0 0 1-1.9 4.6A3 3 0 0 1 12 18.8z" /></svg>
+                    </span>
+                    <span class="en__ltitle">
+                      <b>LAYER 2: <em class="is-blue">Enlightened Systems</em></b>
+                      <small class="font-thai">เรียนรู้พฤติกรรมจากข้อมูลย้อนหลัง เพื่อคาดการณ์และแนะนำล่วงหน้า · ข้อมูลสะสม 29 วัน</small>
+                    </span>
+                    <span class="en__pager font-thai"><i>‹</i><b>วันนี้</b><i>›</i></span>
+                  </div>
+
+                  <div class="en__row2">
+                    <div class="en__box">
+                      <span class="en__btitle font-thai">แนวโน้มการใช้งาน <em>· ที่นั่งรวม 228</em></span>
+                      <span class="en__legend"><i class="is-blue" />4 สัปดาห์ก่อน<i class="is-green" />วันนี้</span>
+                      <div class="en__plot">
+                        <span class="en__yaxis"><em style="--i:0">228</em><em style="--i:1">171</em><em style="--i:2">114</em><em style="--i:3">57</em><em style="--i:4">0</em></span>
+                        <span class="en__svgwrap">
+                        <svg viewBox="0 0 260 96" preserveAspectRatio="none" aria-hidden="true">
+                          <defs>
+                            <linearGradient id="enTrendFill" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stop-color="#8EC06C" stop-opacity="0.32" />
+                              <stop offset="100%" stop-color="#8EC06C" stop-opacity="0" />
+                            </linearGradient>
+                            <linearGradient id="enFadeX" x1="0" y1="0" x2="1" y2="0">
+                              <stop offset="0%" stop-color="#fff" stop-opacity="1" />
+                              <stop offset="62%" stop-color="#fff" stop-opacity="1" />
+                              <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+                            </linearGradient>
+                            <mask id="enFadeMask">
+                              <rect x="0" y="0" width="125" height="96" fill="url(#enFadeX)" />
+                            </mask>
+                          </defs>
+                          <g stroke="rgba(255,255,255,0.05)" stroke-width="0.8">
+                            <line x1="0" y1="24" x2="260" y2="24" /><line x1="0" y1="48" x2="260" y2="48" /><line x1="0" y1="72" x2="260" y2="72" />
+                          </g>
+                          <line x1="0" y1="95.2" x2="260" y2="95.2" stroke="rgba(255,255,255,0.18)" stroke-width="0.9" vector-effect="non-scaling-stroke" />
+                          <path :d="enTodayArea" fill="url(#enTrendFill)" mask="url(#enFadeMask)" />
+                          <path :d="enPastLine" fill="none" stroke="#56A0D3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" vector-effect="non-scaling-stroke" />
+                          <path :d="enTodayLine" fill="none" stroke="#8EC06C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                        </svg>
+                        <i class="en__dot" :style="{ top: enTodayTop }" />
+                        </span>
+                      </div>
+                      <div class="en__xaxis"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
+                    </div>
+
+                    <div class="en__box">
+                      <span class="en__btitle font-thai">คาดการณ์ความหนาแน่น <em>(FORECAST)</em></span>
+                      <span class="en__legend"><i class="is-green" />Real-time<i class="is-orange" />Predicted</span>
+                      <div class="en__plot">
+                        <span class="en__yaxis"><em style="--i:0">228</em><em style="--i:1">171</em><em style="--i:2">114</em><em style="--i:3">57</em><em style="--i:4">0</em></span>
+                        <span class="en__svgwrap">
+                        <svg viewBox="0 0 260 96" preserveAspectRatio="none" aria-hidden="true">
+                          <g stroke="rgba(255,255,255,0.06)" stroke-width="0.8">
+                            <line x1="0" y1="24" x2="260" y2="24" /><line x1="0" y1="48" x2="260" y2="48" /><line x1="0" y1="72" x2="260" y2="72" />
+                          </g>
+                          <line x1="0" y1="95.2" x2="260" y2="95.2" stroke="rgba(255,255,255,0.18)" stroke-width="0.9" vector-effect="non-scaling-stroke" />
+                          <path :d="enRealArea" fill="url(#enTrendFill)" mask="url(#enFadeMask)" />
+                          <line x1="125" y1="0" x2="125" y2="95.2" stroke="#ECB731" stroke-width="1" stroke-dasharray="3 3" opacity="0.85" vector-effect="non-scaling-stroke" />
+                          <path :d="enRealLine" fill="none" stroke="#8EC06C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                          <path :d="enPredLine" fill="none" stroke="#ECB731" stroke-width="1.8" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                        </svg>
+                        <i class="en__dot" :style="{ top: enRealTop }" />
+                        </span>
+                        <span class="en__now font-thai">ตอนนี้</span>
+                        <span class="en__peak font-thai">คาดการณ์จุดพีค<br /><b>14:00 - 15:00</b></span>
+                      </div>
+                      <div class="en__xaxis"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
+                    </div>
+
+                    <div class="en__box">
+                      <span class="en__btitle font-thai">พฤติกรรมการใช้งานวันนี้ <em>(TIME × CAMERA)</em></span>
+                      <div class="en__heat">
+                        <div v-for="r in enHeatRows" :key="r.label" class="en__heatrow">
+                          <span>{{ r.label }}</span>
+                          <span class="en__cells"><i v-for="(c, i) in r.cells" :key="`${r.label}${i}`" :style="{ background: c }" /></span>
+                        </div>
+                      </div>
+                      <div class="en__xaxis en__xaxis--heat"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
+                      <span class="en__scale font-thai">น้อย<i />มาก</span>
+                    </div>
+
+                    <div class="en__box">
+                      <span class="en__btitle font-thai">การเลือกหนังสือแยกตามหมวดหมู่</span>
+                      <ul class="en__bars font-thai">
+                        <li v-for="b in enCompare" :key="b.label">
+                          <span>{{ b.label }}</span>
+                          <span class="en__track"><i :style="{ width: b.value + '%', background: b.color }" /></span>
+                          <em>{{ b.value }}%</em>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- ═══ พลังงานของอาคารทั้งวัน ═══ -->
+              <div class="en__block en__block--power">
+                <div class="en__phead">
+                  <span class="en__chip font-thai">ทั้งอาคาร</span>
+                  <span class="en__date"><i>‹</i><b>{{ enDate }}</b><i>›</i></span>
+                  <span class="en__chip en__chip--ghost">Booking</span>
+                </div>
+                <div class="en__plot en__plot--power">
+                  <span class="en__yaxis en__yaxis--6"><em style="--i:0">250</em><em style="--i:1">200</em><em style="--i:2">150</em><em style="--i:3">100</em><em style="--i:4">50</em><em style="--i:5">0</em></span>
+                  <svg viewBox="0 0 640 62" preserveAspectRatio="none" aria-hidden="true">
+                    <path :d="enPowerArea" fill="url(#enPowerFill)" />
+                    <path :d="enPowerLine" fill="none" stroke="#ECB731" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                    <line x1="0" y1="50.6" x2="640" y2="50.6" stroke="#ECB731" stroke-width="1" stroke-dasharray="5 4" opacity="0.55" vector-effect="non-scaling-stroke" />
+                    <circle :cx="enPowerPeak.x" :cy="enPowerPeak.y" r="3.2" fill="#ED1B2E" />
+                    <defs>
+                      <linearGradient id="enPowerFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ECB731" stop-opacity="0.38" />
+                        <stop offset="100%" stop-color="#ECB731" stop-opacity="0" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <div class="en__pfoot">
+                  <span class="en__xaxis en__xaxis--power"><em>00.00</em><em>06.00</em><em>12.00</em><em>18.00</em><em>24.00</em></span>
+                  <span class="en__chip en__chip--ghost">Total <span v-count="{ to: enPower }">0</span> kWh</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="showcase-body" :class="{ 'showcase-body--split': sc.phone }">
+            <ul class="purpose-grid" :style="{ '--cols': sc.phone ? 1 : sc.cards.length }">
+              <li v-for="(c, i) in sc.cards" :key="c.title" class="pcard" v-reveal:zoom="i * 90">
+                <span class="pcard__glow" :style="{ background: c.color }" />
+                <span class="pcard__icon" :style="{ color: c.color, borderColor: c.color + '55' }" v-html="c.icon" />
+                <h3>{{ c.title }}</h3>
+                <p class="font-thai">{{ c.note }}</p>
+              </li>
+            </ul>
+
+            <!-- ภาพจำลองแอป MOMAY STUDENT — สองเครื่องเอียงสวนกันแบบภาพตัวอย่าง -->
+            <div v-if="sc.phone" class="phone-duo" v-reveal:right="180">
+            <div class="phone phone--front">
+              <span class="phone__notch" aria-hidden="true" />
+              <span class="phone__btn phone__btn--power" aria-hidden="true" />
+              <span class="phone__btn phone__btn--vol" aria-hidden="true" />
+              <div class="phone__screen">
+                <div class="phone__top">
+                  <span class="phone__brand">
+                    <i class="phone__avatar">M</i>
+                    <b>MOMAY</b><em>STUDENT</em>
+                  </span>
+                  <span class="phone__meta">
+                    <em>{{ clockShort }}</em>
+                    <i class="phone__chip">TH</i>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8.6a6 6 0 1 0-12 0c0 6-2 7.4-2 7.4h16s-2-1.4-2-7.4"/><path d="M10.4 19.5a2 2 0 0 0 3.2 0"/></svg>
+                  </span>
+                </div>
+
+                <div class="phone__hello font-thai">
+                  <b>สวัสดีครับ 👋</b>
+                  <small>วันนี้จะใช้พื้นที่ไหน?</small>
+                </div>
+
+                <div class="phone__body font-thai">
+                  <span class="phone__label">บริการรายชั้น</span>
+                  <ul class="phone__list">
+                    <li v-for="(f, i) in studentFloors" :key="f.floor"
+                        :class="{ 'is-open': openFloor === f.floor }" v-reveal="120 + i * 70">
+                      <button type="button" class="phone__row" @click="toggleFloor(f.floor)">
+                        <span class="phone__mix">
+                          <i v-for="c in floorMix(f)" :key="c" :style="{ background: c }" />
+                        </span>
+                        <span class="phone__floor">ชั้น <b>{{ f.floor }}</b></span>
+                        <span class="phone__info">
+                          <b :class="{ 'is-live': f.open }">{{ f.title }}</b>
+                          <small>{{ floorNote(f) }}</small>
+                        </span>
+                        <svg class="phone__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+                      </button>
+
+                      <!-- กดแล้วกางดูที่นั่งของแต่ละพื้นที่ -->
+                      <ul v-if="openFloor === f.floor" class="phone__zones">
+                        <li v-for="z in f.zones" :key="z.name">
+                          <span class="phone__zicon" :style="{ color: purposeOf(z.kind).color }" v-html="purposeOf(z.kind).icon" />
+                          <span class="phone__info">
+                            <b>{{ z.name }}</b>
+                            <small>{{ z.hours }}</small>
+                          </span>
+                          <span class="phone__seats">
+                            <b><span v-count="{ to: z.used }">0</span>/{{ z.total }} <em>ที่นั่ง</em></b>
+                            <small>จำนวนที่ใช้งานอยู่</small>
+                          </span>
+                        </li>
+                      </ul>
+                    </li>
+                    <li class="phone__park" v-reveal="560">
+                      <button type="button" class="phone__row">
+                        <span class="phone__kind" style="color: #56A0D3; border-color: #56A0D355">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M8 12h5.5a2 2 0 1 0 0-4H8v8"/></svg>
+                        </span>
+                        <span class="phone__floor phone__floor--icon">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15.5h16M6.5 15.5V19H4.8v-3.5M19.2 15.5V19h-1.7v-3.5"/><path d="M5.4 15.5l1.5-4.6A2 2 0 0 1 8.8 9.5h6.4a2 2 0 0 1 1.9 1.4l1.5 4.6"/><circle cx="7.6" cy="12.9" r="0.9" fill="currentColor" stroke="none"/><circle cx="16.4" cy="12.9" r="0.9" fill="currentColor" stroke="none"/></svg>
+                        </span>
+                        <span class="phone__info">
+                          <b>ที่จอดรถ</b>
+                          <small>เช็กที่จอดว่างแบบเรียลไทม์</small>
+                        </span>
+                        <svg class="phone__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+                      </button>
+                    </li>
+                  </ul>
+                  <span class="phone__label">ภาพรวมวันนี้</span>
+                </div>
+                <div class="phone__fade" aria-hidden="true" />
+
+                <nav class="phone__tabs font-thai">
+                  <span v-for="(t, i) in phoneTabs" :key="t.label" :class="{ 'is-on': i === 0 }">
+                    <i v-html="t.icon" />
+                    {{ t.label }}
+                  </span>
+                </nav>
+              </div>
+            </div>
+
+            <!-- เครื่องหลัง: แท็บเล็ตแสดงรายละเอียดพื้นที่ -->
+            <div class="tablet" aria-hidden="true">
+              <span class="tablet__cam" />
+              <div class="tablet__screen">
+                <div class="phone__top">
+                  <span class="phone__brand">
+                    <i class="phone__avatar">M</i>
+                    <b>MOMAY</b><em>STUDENT</em>
+                  </span>
+                  <span class="phone__meta">
+                    <em>{{ clockShort }}</em>
+                    <i class="phone__chip">TH</i>
+                  </span>
+                </div>
+
+                <div class="tablet__cols font-thai">
+                  <div class="tablet__col">
+                    <span class="phone__label">บริการรายชั้น</span>
+                    <ul class="phone__list">
+                      <li v-for="f in studentFloors.slice(0, 4)" :key="`t-${f.floor}`" :class="{ 'is-open': f.floor === '1' }">
+                        <span class="phone__row">
+                          <span class="phone__mix">
+                            <i v-for="c in floorMix(f)" :key="c" :style="{ background: c }" />
+                          </span>
+                          <span class="phone__floor">ชั้น <b>{{ f.floor }}</b></span>
+                          <span class="phone__info">
+                            <b :class="{ 'is-live': f.open }">{{ f.title }}</b>
+                            <small>{{ floorNote(f) }}</small>
+                          </span>
+                          <svg class="phone__go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div class="tablet__col">
+                    <div class="zonecard">
+                      <span class="zonecard__name">24-Hr Learning Commons</span>
+                      <b class="zonecard__big"><span v-count="{ to: enZones[0].people }">0</span><em>/131 ที่นั่ง</em></b>
+                      <span class="zonecard__bar"><i :style="{ width: Math.min(100, enZones[0].pct) + '%' }" /></span>
+                      <small>เปิด 24 ชม. · ที่นั่งว่างตอนนี้</small>
+                    </div>
+
+                    <span class="phone__label">ประเภทที่นั่ง</span>
+                    <ul class="phone__list">
+                      <li v-for="k in seatKinds" :key="k.name">
+                        <span class="phone__row">
+                          <span class="phone__floor phone__floor--icon" v-html="k.icon" />
+                          <span class="phone__info">
+                            <b>{{ k.name }}</b>
+                            <small>{{ k.note }}</small>
+                          </span>
+                          <span class="phone__seats"><b>{{ k.free }}<em>ว่าง</em></b></span>
+                        </span>
+                      </li>
+                    </ul>
+
+                    <span class="phone__cta">จองที่นั่ง</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+
+          <div class="center" v-reveal="120">
+            <button type="button" class="mm-btn mm-btn--ghost mm-btn--lg" v-magnetic @click="open(sc.link)">
+              {{ sc.cta }}
+              <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+            </button>
+          </div>
         </div>
+      </section>
+
+      <!-- เส้นคั่นระหว่างผลิตภัณฑ์ -->
+      <div v-if="si < showcases.length - 1" class="hr-space" aria-hidden="true">
+        <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
+          <ellipse cx="600" cy="90" rx="300" ry="24" fill="url(#hrGlow)" />
+          <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
+        </svg>
+        <span class="hr-space__star" style="--x:24%; --y:-40px; --d:0.6s" />
+        <span class="hr-space__star" style="--x:52%; --y:-56px; --d:1.9s" />
+        <span class="hr-space__star" style="--x:76%; --y:-38px; --d:3.1s" />
       </div>
-
-    </section>
-
-    <!-- ───────────────── แถบข้อความวิ่ง (คั่นระหว่าง hero กับเนื้อหา) ───────────────── -->
-    <div class="ticker" aria-hidden="true">
-      <div class="ticker__track">
-        <span v-for="(t, i) in tickerLoop" :key="`t${i}`" class="ticker__item">
-          {{ t }}
-          <svg class="ticker__sep" viewBox="0 0 16 16"><path d="M8 1l4.5 7L8 15 3.5 8z" /></svg>
-        </span>
-      </div>
-    </div>
-
-    <!-- ───────────────── WHAT ARE YOU HERE TO DO ───────────────── -->
-    <section id="solutions" class="section section--purpose">
-      <div class="wrap">
-        <p class="kicker" v-reveal>MOMAY STUDENT</p>
-        <h2 class="h2" v-split="24">WHAT ARE YOU HERE TO DO?</h2>
-        <p class="lead font-thai" v-reveal="160">ค้นหาพื้นที่ที่ใช่ ในบรรยากาศที่เหมาะสม ได้ง่ายและสะดวกยิ่งขึ้น</p>
-
-        <ul class="purpose-grid">
-          <li v-for="(c, i) in purposes" :key="c.title" class="pcard" v-reveal:zoom="i * 90">
-            <span class="pcard__glow" :style="{ background: c.color }" />
-            <span class="pcard__icon" :style="{ color: c.color, borderColor: c.color + '55' }" v-html="c.icon" />
-            <h3>{{ c.title }}</h3>
-            <p class="font-thai">{{ c.note }}</p>
-          </li>
-        </ul>
-
-        <div class="center" v-reveal="120">
-          <button type="button" class="mm-btn mm-btn--ghost mm-btn--lg" v-magnetic @click="open('/momay/MomayBUUStudent')">
-            EXPLORE MOMAY STUDENT
-            <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
-          </button>
-        </div>
-      </div>
-    </section>
+    </template>
 
 
     <!-- เส้นคั่นแบบขอบฟ้าอวกาศ -->
@@ -382,17 +780,17 @@
       </div>
     </section>
 
-    <!-- ───────────────── STATS ───────────────── -->
-    <section id="stats" class="section section--stats">
-      <div class="wrap mm-stats">
-        <div v-for="(s, i) in stats" :key="s.label" class="mm-stat" v-reveal="i * 100">
-          <span class="mm-stat__num">
-            <span v-count="{ to: s.value, decimals: s.decimals }">0</span>{{ s.suffix }}
-          </span>
-          <span class="mm-stat__label">{{ s.label }}</span>
-        </div>
-      </div>
-    </section>
+    <!-- เส้นคั่นก่อนเข้าส่วนองค์กรที่ใช้งาน -->
+    <div class="hr-space" aria-hidden="true">
+      <svg viewBox="0 0 1200 90" preserveAspectRatio="none">
+        <ellipse cx="600" cy="90" rx="300" ry="24" fill="url(#hrGlow)" />
+        <path d="M0 62 Q 600 24 1200 62" fill="none" stroke="url(#hrLine)" stroke-width="1.7" />
+      </svg>
+      <span class="hr-space__star" style="--x:21%; --y:-36px; --d:0.4s" />
+      <span class="hr-space__star" style="--x:46%; --y:-54px; --d:1.7s" />
+      <span class="hr-space__star" style="--x:69%; --y:-42px; --d:2.9s" />
+      <span class="hr-space__star" style="--x:86%; --y:-56px; --d:3.5s" />
+    </div>
 
     <!-- ───────────────── TRUSTED BY ───────────────── -->
     <section id="trusted" class="section section--trusted">
@@ -467,9 +865,11 @@
             พูดคุยกับทีมงานเพื่อค้นหาวิธีที่ MOMAY<br />สามารถช่วยองค์กรของคุณได้
           </p>
           <div class="cta__actions" v-reveal="220">
-            <button type="button" class="mm-btn mm-btn--solid mm-btn--lg" v-magnetic @click="requestDemo">
-              REQUEST DEMO
-              <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+            <button type="button" class="mm-btn mm-btn--solid mm-btn--lg" v-magnetic @click="contactOpen = true">
+              CONTACT
+              <svg class="mm-btn__arrow mm-btn__arrow--tel" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7.2 3.5l2.4 4.2-2 1.9a12 12 0 0 0 6.8 6.8l1.9-2 4.2 2.4-.8 3a2 2 0 0 1-2.2 1.4C10.2 20.1 3.9 13.8 3 6.5A2 2 0 0 1 4.4 4.3z" />
+              </svg>
             </button>
             <button type="button" class="mm-btn mm-btn--ghost mm-btn--lg" v-magnetic @click="docOpen = true">
               <svg class="mm-btn__doc" viewBox="0 0 24 24" aria-hidden="true">
@@ -498,38 +898,35 @@
     <footer class="mm-footer">
       <div class="wrap mm-footer__inner">
         <a class="brand" href="#top" @click.prevent="goTo('#top')">
-          <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
-            <path d="M4 30 L20 6 L36 30 L28 30 L20 17 L12 30 Z" fill="#ED1B2E" />
-            <path d="M14 34 L20 25 L26 34 Z" fill="#ED1B2E" opacity="0.55" />
-          </svg>
           <span class="brand__text">
             <strong>MOMAY</strong>
             <small>BEHAVIORAL INTELLIGENCE PLATFORM</small>
           </span>
         </a>
 
-        <nav class="mm-footer__links">
-          <a v-for="item in navItems" :key="`f-${item.hash}`" :href="item.hash" @click.prevent="goTo(item.hash)">
-            {{ item.label }}
-          </a>
-          <a href="/contact" @click.prevent="open('/contact')">CONTACT</a>
-        </nav>
-
-        <div class="mm-footer__social">
-          <a v-for="s in socials" :key="s.label" :href="s.href" :aria-label="s.label" :title="s.label"
-             target="_blank" rel="noopener" v-html="s.icon" />
-        </div>
       </div>
       <p class="mm-footer__copy">© {{ year }} Kwang Unlimit Company Limited. All rights reserved.</p>
     </footer>
 
-    <!-- ───────────────── VIDEO LIGHTBOX ───────────────── -->
+    <!-- ───────────────── CONTACT POPUP ───────────────── -->
     <Transition name="fade">
-      <div v-if="videoOpen" class="lightbox" @click.self="videoOpen = false">
-        <button type="button" class="lightbox__close" aria-label="ปิด" @click="videoOpen = false">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
-        </button>
-        <video class="lightbox__video" src="/video/animation_openweb.mp4" controls autoplay playsinline />
+      <div v-if="contactOpen" class="lightbox lightbox--contact" @click.self="contactOpen = false">
+        <div class="contactcard">
+          <button type="button" class="lightbox__close contactcard__close" aria-label="ปิด" @click="contactOpen = false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
+          </button>
+          <span class="contactcard__eyebrow">CONTACT</span>
+          <h3 class="font-thai">พูดคุยกับทีม MOMAY</h3>
+          <p class="font-thai">โทรหาเราได้โดยตรง</p>
+
+          <a class="contactcard__tel" :href="`tel:${CONTACT.telHref}`">
+            <span class="contactcard__ticon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 3.5l2.4 4.2-2 1.9a12 12 0 0 0 6.8 6.8l1.9-2 4.2 2.4-.8 3a2 2 0 0 1-2.2 1.4C10.2 20.1 3.9 13.8 3 6.5A2 2 0 0 1 4.4 4.3z" /></svg>
+            </span>
+            <b>{{ CONTACT.tel }}</b>
+          </a>
+
+        </div>
       </div>
     </Transition>
 
@@ -542,9 +939,9 @@
         <div class="lightbox__doc" @click.self="docOpen = false">
           <img :src="DOC_SRC" alt="MOMAY — Behavioral Intelligence Platform document" />
         </div>
-        <a class="mm-btn mm-btn--ghost lightbox__open" :href="DOC_SRC" target="_blank" rel="noopener">
-          เปิดเต็มขนาด
-          <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+        <a class="mm-btn mm-btn--ghost lightbox__open" :href="DOC_SRC" :download="DOC_NAME">
+          ดาวน์โหลดเอกสาร
+          <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14" /></svg>
         </a>
       </div>
     </Transition>
@@ -583,7 +980,7 @@ const runCount = (el, from, to, decimals, duration = 1400) => {
   cancelAnimationFrame(el._countRaf)
   const t0 = performance.now()
   const tick = (now) => {
-    const p = Math.min(1, (now - t0) / duration)
+    const p = Math.min(1, Math.max(0, (now - t0) / duration))
     el.textContent = fmt(from + (to - from) * easeOutCubic(p))
     el._shown = from + (to - from) * easeOutCubic(p)
     if (p < 1) el._countRaf = requestAnimationFrame(tick)
@@ -706,9 +1103,14 @@ const scrollProgress = ref(0)
 const heroY = ref(0)
 const heroReady = ref(false)
 const menuOpen = ref(false)
-const videoOpen = ref(false)
 const docOpen = ref(false)
+const contactOpen = ref(false)
+const CONTACT = {
+  tel: '083 954 9743',
+  telHref: '+66839549743',
+}
 const DOC_SRC = '/momay/momay-doc.webp'
+const DOC_NAME = 'MOMAY-behavioral-intelligence-platform.webp'
 const vw = ref(1280)
 let targetHeroY = 0
 let targetProgress = 0
@@ -758,18 +1160,6 @@ const smoothScrollTo = (to, duration = 950) => {
   scrollAnimRaf = requestAnimationFrame(step)
 }
 
-// เอียงการ์ด Executive Brief ตามเมาส์
-const tilt = reactive({ x: 0, y: 0 })
-const onTilt = (e) => {
-  if (vw.value < 976 || reduceMotion()) return
-  const r = e.currentTarget.getBoundingClientRect()
-  tilt.y = ((e.clientX - r.left) / r.width - 0.5) * 9
-  tilt.x = (0.5 - (e.clientY - r.top) / r.height) * 7
-}
-const resetTilt = () => {
-  tilt.x = 0
-  tilt.y = 0
-}
 
 /* ══════════════ 3. เนื้อหา ══════════════ */
 const year = new Date().getFullYear()
@@ -778,20 +1168,8 @@ const navItems = [
   { label: 'VISION', hash: '#approach' },
   { label: 'SOLUTIONS', hash: '#solutions' },
   { label: 'CASES', hash: '#trusted' },
-  { label: 'RESOURCES', hash: '#stats' },
   { label: 'COMPANY', hash: '#contact' },
 ]
-
-// แถบข้อความวิ่ง — วนสองรอบเพื่อให้ต่อกันแบบไม่มีรอยต่อ
-const tickerWords = [
-  'BEHAVIORAL INTELLIGENCE',
-  'REAL-TIME DATA',
-  'SPACE UTILIZATION',
-  'AI INSIGHT',
-  'BETTER DECISIONS',
-  'FROM DATA TO AWARENESS',
-]
-const tickerLoop = [...tickerWords, ...tickerWords]
 
 const heroChips = [
   {
@@ -850,6 +1228,240 @@ const purposes = [
   },
 ]
 
+/* ══════════════ คอนโซลจำลองของ ENLIGHTENED ══════════════ */
+// โซนที่กล้องตรวจจับ — ตัวเลขอ้างอิงจากแดชบอร์ดจริง
+const enZones = reactive([
+  { code: 'ชั้น 1', people: 76, pct: 40, note: 'ความจุ 191 ที่นั่ง · เปิด 24 ชม.', color: '#ECB731', hot: true },
+  { code: 'ชั้น 2', people: 52, pct: 29, note: 'ความจุ 180 ที่นั่ง', color: '#3FA34D' },
+  { code: 'ชั้น 3', people: 30, pct: 26, note: 'ความจุ 117 ที่นั่ง · 6 ห้อง', color: '#3FA34D' },
+  { code: 'ชั้น 4', people: 44, pct: 37, note: 'ความจุ 120 ที่นั่ง · 10 ห้อง', color: '#3FA34D' },
+  { code: 'ชั้น 5', people: 21, pct: 16, note: 'ความจุ 130 ที่นั่ง · 10 ห้อง', color: '#56A0D3' },
+  { code: 'ชั้น 6', people: 12, pct: 17, note: 'ความจุ 70 ที่นั่ง · 25 ห้อง', color: '#56A0D3' },
+])
+
+const enDensity = ref(7)
+const enPeople = ref(41)
+
+const enPower = ref(1284)
+const enDoors = reactive([
+  { name: 'ทางเข้าทิศเหนือ', in: 204, out: 98 },
+  { name: 'ทางเข้าทิศใต้', in: 224, out: 157 },
+])
+const enIn = computed(() => enDoors.reduce((a, d) => a + d.in, 0))
+const enOut = computed(() => enDoors.reduce((a, d) => a + d.out, 0))
+const enCompare = [
+  { label: 'นิยาย · วารสาร', value: 35, color: 'linear-gradient(90deg,#56A0D3,#7FD3FF)' },
+  { label: 'ภาษาไทย', value: 28, color: 'linear-gradient(90deg,#8EC06C,#C4E59F)' },
+  { label: 'ภาษาต่างประเทศ', value: 21, color: 'linear-gradient(90deg,#ECB731,#FFE08A)' },
+  { label: 'วิทยาศาสตร์ · งานวิจัย', value: 16, color: 'linear-gradient(90deg,#ED1B2E,#FF7B6B)' },
+]
+const enRealTop = computed(() => `${((1 - enRealSeries[enRealSeries.length - 1] / SEATS) * 100).toFixed(1)}%`)
+const enGaugeColor = computed(() => (enDensity.value < 25 ? '#8EC06C' : enDensity.value < 60 ? '#ECB731' : '#ED1B2E'))
+const enGaugePt = computed(() => {
+  const a = Math.PI * (1 - Math.min(100, Math.max(0, enDensity.value)) / 100)
+  return { x: (60 + 48 * Math.cos(a)).toFixed(1), y: (62 - 48 * Math.sin(a)).toFixed(1) }
+})
+const enLevel = computed(() => (enDensity.value < 25 ? 'ค่อนข้างว่าง' : enDensity.value < 60 ? 'ปานกลาง' : 'หนาแน่น'))
+
+// เส้นกราฟสร้างจากชุดตัวเลขคงที่ ทำให้ผลฝั่งเซิร์ฟเวอร์กับเบราว์เซอร์ตรงกัน
+// วางเส้นบนแกนจริง: 0 อยู่ที่ก้นกราฟ ค่าสูงสุดของแกนอยู่ที่ขอบบน
+// เส้นโค้งลื่น (Catmull-Rom → Bezier) ให้หน้าตาเดียวกับกราฟในการ์ด Executive Brief
+const toLine = (vals, w, h, top, x0 = 0) => {
+  const dx = w / (vals.length - 1)
+  const pts = vals.map((v, i) => [x0 + i * dx, h - (v / top) * h])
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    const p0 = pts[i - 1] || pts[i]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = pts[i + 2] || p2
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6]
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6]
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)}, ${c2[0].toFixed(1)} ${c2[1].toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`
+  }
+  return d
+}
+const SEATS = 228
+const POWER_TOP = 250
+
+const enPastSeries = [42, 38, 35, 34, 38, 48, 62, 78, 94, 108, 122, 134, 144, 150, 154, 156, 154, 150, 145, 139, 133, 126, 118, 109, 99, 88, 76, 64, 54]
+const enTodaySeries = [40, 36, 34, 33, 38, 50, 66, 84, 101, 116, 130, 142, 152, 160, 166, 170, 172, 173, 172, 170, 167]
+const enRealSeries = [40, 36, 34, 33, 39, 52, 70, 89, 107, 124, 139, 151, 160]
+const enPredSeries = [160, 170, 180, 188, 194, 197, 193, 185, 174, 162, 150, 137, 124, 112, 100, 89, 78]
+const enPowerSeries = [24, 23, 22, 21, 22, 25, 30, 41, 58, 82, 108, 140, 168, 190, 205, 194, 178, 174, 172, 168, 164, 148, 128, 108, 92, 76, 62, 49, 38, 31, 27]
+
+const enPastLine = computed(() => toLine(enPastSeries, 260, 96, SEATS))
+const enTodayLine = computed(() => toLine(enTodaySeries, 125, 96, SEATS))
+const enTodayTop = computed(() => `${((1 - enTodaySeries[enTodaySeries.length - 1] / SEATS) * 100).toFixed(1)}%`)
+const enRealLine = computed(() => toLine(enRealSeries, 125, 96, SEATS))
+const enPredLine = computed(() => toLine(enPredSeries, 135, 96, SEATS, 125))
+const enTodayArea = computed(() => `${enTodayLine.value} L125 96 L0 96 Z`)
+const enRealArea = computed(() => `${enRealLine.value} L125 96 L0 96 Z`)
+const enPowerLine = computed(() => toLine(enPowerSeries, 640, 62, POWER_TOP))
+const enPowerArea = computed(() => `${enPowerLine.value} L640 62 L0 62 Z`)
+const enPowerPeak = computed(() => {
+  const i = enPowerSeries.indexOf(Math.max(...enPowerSeries))
+  const dx = 640 / (enPowerSeries.length - 1)
+  return {
+    x: Number((i * dx).toFixed(1)),
+    y: Number((62 - (enPowerSeries[i] / POWER_TOP) * 62).toFixed(1)),
+  }
+})
+const enDate = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+  .format(new Date())
+  .replace(/ /g, ' - ')
+
+// ตารางพฤติกรรมรายกล้อง — ช่วงที่ยังไม่ถึงเวลาเป็นช่องมืด
+// ไล่สีของตารางพฤติกรรม: เขียวเข้ม → เขียวอ่อน → เหลือง → ส้มแดง (นุ่มกว่าแบบ hsl ตรง ๆ)
+const HEAT_STOPS = [
+  [26, 54, 40],
+  [96, 168, 92],
+  [236, 183, 49],
+  [222, 92, 60],
+]
+const heatColor = (v) => {
+  if (v < 0) return 'rgba(255,255,255,0.04)'
+  const t = Math.min(0.999, Math.max(0, v)) * (HEAT_STOPS.length - 1)
+  const i = Math.floor(t)
+  const f = t - i
+  const [r1, g1, b1] = HEAT_STOPS[i]
+  const [r2, g2, b2] = HEAT_STOPS[i + 1]
+  const mix = (a, b) => Math.round(a + (b - a) * f)
+  return `rgb(${mix(r1, r2)} ${mix(g1, g2)} ${mix(b1, b2)})`
+}
+const enHeatRows = ['ชั้น 1', 'ชั้น 2', 'ชั้น 3', 'ชั้น 4', 'ชั้น 5', 'ชั้น 6'].map((label, r) => ({
+  label,
+  cells: Array.from({ length: 16 }, (_, c) =>
+    heatColor(c > 8 ? -1 : Math.min(1, (Math.sin((c + 1) * 0.8 + r) + 1) / 2 * 0.75 + r * 0.08)),
+  ),
+}))
+
+// ภาพจำลองแอป MOMAY STUDENT — ตัวเลขอ้างอิงจากแอปจริง
+const studentFloors = reactive([
+  {
+    floor: '1', title: 'พื้นที่ให้บริการ 24 ชม.', open: true, kind: 'SOCIAL / LEARN',
+    zones: [
+      { name: '24-Hr Learning Commons', kind: 'SOCIAL / LEARN', hours: 'เปิด 24 ชม.', used: 37, total: 131 },
+      { name: 'ห้อง 101', kind: 'FOCUS', hours: 'เปิด 24 ชม.', used: 0, total: 20 },
+      { name: 'ห้อง 102', kind: 'COLLABORATE', hours: 'เปิด 24 ชม.', used: 0, total: 40 },
+    ],
+  },
+  {
+    floor: '2', title: '4 พื้นที่', kind: 'READ',
+    zones: [
+      { name: 'Reading Zone', kind: 'READ', hours: '08:00 - 20:00', used: 24, total: 60 },
+      { name: 'Co-Working', kind: 'COLLABORATE', hours: '08:00 - 20:00', used: 18, total: 50 },
+      { name: 'ห้อง 201', kind: 'FOCUS', hours: '08:00 - 20:00', used: 0, total: 40 },
+      { name: 'ห้อง 202', kind: 'CREATE / PRESENT', hours: '08:00 - 20:00', used: 6, total: 30 },
+    ],
+  },
+  {
+    floor: '3', title: '4 พื้นที่', rooms: 6, kind: 'FOCUS',
+    zones: [
+      { name: 'Silent Zone', kind: 'FOCUS', hours: '08:00 - 20:00', used: 19, total: 45 },
+      { name: 'Research Zone', kind: 'READ', hours: '08:00 - 20:00', used: 11, total: 32 },
+      { name: 'ห้อง 301', kind: 'COLLABORATE', hours: 'จองล่วงหน้า', used: 0, total: 20 },
+      { name: 'ห้อง 302', kind: 'CREATE WITH TECHNOLOGY', hours: 'จองล่วงหน้า', used: 4, total: 20 },
+    ],
+  },
+  {
+    floor: '4', title: '4 พื้นที่', rooms: 10, kind: 'COLLABORATE',
+    zones: [
+      { name: 'Focus Floor', kind: 'FOCUS', hours: '08:00 - 20:00', used: 28, total: 50 },
+      { name: 'Collaboration Zone', kind: 'COLLABORATE', hours: '08:00 - 20:00', used: 22, total: 40 },
+      { name: 'ห้อง 401', kind: 'CREATE / PRESENT', hours: 'จองล่วงหน้า', used: 5, total: 15 },
+      { name: 'ห้อง 402', kind: 'READ', hours: 'จองล่วงหน้า', used: 0, total: 15 },
+    ],
+  },
+  {
+    floor: '5', title: '5 พื้นที่', rooms: 10, kind: 'CREATE WITH TECHNOLOGY',
+    zones: [
+      { name: 'Innovation Lab', kind: 'CREATE WITH TECHNOLOGY', hours: '09:00 - 18:00', used: 16, total: 40 },
+      { name: 'Media Zone', kind: 'CREATE / PRESENT', hours: '09:00 - 18:00', used: 9, total: 30 },
+      { name: 'Studio', kind: 'CREATE WITH TECHNOLOGY', hours: 'จองล่วงหน้า', used: 4, total: 20 },
+      { name: 'ห้อง 501', kind: 'COLLABORATE', hours: 'จองล่วงหน้า', used: 0, total: 20 },
+      { name: 'ห้อง 502', kind: 'SOCIAL / LEARN', hours: 'จองล่วงหน้า', used: 7, total: 20 },
+    ],
+  },
+  {
+    floor: '6', title: '6 พื้นที่', rooms: 25, kind: 'CREATE / PRESENT',
+    zones: [
+      { name: 'ห้องประชุม 601', kind: 'COLLABORATE', hours: 'จองล่วงหน้า', used: 8, total: 12 },
+      { name: 'ห้องประชุม 602', kind: 'CREATE / PRESENT', hours: 'จองล่วงหน้า', used: 0, total: 12 },
+      { name: 'ห้องประชุม 603', kind: 'COLLABORATE', hours: 'จองล่วงหน้า', used: 5, total: 12 },
+      { name: 'ห้องประชุม 604', kind: 'CREATE WITH TECHNOLOGY', hours: 'จองล่วงหน้า', used: 0, total: 12 },
+      { name: 'ห้องประชุม 605', kind: 'SOCIAL / LEARN', hours: 'จองล่วงหน้า', used: 3, total: 11 },
+      { name: 'ห้องประชุม 606', kind: 'FOCUS', hours: 'จองล่วงหน้า', used: 0, total: 11 },
+    ],
+  },
+])
+
+// สีกับไอคอนของแต่ละชั้น อ้างจากการ์ดหมวดเดียวกัน จะได้เป็นภาษาเดียวกันทั้งหน้า
+const purposeOf = (kind) => purposes.find((c) => c.title === kind) || purposes[0]
+// สีของโซนที่มีอยู่ในชั้นนั้น (ไม่ซ้ำ) ใช้เป็นจุดบอกว่าชั้นนี้มีโซนอะไรผสมกันบ้าง
+const floorMix = (f) => [...new Set(f.zones.map((z) => purposeOf(z.kind).color))].slice(0, 4)
+
+const openFloor = ref('1')
+const toggleFloor = (floor) => (openFloor.value = openFloor.value === floor ? '' : floor)
+
+// บรรทัดสรุปของแต่ละชั้น — คิดจากที่นั่งจริงในชั้นนั้น เลยขยับตามข้อมูลไปด้วย
+const floorNote = (f) => {
+  const used = f.zones.reduce((a, z) => a + z.used, 0)
+  const total = f.zones.reduce((a, z) => a + z.total, 0)
+  return `${f.zones.length} พื้นที่ · ${used} คน · ${total} ที่นั่ง${f.rooms ? ` · ${f.rooms} ห้อง` : ''}`
+}
+
+const seatKinds = [
+  { name: 'โต๊ะเดี่ยว', note: 'โซนเงียบ · ปลั๊กทุกที่นั่ง', free: 24, icon: `<svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="3" rx="1.2"/><path d="M6 12v7M18 12v7"/><path d="M9 9V6h6v3"/></svg>` },
+  { name: 'โต๊ะกลุ่ม', note: 'นั่งได้ 4-6 คน', free: 8, icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="4.6" r="1.8"/><circle cx="12" cy="19.4" r="1.8"/><circle cx="4.6" cy="12" r="1.8"/><circle cx="19.4" cy="12" r="1.8"/></svg>` },
+  { name: 'ห้องประชุม', note: 'จองล่วงหน้า 1 ชม.', free: 3, icon: `<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.4"/><path d="M8 9.5h8M8 13h5"/></svg>` },
+]
+
+const phoneTabs = [
+  { label: 'หน้าหลัก', icon: `<svg viewBox="0 0 24 24"><path d="M4 10.5L12 4l8 6.5V20H4z"/><path d="M9.5 20v-5.5h5V20"/></svg>` },
+  { label: 'พื้นที่', icon: `<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6"/></svg>` },
+  { label: 'แผนที่', icon: `<svg viewBox="0 0 24 24"><path d="M9 5.5L4 4v14l5 1.5 6-1.5 5 1.5V5.5L15 4z"/><path d="M9 5.5v14M15 4v14"/></svg>` },
+  { label: 'แจ้งเตือน', icon: `<svg viewBox="0 0 24 24"><path d="M18 8.6a6 6 0 1 0-12 0c0 6-2 7.4-2 7.4h16s-2-1.4-2-7.4"/><path d="M10.4 19.5a2 2 0 0 0 3.2 0"/></svg>` },
+  { label: 'โปรไฟล์', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.2"/><path d="M5.6 19.5a6.4 6.4 0 0 1 12.8 0"/></svg>` },
+]
+
+// สามผลิตภัณฑ์ เรียงตามสี เหลือง → เขียว → แดง (คำนิยามไทยจากเอกสารแนะนำระบบ)
+const showcases = [
+  {
+    id: 'solutions',
+    kicker: 'MOMAY ENLIGHTENED',
+    title: 'FROM DATA TO INTELLIGENCE.',
+    lead: 'แพลตฟอร์มที่สามารถนำข้อมูลมาสร้าง Behavioral Intelligence ตั้งแต่การมองเห็นสถานการณ์ การทำความเข้าใจรูปแบบการใช้งาน การคาดการณ์แนวโน้ม ไปจนถึงการนำเสนอข้อมูลเพื่อช่วยให้ผู้บริหารสามารถตัดสินใจและบริหารทรัพยากรได้อย่างเหมาะสม',
+    cta: 'EXPLORE MOMAY ENLIGHTENED',
+    link: '/momay/MomayPrototype',
+    color: '#ECB731',
+    console: true,
+    cards: [],
+  },
+  {
+    id: 'student',
+    kicker: 'MOMAY STUDENT',
+    title: 'WHAT ARE YOU HERE TO DO?',
+    lead: 'ส่วนติดต่อสำหรับผู้ใช้บริการทั่วไป โดยออกแบบจากแนวคิดว่า ระบบไม่ควรเพียงแสดงข้อมูล แต่ควรช่วยให้ผู้ใช้ตัดสินใจเลือกพื้นที่ให้เหมาะกับสิ่งที่ต้องการทำ เช่น การอ่านหนังสือ การทำงานกลุ่ม การทำงานเงียบ ๆ การใช้เทคโนโลยี การสร้างสรรค์หรือนำเสนอผลงาน และการพักหรือพบปะ โดยระบบสามารถเชื่อมโยงไปยังพื้นที่จริง ห้อง และข้อมูลการให้บริการของสถานที่นั้น ๆ',
+    cta: 'EXPLORE MOMAY STUDENT',
+    link: '/momay/MomayBUUStudent',
+    color: '#8EC06C',
+    phone: true,
+    cards: purposes,
+  },
+  {
+    id: 'brief',
+    kicker: 'MOMAY EXECUTIVE BRIEF',
+    title: 'ONE PAGE. ONE MINUTE. ONE BETTER DECISION.',
+    lead: 'สรุปข้อมูลสำคัญขององค์กรในรูปแบบที่กระชับและนำไปใช้ประกอบการตัดสินใจได้ทันที ภายใต้แนวคิด “One Page. One Minute. One Better Decision.”',
+    cta: 'EXPLORE MOMAY EXECUTIVE BRIEF',
+    link: '/momay/MomayBUU-Executive',
+    color: '#ED1B2E',
+    panel: true,
+    cards: [],
+  },
+]
+
 const steps = [
   {
     title: 'FROM DATA',
@@ -890,6 +1502,31 @@ const steps = [
 ]
 
 const products = [
+  {
+    name: 'MOMAY ENLIGHTENED',
+    tagline: 'From Data to Behavioral Intelligence.',
+    note: 'แพลตฟอร์มวิเคราะห์พฤติกรรมการใช้พื้นที่ เพื่อองค์กรและเมืองที่ฉลาดขึ้น',
+    color: '#ECB731',
+    link: '/momay/MomayPrototype',
+    art: `<svg viewBox="0 0 260 210" class="art art--city">
+      <g class="float-c">
+        
+        <g fill="none" stroke="rgba(255,255,255,0.08)">
+          <path d="M130 20 L242 84 L130 148 L18 84 Z"/>
+          <path d="M130 40 L208 84 L130 128 L52 84 Z"/>
+        </g>
+        <g class="tower" style="--i:0"><path d="M74 96 l26 -15 26 15 v28 l-26 15 -26 -15z" fill="#ED1B2E" opacity="0.85"/><path d="M74 96 l26 15 v28 l-26 -15z" fill="#7F181B"/></g>
+        <g class="tower" style="--i:1"><path d="M110 76 l26 -15 26 15 v46 l-26 15 -26 -15z" fill="#F0682A" opacity="0.8"/><path d="M110 76 l26 15 v46 l-26 -15z" fill="#8a3a12"/></g>
+        <g class="tower" style="--i:2"><path d="M146 96 l26 -15 26 15 v22 l-26 15 -26 -15z" fill="#ECB731" opacity="0.85"/><path d="M146 96 l26 15 v22 l-26 -15z" fill="#8a6a13"/></g>
+        <g class="tower" style="--i:3"><path d="M92 124 l26 -15 26 15 v18 l-26 15 -26 -15z" fill="#56A0D3" opacity="0.75"/><path d="M92 124 l26 15 v18 l-26 -15z" fill="#2a5a7d"/></g>
+        <g class="tower" style="--i:4"><path d="M128 140 l26 -15 26 15 v14 l-26 15 -26 -15z" fill="#8EC06C" opacity="0.75"/><path d="M128 140 l26 15 v14 l-26 -15z" fill="#3e6b2a"/></g>
+      </g>
+      <g class="spark">
+        <circle cx="86" cy="60" r="2.4" fill="#ED1B2E"/><circle cx="178" cy="52" r="2" fill="#ECB731"/>
+        <circle cx="206" cy="120" r="2.2" fill="#56A0D3"/><circle cx="52" cy="118" r="2" fill="#8EC06C"/>
+      </g>
+    </svg>`,
+  },
   {
     name: 'MOMAY STUDENT',
     tagline: 'Find the right space.',
@@ -954,40 +1591,22 @@ const products = [
       <rect x="70" y="184" width="120" height="6" rx="3" fill="rgba(255,255,255,0.16)"/>
     </svg>`,
   },
-  {
-    name: 'MOMAY PLATFORM',
-    tagline: 'From Data to Behavioral Intelligence.',
-    note: 'แพลตฟอร์มวิเคราะห์พฤติกรรมการใช้พื้นที่ เพื่อองค์กรและเมืองที่ฉลาดขึ้น',
-    color: '#ECB731',
-    link: '/momay/MomayPrototype',
-    art: `<svg viewBox="0 0 260 210" class="art art--city">
-      <g class="float-c">
-        
-        <g fill="none" stroke="rgba(255,255,255,0.08)">
-          <path d="M130 20 L242 84 L130 148 L18 84 Z"/>
-          <path d="M130 40 L208 84 L130 128 L52 84 Z"/>
-        </g>
-        <g class="tower" style="--i:0"><path d="M74 96 l26 -15 26 15 v28 l-26 15 -26 -15z" fill="#ED1B2E" opacity="0.85"/><path d="M74 96 l26 15 v28 l-26 -15z" fill="#7F181B"/></g>
-        <g class="tower" style="--i:1"><path d="M110 76 l26 -15 26 15 v46 l-26 15 -26 -15z" fill="#F0682A" opacity="0.8"/><path d="M110 76 l26 15 v46 l-26 -15z" fill="#8a3a12"/></g>
-        <g class="tower" style="--i:2"><path d="M146 96 l26 -15 26 15 v22 l-26 15 -26 -15z" fill="#ECB731" opacity="0.85"/><path d="M146 96 l26 15 v22 l-26 -15z" fill="#8a6a13"/></g>
-        <g class="tower" style="--i:3"><path d="M92 124 l26 -15 26 15 v18 l-26 15 -26 -15z" fill="#56A0D3" opacity="0.75"/><path d="M92 124 l26 15 v18 l-26 -15z" fill="#2a5a7d"/></g>
-        <g class="tower" style="--i:4"><path d="M128 140 l26 -15 26 15 v14 l-26 15 -26 -15z" fill="#8EC06C" opacity="0.75"/><path d="M128 140 l26 15 v14 l-26 -15z" fill="#3e6b2a"/></g>
-      </g>
-      <g class="spark">
-        <circle cx="86" cy="60" r="2.4" fill="#ED1B2E"/><circle cx="178" cy="52" r="2" fill="#ECB731"/>
-        <circle cx="206" cy="120" r="2.2" fill="#56A0D3"/><circle cx="52" cy="118" r="2" fill="#8EC06C"/>
-      </g>
-    </svg>`,
-  },
 ]
 
-const stats = [
-  { value: 20, decimals: 0, suffix: '+', label: 'ORGANIZATIONS TRUST US' },
-  { value: 50, decimals: 0, suffix: '+', label: 'SPACES CONNECTED' },
-  { value: 1, decimals: 0, suffix: 'M+', label: 'BEHAVIORS ANALYZED' },
-  { value: 99.9, decimals: 1, suffix: '%', label: 'SYSTEM RELIABILITY' },
-  { value: 24, decimals: 0, suffix: '/7', label: 'REAL-TIME MONITORING' },
-]
+// ปุ่มใต้ Executive Brief — อ้างผลิตภัณฑ์ชุดเดียวกัน จะได้ไม่ต้องแก้ลิงก์สองที่
+const demoIcons = {
+  'MOMAY ENLIGHTENED': `<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>`,
+  'MOMAY STUDENT': `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0"/></svg>`,
+  'MOMAY EXECUTIVE BRIEF': `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M13.5 3.7V8.2H18"/><path d="M9 12.5h6M9 16h4"/></svg>`,
+}
+
+const demoLinks = products.map((p) => ({
+  key: p.name,
+  label: p.name.replace(/^MOMAY\s+/, ''),
+  color: p.color,
+  link: p.link,
+  icon: demoIcons[p.name],
+}))
 
 const orgs = [
   { name: 'มหาวิทยาลัยนเรศวร', glyph: 'M42 22 v40 M30 34 h24 M34 52 h16 M42 22 l-6 8 M42 22 l6 8' },
@@ -1012,28 +1631,6 @@ const benefits = [
   },
 ]
 
-const socials = [
-  {
-    label: 'Website',
-    href: 'https://www.kwangunlimit.com',
-    icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.7 3.9 5.7 3.9 9S14.6 21.3 12 21c-2.6-.3-3.9-3-3.9-9S9.4 5.7 12 3z"/></svg>`,
-  },
-  {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com',
-    icon: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10.5V17M8 7.4v.1M12 17v-3.8a2.2 2.2 0 0 1 4.4 0V17"/></svg>`,
-  },
-  {
-    label: 'Email',
-    href: 'mailto:contact@kwangunlimit.com',
-    icon: `<svg viewBox="0 0 24 24"><rect x="2.8" y="5" width="18.4" height="14" rx="3"/><path d="M3.6 7.2l8.4 6 8.4-6"/></svg>`,
-  },
-  {
-    label: 'Phone',
-    href: 'tel:+6655000000',
-    icon: `<svg viewBox="0 0 24 24"><path d="M7.2 3.5l2.4 4.2-2 1.9a12 12 0 0 0 6.8 6.8l1.9-2 4.2 2.4-.8 3a2 2 0 0 1-2.2 1.4C10.2 20.1 3.9 13.8 3 6.5A2 2 0 0 1 4.4 4.3z"/></svg>`,
-  },
-]
 
 /* ══════════════ 4. Executive Brief (ตัวเลขขยับแบบ live) ══════════════ */
 const hourTicks = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00']
@@ -1060,6 +1657,7 @@ const actions = [
 ]
 
 const clock = ref('')
+const clockShort = computed(() => clock.value.split(' | ')[0] || '')
 const updateClock = () => {
   const now = new Date()
   const time = new Intl.DateTimeFormat('th-TH', {
@@ -1107,6 +1705,10 @@ const linePath = smooth(pointsA)
 const linePathAlt = smooth(toPoints(seriesB))
 const areaPath = `${linePath} L ${W} ${H} L 0 ${H} Z`
 const peak = pointsA.reduce((a, b) => (b.y < a.y ? b : a), pointsA[0])
+const peakPos = {
+  left: `${((peak.x / W) * 100).toFixed(2)}%`,
+  top: `${((peak.y / H) * 100).toFixed(2)}%`,
+}
 
 /* ══════════════ 6. ฉากหลัง: เส้นขอบฟ้า + จุดข้อมูล (สุ่มแบบคงที่) ══════════════ */
 const lcg = (seed) => () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296)
@@ -1166,7 +1768,6 @@ const open = (path) => {
   else navigateTo(path)
 }
 const requestDemo = () => open('/contact')
-const exploreMomay = () => open('/renewablesort/momay')
 const goTo = (hash) => {
   menuOpen.value = false
   const el = document.querySelector(hash)
@@ -1181,7 +1782,7 @@ let autoTimer = null
 
 onMounted(() => {
   vw.value = window.innerWidth
-  io = new IntersectionObserver(onIntersect, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 })
+  io = new IntersectionObserver(onIntersect, { rootMargin: '0px 0px 18% 0px', threshold: 0.01 })
   waiting.splice(0).forEach((el) => io.observe(el))
 
   window.addEventListener('scroll', onScroll, { passive: true })
@@ -1201,6 +1802,24 @@ onMounted(() => {
     kpis[1].value = 69 + Math.round(Math.random() * 7)
     kpis[2].value = 176 + Math.round(Math.random() * 12)
     kpis[3].value = 27 + Math.round(Math.random() * 2)
+    enDensity.value = 5 + Math.round(Math.random() * 7)
+    enPeople.value = 36 + Math.round(Math.random() * 12)
+    enDoors.forEach((d) => {
+      d.in += Math.round(Math.random() * 2)
+      d.out += Math.round(Math.random() * 2)
+    })
+    enPower.value = 1270 + Math.round(Math.random() * 40)
+    enZones.forEach((z) => {
+      z.people = Math.max(0, z.people + Math.round((Math.random() - 0.5) * 3))
+      z.pct = Math.max(1, Math.min(99, z.pct + Math.round((Math.random() - 0.5) * 4)))
+    })
+    // ที่นั่งในแอปนักศึกษาขยับตามด้วย ห้องเล็กเปลี่ยนช้ากว่าโซนใหญ่
+    studentFloors.forEach((f) => {
+      f.zones.forEach((z) => {
+        const step = Math.max(1, Math.round(z.total * 0.06))
+        z.used = Math.max(0, Math.min(z.total, z.used + Math.round((Math.random() - 0.5) * step * 2)))
+      })
+    })
   }, 4200)
 
   autoTimer = setInterval(() => {
@@ -1318,17 +1937,6 @@ section {
   .line__in--red.split .split__ch { color: transparent; }
 }
 
-/* ── hover แล้วตัวหนังสือสลับชุด ── */
-.mm-swap { display: inline-flex; flex-direction: column; height: 1.15em; overflow: hidden; }
-.mm-swap i {
-  flex: 0 0 1.15em;
-  height: 1.15em;
-  font-style: normal;
-  line-height: 1.15em;
-  transition: transform 0.55s var(--ease);
-}
-.nav__links a:hover .mm-swap i { transform: translateY(-1.15em); }
-
 /* ══════════════ ปุ่ม ══════════════ */
 .mm-btn {
   display: inline-flex;
@@ -1355,26 +1963,10 @@ section {
 .mm-btn--solid:hover { transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 3px), 0); box-shadow: 0 18px 44px rgba(237, 27, 46, 0.45); }
 .mm-btn--ghost { border-color: rgba(237, 27, 46, 0.65); color: #ffd9dc; }
 .mm-btn--ghost:hover { background: rgba(237, 27, 46, 0.14); transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 2px), 0); }
-.mm-btn--play { color: var(--txt); }
-.mm-btn--play:hover { color: #fff; }
-.mm-btn__play {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-  transition: border-color 0.4s var(--ease), box-shadow 0.5s var(--ease), transform 0.5s var(--ease);
-}
-.mm-btn__play svg { width: 15px; height: 15px; }
-.mm-btn--play:hover .mm-btn__play {
-  border-color: var(--red);
-  box-shadow: 0 0 0 7px rgba(237, 27, 46, 0.12);
-  transform: scale(1.09);
-}
 .mm-btn__arrow { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.45s var(--ease); }
 .mm-btn:hover .mm-btn__arrow { transform: translateX(4px); }
+.mm-btn__arrow--tel { width: 16px; height: 16px; stroke-linejoin: round; }
+.mm-btn:hover .mm-btn__arrow--tel { transform: rotate(-12deg) scale(1.08); }
 
 /* ══════════════ แถบความคืบหน้า + NAV ══════════════ */
 .scroll-progress {
@@ -1386,7 +1978,7 @@ section {
   z-index: 60;
 }
 .nav {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -1406,32 +1998,37 @@ section {
   height: 68px;
 }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
-.brand__mark { width: 34px; height: 34px; flex: none; }
 .brand__text { display: flex; flex-direction: column; line-height: 1.05; }
 .brand__text strong { font-family: 'Poppins', 'Inter', sans-serif; font-size: 1.06rem; letter-spacing: 0.12em; }
 .brand__text small { font-size: 0.5rem; letter-spacing: 0.16em; color: var(--muted); }
-.nav__links { display: flex; gap: 26px; margin-left: auto; }
-.nav__links a {
-  font-size: 0.72rem;
-  letter-spacing: 0.13em;
-  font-weight: 600;
-  color: #d7d7dd;
-  text-decoration: none;
+.nav__live { display: flex; align-items: center; margin-left: auto; }
+.nav__live-tag { font-size: 0.5rem; padding-right: 16px; }
+.navkpi {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 16px;
   position: relative;
-  padding: 6px 0;
 }
-.nav__links a::after {
+.navkpi::before {
   content: '';
   position: absolute;
   left: 0;
-  bottom: 0;
-  height: 1.5px;
-  width: 0;
-  background: var(--red);
-  transition: width 0.3s ease;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.09);
 }
-.nav__links a:hover { color: #fff; }
-.nav__links a:hover::after { width: 100%; }
+.navkpi__label { font-style: normal; font-size: 0.5rem; letter-spacing: 0.14em; color: var(--muted); }
+.navkpi__value {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.navkpi__value em { font-style: normal; font-size: 0.5rem; letter-spacing: 0.08em; color: var(--muted); margin-left: 3px; }
 .nav__burger { display: none; background: none; border: 0; color: #fff; padding: 6px; cursor: pointer; }
 .nav__burger svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .nav__mobile {
@@ -1473,16 +2070,17 @@ section {
 }
 .mm-hero__grid { inset: 0; width: 100%; height: 100%; opacity: 0.75; }
 .mm-hero__people {
-  left: -3%;
+  left: auto;
+  right: -3%;
   top: 4%;
   width: min(82%, 1250px);
   height: 90%;
-  background: url('/momay/hero-people.webp') left 42% / cover no-repeat;
+  background: url('/momay/hero-people.webp') right 42% / cover no-repeat;
   opacity: 0.88;
   filter: brightness(1.3) contrast(1.04) saturate(1.12);
   mix-blend-mode: screen;
-  -webkit-mask-image: radial-gradient(82% 92% at 36% 48%, #000 18%, rgba(0, 0, 0, 0.6) 60%, transparent 88%);
-  mask-image: radial-gradient(72% 82% at 34% 48%, #000 10%, rgba(0, 0, 0, 0.5) 52%, transparent 84%);
+  -webkit-mask-image: radial-gradient(82% 92% at 64% 48%, #000 18%, rgba(0, 0, 0, 0.6) 60%, transparent 88%);
+  mask-image: radial-gradient(72% 82% at 66% 48%, #000 10%, rgba(0, 0, 0, 0.5) 52%, transparent 84%);
 }
 .mm-hero__streams { inset: 0; width: 100%; height: 100%; }
 .mm-hero__city { left: 0; right: 0; bottom: 0; width: 100%; }
@@ -1515,8 +2113,8 @@ section {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
-  gap: clamp(28px, 4vw, 60px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 44px);
   align-items: center;
   perspective: 1400px;
 }
@@ -1555,10 +2153,11 @@ section {
   margin: 14px 0 0;
 }
 .mm-hero__thai {
-  color: var(--muted);
-  font-size: clamp(0.86rem, 1.3vw, 1rem);
-  line-height: 1.85;
+  color: #eaeaf0;
+  font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+  line-height: 2;
   margin: 20px 0 0;
+  word-spacing: 0.06em;
 }
 .mm-hero__chips {
   display: flex;
@@ -1588,7 +2187,6 @@ section {
 .chip__label { display: flex; flex-direction: column; line-height: 1.3; }
 .chip__label b { font-size: 0.7rem; letter-spacing: 0.13em; }
 .chip__label small { font-size: 0.66rem; color: var(--muted); }
-.mm-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 30px; }
 
 
 /* ══════════════ เส้นคั่นแบบขอบฟ้าอวกาศ ══════════════ */
@@ -1626,38 +2224,8 @@ section {
 }
 
 /* ══════════════ แถบข้อความวิ่ง ══════════════ */
-.ticker {
-  position: relative;
-  overflow: hidden;
-  padding: 15px 0;
-  border-block: 1px solid var(--line);
-  background: linear-gradient(90deg, rgba(237, 27, 46, 0.07), rgba(255, 255, 255, 0.02), rgba(237, 27, 46, 0.07));
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-}
-.ticker__track {
-  display: flex;
-  width: max-content;
-  animation: tickerRun 36s linear infinite;
-}
-.ticker:hover .ticker__track { animation-play-state: paused; }
-.ticker__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 24px;
-  padding-right: 24px;
-  font-family: 'Poppins', 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: clamp(0.78rem, 1.5vw, 1.02rem);
-  letter-spacing: 0.17em;
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.4);
-}
-.ticker__item:nth-child(2n) { color: rgba(237, 27, 46, 0.78); }
-.ticker__sep { width: 10px; height: 10px; flex: none; fill: var(--red); opacity: 0.75; }
 
 /* ══════════════ การ์ด EXECUTIVE BRIEF ══════════════ */
-.mm-hero__panel { transform-style: preserve-3d; transition: transform 0.6s var(--ease); }
 .brief {
   border-radius: 18px;
   border: 1px solid var(--line);
@@ -1699,6 +2267,609 @@ section {
 .kpi__delta.is-flat { color: var(--muted); }
 
 .brief__row { display: grid; grid-template-columns: 1.25fr 1fr; gap: 8px; margin-top: 8px; }
+.brief-showcase { max-width: 880px; margin: clamp(30px, 4vw, 52px) auto 0; }
+/* ส่วน STUDENT — การ์ดฝั่งซ้าย ภาพจำลองแอปฝั่งขวา */
+.showcase-body--split {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, 690px);
+  justify-content: center;
+  gap: clamp(24px, 4vw, 72px);
+  align-items: center;
+}
+.showcase-body--split .purpose-grid { margin-top: 0; grid-template-columns: minmax(0, max-content); gap: 7px; }
+.showcase-body--split .pcard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 1px 11px;
+  padding: clamp(7px, 1.1vh, 11px) 16px clamp(7px, 1.1vh, 11px) 13px;
+  max-width: 420px;
+  text-align: left;
+}
+.showcase-body--split .pcard__icon { grid-row: 1 / span 2; grid-column: 1; width: 34px; height: 34px; margin: 0; }
+.showcase-body--split .pcard__icon :deep(svg) { width: 18px; height: 18px; }
+.showcase-body--split .pcard h3 { grid-column: 2; align-self: end; font-size: 0.68rem; margin: 0; }
+.showcase-body--split .pcard p { grid-column: 2; align-self: start; font-size: 0.72rem; line-height: 1.65; }
+.phone-duo { display: flex; align-items: center; justify-content: flex-end; min-width: 0; }
+.phone {
+  position: relative;
+  width: min(252px, 100%);
+  flex: none;
+  padding: 11px 10px;
+  border-radius: 42px;
+  background: linear-gradient(155deg, #4a4a55 0%, #23232c 18%, #101016 55%, #08080d 100%);
+  box-shadow:
+    0 50px 100px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.7s var(--ease);
+}
+.phone--front { z-index: 2; transform: perspective(1500px) rotateY(-11deg) rotateX(2deg) rotate(-2deg); }
+.phone-duo:hover .phone--front { transform: perspective(1500px) rotateY(-6deg) rotate(-1deg); }
+/* รอยบากด้านบน */
+.phone__notch {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 74px;
+  height: 13px;
+  border-radius: 999px;
+  background: #05050a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 2;
+}
+/* ปุ่มข้างเครื่อง */
+.phone__btn { position: absolute; width: 2px; border-radius: 2px; background: linear-gradient(180deg, #4a4a55, #24242c); }
+.phone__btn--power { right: -2px; top: 96px; height: 46px; }
+.phone__btn--vol { left: -2px; top: 84px; height: 30px; box-shadow: 0 42px 0 0 #33333d; }
+.phone__screen {
+  position: relative;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #08080e;
+  padding: 13px 12px 0;
+  overflow: hidden;
+}
+.phone__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.phone__brand { display: inline-flex; align-items: center; gap: 5px; font-size: 0.54rem; letter-spacing: 0.1em; }
+.phone__brand b { color: #fff; }
+.phone__brand em { font-style: normal; color: var(--muted); }
+.phone__avatar {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: rgba(142, 192, 108, 0.16);
+  border: 1px solid rgba(142, 192, 108, 0.5);
+  color: #8ec06c;
+  font-style: normal;
+  font-size: 0.5rem;
+  font-weight: 700;
+}
+.phone__meta { display: inline-flex; align-items: center; gap: 6px; font-size: 0.5rem; color: var(--muted); }
+.phone__meta em { font-style: normal; }
+.phone__meta svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.phone__chip {
+  font-style: normal;
+  font-size: 0.42rem;
+  letter-spacing: 0.06em;
+  padding: 2px 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #dcdce2;
+}
+.phone__hello { margin: 14px 0 12px; display: flex; flex-direction: column; gap: 3px; }
+.phone__hello b { font-size: 0.92rem; color: #fff; }
+.phone__hello small { font-size: 0.58rem; color: var(--muted); }
+.phone__label { display: block; font-size: 0.55rem; color: #cfcfd8; margin-bottom: 7px; }
+.phone__body { overflow: auto; scrollbar-width: none; }
+.phone__body::-webkit-scrollbar { display: none; }
+.phone__list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px; }
+.phone__list > li {
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.028);
+  transition: border-color 0.4s var(--ease);
+}
+.phone__list > li.is-open { border-color: rgba(255, 255, 255, 0.16); }
+.phone__mix {
+  display: grid;
+  grid-template-columns: repeat(2, 6px);
+  grid-auto-rows: 6px;
+  gap: 3px;
+  align-content: center;
+  justify-content: center;
+}
+.phone__mix i { display: block; width: 6px; height: 6px; border-radius: 2px; }
+.phone__kind {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.03);
+}
+.phone__kind :deep(svg) { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.phone__kind svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.phone__row {
+  display: grid;
+  grid-template-columns: 22px 36px minmax(0, 1fr) 12px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 9px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.phone__list > li.is-open .phone__go { transform: rotate(90deg); color: #8ec06c; }
+.phone__zones { list-style: none; margin: 0; padding: 0 8px 8px; display: grid; gap: 5px; }
+.phone__zones li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 7px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.phone__zicon { display: grid; place-items: center; color: #8ec06c; }
+.phone__zicon svg,
+.phone__zicon :deep(svg) { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.phone__seats { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; text-align: right; }
+.phone__seats b { font-size: 0.54rem; color: #8ec06c; font-variant-numeric: tabular-nums; }
+.phone__seats b em { font-style: normal; font-size: 0.45rem; color: var(--muted); }
+.phone__seats small { font-size: 0.42rem; color: var(--muted); }
+.phone__floor { font-size: 0.5rem; color: var(--muted); }
+.phone__floor b { font-size: 0.78rem; color: #fff; margin-left: 2px; }
+.phone__floor--icon { display: grid; place-items: center; color: #8ec06c; }
+.phone__floor--icon svg,
+.phone__floor--icon :deep(svg) { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.phone__info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.phone__info b { font-size: 0.56rem; color: #e8e8ee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.phone__info b.is-live { color: #8ec06c; }
+.phone__info small { font-size: 0.47rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.phone__go { width: 12px; height: 12px; fill: none; stroke: rgba(255, 255, 255, 0.35); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.4s var(--ease), color 0.4s var(--ease); }
+.phone__fade { height: 26px; background: linear-gradient(180deg, transparent, #08080e); }
+.phone__tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  margin: 0 -12px;
+  padding: 8px 6px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+.phone__tabs span { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.42rem; color: var(--muted); }
+.phone__tabs span.is-on { color: #8ec06c; }
+.phone__tabs i { display: block; }
+.phone__tabs :deep(svg) { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ══════════════ คอนโซลจำลองของ ENLIGHTENED ══════════════ */
+.brief--en { border-color: var(--line); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+.brief--en .brief__title { color: #ecb731; text-shadow: 0 0 20px rgba(236, 183, 49, 0.45); }
+.brief--en .live { color: #ffd98a; }
+.brief--en .live i { background: #ecb731; }
+
+.en__blocks { display: grid; grid-template-columns: 1fr 1.06fr; gap: 8px; margin-top: 10px; }
+.en__block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.018);
+  box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.015);
+  padding: 8px 9px 9px;
+}
+.en__block--blue { border-color: rgba(255, 255, 255, 0.09); background: rgba(255, 255, 255, 0.015); box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.012); }
+.en__block--power { margin-top: 8px; border-color: rgba(255, 255, 255, 0.09); background: rgba(255, 255, 255, 0.015); box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.012); }
+
+.en__lhead { display: flex; align-items: center; gap: 7px; }
+.en__lmark { display: grid; place-items: center; width: 22px; height: 22px; flex: none; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.05); color: #ecb731; }
+.en__lmark--blue { border-color: rgba(86, 160, 211, 0.5); background: rgba(86, 160, 211, 0.14); color: #56a0d3; }
+.en__lmark svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
+.en__ltitle { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.en__ltitle b { font-size: 0.54rem; letter-spacing: 0.02em; color: #e8e8ee; }
+.en__ltitle b em { font-style: normal; color: #ecb731; }
+.en__ltitle b em.is-blue { color: #56a0d3; }
+.en__ltitle small { font-size: 0.38rem; line-height: 1.45; color: var(--muted); }
+.en__pager { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; font-size: 0.38rem; color: var(--muted); }
+.en__pager i { font-style: normal; padding: 1px 4px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.12); }
+.en__pager b { padding: 2px 6px; border-radius: 5px; border: 1px solid rgba(86, 160, 211, 0.45); color: #cfe6f7; }
+
+.en__row3 { display: grid; grid-template-columns: 1.15fr 0.82fr 1.03fr; gap: 5px; }
+.en__row3--gates { grid-template-columns: 1.25fr 0.9fr 0.9fr; }
+.en__row2 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 5px; flex: 1; min-height: 0; }
+.en__row2 .en__box { display: flex; flex-direction: column; min-height: 0; }
+.en__row2 .en__plot { flex: 1; min-height: 34px; }
+.en__row2 .en__plot { min-height: 40px; }
+.en__row2 .en__heat { flex: 1; align-content: center; }
+.en__row2 .en__cells i { height: auto; aspect-ratio: 1.4; }
+.en__box {
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
+  background: rgba(4, 8, 6, 0.45);
+  padding: 5px 7px 6px;
+  min-width: 0;
+}
+.en__box--center { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.en__btitle { display: block; width: 100%; font-size: 0.4rem; color: #cfcfd8; margin-bottom: 4px; }
+.en__btitle em { font-style: normal; color: var(--muted); }
+
+.en__zones { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.en__zones li { display: grid; grid-template-columns: 22px 22px minmax(0, 1fr); align-items: center; gap: 5px; padding: 2px 3px; border-radius: 6px; border: 1px solid transparent; }
+.en__zones li.is-hot { border-color: rgba(236, 183, 49, 0.5); background: rgba(236, 183, 49, 0.07); }
+.en__ring { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--c) calc(var(--p) * 1%), rgba(255, 255, 255, 0.08) 0); }
+.en__ring b { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; background: #05070a; font-size: 0.4rem; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+.en__ring b em { display: block; font-style: normal; font-size: 0.26rem; color: var(--muted); }
+.en__zinfo { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.en__zinfo b { display: inline-flex; align-items: center; gap: 4px; font-size: 0.42rem; color: #e8e8ee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.en__zinfo small { font-size: 0.34rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.en__livetag { font-style: normal; font-size: 0.28rem; letter-spacing: 0.06em; padding: 1px 3px; border-radius: 3px; background: rgba(63, 163, 77, 0.2); color: #8ec06c; }
+
+.en__gauge { display: block; width: 100%; max-width: 118px; margin-top: auto; }
+.en__gaugearc { transition: stroke-dashoffset 0.9s var(--ease), stroke 0.6s var(--ease); }
+
+.en__mpct {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%);
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1;
+  color: #e8e8ee;
+  font-variant-numeric: tabular-nums;
+}
+.en__mcap { font-size: 0.42rem; color: #cfcfd8; margin-top: 2px; }
+.en__mtrend { font-size: 0.34rem; color: var(--muted); margin-bottom: auto; }
+.en__iso { display: block; width: 100%; max-width: 168px; height: auto; margin: auto 0; }
+
+.en__strip { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.38rem; letter-spacing: 0.16em; color: #ffd98a; margin: 0; }
+.en__strip i { width: 4px; height: 4px; border-radius: 50%; background: #ecb731; box-shadow: 0 0 6px rgba(236, 183, 49, 0.9); }
+.en__doors { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.en__doors li { display: grid; grid-template-columns: 22px 22px minmax(0, 1fr); align-items: center; gap: 5px; padding: 3px 3px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.06); }
+.en__big {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0;
+  width: min(100%, 60px);
+  aspect-ratio: 1;
+  margin: auto 0;
+  border-radius: 50%;
+  border: 2px solid rgba(63, 163, 77, 0.55);
+  background: rgba(63, 163, 77, 0.07);
+}
+.en__big b { font-family: 'Poppins', 'Inter', sans-serif; font-size: 0.74rem; color: #8ec06c; font-variant-numeric: tabular-nums; }
+.en__big em { font-style: normal; font-size: 0.36rem; color: var(--muted); }
+.en__big--out { border-color: rgba(86, 160, 211, 0.55); background: rgba(86, 160, 211, 0.07); }
+.en__big--out b { color: #7fc4ef; }
+
+.en__legend { display: inline-flex; align-items: center; gap: 4px; font-size: 0.32rem; color: var(--muted); margin-bottom: 2px; }
+.en__legend i { width: 8px; height: 2px; border-radius: 2px; }
+.en__legend i.is-blue { background: #56a0d3; }
+.en__legend i.is-green { background: #3fa34d; }
+.en__legend i.is-orange { background: #ecb731; }
+.en__plot {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 3px;
+  min-height: 0;
+}
+/* แท็บเล็ตด้านหลัง */
+.tablet {
+  position: relative;
+  z-index: 1;
+  width: min(430px, 100%);
+  flex: none;
+  margin-left: -34px;
+  margin-top: 30px;
+  padding: 13px 11px;
+  border-radius: 26px;
+  background: linear-gradient(155deg, #4a4a55 0%, #23232c 18%, #101016 55%, #08080d 100%);
+  box-shadow:
+    0 50px 100px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: perspective(1500px) rotateY(13deg) rotateX(2deg) rotate(2.5deg) scale(0.94);
+  transition: transform 0.7s var(--ease);
+  filter: brightness(0.94);
+}
+.phone-duo:hover .tablet { transform: perspective(1500px) rotateY(7deg) rotate(1.5deg) scale(0.96); }
+.tablet__cam {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #05050a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.tablet__screen {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #08080e;
+  padding: 11px 11px 12px;
+  overflow: hidden;
+}
+.tablet__cols { display: grid; grid-template-columns: 1fr 1.05fr; gap: 11px; margin-top: 11px; }
+.tablet__col { min-width: 0; }
+.tablet .phone__row { cursor: default; grid-template-columns: 22px 30px minmax(0, 1fr) 10px; gap: 6px; padding: 6px 7px; }
+.tablet .phone__info b { font-size: 0.54rem; }
+.tablet .phone__info small { font-size: 0.45rem; }
+.tablet .phone__seats b { font-size: 0.5rem; }
+.tablet .phone__label { font-size: 0.5rem; }
+.tablet .zonecard__name { font-size: 0.5rem; }
+.tablet .phone__list { gap: 5px; margin-bottom: 8px; }
+
+/* หน้าจอเครื่องที่สองของแอปนักศึกษา */
+.zonecard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 11px 11px;
+  border-radius: 12px;
+  border: 1px solid rgba(142, 192, 108, 0.35);
+  background: rgba(142, 192, 108, 0.07);
+  margin-bottom: 10px;
+}
+.zonecard__name { font-size: 0.54rem; color: #e8e8ee; }
+.zonecard__big { font-family: 'Poppins', 'Inter', sans-serif; font-size: 1.05rem; line-height: 1.1; color: #8ec06c; font-variant-numeric: tabular-nums; }
+.zonecard__big em { font-style: normal; font-size: 0.5rem; color: var(--muted); margin-left: 3px; }
+.zonecard__bar { display: block; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.09); overflow: hidden; }
+.zonecard__bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #3fa34d, #8ec06c); transition: width 1s var(--ease); }
+.zonecard small { font-size: 0.45rem; color: var(--muted); }
+.phone__cta {
+  display: block;
+  margin-top: 10px;
+  padding: 8px 0;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.56rem;
+  color: #0b1508;
+  background: linear-gradient(90deg, #8ec06c, #b6dd97);
+}
+.en__svgwrap { position: relative; display: block; min-width: 0; height: 100%; }
+.en__plot svg { display: block; width: 100%; height: 100%; min-height: 36px; }
+.en__dot {
+  position: absolute;
+  left: 48.1%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8ec06c;
+  box-shadow: 0 0 0 3px rgba(142, 192, 108, 0.18);
+  transform: translate(-50%, -50%);
+}
+.en__yaxis { position: relative; height: 100%; font-size: 0.28rem; color: var(--muted); }
+.en__yaxis em {
+  position: absolute;
+  right: 0;
+  top: calc(var(--i) * 25%);
+  transform: translateY(-50%);
+  font-style: normal;
+  line-height: 1;
+  white-space: nowrap;
+}
+.en__yaxis--6 em { top: calc(var(--i) * 20%); }
+.en__xaxis { display: flex; justify-content: space-between; font-size: 0.3rem; color: var(--muted); margin-top: 2px; padding-left: 19px; }
+.en__xaxis em { font-style: normal; }
+.en__xaxis--heat { padding-left: 29px; }
+.en__now {
+  position: absolute;
+  top: -1px;
+  left: 46%;
+  font-size: 0.3rem;
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(63, 163, 77, 0.6);
+  background: rgba(6, 10, 8, 0.95);
+  color: #8ec06c;
+}
+.en__peak {
+  position: absolute;
+  top: -2px;
+  right: 0;
+  font-size: 0.3rem;
+  line-height: 1.35;
+  text-align: center;
+  padding: 2px 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(236, 183, 49, 0.55);
+  background: rgba(30, 22, 6, 0.95);
+  color: #ffd98a;
+}
+.en__peak b { font-size: 0.34rem; }
+
+.en__heat { display: grid; gap: 2px; }
+.en__heatrow { display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: center; gap: 3px; font-size: 0.32rem; color: var(--muted); }
+.en__cells { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 1px; }
+.en__cells i { display: block; height: clamp(6px, 1.1vh, 11px); border-radius: 2px; }
+.en__scale { display: inline-flex; align-items: center; gap: 4px; font-size: 0.3rem; color: var(--muted); margin-top: 3px; }
+.en__scale i { width: 56px; height: 5px; border-radius: 999px; background: linear-gradient(90deg, rgb(26 54 40), rgb(96 168 92), rgb(236 183 49), rgb(222 92 60)); }
+
+.en__bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; align-content: center; flex: 1; }
+.en__bars li { display: grid; grid-template-columns: 82px minmax(0, 1fr) 26px; align-items: center; gap: 7px; font-size: 0.38rem; color: var(--muted); }
+.en__bars li span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.en__track { height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+.en__track i { display: block; height: 100%; border-radius: 999px; transition: width 1.2s var(--ease); }
+.en__bars em { font-style: normal; text-align: right; color: #dcdce2; }
+
+.en__phead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.en__chip { font-size: 0.4rem; padding: 3px 7px; border-radius: 6px; border: 1px solid rgba(236, 183, 49, 0.45); color: #ffd98a; }
+.en__chip--ghost { border-color: rgba(255, 255, 255, 0.14); color: var(--muted); }
+.en__date { display: inline-flex; align-items: center; gap: 4px; font-size: 0.42rem; color: #e8e8ee; }
+.en__date i { font-style: normal; padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(236, 183, 49, 0.35); color: #ffd98a; }
+.en__plot--power { min-height: clamp(48px, 6.5vh, 76px); }
+.en__pfoot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 1px; }
+.en__xaxis--power { flex: 1; }
+
+/* ══════════════ ส่วนที่ต้องจบในหนึ่งหน้าจอ ══════════════ */
+.section.section--fit {
+  min-height: 100svh;
+  display: grid;
+  align-content: start;
+  padding-top: clamp(44px, 6.8vh, 80px);
+  padding-bottom: clamp(14px, 2.2vh, 32px);
+}
+/* เส้นคั่นด้านบนวางทับ (z-index 3) — ยกเนื้อหาส่วนนี้ขึ้นมาไม่ให้แสงพาดตัวหนังสือ */
+.section--fit .wrap { position: relative; z-index: 4; }
+.section--fit .kicker { font-size: clamp(1.4rem, 3vw, 2.1rem); }
+.section--fit .lead {
+  margin-top: 12px;
+  max-width: min(1180px, 100%);
+  font-size: clamp(0.88rem, 1.08vw, 1.02rem);
+  line-height: 1.95;
+}
+.section--fit .center { margin-top: clamp(12px, 2vh, 24px); }
+.section--fit .brief-showcase { margin-top: clamp(14px, 2.2vh, 26px); }
+.section--fit .brief { padding: clamp(9px, 1.05vw, 14px); }
+.section--fit .brief__head { padding-bottom: 9px; }
+
+/* การ์ด Executive Brief */
+.section--panel .chart svg { height: clamp(60px, 8.5vh, 104px); }
+
+/* คอนโซล ENLIGHTENED */
+.section--fit .en__blocks { margin-top: clamp(5px, 0.8vh, 9px); }
+.section--fit .en__zones { gap: 2px; }
+.section--fit .en__cells i { height: clamp(6px, 1.1vh, 11px); }
+.section--fit .en__row2 .en__plot { min-height: clamp(28px, 3.4vh, 46px); }
+.section--fit .en__plot--power { min-height: clamp(30px, 4.2vh, 64px); }
+.section--fit .en__gauge { max-width: clamp(84px, 11.5vh, 108px); }
+.section--fit .en__big { width: min(100%, 54px); }
+
+/* ส่วน STUDENT — การ์ดฝั่งซ้ายกับจอมือถือ */
+.section--fit .showcase-body { margin-top: clamp(16px, 2.6vh, 30px); }
+.section--fit .purpose-grid { margin-top: 0; gap: clamp(7px, 0.9vh, 10px); }
+.section--fit .pcard h3 { font-size: 0.68rem; }
+.section--fit .pcard p { font-size: 0.72rem; color: #dcdce2; }
+.section--fit .showcase-body--split { gap: clamp(16px, 2.4vw, 34px); }
+.section--fit .phone { padding: 9px 8px; border-radius: 38px; }
+.section--fit .phone__screen { padding: 20px 10px 0; border-radius: 30px; }
+.section--fit .phone__body { max-height: clamp(210px, 39vh, 440px); }
+.section--fit .phone__hello { margin: clamp(7px, 1.2vh, 13px) 0 clamp(7px, 1.1vh, 11px); }
+.section--fit .phone__hello b { font-size: 0.82rem; }
+.section--fit .phone__list { gap: 5px; margin-bottom: 8px; }
+.section--fit .phone__list li { padding: clamp(5px, 0.8vh, 8px) 8px; }
+.section--fit .phone__fade { height: 16px; }
+.section--fit .phone__tabs { margin: 0 -10px; padding: 6px 5px 8px; }
+
+/* จอเตี้ยมาก — ย่อหัวเรื่องลงอีกให้เนื้อหายังอยู่ครบในหน้าเดียว */
+@media (max-height: 860px) {
+  .section.section--fit { padding-top: clamp(22px, 3.8vh, 58px); padding-bottom: clamp(8px, 1.3vh, 22px); }
+  .section--fit .kicker { font-size: clamp(1.15rem, 2.4vw, 1.7rem); }
+  .section--fit .h2 { font-size: clamp(0.92rem, 1.6vw, 1.3rem); }
+  .section--fit .lead { font-size: 0.86rem; line-height: 1.8; margin-top: 9px; }
+  .section--fit .pcard h3 { font-size: 0.68rem; }
+  .section--fit .pcard p { font-size: 0.68rem; }
+  /* คอนโซลแน่นที่สุด — ย่อกราฟกับเกจลงอีกขั้น */
+  .section--fit .en__powerchart svg { height: 26px; }
+  .section--fit .en__meter svg { max-width: 88px; }
+  .section--fit .en__mpct { font-size: 0.86rem; }
+  .section--fit .en__gauge { max-width: 92px; }
+  .section--fit .en__iso { max-width: 120px; }
+  .section--fit .en__zones li { padding: 1px 3px; }
+  .section--fit .en__zinfo small { display: none; }
+  .section--fit .en__ltitle small { display: none; }
+  .section--fit .en__lhead { margin-bottom: 3px; }
+  .section--fit .en__box { padding: 4px 6px 5px; }
+  .section--fit .en__doors li { padding: 2px 3px; }
+  .section--fit .en__blocks { margin-top: 6px; }
+  .section--fit .en__block { gap: 3px; padding: 5px 6px 6px; }
+  .section--fit .en__row2 .en__plot { min-height: 26px; }
+  .section--fit .en__plot--power { min-height: 30px; }
+  .section--fit .en__pfoot em { font-size: 0.28rem; }
+  .section--fit .en__zinfo small { display: none; }
+  .section--fit .en__scale { display: none; }
+  .section--fit .en__inout { padding-top: 5px; }
+  .section--fit .en__io { padding: 4px 5px; }
+}
+.hero-demos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: min(660px, 100%);
+  margin-top: 30px;
+}
+.demolink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(20, 20, 28, 0.9), rgba(10, 10, 16, 0.92));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.45s var(--ease), transform 0.45s var(--ease);
+}
+.demolink:hover { border-color: var(--accent); transform: translateY(-3px); }
+.demolink__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--accent);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+}
+.demolink:hover .demolink__icon { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45); }
+.demolink__icon :deep(svg) {
+  width: 19px; height: 19px; fill: none; stroke: currentColor;
+  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+}
+.demolink__label { display: flex; flex-direction: column; gap: 2px; line-height: 1.3; }
+.demolink__label b {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.demolink__label small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.52rem;
+  letter-spacing: 0.13em;
+  color: var(--muted);
+  transition: color 0.35s var(--ease);
+}
+.demolink:hover .demolink__label small { color: #fff; }
+.demolink__arrow {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.35s var(--ease);
+}
+.demolink:hover .demolink__arrow { transform: translateX(3px); }
 .panelbox {
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -1712,12 +2883,29 @@ section {
 .chart svg { display: block; width: 100%; height: clamp(86px, 11vh, 118px); overflow: visible; }
 .chart__line { stroke-dasharray: 700; stroke-dashoffset: 700; }
 .chart__area { opacity: 0; }
-.chart__peak, .chart__peak-ring { opacity: 0; }
+.chart__peakdot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ed1b2e;
+  box-shadow: 0 0 0 3px rgba(237, 27, 46, 0.22);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+.chart__peakdot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid #ed1b2e;
+  opacity: 0;
+}
 .chart.is-in .chart__line { animation: drawLine 2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 .chart.is-in .chart__line--alt { animation-duration: 2.6s; animation-delay: 0.15s; }
 .chart.is-in .chart__area { animation: fadeIn 1s ease 1.1s forwards; }
-.chart.is-in .chart__peak { animation: fadeIn 0.4s ease 1.5s forwards; }
-.chart.is-in .chart__peak-ring { animation: peakRing 2.2s ease 1.6s infinite; }
+.chart.is-in .chart__peakdot { animation: fadeIn 0.4s ease 1.5s forwards; }
+.chart.is-in .chart__peakdot::after { animation: ringOut 2.2s ease 1.6s infinite; }
 .chart__badge {
   position: absolute;
   top: -4px;
@@ -1749,7 +2937,8 @@ section {
 .todo li.is-in .todo__tick { animation: drawTick 0.55s ease 0.25s forwards; }
 
 /* ══════════════ หัวข้อ section ══════════════ */
-.section { position: relative; padding: clamp(64px, 9vw, 118px) 0; }
+/* ระยะจากเส้นคั่นถึงหัวข้อเท่ากันกับส่วนที่จบในหน้าเดียว */
+.section { position: relative; padding: clamp(44px, 6.8vh, 80px) 0 clamp(56px, 7.5vw, 96px); }
 /* สลับลำดับความเด่น: ป้ายสีแดงเป็นตัวใหญ่ หัวข้อสีขาวเป็นตัวเล็กอยู่ใต้ */
 .kicker {
   text-align: center;
@@ -1779,7 +2968,16 @@ section {
   letter-spacing: -0.01em;
   color: var(--txt);
 }
-.lead { text-align: center; color: var(--muted); margin: 14px auto 0; max-width: 62ch; line-height: 1.9; font-size: clamp(0.82rem, 1.2vw, 0.98rem); }
+.lead {
+  text-align: center;
+  color: #eaeaf0;
+  margin: 16px auto 0;
+  max-width: 68ch;
+  line-height: 2;
+  font-size: clamp(0.94rem, 1.35vw, 1.12rem);
+  text-wrap: balance;
+  word-spacing: 0.06em;
+}
 
 /* ══════════════ การ์ด PURPOSE ══════════════ */
 .section--purpose { background: linear-gradient(180deg, var(--ink) 0%, var(--ink2) 100%); }
@@ -1788,7 +2986,7 @@ section {
   margin: clamp(30px, 4vw, 52px) 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols, 6), minmax(0, 1fr));
   gap: 12px;
 }
 .pcard {
@@ -1826,7 +3024,7 @@ section {
 .pcard:hover .pcard__icon { transform: scale(1.1) rotate(-4deg); }
 .pcard__icon :deep(svg) { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .pcard h3 { position: relative; font-size: 0.86rem; font-weight: 800; letter-spacing: 0.09em; margin: 0 0 9px; }
-.pcard p { position: relative; font-size: 0.79rem; line-height: 1.8; color: var(--muted); margin: 0; }
+.pcard p { position: relative; font-size: 0.84rem; line-height: 1.85; color: #dcdce2; margin: 0; }
 
 /* ══════════════ FLOW ══════════════ */
 .section--flow { background: var(--ink2); overflow: hidden; }
@@ -1978,32 +3176,6 @@ section {
 .product__art :deep(.tower) { opacity: 0; transform: translateY(16px); }
 .product.is-in .product__art :deep(.tower) { animation: riseUp 0.75s var(--ease) forwards; animation-delay: calc(var(--i, 0) * 0.13s + 0.35s); }
 
-/* ══════════════ STATS ══════════════ */
-.section--stats { padding: clamp(44px, 6vw, 74px) 0; border-block: 1px solid var(--line); background: rgba(255, 255, 255, 0.015); }
-.mm-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; text-align: center; }
-.mm-stat { position: relative; }
-/* ขีดแบ่งคอลัมน์ — จางหัวท้ายให้กลืนกับพื้นดำ */
-.mm-stat + .mm-stat::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: -9px;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 64%;
-  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.18) 45%, rgba(237, 27, 46, 0.35) 55%, transparent);
-}
-.mm-stat__num {
-  display: block;
-  font-family: 'Poppins', 'Inter', sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.7rem, 3.4vw, 2.9rem);
-  color: var(--red);
-  text-shadow: 0 0 34px rgba(237, 27, 46, 0.35);
-  line-height: 1.15;
-}
-.mm-stat__label { display: block; font-size: 0.6rem; letter-spacing: 0.13em; color: var(--muted); margin-top: 8px; }
-
 /* ══════════════ TRUSTED ══════════════ */
 .section--trusted { background: var(--ink); }
 .mm-carousel { position: relative; display: flex; align-items: center; gap: 10px; margin-top: clamp(24px, 3vw, 40px); }
@@ -2099,40 +3271,68 @@ section {
 /* ══════════════ FOOTER ══════════════ */
 .mm-footer { border-top: 1px solid var(--line); background: var(--ink); padding: 34px 0 26px; }
 .mm-footer__inner { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
-.mm-footer__links { display: flex; flex-wrap: wrap; gap: 18px; margin-inline: auto; }
-.mm-footer__links a { font-size: 0.64rem; letter-spacing: 0.12em; color: var(--muted); text-decoration: none; transition: color 0.25s ease; }
-.mm-footer__links a:hover { color: #fff; }
-.mm-footer__social { display: flex; gap: 9px; }
-.mm-footer__social a {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  transition: color 0.4s var(--ease), border-color 0.4s var(--ease), transform 0.45s var(--ease);
-}
-.mm-footer__social a:hover { color: #fff; border-color: rgba(237, 27, 46, 0.6); transform: translateY(-3px); }
-.mm-footer__social :deep(svg) { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .mm-footer__copy { text-align: center; font-size: 0.6rem; color: rgba(255, 255, 255, 0.32); margin: 24px 0 0; }
 
 /* ══════════════ LIGHTBOX ══════════════ */
 .lightbox { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(3, 3, 6, 0.92); backdrop-filter: blur(6px); padding: 5vw; }
-.lightbox__video { width: min(1000px, 92vw); max-height: 82vh; border-radius: 14px; border: 1px solid var(--line); background: #000; }
 /* เอกสาร MOMAY — เลื่อนดูได้ทั้งแนวตั้ง/แนวนอนบนจอเล็ก */
 .lightbox--doc { align-content: center; padding: clamp(48px, 6vw, 72px) 4vw clamp(70px, 8vw, 96px); }
 .lightbox__doc {
-  width: 100%;
-  max-height: 82vh;
+  width: min(1020px, 100%);
+  max-height: 74vh;
+  margin-inline: auto;
   overflow: auto;
   border-radius: 14px;
   border: 1px solid var(--line);
   background: #05050a;
   overscroll-behavior: contain;
 }
-.lightbox__doc img { display: block; width: 100%; min-width: 680px; height: auto; margin-inline: auto; }
+.lightbox__doc img { display: block; width: 100%; min-width: 560px; height: auto; margin-inline: auto; }
 .lightbox__open { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); text-decoration: none; }
+.lightbox--contact { padding: 5vw; }
+.contactcard {
+  position: relative;
+  width: min(420px, 92vw);
+  padding: clamp(22px, 3vw, 32px);
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: linear-gradient(160deg, rgba(22, 22, 30, 0.96), rgba(10, 10, 16, 0.97));
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  text-align: center;
+}
+.contactcard__close { top: 12px; right: 12px; width: 32px; height: 32px; }
+.contactcard__close svg { width: 15px; height: 15px; }
+.contactcard__eyebrow { display: block; font-size: 0.6rem; letter-spacing: 0.22em; color: var(--red); }
+.contactcard h3 { font-size: 1.05rem; color: #fff; margin: 10px 0 6px; }
+.contactcard p { font-size: 0.86rem; line-height: 1.9; color: #cfcfd8; margin: 0 0 18px; }
+.contactcard__tel {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(237, 27, 46, 0.55);
+  background: rgba(237, 27, 46, 0.1);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.contactcard__tel:hover { background: rgba(237, 27, 46, 0.2); transform: translateY(-2px); }
+.contactcard__tel b { font-family: 'Poppins', 'Inter', sans-serif; font-size: 1.35rem; letter-spacing: 0.06em; }
+.contactcard__ticon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: #fff; }
+.contactcard__ticon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; }
+.contactcard__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 0.84rem;
+  color: #dcdce2;
+  text-decoration: none;
+}
+.contactcard__row svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
+.contactcard__row:hover { color: #fff; }
+.contactcard__note { display: block; margin-top: 14px; font-size: 0.76rem; color: var(--muted); }
 .lightbox__close { position: absolute; top: 22px; right: 26px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: #fff; cursor: pointer; }
 .lightbox__close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
@@ -2147,13 +3347,11 @@ section {
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 @keyframes softPulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: 0.55; } }
-@keyframes peakRing { 0% { r: 4; opacity: 0.9; } 100% { r: 13; opacity: 0; } }
 @keyframes ringOut { 0% { transform: scale(0.92); opacity: 0.5; } 70% { transform: scale(1.22); opacity: 0; } 100% { opacity: 0; } }
 @keyframes driftUp { 0% { transform: translateY(14px); } 50% { transform: translateY(-16px); } 100% { transform: translateY(14px); } }
 @keyframes streamRun { to { stroke-dashoffset: -1160; } }
 @keyframes waveRun { to { stroke-dashoffset: -320; } }
 @keyframes twinkle { 0%, 100% { opacity: 0.18; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.6); } }
-@keyframes tickerRun { to { transform: translate3d(-50%, 0, 0); } }
 @keyframes shine { 0%, 100% { background-position: 130% 0; } 50% { background-position: -30% 0; } }
 
 /* ══════════════ responsive ══════════════ */
@@ -2171,20 +3369,22 @@ section {
   .product__tag { font-size: 0.78rem; }
   .product__note { font-size: 0.72rem; }
   .product__link { padding: 9px 18px; font-size: 0.64rem; letter-spacing: 0.12em; }
-  .mm-stat__label { font-size: 0.55rem; letter-spacing: 0.1em; }
+  .navkpi { padding: 0 11px; }
+  .navkpi__value { font-size: 0.82rem; }
+  .navkpi:last-child { display: none; }
 }
 @media (max-width: 975px) {
-  .nav__links, .nav__cta { display: none; }
+  .nav__live, .nav__cta { display: none; }
   .nav__burger { display: block; margin-left: auto; }
   .nav__mobile { display: flex; max-height: 0; overflow: hidden; padding-block: 0; transition: max-height 0.4s ease, padding 0.4s ease; }
   .nav__mobile.is-open { max-height: 420px; padding-bottom: 18px; }
+  .showcase-body--split { grid-template-columns: minmax(0, 1fr); }
+  .showcase-body--split .phone { margin-top: 4px; }
   .mm-hero { min-height: auto; }
   .mm-hero__inner { grid-template-columns: minmax(0, 1fr); }
-  .mm-hero__panel { transform: none !important; }
   .product { min-height: 350px; }
   .cta { grid-template-columns: minmax(0, 1fr); }
   .mm-footer__inner { justify-content: center; }
-  .mm-footer__links { margin-inline: 0; justify-content: center; }
 }
 /* มือถือ: ตัดเป็นหลายแถวให้เห็นครบทุกใบในจอเดียว ไม่ต้องเลื่อนซ้ายขวา */
 @media (max-width: 767px) {
@@ -2194,9 +3394,6 @@ section {
   .products { grid-template-columns: minmax(0, 1fr); }
   .product { min-height: 340px; }
   .product__art { width: 88%; right: -6%; }
-  .mm-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 10px; }
-  .mm-stat + .mm-stat::before { left: -5px; }
-  .mm-stat:nth-child(3n + 1)::before { display: none; }
   .brief__row { grid-template-columns: minmax(0, 1fr); }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mm-hero__chips { gap: 14px 18px; }
@@ -2208,12 +3405,8 @@ section {
 @media (max-width: 479px) {
   .purpose-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .mm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .mm-stat:nth-child(3n + 1)::before { display: block; }
-  .mm-stat:nth-child(2n + 1)::before { display: none; }
   .product { min-height: 330px; }
   .product__art { width: 92%; right: -6%; }
-  .mm-stat__num { font-size: 1.6rem; }
 }
 
 /* เคารพการตั้งค่า "ลดการเคลื่อนไหว" ของผู้ใช้ */
@@ -2225,7 +3418,7 @@ section {
   }
   .reveal, .line__in, .split__ch { opacity: 1 !important; transform: none !important; filter: none !important; }
   .bars__fill { width: var(--w) !important; }
-  .chart__line, .chart__area, .chart__peak, .todo__tick { stroke-dashoffset: 0 !important; opacity: 1 !important; }
+  .chart__line, .chart__area, .chart__peakdot, .todo__tick { stroke-dashoffset: 0 !important; opacity: 1 !important; }
   .product__art :deep(.tower) { opacity: 1 !important; transform: none !important; }
   .product__art :deep(.grow-g rect) { transform: scaleX(1) !important; }
 }
