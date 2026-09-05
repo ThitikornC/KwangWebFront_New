@@ -3276,19 +3276,42 @@ section {
 /* ══════════════ LIGHTBOX ══════════════ */
 .lightbox { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(3, 3, 6, 0.92); backdrop-filter: blur(6px); padding: 5vw; }
 /* เอกสาร MOMAY — เลื่อนดูได้ทั้งแนวตั้ง/แนวนอนบนจอเล็ก */
-.lightbox--doc { align-content: center; padding: clamp(48px, 6vw, 72px) 4vw clamp(70px, 8vw, 96px); }
-.lightbox__doc {
-  width: min(1020px, 100%);
-  max-height: 74vh;
-  margin-inline: auto;
-  overflow: auto;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: #05050a;
-  overscroll-behavior: contain;
+.lightbox--doc {
+  place-items: center;
+  padding: clamp(26px, 4vw, 56px) 4vw clamp(78px, 8vw, 104px);
+  background: rgba(3, 3, 6, 0.9);
+  backdrop-filter: blur(16px);
 }
-.lightbox__doc img { display: block; width: 100%; min-width: 560px; height: auto; margin-inline: auto; }
-.lightbox__open { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); text-decoration: none; }
+.lightbox__doc {
+  display: grid;
+  place-items: center;
+  max-width: min(1200px, 92vw);
+  max-height: min(76vh, 800px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 40px 110px rgba(0, 0, 0, 0.72);
+  overflow: hidden;
+}
+.lightbox__doc img {
+  display: block;
+  max-width: 100%;
+  max-height: min(76vh, 800px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.lightbox__open {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  text-decoration: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  color: #fff;
+}
+.lightbox__open:hover { background: rgba(237, 27, 46, 0.24); border-color: rgba(237, 27, 46, 0.6); }
 .lightbox--contact { padding: 5vw; }
 .contactcard {
   position: relative;
@@ -3333,7 +3356,8 @@ section {
 .contactcard__row svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
 .contactcard__row:hover { color: #fff; }
 .contactcard__note { display: block; margin-top: 14px; font-size: 0.76rem; color: var(--muted); }
-.lightbox__close { position: absolute; top: 22px; right: 26px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: #fff; cursor: pointer; }
+.lightbox__close { position: absolute; top: 22px; right: 26px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.07); backdrop-filter: blur(10px); color: #fff; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; }
+.lightbox__close:hover { background: rgba(255, 255, 255, 0.14); transform: rotate(90deg); }
 .lightbox__close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
