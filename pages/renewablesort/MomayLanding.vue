@@ -675,9 +675,9 @@
           </div>
 
           <div class="center" v-reveal="120">
-            <button type="button" class="mm-btn mm-btn--ghost mm-btn--lg" v-magnetic @click="open(sc.link)">
+            <button type="button" class="mm-btn mm-btn--lg mm-btn--section" :style="{ '--accent': sc.color }"
+                    v-magnetic @click="open(sc.link)">
               {{ sc.cta }}
-              <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
             </button>
           </div>
         </div>
@@ -1966,6 +1966,55 @@ section {
 .mm-btn__arrow { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.45s var(--ease); }
 .mm-btn:hover .mm-btn__arrow { transform: translateX(4px); }
 .mm-btn__arrow--tel { width: 16px; height: 16px; stroke-linejoin: round; }
+/* ปุ่มปิดท้ายของแต่ละผลิตภัณฑ์ — กว้างเท่ากัน ขอบเรืองแสงวิ่งรอบ */
+@property --btn-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.mm-btn--section {
+  position: relative;
+  isolation: isolate;
+  justify-content: center;
+  min-width: clamp(236px, 21vw, 296px);
+  padding: 13px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+}
+.mm-btn--section::before {
+  content: '';
+  position: absolute;
+  inset: -1.4px;
+  z-index: -2;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--btn-a),
+    rgba(255, 255, 255, 0.06) 0deg,
+    rgba(255, 255, 255, 0.06) 214deg,
+    var(--accent) 268deg,
+    #ffffff 300deg,
+    var(--accent) 332deg,
+    rgba(255, 255, 255, 0.06) 360deg
+  );
+  animation: btnSweep 3.6s linear infinite;
+}
+.mm-btn--section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: #0b0b11;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.mm-btn--section:hover { transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 2px), 0); }
+.mm-btn--section:hover::before { animation-duration: 1.6s; }
+.mm-btn--section:hover::after { background: #12121a; }
+@keyframes btnSweep { to { --btn-a: 360deg; } }
 .mm-btn:hover .mm-btn__arrow--tel { transform: rotate(-12deg) scale(1.08); }
 
 /* ══════════════ แถบความคืบหน้า + NAV ══════════════ */
@@ -2725,7 +2774,7 @@ section {
   display: grid;
   align-content: start;
   padding-top: clamp(44px, 6.8vh, 80px);
-  padding-bottom: clamp(14px, 2.2vh, 32px);
+  padding-bottom: clamp(26px, 3.6vh, 54px);
 }
 /* เส้นคั่นด้านบนวางทับ (z-index 3) — ยกเนื้อหาส่วนนี้ขึ้นมาไม่ให้แสงพาดตัวหนังสือ */
 .section--fit .wrap { position: relative; z-index: 4; }
@@ -2736,7 +2785,7 @@ section {
   font-size: clamp(0.88rem, 1.08vw, 1.02rem);
   line-height: 1.95;
 }
-.section--fit .center { margin-top: clamp(12px, 2vh, 24px); }
+.section--fit .center { margin-top: clamp(10px, 1.5vh, 20px); }
 .section--fit .brief-showcase { margin-top: clamp(14px, 2.2vh, 26px); }
 .section--fit .brief { padding: clamp(9px, 1.05vw, 14px); }
 .section--fit .brief__head { padding-bottom: 9px; }
@@ -2748,8 +2797,8 @@ section {
 .section--fit .en__blocks { margin-top: clamp(5px, 0.8vh, 9px); }
 .section--fit .en__zones { gap: 2px; }
 .section--fit .en__cells i { height: clamp(6px, 1.1vh, 11px); }
-.section--fit .en__row2 .en__plot { min-height: clamp(28px, 3.4vh, 46px); }
-.section--fit .en__plot--power { min-height: clamp(30px, 4.2vh, 64px); }
+.section--fit .en__row2 .en__plot { min-height: clamp(26px, 3.1vh, 44px); }
+.section--fit .en__plot--power { min-height: clamp(26px, 3.6vh, 58px); }
 .section--fit .en__gauge { max-width: clamp(84px, 11.5vh, 108px); }
 .section--fit .en__big { width: min(100%, 54px); }
 
@@ -2771,7 +2820,7 @@ section {
 
 /* จอเตี้ยมาก — ย่อหัวเรื่องลงอีกให้เนื้อหายังอยู่ครบในหน้าเดียว */
 @media (max-height: 860px) {
-  .section.section--fit { padding-top: clamp(22px, 3.8vh, 58px); padding-bottom: clamp(8px, 1.3vh, 22px); }
+  .section.section--fit { padding-top: clamp(22px, 3.8vh, 58px); padding-bottom: clamp(20px, 3vh, 44px); }
   .section--fit .kicker { font-size: clamp(1.15rem, 2.4vw, 1.7rem); }
   .section--fit .h2 { font-size: clamp(0.92rem, 1.6vw, 1.3rem); }
   .section--fit .lead { font-size: 0.86rem; line-height: 1.8; margin-top: 9px; }
