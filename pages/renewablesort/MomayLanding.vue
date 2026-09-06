@@ -764,15 +764,12 @@
 
         <div class="products">
           <article v-for="(p, i) in products" :key="p.name" class="product" v-reveal="i * 140"
-                   :style="{ '--accent': p.color }" @click="open(p.link)">
+                   :style="{ '--accent': p.color, '--sweep-delay': `${i * -1.2}s` }" @click="open(p.link)">
             <div class="product__body">
               <h3 class="product__name">{{ p.name }}</h3>
               <p class="product__tag">{{ p.tagline }}</p>
               <p class="product__note font-thai">{{ p.note }}</p>
-              <span class="product__link">
-                VIEW DEMO
-                <svg class="mm-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
-              </span>
+              <span class="product__link">VIEW DEMO</span>
             </div>
             <!-- ภาพประกอบ SVG: ลอยขึ้นลง วาดเส้น และไล่ขึ้นทีละชั้นเมื่อเลื่อนมาถึง -->
             <div class="product__art" v-html="p.art" />
@@ -1038,8 +1035,12 @@ const onIntersect = (entries) => {
   entries.forEach((entry) => {
     if (!entry.isIntersecting) return
     const el = entry.target
-    el.classList.add('is-in')
-    if (el._count) runCount(el, 0, el._count.to, el._count.decimals || 0)
+    // รอให้เบราว์เซอร์วาดสถานะเริ่มต้น (จาง/เลื่อนลง) ก่อนหนึ่งเฟรม
+    // ไม่งั้นของที่อยู่ในจอตั้งแต่เปิดหน้าจะข้ามทรานซิชันไปโผล่ทันที
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.classList.add('is-in')
+      if (el._count) runCount(el, 0, el._count.to, el._count.decimals || 0)
+    }))
     el._seen = true
     io.unobserve(el)
   })
@@ -1059,11 +1060,15 @@ const vSplit = {
   mounted(el, binding) {
     const text = (el.textContent || '').trim()
     const step = Number(binding.value) || 30
+    // สไตล์ของไฟล์นี้เป็น scoped — span ที่สร้างด้วย JS ต้องติดแอตทริบิวต์สโคปด้วย
+    // ไม่งั้นกฎ .split__ch จะไม่จับ ตัวอักษรก็จะโผล่มาเฉย ๆ ไม่มีทรานซิชัน
+    const scopeAttr = Array.from(el.attributes).find((a) => a.name.startsWith('data-v-'))
     el.textContent = ''
     el.classList.add('split')
     graphemes(text).forEach((g, i) => {
       const s = document.createElement('span')
       s.className = 'split__ch'
+      if (scopeAttr) s.setAttribute(scopeAttr.name, '')
       s.style.setProperty('--i', i)
       s.style.setProperty('--step', `${step}ms`)
       if (g === ' ') {
@@ -2297,10 +2302,11 @@ section {
   animation: pulseDot 2.4s ease-in-out infinite;
 }
 .mm-hero__copy { text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75); }
+.mm-hero__copy .eyebrow, .mm-hero__eyebrow { margin-bottom: clamp(12px, 2vh, 28px); }
 .mm-hero__title {
   font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 800;
-  font-size: clamp(2.9rem, 8vw, 6.2rem);
+  font-size: clamp(2.9rem, max(8vw, 10vh), 7.4rem);
   line-height: 0.94;
   letter-spacing: -0.025em;
   margin: 0;
@@ -2308,23 +2314,23 @@ section {
 .mm-hero__sub {
   font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 600;
-  font-size: clamp(0.95rem, 1.7vw, 1.35rem);
+  font-size: clamp(0.95rem, max(1.7vw, 2vh), 1.6rem);
   letter-spacing: 0.16em;
   color: #e2e2e8;
-  margin: 14px 0 0;
+  margin: clamp(14px, 3vh, 44px) 0 0;
 }
 .mm-hero__thai {
   color: #eaeaf0;
-  font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+  font-size: clamp(0.95rem, max(1.4vw, 1.65vh), 1.3rem);
   line-height: 2;
-  margin: 20px 0 0;
+  margin: clamp(18px, 3.4vh, 48px) 0 0;
   word-spacing: 0.06em;
 }
 .mm-hero__chips {
   display: flex;
   flex-wrap: wrap;
   gap: clamp(14px, 2.4vw, 30px);
-  margin: 26px 0 0;
+  margin: clamp(22px, 4vh, 56px) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -2976,9 +2982,9 @@ section {
 .hero-demos {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: clamp(12px, 1.4vw, 18px);
   max-width: min(660px, 100%);
-  margin-top: 30px;
+  margin-top: clamp(24px, 4.2vh, 60px);
 }
 .demolink {
   display: flex;
@@ -3441,26 +3447,54 @@ section {
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  isolation: isolate;
   margin-top: 20px;
-  padding: 11px 26px;
-  border: 2px solid var(--accent);
+  padding: 12px 28px;
+  border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
+  background: transparent;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   white-space: nowrap;
-  color: var(--accent);
-  transition: background 0.45s var(--ease), color 0.45s var(--ease),
-              box-shadow 0.5s var(--ease), transform 0.5s var(--ease);
+  color: #fff;
+  transition: color 0.45s var(--ease), box-shadow 0.5s var(--ease), transform 0.5s var(--ease);
+}
+/* ขอบแสงวิ่งชุดเดียวกับปุ่มอื่นทั้งหน้า */
+.product__link::before {
+  content: '';
+  position: absolute;
+  inset: -1.4px;
+  z-index: -2;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--btn-a),
+    rgba(255, 255, 255, 0.06) 0deg,
+    rgba(255, 255, 255, 0.06) 214deg,
+    var(--accent) 268deg,
+    #ffffff 300deg,
+    var(--accent) 332deg,
+    rgba(255, 255, 255, 0.06) 360deg
+  );
+  animation: btnSweep 3.6s linear infinite;
+  animation-delay: var(--sweep-delay, 0s);
+}
+.product__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: #0b0b11;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: background 0.45s var(--ease);
 }
 .product:hover .product__link {
-  background: var(--accent);
-  color: #08080d;
   transform: translateY(-2px);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5), 0 0 24px -8px var(--accent);
 }
-.product:hover .product__link .mm-btn__arrow { transform: translateX(5px); }
+.product:hover .product__link::before { animation-duration: 1.6s; }
+.product:hover .product__link::after { background: #14141c; }
 .product__art :deep(.float-a) { animation: floaty 6.5s ease-in-out infinite; }
 .product__art :deep(.float-b) { animation: floaty 7.5s ease-in-out infinite 0.4s; }
 .product__art :deep(.float-c) { animation: floaty 8.5s ease-in-out infinite 0.8s; }
