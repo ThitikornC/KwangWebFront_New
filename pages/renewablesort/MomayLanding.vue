@@ -84,8 +84,10 @@
           <rect width="1200" height="700" fill="url(#gridPattern)" mask="url(#gridMask)" />
         </svg>
 
-        <!-- ภาพการไหลของผู้คนฝั่งซ้าย — จางและกลืนไปกับพื้นดำ -->
-        <div class="mm-hero__people" :style="{ transform: `translate3d(0, ${heroY * 0.08}px, 0)` }" />
+        <!-- คลิปการไหลของผู้คน — ตัวไฟล์ไขว้จางหัวกับท้ายมาแล้ว วนซ้ำได้เนียนโดยไม่ต้องซ้อนชั้น -->
+        <video class="mm-hero__people" :style="{ transform: `translate3d(0, ${heroY * 0.08}px, 0)` }"
+               src="/momay/hero-people.mp4" poster="/momay/hero-people.webp"
+               autoplay muted loop playsinline preload="auto" />
 
         <svg class="mm-hero__streams" viewBox="0 0 1200 700" preserveAspectRatio="none"
              :style="{ transform: `translate3d(0, ${heroY * 0.18}px, 0)` }">
@@ -2235,7 +2237,8 @@ section {
   top: 4%;
   width: min(82%, 1250px);
   height: 90%;
-  background: url('/momay/hero-people.webp') right 42% / cover no-repeat;
+  object-fit: cover;
+  object-position: right 42%;
   opacity: 0.88;
   filter: brightness(1.3) contrast(1.04) saturate(1.12);
   mix-blend-mode: screen;
@@ -3438,9 +3441,9 @@ section {
   width: clamp(72px, 7.4vw, 104px);
   aspect-ratio: 1;
   transition: transform 0.55s var(--ease), filter 0.55s var(--ease);
-  filter: drop-shadow(0 0 14px rgba(237, 27, 46, 0.5));
+  filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.35));
 }
-.org:hover .org__crest { transform: translateY(-4px) scale(1.06); filter: brightness(1.15) drop-shadow(0 0 24px rgba(237, 27, 46, 0.8)); }
+.org:hover .org__crest { transform: translateY(-4px) scale(1.06); filter: brightness(0) invert(1) drop-shadow(0 0 20px rgba(255, 255, 255, 0.65)); }
 .org__crest img { width: 100%; height: 100%; object-fit: contain; }
 .org__name { font-size: 0.79rem; line-height: 1.6; text-align: center; color: var(--muted); }
 .mm-carousel__nav {
