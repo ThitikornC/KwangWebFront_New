@@ -26,6 +26,7 @@
     <header class="nav" :class="{ 'nav--solid': scrolled }">
       <div class="wrap nav__inner">
         <a class="brand" href="#top" @click.prevent="goTo('#top')">
+          <img class="brand__mark" src="/MOMAY_mark.png" alt="" aria-hidden="true" />
           <span class="brand__text">
             <strong>MOMAY</strong>
             <small>BEHAVIORAL INTELLIGENCE PLATFORM</small>
@@ -181,7 +182,7 @@
         <div class="wrap">
           <p class="kicker" v-reveal>{{ sc.kicker }}</p>
           <h2 class="h2" v-split="24">{{ sc.title }}</h2>
-          <p class="lead font-thai" v-reveal="160">{{ sc.lead }}</p>
+          <p class="lead font-thai" v-reveal="160">{{ noSplit(sc.lead) }}</p>
 
           <div v-if="sc.panel" class="brief-showcase" v-reveal="140">
             <div class="brief">
@@ -551,8 +552,7 @@
                 <div class="phone__body font-thai">
                   <span class="phone__label">บริการรายชั้น</span>
                   <ul class="phone__list">
-                    <li v-for="(f, i) in studentFloors" :key="f.floor"
-                        :class="{ 'is-open': openFloor === f.floor }" v-reveal="120 + i * 70">
+                    <li v-for="f in studentFloors" :key="f.floor" :class="{ 'is-open': openFloor === f.floor }">
                       <button type="button" class="phone__row" @click="toggleFloor(f.floor)">
                         <span class="phone__mix">
                           <i v-for="c in floorMix(f)" :key="c" :style="{ background: c }" />
@@ -580,7 +580,7 @@
                         </li>
                       </ul>
                     </li>
-                    <li class="phone__park" v-reveal="560">
+                    <li class="phone__park">
                       <button type="button" class="phone__row">
                         <span class="phone__kind" style="color: #56A0D3; border-color: #56A0D355">
                           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M8 12h5.5a2 2 0 1 0 0-4H8v8"/></svg>
@@ -722,7 +722,7 @@
         <p class="kicker" v-reveal>OUR APPROACH</p>
         <h2 class="h2" v-split="24">FROM DATA TO AWARENESS</h2>
         <p class="lead font-thai" v-reveal="160">
-          กระบวนการเปลี่ยนข้อมูลให้เป็นความเข้าใจ และนำไปสู่การตัดสินใจที่ดีกว่า
+          {{ noSplit('กระบวนการเปลี่ยนข้อมูลให้เป็นความเข้าใจ และนำไปสู่การตัดสินใจที่ดีกว่า') }}
         </p>
 
         <ol class="flow">
@@ -807,15 +807,7 @@
             <ul class="mm-carousel__track" :style="{ transform: `translate3d(-${page * 100}%, 0, 0)` }">
               <li v-for="(o, i) in orgs" :key="o.name" class="org" :style="{ '--per': perView }" v-reveal="(i % 8) * 60">
                 <span class="org__crest">
-                  <svg viewBox="0 0 84 84" aria-hidden="true">
-                    <circle cx="42" cy="42" r="39" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4" />
-                    <circle cx="42" cy="42" r="33" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="2 4" />
-                    <g stroke="rgba(255,255,255,0.75)" stroke-width="1.6" fill="none"
-                       stroke-linecap="round" stroke-linejoin="round">
-                      <path :d="o.glyph" />
-                    </g>
-                    <path d="M42 6 L45 12 L39 12 Z" fill="rgba(255,255,255,0.6)" />
-                  </svg>
+                  <img :src="o.logo" :alt="o.name" loading="lazy" decoding="async" />
                 </span>
                 <span class="org__name font-thai">{{ o.name }}</span>
               </li>
@@ -899,6 +891,7 @@
     <footer class="mm-footer">
       <div class="wrap mm-footer__inner">
         <a class="brand" href="#top" @click.prevent="goTo('#top')">
+          <img class="brand__mark" src="/MOMAY_mark.png" alt="" aria-hidden="true" />
           <span class="brand__text">
             <strong>MOMAY</strong>
             <small>BEHAVIORAL INTELLIGENCE PLATFORM</small>
@@ -910,7 +903,7 @@
     </footer>
 
     <!-- ───────────────── CUSTOMER MAP POPUP ───────────────── -->
-    <Transition name="fade">
+    <Transition name="mapfx">
       <div v-if="customersOpen" class="lightbox lightbox--map" @click="customersOpen = false">
         <div class="mapcard">
           <div class="mapcard__head">
@@ -924,7 +917,7 @@
               <div class="thplane">
                 <!-- ความหนาของแผ่นแผนที่ -->
                 <svg v-for="n in 9" :key="`d${n}`" class="thmap thmap--depth" viewBox="0 0 400 760"
-                     :style="{ transform: `translateZ(${-n * 3}px)`, opacity: 1 - n * 0.055 }" aria-hidden="true">
+                     :style="{ '--n': n }" aria-hidden="true">
                   <path :d="TH_PATH" fill="#3a0710" stroke="#5d0b18" stroke-width="2" stroke-linejoin="round" />
                 </svg>
 
@@ -936,14 +929,14 @@
                       <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0.05" />
                     </linearGradient>
                   </defs>
-                  <path class="thmap__shape" :d="TH_PATH" fill="url(#thFill)" stroke="#ED1B2E" stroke-width="2"
-                        stroke-linejoin="round" stroke-linecap="round" />
+                  <path ref="mapPath" class="thmap__shape" :d="TH_PATH" fill="url(#thFill)" stroke="#ED1B2E"
+                        stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
                 </svg>
 
                 <!-- หมุดลูกค้า ตั้งขึ้นจากผิวแผนที่ -->
                 <button v-for="(c, i) in customerPins" :key="c.name" type="button" class="thpin"
                         :class="{ 'is-active': activePin === i }"
-                        :style="{ left: `${(c.x / 400) * 100}%`, top: `${(c.y / 760) * 100}%`, '--d': `${i * 0.4}s`, '--in': `${0.35 + (c.y / 760) * 2.1}s` }"
+                        :style="{ left: `${(c.x / 400) * 100}%`, top: `${(c.y / 760) * 100}%`, '--d': `${i * 0.4}s`, '--in': `${1.9 + (c.y / 760) * 1.1}s` }"
                         @mouseenter="activePin = i" @focus="activePin = i" @click.stop="activePin = i">
                   <span class="thpin__spot" />
                   <span class="thpin__beam" />
@@ -1159,14 +1152,29 @@ const docOpen = ref(false)
 const contactOpen = ref(false)
 const customersOpen = ref(false)
 const activePin = ref(0)
+const mapPath = ref(null)
+
+/* ภาษาไทยไม่มีช่องว่างระหว่างคำ เบราว์เซอร์จึงเดาที่ตัดเองแล้วมักได้คำขาดกลางคำ
+   เชื่อมอักษรไทยที่ติดกันด้วย word joiner (U+2060) เพื่อให้ขึ้นบรรทัดใหม่ได้เฉพาะตรงช่องว่างจริง */
+const noSplit = (text) => text.replace(/([฀-๿])(?=[฀-๿])/g, '$1⁠')
+
+// วัดความยาวเส้นขอบจริงก่อน แล้วค่อยปล่อยให้เส้นวิ่งวาดทีละส่วน
+watch(customersOpen, async (open) => {
+  if (!open) return
+  await nextTick()
+  const el = mapPath.value
+  if (!el) return
+  el.style.setProperty('--len', el.getTotalLength())
+  el.classList.add('is-drawing')
+})
 
 // เส้นขอบประเทศไทยแบบลายเส้น (วาดโดยประมาณให้พอจำรูปทรงได้ ไม่ใช่แผนที่เชิงพิกัด)
 const TH_PATH = 'M253.2 452.6 L252.4 457.7 L249.6 455.6 L250.3 453.0 L251.4 451.8 L253.2 452.6 Z M244.5 437.2 L244.6 438.3 L242.1 437.4 L241.2 437.9 L238.4 437.6 L237.1 430.7 L237.3 429.1 L239.3 429.6 L242.1 433.0 L243.6 435.4 L244.5 437.2 Z M50.1 638.0 L49.6 641.6 L47.6 641.5 L45.6 643.8 L44.6 644.1 L43.0 636.8 L44.9 626.5 L45.9 625.0 L47.3 627.8 L51.3 629.0 L49.6 634.9 L50.1 638.0 Z M133.0 17.2 L132.6 20.3 L133.8 20.9 L135.5 19.5 L137.6 16.0 L139.9 14.1 L142.4 13.7 L145.1 16.0 L147.9 21.1 L150.8 24.1 L152.2 24.4 L153.2 26.7 L153.3 29.0 L152.0 33.7 L149.6 39.3 L146.3 46.1 L147.4 51.8 L151.9 56.5 L157.3 59.3 L163.1 58.5 L166.1 57.1 L168.6 54.9 L170.9 53.8 L173.8 53.6 L182.9 55.2 L185.7 56.8 L186.1 59.9 L185.0 68.1 L186.4 74.0 L189.0 80.3 L189.3 86.0 L186.1 95.5 L183.5 104.4 L180.6 108.7 L178.4 111.5 L177.7 113.4 L177.9 115.2 L179.9 117.8 L182.1 121.3 L182.6 124.6 L182.4 128.6 L180.9 134.2 L175.4 146.2 L171.0 157.0 L173.3 159.2 L177.7 160.8 L180.5 162.3 L183.5 161.3 L189.9 155.0 L195.5 150.2 L202.3 145.4 L202.7 145.0 L208.7 141.5 L211.5 138.3 L212.9 134.2 L215.1 132.6 L217.8 133.5 L221.3 131.8 L225.5 127.3 L228.7 125.2 L231.0 125.5 L235.0 128.3 L240.9 133.6 L246.0 136.7 L250.6 137.7 L252.8 139.6 L252.7 142.5 L253.7 144.4 L255.8 145.2 L256.7 144.8 L256.5 143.4 L258.6 141.4 L262.9 138.7 L267.3 137.1 L271.8 136.6 L274.7 134.4 L276.6 128.9 L279.4 124.6 L281.9 122.7 L284.9 121.7 L285.7 120.4 L284.3 118.6 L284.4 116.9 L286.2 115.1 L290.0 114.3 L295.8 114.6 L302.7 116.4 L310.5 119.8 L315.7 120.9 L318.2 119.7 L323.0 124.9 L330.1 136.5 L336.2 145.3 L341.3 151.2 L346.7 155.8 L352.3 158.9 L356.4 163.2 L360.1 171.4 L357.3 182.7 L356.6 192.5 L356.9 204.4 L360.2 213.6 L366.6 220.0 L370.2 225.1 L371.3 229.0 L376.2 232.4 L385.0 235.2 L388.6 237.7 L387.2 240.0 L387.0 242.6 L388.3 245.7 L391.3 248.1 L396.2 250.1 L399.1 252.2 L400.0 254.4 L399.9 257.9 L398.8 262.8 L396.7 266.6 L393.8 269.2 L393.5 271.3 L392.7 274.4 L392.7 280.9 L394.8 285.2 L395.4 290.7 L394.3 295.2 L393.2 304.3 L393.0 307.8 L392.0 310.8 L389.4 313.7 L385.5 316.5 L380.8 318.9 L377.9 320.0 L377.2 320.5 L375.1 323.3 L372.6 325.9 L370.6 325.9 L369.2 324.6 L368.1 322.8 L367.5 319.0 L363.1 317.1 L358.3 315.9 L348.5 317.8 L340.5 318.8 L331.6 317.5 L323.2 319.2 L319.7 319.4 L315.7 319.2 L311.8 319.2 L308.1 318.6 L301.3 316.3 L298.7 316.4 L293.1 318.4 L287.4 319.8 L281.9 320.7 L273.7 324.7 L267.8 330.5 L266.1 334.5 L263.2 338.7 L259.1 345.2 L253.8 351.4 L250.2 354.2 L251.2 355.9 L250.3 357.9 L244.6 358.8 L240.1 359.2 L239.3 360.2 L239.8 372.7 L241.4 377.5 L244.3 383.2 L246.2 386.3 L247.6 395.6 L248.0 403.4 L254.3 408.4 L257.9 412.2 L260.4 415.5 L259.5 417.6 L258.0 424.0 L259.5 432.2 L268.3 449.8 L269.0 451.1 L268.0 451.2 L266.6 447.8 L262.1 442.1 L260.7 436.0 L255.5 429.2 L252.6 426.6 L251.6 428.8 L250.0 431.2 L244.8 427.7 L240.4 424.1 L236.4 417.1 L235.9 418.7 L234.9 420.2 L230.3 414.7 L225.5 410.3 L221.1 408.7 L218.5 407.2 L215.9 404.9 L210.5 402.5 L197.0 406.0 L179.8 403.2 L173.2 405.8 L170.5 404.2 L168.8 401.2 L170.4 396.1 L170.8 385.3 L172.8 377.7 L171.9 372.0 L172.9 369.3 L173.6 365.6 L170.9 364.1 L158.8 361.1 L156.2 358.8 L153.0 361.5 L138.5 363.0 L133.0 365.2 L127.9 369.5 L126.6 374.9 L129.5 378.5 L131.4 384.8 L126.2 398.4 L125.3 402.4 L127.3 419.0 L126.5 428.2 L123.7 434.3 L119.2 439.7 L117.3 449.0 L113.8 453.3 L109.0 463.1 L105.8 475.4 L103.6 481.0 L102.2 491.4 L92.5 507.2 L90.2 516.1 L86.7 519.5 L87.9 522.1 L88.1 526.6 L86.9 538.4 L86.5 548.3 L87.9 553.5 L92.6 563.9 L91.5 566.9 L91.0 571.2 L94.9 573.2 L97.7 573.8 L113.7 568.8 L119.1 570.1 L121.1 574.7 L122.4 578.7 L125.2 600.3 L126.6 604.4 L129.8 608.2 L133.3 612.2 L134.5 611.5 L134.7 610.0 L135.0 608.3 L138.1 612.4 L140.6 620.0 L149.0 660.4 L151.4 665.5 L153.4 670.9 L148.3 668.3 L146.9 659.3 L145.5 655.6 L143.7 655.0 L140.8 655.1 L140.6 653.5 L142.8 650.5 L142.4 647.0 L139.5 644.2 L134.7 646.4 L134.8 652.7 L137.0 657.6 L145.0 668.3 L147.6 672.8 L150.8 674.1 L155.4 673.4 L161.0 678.0 L165.4 682.2 L176.3 688.8 L182.9 688.1 L190.1 686.4 L194.8 686.9 L199.5 688.5 L205.2 694.0 L214.1 707.6 L228.7 718.9 L227.1 721.7 L226.5 726.0 L220.7 731.7 L219.8 735.0 L217.7 739.2 L213.7 741.4 L210.3 741.8 L208.3 741.4 L206.9 740.6 L204.5 736.6 L203.4 735.4 L202.4 735.2 L195.0 737.9 L187.9 740.9 L186.6 743.6 L184.7 746.8 L182.6 748.0 L181.0 748.3 L179.4 746.5 L176.7 744.1 L174.6 741.8 L175.1 738.2 L179.1 732.8 L179.6 729.0 L179.1 722.6 L178.0 718.9 L176.9 718.7 L174.9 718.1 L169.3 718.7 L166.6 714.5 L165.5 709.9 L163.6 708.3 L161.7 707.3 L157.5 708.9 L154.3 707.9 L143.8 703.9 L139.7 697.4 L137.5 697.2 L135.6 698.0 L134.9 699.4 L133.7 706.9 L132.8 709.2 L120.7 694.2 L112.4 688.0 L113.5 676.8 L111.0 674.6 L107.8 674.4 L105.4 671.3 L107.6 664.6 L104.3 665.9 L99.7 665.7 L96.0 663.8 L93.2 654.6 L91.4 651.8 L87.6 646.9 L82.4 646.9 L80.7 644.6 L81.1 638.6 L77.4 635.0 L72.5 632.0 L68.5 630.2 L64.3 620.6 L61.1 618.3 L58.3 616.3 L54.5 617.6 L53.2 621.1 L50.7 624.5 L47.7 624.0 L45.1 622.1 L41.8 612.5 L41.3 606.6 L42.0 595.6 L46.1 585.8 L48.3 570.0 L51.7 560.1 L54.1 556.7 L57.5 543.2 L64.3 525.8 L65.1 522.1 L66.4 517.9 L67.5 514.0 L67.8 507.8 L66.9 504.5 L66.9 502.7 L68.4 500.3 L73.2 496.4 L79.9 489.9 L87.9 480.8 L96.0 466.8 L100.1 458.6 L101.8 455.8 L103.6 454.9 L106.4 452.1 L108.3 449.0 L108.4 447.4 L104.0 432.2 L101.1 427.2 L99.6 421.3 L98.8 417.1 L97.8 413.2 L98.3 409.5 L96.7 407.2 L93.1 404.3 L89.3 400.0 L87.1 392.9 L87.1 389.0 L84.7 385.5 L83.9 381.9 L85.3 378.4 L87.2 375.5 L87.0 362.3 L86.2 358.4 L85.3 351.4 L82.8 346.1 L79.4 339.9 L75.5 334.8 L65.2 325.5 L57.9 319.3 L54.2 313.7 L49.7 307.2 L46.4 302.5 L42.2 296.6 L40.1 288.5 L38.9 279.9 L39.5 277.1 L41.5 275.2 L44.1 273.7 L46.2 273.3 L52.2 269.4 L56.3 269.7 L57.2 268.9 L57.6 267.1 L57.1 259.2 L57.3 248.7 L58.1 240.2 L59.0 234.5 L69.9 228.0 L72.2 225.2 L73.3 222.1 L73.3 219.4 L72.4 217.2 L70.7 216.1 L63.6 221.7 L62.3 220.4 L59.0 211.1 L57.6 208.3 L55.6 204.9 L53.4 200.2 L53.1 191.9 L51.5 187.9 L42.7 179.2 L38.7 174.5 L33.3 167.7 L26.9 159.6 L20.3 152.1 L17.2 147.3 L16.1 146.2 L15.7 144.4 L17.7 139.2 L16.7 134.0 L13.4 127.1 L12.0 122.8 L12.5 121.1 L10.9 120.5 L7.3 120.8 L3.7 117.6 L0.3 110.7 L0.0 109.5 L1.1 109.5 L5.4 110.7 L6.8 110.5 L9.8 109.0 L14.4 107.3 L17.1 106.7 L18.0 105.9 L18.4 104.3 L16.1 88.4 L16.5 85.1 L20.8 78.2 L20.3 71.3 L21.4 61.3 L26.2 54.5 L29.9 51.4 L31.0 46.4 L32.7 45.4 L35.7 45.8 L41.9 49.5 L44.5 49.6 L48.3 49.5 L52.3 49.3 L54.2 48.9 L67.1 45.3 L69.9 44.9 L72.7 45.4 L74.6 45.2 L76.6 43.6 L78.1 40.7 L79.7 31.4 L80.6 29.8 L82.3 28.4 L85.0 27.5 L88.2 27.6 L92.4 29.4 L95.0 29.5 L98.0 28.7 L100.5 27.5 L102.2 25.8 L102.9 23.9 L102.3 20.1 L100.4 15.4 L100.9 14.8 L104.4 15.9 L109.6 17.0 L113.5 16.8 L116.1 16.0 L118.6 13.7 L121.8 11.7 L124.9 12.1 L127.2 14.0 L133.0 17.2 Z M130.6 550.1 L130.2 550.9 L128.3 549.3 L127.0 547.6 L126.3 545.3 L129.2 545.4 L130.6 547.5 L130.6 550.1 Z M130.5 555.5 L130.7 558.3 L129.7 561.6 L125.2 563.6 L123.7 560.9 L124.1 556.8 L124.8 555.8 L129.1 556.0 L130.5 555.5 Z M110.8 705.3 L109.8 705.5 L108.0 701.6 L110.3 695.9 L112.6 702.9 L110.8 705.3 Z M58.9 636.4 L58.4 637.2 L55.9 627.9 L59.5 630.4 L58.9 636.4 Z M45.2 581.7 L42.4 582.2 L42.8 579.6 L43.5 577.9 L44.9 577.4 L45.4 580.3 L45.2 581.7 Z M82.5 653.1 L83.7 659.0 L82.0 657.8 L80.5 655.2 L80.5 651.4 L80.9 650.9 L82.5 653.1 Z'
 
 // ลูกค้าที่ใช้งานจริง (พิกัดเป็นตำแหน่งโดยประมาณบนภาพ)
 const customerPins = [
-  { name: 'มหาวิทยาลัยนเรศวร', province: 'พิษณุโลก', x: 136.5, y: 199.5 },
-  { name: 'มหาวิทยาลัยบูรพา', province: 'ชลบุรี', x: 171.8, y: 373.0 },
+  { name: 'มหาวิทยาลัยนเรศวร', province: 'พิษณุโลก', logo: '/NU_crest.png', x: 136.5, y: 199.5 },
+  { name: 'มหาวิทยาลัยบูรพา', province: 'ชลบุรี', logo: '/BUU_crest.png', x: 171.8, y: 373.0 },
 ]
 const CONTACT = {
   tel: '083 954 9743',
@@ -1672,8 +1680,8 @@ const demoLinks = products.map((p) => ({
 }))
 
 const orgs = [
-  { name: 'มหาวิทยาลัยนเรศวร', glyph: 'M42 22 v40 M30 34 h24 M34 52 h16 M42 22 l-6 8 M42 22 l6 8' },
-  { name: 'มหาวิทยาลัยบูรพา', glyph: 'M42 24 L54 42 L42 60 L30 42 Z M42 32 L48 42 L42 52 L36 42 Z' },
+  { name: 'มหาวิทยาลัยนเรศวร', logo: '/NU_crest.png' },
+  { name: 'มหาวิทยาลัยบูรพา', logo: '/BUU_crest.png' },
 ]
 
 const benefits = [
@@ -2026,6 +2034,44 @@ section {
 .mm-btn--solid:hover { transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 3px), 0); box-shadow: 0 18px 44px rgba(237, 27, 46, 0.45); }
 .mm-btn--ghost { border-color: rgba(237, 27, 46, 0.65); color: #ffd9dc; }
 .mm-btn--ghost:hover { background: rgba(237, 27, 46, 0.14); transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 2px), 0); }
+
+/* ปุ่ม SEE CUSTOMERS บนแถบนำทาง — แสงวิ่งรอบขอบเหมือนปุ่มปิดท้ายของแต่ละผลิตภัณฑ์ */
+.mm-btn.nav__cta {
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  background: transparent;
+  color: #ffe6e8;
+}
+.mm-btn.nav__cta::before {
+  content: '';
+  position: absolute;
+  inset: -1.2px;
+  z-index: -2;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--btn-a),
+    rgba(255, 255, 255, 0.05) 0deg,
+    rgba(255, 255, 255, 0.05) 216deg,
+    var(--red) 272deg,
+    #ffffff 302deg,
+    var(--red) 332deg,
+    rgba(255, 255, 255, 0.05) 360deg
+  );
+  animation: btnSweep 4.2s linear infinite;
+}
+.mm-btn.nav__cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgba(10, 10, 16, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.mm-btn.nav__cta:hover { background: transparent; }
+.mm-btn.nav__cta:hover::before { animation-duration: 1.8s; }
+.mm-btn.nav__cta:hover::after { background: rgba(30, 8, 12, 0.9); }
 .mm-btn__arrow { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.45s var(--ease); }
 .mm-btn:hover .mm-btn__arrow { transform: translateX(4px); }
 .mm-btn__arrow--tel { width: 16px; height: 16px; stroke-linejoin: round; }
@@ -2109,17 +2155,19 @@ section {
   gap: 18px;
   height: 68px;
 }
-.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+.brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: inherit; }
+.brand__mark { width: auto; height: 30px; flex: none; object-fit: contain; filter: drop-shadow(0 0 12px rgba(237, 27, 46, 0.45)); transition: filter 0.45s var(--ease), transform 0.45s var(--ease); }
+.brand:hover .brand__mark { filter: drop-shadow(0 0 20px rgba(237, 27, 46, 0.8)); transform: translateY(-1px) scale(1.04); }
 .brand__text { display: flex; flex-direction: column; line-height: 1.05; }
 .brand__text strong { font-family: 'Poppins', 'Inter', sans-serif; font-size: 1.06rem; letter-spacing: 0.12em; }
 .brand__text small { font-size: 0.5rem; letter-spacing: 0.16em; color: var(--muted); }
 .nav__live { display: flex; align-items: center; margin-left: auto; }
-.nav__live-tag { font-size: 0.5rem; padding-right: 16px; }
+.nav__live-tag { font-size: 0.58rem; padding-right: 20px; }
 .navkpi {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 0 16px;
+  gap: 5px;
+  padding: 0 20px;
   position: relative;
 }
 .navkpi::before {
@@ -2129,18 +2177,18 @@ section {
   top: 50%;
   transform: translateY(-50%);
   width: 1px;
-  height: 22px;
+  height: 28px;
   background: rgba(255, 255, 255, 0.09);
 }
-.navkpi__label { font-style: normal; font-size: 0.5rem; letter-spacing: 0.14em; color: var(--muted); }
+.navkpi__label { font-style: normal; font-size: 0.58rem; letter-spacing: 0.14em; color: var(--muted); }
 .navkpi__value {
   font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 700;
-  font-size: 0.92rem;
+  font-size: 1.14rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.navkpi__value em { font-style: normal; font-size: 0.5rem; letter-spacing: 0.08em; color: var(--muted); margin-left: 3px; }
+.navkpi__value em { font-style: normal; font-size: 0.58rem; letter-spacing: 0.08em; color: var(--muted); margin-left: 4px; }
 .nav__burger { display: none; background: none; border: 0; color: #fff; padding: 6px; cursor: pointer; }
 .nav__burger svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .nav__mobile {
@@ -2403,10 +2451,13 @@ section {
 .showcase-body--split .pcard__icon :deep(svg) { width: 18px; height: 18px; }
 .showcase-body--split .pcard h3 { grid-column: 2; align-self: end; font-size: 0.68rem; margin: 0; }
 .showcase-body--split .pcard p { grid-column: 2; align-self: start; font-size: 0.72rem; line-height: 1.65; }
-.phone-duo { display: flex; align-items: center; justify-content: flex-end; min-width: 0; }
+.phone-duo { --pw: min(252px, 44vw, 52vh); display: flex; align-items: center; justify-content: flex-end; min-width: 0; }
 .phone {
   position: relative;
-  width: min(252px, 100%);
+  width: var(--pw, 252px);
+  height: calc(var(--pw, 252px) * 2.05);
+  display: flex;
+  flex-direction: column;
   flex: none;
   padding: 11px 10px;
   border-radius: 42px;
@@ -2444,6 +2495,10 @@ section {
   background: #08080e;
   padding: 13px 12px 0;
   overflow: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 .phone__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .phone__brand { display: inline-flex; align-items: center; gap: 5px; font-size: 0.54rem; letter-spacing: 0.1em; }
@@ -2478,7 +2533,7 @@ section {
 .phone__hello b { font-size: 0.92rem; color: #fff; }
 .phone__hello small { font-size: 0.58rem; color: var(--muted); }
 .phone__label { display: block; font-size: 0.55rem; color: #cfcfd8; margin-bottom: 7px; }
-.phone__body { overflow: auto; scrollbar-width: none; }
+.phone__body { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: none; }
 .phone__body::-webkit-scrollbar { display: none; }
 .phone__list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px; }
 .phone__list > li {
@@ -2841,12 +2896,11 @@ section {
 }
 /* เส้นคั่นด้านบนวางทับ (z-index 3) — ยกเนื้อหาส่วนนี้ขึ้นมาไม่ให้แสงพาดตัวหนังสือ */
 .section--fit .wrap { position: relative; z-index: 4; }
-.section--fit .kicker { font-size: clamp(1.4rem, 3vw, 2.1rem); }
 .section--fit .lead {
   margin-top: 12px;
   max-width: min(1180px, 100%);
-  font-size: clamp(0.88rem, 1.08vw, 1.02rem);
-  line-height: 1.95;
+  /* balance ทำให้สองบรรทัดยาวเท่ากันจนคำท้ายตกบรรทัด ใช้ pretty ให้ไล่เต็มบรรทัดแทน */
+  text-wrap: pretty;
 }
 .section--fit .center { margin-top: clamp(10px, 1.5vh, 20px); }
 .section--fit .brief-showcase { margin-top: clamp(14px, 2.2vh, 26px); }
@@ -2873,7 +2927,6 @@ section {
 .section--fit .showcase-body--split { gap: clamp(16px, 2.4vw, 34px); }
 .section--fit .phone { padding: 9px 8px; border-radius: 38px; }
 .section--fit .phone__screen { padding: 20px 10px 0; border-radius: 30px; }
-.section--fit .phone__body { max-height: clamp(210px, 39vh, 440px); }
 .section--fit .phone__hello { margin: clamp(7px, 1.2vh, 13px) 0 clamp(7px, 1.1vh, 11px); }
 .section--fit .phone__hello b { font-size: 0.82rem; }
 .section--fit .phone__list { gap: 5px; margin-bottom: 8px; }
@@ -3056,7 +3109,7 @@ section {
   text-align: center;
   font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 800;
-  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
   line-height: 1.1;
   letter-spacing: 0.06em;
   color: var(--red);
@@ -3085,8 +3138,8 @@ section {
   color: #eaeaf0;
   margin: 16px auto 0;
   max-width: 68ch;
-  line-height: 2;
-  font-size: clamp(0.94rem, 1.35vw, 1.12rem);
+  line-height: 1.95;
+  font-size: clamp(0.88rem, 1.08vw, 1.02rem);
   text-wrap: balance;
   word-spacing: 0.06em;
 }
@@ -3371,9 +3424,16 @@ section {
 .mm-carousel__viewport { flex: 1; overflow: hidden; }
 .mm-carousel__track { display: flex; justify-content: center; list-style: none; margin: 0; padding: 8px 0; transition: transform 0.9s var(--ease); }
 .org { flex: 0 0 calc(100% / var(--per)); max-width: 240px; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 0 6px; }
-.org__crest { display: block; width: clamp(66px, 7vw, 98px); transition: transform 0.55s var(--ease), filter 0.55s var(--ease); filter: grayscale(1) opacity(0.78); }
-.org:hover .org__crest { transform: translateY(-4px) scale(1.06); filter: grayscale(0) opacity(1); }
-.org__crest svg { width: 100%; height: auto; }
+.org__crest {
+  display: grid;
+  place-items: center;
+  width: clamp(72px, 7.4vw, 104px);
+  aspect-ratio: 1;
+  transition: transform 0.55s var(--ease), filter 0.55s var(--ease);
+  filter: drop-shadow(0 0 14px rgba(237, 27, 46, 0.5));
+}
+.org:hover .org__crest { transform: translateY(-4px) scale(1.06); filter: brightness(1.15) drop-shadow(0 0 24px rgba(237, 27, 46, 0.8)); }
+.org__crest img { width: 100%; height: 100%; object-fit: contain; }
 .org__name { font-size: 0.79rem; line-height: 1.6; text-align: center; color: var(--muted); }
 .mm-carousel__nav {
   display: grid;
@@ -3416,7 +3476,7 @@ section {
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(100deg, rgba(6, 6, 10, 0.88) 6%, rgba(6, 6, 10, 0.44) 42%, rgba(6, 6, 10, 0.08) 100%),
+    linear-gradient(100deg, rgba(6, 6, 10, 0.78) 4%, rgba(6, 6, 10, 0.42) 38%, rgba(6, 6, 10, 0.16) 70%, rgba(6, 6, 10, 0.02) 100%),
     linear-gradient(180deg, rgba(6, 6, 10, 0.86) 0%, transparent 24%, transparent 66%, var(--ink) 100%);
 }
 /* จอใหญ่: ตรึงภาพให้เลื่อนช้ากว่าเนื้อหาเล็กน้อย */
@@ -3425,8 +3485,19 @@ section {
 }
 .cta__city { position: absolute; inset: auto 0 0 0; z-index: 1; width: 100%; height: 62%; opacity: 0.6; }
 .cta__ray { stroke-dasharray: 4 12; animation: waveRun 9s linear infinite; animation-delay: calc(var(--i) * -0.6s); }
-.cta { position: relative; z-index: 2; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(26px, 4vw, 56px); align-items: center; }
-.cta__copy { text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7); }
+.cta { position: relative; z-index: 4; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(26px, 4vw, 56px); align-items: center; }
+.cta__copy { position: relative; z-index: 1; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 26px rgba(0, 0, 0, 0.85), 0 0 52px rgba(0, 0, 0, 0.6); }
+/* ม่านนุ่ม ๆ เฉพาะหลังก้อนข้อความ ให้ตัวหนังสืออยู่หน้าสีแดงชัด ๆ โดยไม่ทำให้ภาพเมืองมืดทั้งหมด */
+.cta__copy::before {
+  content: '';
+  position: absolute;
+  inset: -12% -34% -10% -14%;
+  z-index: -1;
+  background:
+    radial-gradient(56% 40% at 38% 24%, rgba(5, 5, 9, 0.62), rgba(5, 5, 9, 0.3) 60%, transparent 82%),
+    radial-gradient(70% 58% at 30% 60%, rgba(5, 5, 9, 0.5), rgba(5, 5, 9, 0.2) 58%, transparent 80%);
+  pointer-events: none;
+}
 .cta__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 .mm-btn__doc { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .cta__thai { color: #c9c9d2; line-height: 1.9; font-size: clamp(0.82rem, 1.2vw, 0.96rem); margin: 20px 0 28px; }
@@ -3502,7 +3573,18 @@ section {
 }
 .lightbox__open:hover { background: rgba(237, 27, 46, 0.24); border-color: rgba(237, 27, 46, 0.6); }
 /* ป๊อปอัปแผนที่ลูกค้า */
-.lightbox--map { place-items: center; padding: 3vh 4vw 4vh; background: rgba(3, 3, 6, 0.92); backdrop-filter: blur(16px); }
+.lightbox--map { place-items: center; padding: 3vh 4vw 4vh; background: rgba(4, 4, 8, 0.55); backdrop-filter: blur(7px); }
+/* เปิด: ฉากหลังค่อยเข้ม แล้วแผนที่วาดตัวเอง — ปิด: การ์ดหดลอยขึ้นแล้วจางหาย */
+.mapfx-enter-active { transition: opacity 0.4s var(--ease), backdrop-filter 0.4s var(--ease); }
+.mapfx-enter-from { opacity: 0; backdrop-filter: blur(0); }
+.mapfx-leave-active { transition: opacity 0.42s ease, backdrop-filter 0.42s ease; }
+.mapfx-leave-to { opacity: 0; backdrop-filter: blur(0); }
+.mapfx-leave-active .mapcard {
+  transition: transform 0.44s cubic-bezier(0.34, 0, 0.24, 1), opacity 0.4s ease 0.04s;
+}
+.mapfx-leave-to .mapcard { transform: translateY(-24px) scale(0.9); opacity: 0; }
+.mapfx-leave-active .mapcard__head { transition: transform 0.36s ease, opacity 0.26s ease; }
+.mapfx-leave-to .mapcard__head { transform: translateY(-14px); opacity: 0; }
 .mapcard {
   position: relative;
   display: grid;
@@ -3517,35 +3599,86 @@ section {
   box-shadow: none;
 }
 .mapcard__head { text-align: center; }
-.mapcard__eyebrow { display: block; font-size: 0.56rem; letter-spacing: 0.22em; color: var(--red); }
-.mapcard__head h3 { font-size: 1.02rem; color: #fff; margin: 6px 0 3px; }
-.mapcard__head p { font-size: 0.76rem; color: var(--muted); margin: 0; }
-.mapcard__stage { position: relative; display: grid; place-items: center; min-height: 0; perspective: 1500px; }
+.mapcard__eyebrow {
+  display: block;
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  color: var(--red);
+  text-shadow: 0 0 38px rgba(237, 27, 46, 0.35);
+}
+.mapcard__head h3 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 2.1vw, 1.75rem);
+  letter-spacing: 0.13em;
+  color: #e8e8ee;
+  margin: 10px 0 6px;
+}
+.mapcard__head p { font-size: clamp(0.88rem, 1.08vw, 1.02rem); line-height: 1.95; color: #eaeaf0; margin: 0; }
+.mapcard__stage { position: relative; display: grid; place-items: center; min-height: 0; padding-top: clamp(10px, 2vh, 26px); perspective: 1500px; }
 .thscene {
   position: relative;
   display: grid;
   place-items: center;
   width: 100%;
   height: 100%;
-  animation: mapSlideIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  animation: mapSlideIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 /* แผนที่เลื่อนลงมาจากด้านเหนือแล้วเข้าที่ */
 @keyframes mapSlideIn {
-  from { transform: translateY(-16%) scale(0.94); }
+  from { transform: translateY(-6%) scale(0.97); }
   to { transform: translateY(0) scale(1); }
 }
 .thplane {
   position: relative;
-  height: min(64vh, 680px);
+  height: min(67vh, 730px);
   aspect-ratio: 400 / 760;
   transform-style: preserve-3d;
-  transform: rotateX(52deg) scale(1.26);
+  transform: rotateX(52deg) scale(1.5);
   transition: transform 0.9s var(--ease);
 }
-.thscene:hover .thplane { transform: rotateX(44deg) scale(1.28); }
+.thscene:hover .thplane { transform: rotateX(44deg) scale(1.52); }
 .thmap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.thmap--top { filter: drop-shadow(0 0 16px rgba(237, 27, 46, 0.4)); }
+
+
+/* เส้นขอบวาดตัวเองทีละส่วนตอนเปิด (--len ตั้งจากความยาวเส้นจริง) */
+.thmap__shape { fill-opacity: 0; }
+.thmap__shape.is-drawing {
+  stroke-dasharray: var(--len, 6000);
+  stroke-dashoffset: var(--len, 6000);
+  animation: drawLine 2.1s ease-in-out 0.15s forwards, fillIn 0.9s ease 1.75s forwards,
+    mapGlow 3.6s ease-in-out 2.1s infinite;
+}
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes fillIn {
+  from { fill-opacity: 0; }
+  to { fill-opacity: 1; }
+}
+/* วาดเส้นจบแล้วค่อยติดไฟเรืองขึ้นมา แล้วเต้นเบา ๆ ต่อ */
+@keyframes mapGlow {
+  0% { filter: drop-shadow(0 0 2px rgba(237, 27, 46, 0.25)); }
+  22% { filter: drop-shadow(0 0 26px rgba(237, 27, 46, 0.95)) drop-shadow(0 0 60px rgba(237, 27, 46, 0.45)); }
+  60% { filter: drop-shadow(0 0 16px rgba(237, 27, 46, 0.6)) drop-shadow(0 0 44px rgba(237, 27, 46, 0.28)); }
+  100% { filter: drop-shadow(0 0 24px rgba(237, 27, 46, 0.85)) drop-shadow(0 0 56px rgba(237, 27, 46, 0.4)); }
+}
+
+/* ความหนาของแผ่นค่อยดันตัวขึ้นมาหลังเส้นวาดเสร็จ */
+.thmap--depth {
+  transform: translateZ(calc(var(--n) * -3px));
+  opacity: calc(1 - var(--n) * 0.055);
+  animation: depthRise 0.7s var(--ease) both;
+  animation-delay: calc(1.65s + var(--n) * 0.045s);
+}
 .thmap--depth path { filter: none; }
+@keyframes depthRise {
+  from { transform: translateZ(0); opacity: 0; }
+  to { transform: translateZ(calc(var(--n) * -3px)); opacity: calc(1 - var(--n) * 0.055); }
+}
 
 .thpin {
   position: absolute;
@@ -3573,8 +3706,8 @@ section {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(237, 27, 46, 0.9);
-  box-shadow: 0 0 14px rgba(237, 27, 46, 0.9);
+  background: #fff;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.95), 0 0 26px rgba(255, 255, 255, 0.45);
 }
 /* ลำแสงพุ่งขึ้นจากพื้น */
 .thpin__beam {
@@ -3584,7 +3717,7 @@ section {
   width: 3px;
   height: 74px;
   border-radius: 3px;
-  background: linear-gradient(180deg, rgba(237, 27, 46, 0), rgba(237, 27, 46, 0.85));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9));
   transform-origin: bottom center;
   transform: rotateX(-52deg);
   animation: beamGrow 0.6s var(--ease) both var(--in, 0.4s),
@@ -3601,7 +3734,7 @@ section {
   white-space: nowrap;
   padding: 7px 11px;
   border-radius: 10px;
-  border: 1px solid rgba(237, 27, 46, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(12, 12, 18, 0.96);
   transform-origin: bottom left;
   transform: rotateX(-52deg) translate(-50%, -74px);
@@ -3610,7 +3743,7 @@ section {
 }
 .thpin__flag b { font-size: 0.68rem; color: #fff; }
 .thpin__flag small { font-size: 0.58rem; color: var(--muted); }
-.thpin:hover .thpin__flag, .thpin.is-active .thpin__flag { border-color: var(--red); background: rgba(24, 10, 12, 0.98); }
+.thpin:hover .thpin__flag, .thpin.is-active .thpin__flag { border-color: rgba(255, 255, 255, 0.6); background: rgba(20, 20, 26, 0.98); }
 @keyframes beamGrow {
   0% { height: 0; opacity: 0; }
   100% { height: 74px; opacity: 0.85; }
@@ -3723,6 +3856,30 @@ section {
   .cta { grid-template-columns: minmax(0, 1fr); }
   .mm-footer__inner { justify-content: center; }
 }
+/* แนวนอนบนแท็บเล็ต/มือถือ: ใช้เลย์เอาต์เดียวกับคอม แค่ย่อขนาดตามความสูงจอ */
+@media (orientation: landscape) and (min-width: 660px) and (max-width: 1100px) {
+  .nav__live { display: flex; }
+  .nav__cta { display: inline-flex; }
+  .nav__burger { display: none; }
+  .nav__mobile { display: none; }
+  .showcase-body--split { grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: clamp(14px, 2.4vw, 30px); }
+  .showcase-body--split .phone { margin-top: 0; }
+  .mm-hero { min-height: 100svh; }
+  .cta { grid-template-columns: 1.05fr 0.95fr; }
+  .mm-footer__inner { justify-content: space-between; }
+  .purpose-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .flow { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .flow__arrow { display: block; }
+  .products { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .navkpi { padding: 0 9px; }
+  .navkpi__value { font-size: 0.78rem; }
+  .navkpi:nth-last-child(-n+2) { display: none; }
+  /* จอเตี้ย บีบระยะหัวท้ายลงให้เนื้อหาจบในหน้าเดียวเหมือนบนคอม */
+  .section.section--fit { padding-top: clamp(14px, 2.6vh, 34px); padding-bottom: clamp(12px, 2.2vh, 30px); }
+  .section--fit .lead { margin-top: 8px; }
+  .section--fit .center { margin-top: clamp(6px, 1.2vh, 14px); }
+}
+
 /* มือถือ: ตัดเป็นหลายแถวให้เห็นครบทุกใบในจอเดียว ไม่ต้องเลื่อนซ้ายขวา */
 @media (max-width: 767px) {
   .purpose-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
