@@ -149,14 +149,12 @@
           <!-- ทางลัดไปเดโมของทั้งสามผลิตภัณฑ์ -->
           <div class="hero-demos">
             <button v-for="(d, i) in demoLinks" :key="d.key" type="button" class="demolink"
-                    :style="{ '--accent': d.color }" v-reveal="820 + i * 90" @click="open(d.link)">
+                    :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
+                    v-reveal="820 + i * 90" @click="open(d.link)">
               <span class="demolink__icon" v-html="d.icon" />
               <span class="demolink__label">
                 <b>{{ d.label }}</b>
-                <small>
-                  VIEW DEMO
-                  <svg class="demolink__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
-                </small>
+                <small>VIEW DEMO</small>
               </span>
             </button>
           </div>
@@ -2986,32 +2984,78 @@ section {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 13px 9px 10px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: linear-gradient(160deg, rgba(20, 20, 28, 0.9), rgba(10, 10, 16, 0.92));
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  isolation: isolate;
+  padding: 10px 16px 10px 11px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(10px);
   font: inherit;
   color: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.45s var(--ease), transform 0.45s var(--ease);
+  transition: border-color 0.45s var(--ease), transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
 }
-.demolink:hover { border-color: var(--accent); transform: translateY(-3px); }
+/* แสงวิ่งรอบขอบตลอดเวลา ไล่จังหวะกันทีละปุ่ม */
+.demolink::before {
+  content: '';
+  position: absolute;
+  inset: -1.4px;
+  z-index: -2;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--btn-a),
+    rgba(255, 255, 255, 0.06) 0deg,
+    rgba(255, 255, 255, 0.06) 214deg,
+    var(--accent) 268deg,
+    #ffffff 300deg,
+    var(--accent) 332deg,
+    rgba(255, 255, 255, 0.06) 360deg
+  );
+  animation: btnSweep 3.6s linear infinite;
+  animation-delay: var(--sweep-delay, 0s);
+}
+.demolink::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    radial-gradient(72% 140% at 12% 50%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    #0b0b11;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: background 0.45s var(--ease);
+}
+.demolink:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.5), 0 0 26px -6px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.demolink:hover::before { animation-duration: 1.6s; }
+.demolink:hover::after {
+  background:
+    radial-gradient(72% 140% at 12% 50%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 72%),
+    #12121a;
+}
 .demolink__icon {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   flex: none;
-  border-radius: 12px;
-  border: 1px solid var(--accent);
-  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--accent) 26%, transparent), rgba(255, 255, 255, 0.03));
   color: var(--accent);
-  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), border-color 0.5s var(--ease);
 }
-.demolink:hover .demolink__icon { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45); }
+.demolink:hover .demolink__icon {
+  border-color: var(--accent);
+  box-shadow: 0 0 18px -2px color-mix(in srgb, var(--accent) 75%, transparent);
+  transform: scale(1.06);
+}
 .demolink__icon :deep(svg) {
   width: 19px; height: 19px; fill: none; stroke: currentColor;
   stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
