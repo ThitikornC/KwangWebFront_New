@@ -2890,7 +2890,8 @@ section {
 .section.section--fit {
   min-height: 100svh;
   display: grid;
-  align-content: start;
+  /* จอสูงกว่าที่เนื้อหาต้องการ ให้เนื้อหาอยู่กลางจอ ไม่ทิ้งที่ว่างไว้ด้านล่างก้อนเดียว */
+  align-content: center;
   padding-top: clamp(44px, 6.8vh, 80px);
   padding-bottom: clamp(26px, 3.6vh, 54px);
 }
@@ -2908,7 +2909,14 @@ section {
 .section--fit .brief__head { padding-bottom: 9px; }
 
 /* การ์ด Executive Brief */
-.section--panel .chart svg { height: clamp(60px, 8.5vh, 104px); }
+/* การ์ดสรุปผู้บริหาร: ยืดเนื้อหาในการ์ดตามความสูงจอ จะได้ไม่เหลือที่ว่างแนวตั้ง */
+.section--panel .chart svg { height: clamp(74px, 14vh, 190px); }
+.section--fit .kpis { margin-top: clamp(10px, 1.6vh, 20px); gap: clamp(8px, 1vh, 14px); }
+.section--fit .kpi { padding: clamp(10px, 1.5vh, 20px) clamp(11px, 1vw, 16px); }
+.section--fit .brief__row { margin-top: clamp(8px, 1.2vh, 16px); gap: clamp(8px, 1vh, 14px); }
+.section--fit .panelbox { padding: clamp(9px, 1.3vh, 18px) clamp(10px, 1vw, 15px); }
+.section--fit .bars { gap: clamp(6px, 1.1vh, 14px); }
+.section--fit .panelbox--insight { min-height: clamp(52px, 9vh, 120px); }
 
 /* คอนโซล ENLIGHTENED */
 .section--fit .en__blocks { margin-top: clamp(5px, 0.8vh, 9px); }
