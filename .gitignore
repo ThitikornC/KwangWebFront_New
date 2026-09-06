@@ -1,3 +1,14 @@
+/.env
+/.env.local
+/.env.*.local
+node_modules/
+/.output
+/.nuxt
+dist/
+/.cache
+/.idea
+/*.log
+/.DS_Store
 # Nuxt dev/build outputs
 .output
 .data

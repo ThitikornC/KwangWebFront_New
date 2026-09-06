@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useHead, useSeoMeta } from '#imports';
 
 useHead({
@@ -18,6 +18,17 @@ useSeoMeta({
 
 let observer: IntersectionObserver | null = null;
 
+// ✅ Popup เบอร์ติดต่อ
+const showContact = ref(false);
+const contacts = [
+  { name: 'จ๊อบ', tel: '0839549743' },
+  { name: 'ไอซ์', tel: '0888150287' }
+];
+
+const onKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') showContact.value = false;
+};
+
 onMounted(() => {
   // Reset all scroll-reveal elements
   const revealElements = document.querySelectorAll('.scroll-reveal');
@@ -35,6 +46,8 @@ onMounted(() => {
   }, { threshold: 0.15 });
 
   revealElements.forEach(el => observer!.observe(el));
+
+  window.addEventListener('keydown', onKeydown);
 });
 
 onBeforeUnmount(() => {
@@ -43,67 +56,83 @@ onBeforeUnmount(() => {
     observer.disconnect();
     observer = null;
   }
+
+  window.removeEventListener('keydown', onKeydown);
 });
 
 </script>
 
 
 <template>
-  <div class="root-bg min-h-screen flex flex-col relative z-10">
+  <div class="root-bg flex flex-col relative z-10 px-[clamp(1rem,2vw,2rem)] py-[clamp(2rem,4vw,3rem)]">
     <!-- Logo ลายน้ำ - ย้ายมาไว้ข้างนอก -->
     <div class="background-image">
       <img src="/kwang_logo.png" alt="Logo" />
     </div>
 
-    <!-- Logo + Running Text -->
-    <div class="flex items-center justify-between px-16 py-4 w-full gap-6 relative z-10">
-      <div class="running-text-container flex justify-center flex-1 px-6" 
-           style="margin-top: 90px; margin-left: 150px; margin-bottom: -40px;">       
-        <div class="running-text w-full max-w-[1000px] overflow-hidden relative">
-          <div class="marquee">
-            <div class="marquee-content">
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
-            <div class="marquee-content">
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
+    <!-- Running Text -->
+    <div class="flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">       
+      <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
+        <div class="marquee">
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
+          </div>
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Video + Menu -->
-    <div class="flex-1 max-w-6xl mx-auto px-6 py-0 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-20 my-6"
-         style="margin-top: -20px;">
+    <div class="flex-1 max-w-6xl mx-auto px-[clamp(1rem,3vw,2rem)] py-0 flex flex-col xl:flex-row items-center gap-[clamp(2rem,5vw,5rem)]">
       
       <!-- Video Box -->
-      <div class="flex-[2] w-full flex justify-center items-center video-box md:mr-8">
-        <video class="w-full max-w-3xl rounded-xl shadow-xl object-cover" autoplay muted loop playsinline>
+      <div class="flex-[2] w-full flex justify-center items-center video-box">
+        <video class="w-full max-w-[min(48rem,85vw)] rounded-xl shadow-xl object-cover" autoplay muted loop playsinline>
           <source src="/video/kwang_Temporary.mp4" type="video/mp4" />
         </video>
       </div>
       
       <!-- Menu -->
-      <div class="flex-[1] flex flex-col items-center gap-6 w-full">
-        <a href="/valueProposition" class="neon-btn bg-[#f8f6f0] text-black text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
+      <div class="flex-[1] flex flex-col items-center gap-[clamp(1rem,2.5vw,2rem)] w-full">
+        <a href="/valueProposition" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           ABOUT US
         </a>
 
-        <a href="/home" class="neon-btn bg-[#7d1007] text-white text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
+        <a href="/home" class="neon-btn bg-[#7d1007] text-white text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           PROJECTS
         </a>
 
-        <a href="/renewable" class="neon-btn bg-[#7d1007] text-white text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
+        <a href="/renewable" class="neon-btn bg-[#7d1007] text-white text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           FORWARD THINKING
         </a>
 
-        <a href="/products" class="neon-btn bg-[#f8f6f0] text-black text-2xl font-sans font-light px-6 py-4 rounded-xl w-full max-w-[300px] whitespace-nowrap flex items-center justify-center">
-          SHOP
-        </a>
+        <button type="button" @click="showContact = true" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
+          CONTACT
+        </button>
       </div>
     </div>
+
+    <!-- Popup เบอร์ติดต่อ -->
+    <Teleport to="body">
+      <Transition name="contact-fade">
+        <div v-if="showContact" class="contact-overlay" @click.self="showContact = false">
+          <div class="contact-modal" role="dialog" aria-modal="true" aria-label="เบอร์ติดต่อ">
+            <button type="button" class="contact-close" aria-label="ปิด" @click="showContact = false">×</button>
+
+            <h2 class="contact-title">CONTACT</h2>
+
+            <a v-for="c in contacts" :key="c.tel" :href="`tel:${c.tel}`" class="contact-item">
+              <span class="contact-tel">{{ c.tel }}</span>
+              <span class="contact-name">({{ c.name }})</span>
+            </a>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
   </div>
 </template>
@@ -124,7 +153,6 @@ body {
 /* 🌈 พื้นหลังทั้งหน้า */
 .root-bg {
   position: relative;
-  min-height: 100vh;
   overflow-x: hidden;
 }
 
@@ -190,27 +218,16 @@ body {
 .running-text {
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   color: #000;
-  border: 6px solid #74640a;
+  border: clamp(4px, 0.5vw, 6px) solid #74640a;
   border-radius: 9999px;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 15px 20px;
-  box-shadow: 1px 1px 0 #000, -8px 6px #3b3305, 0 0 20px rgba(255,230,160,0.55);
+  padding: clamp(10px, 1.5vw, 15px) clamp(15px, 2vw, 20px);
+  box-shadow: 1px 1px 0 #000, clamp(-6px, -0.8vw, -8px) clamp(4px, 0.6vw, 6px) #3b3305, 0 0 20px rgba(255,230,160,0.55);
   text-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,0,0.15), 0 0 6px rgba(255,230,160,0.55);
   overflow: hidden;
   position: relative;
   z-index: 50;
-}
-
-.running-text-container { 
-  justify-content: flex-start; 
-  padding-left: 0px; 
-  padding-right: 0; 
-}
-
-.running-text { 
-  max-width: 1090px; 
-  width: auto; 
 }
 
 /* Marquee */
@@ -237,14 +254,15 @@ body {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  padding: 0.5rem 2rem;
+  padding: clamp(0.375rem, 1vw, 0.5rem) clamp(1.25rem, 2.5vw, 2rem);
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   font-weight: 700;
   text-transform: uppercase;
-  border: 2px solid #000;
-  border-radius: 6px;
+  border: clamp(1.5px, 0.25vw, 2px) solid #000;
+  border-radius: clamp(4px, 0.6vw, 6px);
   box-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 6px rgba(255,230,160,0.55);
-  margin-right: 1rem;
+  margin-right: clamp(0.75rem, 1.5vw, 1rem);
+  font-size: clamp(0.75rem, 1.25vw, 0.875rem);
 }
 
 @keyframes marquee { 
@@ -319,6 +337,136 @@ body {
   font-weight: 700; 
   color: #7d1007; 
   font-size: 2.7rem; 
+}
+
+/* ลดขนาด 70% สำหรับมือถือ */
+@media (max-width: 768px) {
+  .running-text {
+    border-width: 2px;
+    padding: 3px 4px;
+    font-size: 0.6rem;
+  }
+  
+  .marquee span {
+    padding: 0.2rem 0.6rem;
+    border-width: 1px;
+    border-radius: 3px;
+    font-size: 0.5rem;
+    margin-right: 0.4rem;
+  }
+  
+  .neon-btn {
+    border-width: 3px;
+    padding: 8.4px 19.6px;
+    font-size: 0.7rem;
+  }
+  
+  /* ป้องกัน text wrap */
+  .whitespace-nowrap {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* iPad Pro แนวนอน - แสดง menu ข้างๆ */
+@media (min-width: 1200px) {
+  .flex-1.max-w-6xl {
+    flex-direction: row !important;
+  }
+}
+
+/* Popup เบอร์ติดต่อ */
+.contact-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.contact-modal {
+  position: relative;
+  width: 100%;
+  max-width: min(420px, 90vw);
+  padding: clamp(1.5rem, 4vw, 2.25rem) clamp(1.25rem, 3vw, 2rem);
+  background: linear-gradient(180deg, #f8f6f0 0%, #fffef8 45%, #fff8e8 55%, #f5f0e5 100%);
+  border: 6px solid #74640a;
+  border-radius: 24px;
+  box-shadow: 1px 1px 0 #000, -8px 6px #3b3305, 0 0 30px rgba(255, 230, 160, 0.55);
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  text-align: center;
+}
+
+.contact-close {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: #7d1007;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.contact-title {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  color: #7d1007;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+  padding: clamp(0.625rem, 2vw, 0.875rem) 1rem;
+  color: #000;
+  background: linear-gradient(180deg, #ffffff 0%, #fff8e8 100%);
+  border: 2px solid #74640a;
+  border-radius: 9999px;
+  box-shadow: 2px 2px 0 #000;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.contact-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 4px 0 #000, 0 0 14px rgba(255, 230, 160, 0.8);
+}
+
+.contact-tel {
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.contact-name {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  color: #7d1007;
+  font-weight: 500;
+}
+
+.contact-fade-enter-active,
+.contact-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.contact-fade-enter-from,
+.contact-fade-leave-to {
+  opacity: 0;
 }
 
 </style>
