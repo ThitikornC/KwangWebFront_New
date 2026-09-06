@@ -45,21 +45,6 @@
         </div>
 
         <button type="button" class="mm-btn mm-btn--ghost nav__cta" v-magnetic @click="customersOpen = true">SEE CUSTOMERS</button>
-
-        <button type="button" class="nav__burger" :aria-expanded="menuOpen" aria-label="เมนู" @click="menuOpen = !menuOpen">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path v-if="!menuOpen" d="M3 6h18M3 12h18M3 18h18" />
-            <path v-else d="M5 5l14 14M19 5L5 19" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- เมนูมือถือ -->
-      <div class="nav__mobile" :class="{ 'is-open': menuOpen }">
-        <a v-for="item in navItems" :key="`m-${item.hash}`" :href="item.hash" @click.prevent="goTo(item.hash)">
-          {{ item.label }}
-        </a>
-        <button type="button" class="mm-btn mm-btn--solid" @click="customersOpen = true">SEE CUSTOMERS</button>
       </div>
     </header>
 
@@ -144,6 +129,10 @@
                 <small class="font-thai">{{ chip.note }}</small>
               </span>
             </li>
+            <!-- จอแนวตั้งไม่มีปุ่มนี้บนแถบบน — เติมลงช่องที่ว่างข้างชิปแทน -->
+            <li class="chip chip--cta">
+              <button type="button" class="mm-btn mm-btn--ghost" v-magnetic @click="customersOpen = true">SEE CUSTOMERS</button>
+            </li>
           </ul>
 
           <!-- ทางลัดไปเดโมของทั้งสามผลิตภัณฑ์ -->
@@ -184,334 +173,356 @@
           <h2 class="h2" v-split="24">{{ sc.title }}</h2>
           <p class="lead font-thai" v-reveal="160">{{ noSplit(sc.lead) }}</p>
 
-          <div v-if="sc.panel" class="brief-showcase" v-reveal="140">
-            <div class="brief">
-              <div class="brief__head">
-                <span class="brief__title">EXECUTIVE BRIEF</span>
-                <span class="brief__meta">
-                  <em class="font-thai">{{ clock }}</em>
-                  <span class="live"><i /> LIVE</span>
-                </span>
-              </div>
+          <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop" v-reveal="140">
+            <!-- แผงสรุปเป็นของจอแนวนอนเหมือนคอนโซล — ใส่กรอบโน้ตบุ๊คแบบเดียวกัน -->
+            <div class="laptop">
+              <div class="laptop__lid">
+                <span class="laptop__cam" aria-hidden="true" />
+                <div class="laptop__screen">
+                  <div class="laptop__stage">
+                    <div class="brief">
+                    <div class="brief__head">
+                      <span class="brief__title">EXECUTIVE BRIEF</span>
+                      <span class="brief__meta">
+                        <em class="font-thai">{{ clock }}</em>
+                        <span class="live"><i /> LIVE</span>
+                      </span>
+                    </div>
 
-              <div class="kpis">
-                <div v-for="k in kpis" :key="k.label" class="kpi">
-                  <span class="kpi__label">{{ k.label }}</span>
-                  <span class="kpi__value" :style="{ color: k.color }">
-                    <span v-count="{ to: k.value, decimals: k.decimals }">0</span><em>{{ k.unit }}</em>
-                  </span>
-                  <span class="kpi__delta" :class="`is-${k.dir}`">
-                    <svg v-if="k.dir !== 'flat'" viewBox="0 0 24 24" aria-hidden="true">
-                      <path v-if="k.dir === 'down'" d="M12 5v14M6 13l6 6 6-6" />
-                      <path v-else d="M12 19V5M6 11l6-6 6 6" />
-                    </svg>
-                    {{ k.delta }}
-                  </span>
-                </div>
-              </div>
+                    <div class="kpis">
+                      <div v-for="k in kpis" :key="k.label" class="kpi">
+                        <span class="kpi__label">{{ k.label }}</span>
+                        <span class="kpi__value" :style="{ color: k.color }">
+                          <span v-count="{ to: k.value, decimals: k.decimals }">0</span><em>{{ k.unit }}</em>
+                        </span>
+                        <span class="kpi__delta" :class="`is-${k.dir}`">
+                          <svg v-if="k.dir !== 'flat'" viewBox="0 0 24 24" aria-hidden="true">
+                            <path v-if="k.dir === 'down'" d="M12 5v14M6 13l6 6 6-6" />
+                            <path v-else d="M12 19V5M6 11l6-6 6 6" />
+                          </svg>
+                          {{ k.delta }}
+                        </span>
+                      </div>
+                    </div>
 
-              <div class="brief__row">
-                <!-- กราฟเส้น: ลากเส้นทีละนิดเมื่อเลื่อนมาถึง -->
-                <div class="panelbox">
-                  <span class="panelbox__title">TODAY&apos;S STORY</span>
-                  <div class="chart" v-reveal="200">
-                    <svg viewBox="0 0 320 132" preserveAspectRatio="none" aria-hidden="true">
-                      <defs>
-                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0.38" />
-                          <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <g stroke="rgba(255,255,255,0.07)" stroke-width="1">
-                        <line v-for="g in 4" :key="`g${g}`" x1="0" :y1="g * 26" x2="320" :y2="g * 26" />
-                      </g>
-                      <path class="chart__area" :d="areaPath" fill="url(#areaGrad)" />
-                      <path class="chart__line" :d="linePath" fill="none" stroke="#ED1B2E" stroke-width="2.4"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                      <path class="chart__line chart__line--alt" :d="linePathAlt" fill="none" stroke="#56A0D3"
-                            stroke-width="1.6" stroke-dasharray="4 4" opacity="0.7" />
-                    </svg>
-                    <span class="chart__peakdot" :style="{ left: peakPos.left, top: peakPos.top }" />
-                    <span class="chart__badge font-thai">13:00 - 15:00<br /><b>HIGH USAGE</b></span>
-                    <div class="chart__axis">
-                      <span v-for="t in hourTicks" :key="t">{{ t }}</span>
+                    <div class="brief__row">
+                      <!-- กราฟเส้น: ลากเส้นทีละนิดเมื่อเลื่อนมาถึง -->
+                      <div class="panelbox">
+                        <span class="panelbox__title">TODAY&apos;S STORY</span>
+                        <div class="chart" v-reveal="200">
+                          <svg viewBox="0 0 320 132" preserveAspectRatio="none" aria-hidden="true">
+                            <defs>
+                              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#ED1B2E" stop-opacity="0.38" />
+                                <stop offset="100%" stop-color="#ED1B2E" stop-opacity="0" />
+                              </linearGradient>
+                            </defs>
+                            <g stroke="rgba(255,255,255,0.07)" stroke-width="1">
+                              <line v-for="g in 4" :key="`g${g}`" x1="0" :y1="g * 26" x2="320" :y2="g * 26" />
+                            </g>
+                            <path class="chart__area" :d="areaPath" fill="url(#areaGrad)" />
+                            <path class="chart__line" :d="linePath" fill="none" stroke="#ED1B2E" stroke-width="2.4"
+                                  stroke-linecap="round" stroke-linejoin="round" />
+                            <path class="chart__line chart__line--alt" :d="linePathAlt" fill="none" stroke="#56A0D3"
+                                  stroke-width="1.6" stroke-dasharray="4 4" opacity="0.7" />
+                          </svg>
+                          <span class="chart__peakdot" :style="{ left: peakPos.left, top: peakPos.top }" />
+                          <span class="chart__badge font-thai">13:00 - 15:00<br /><b>HIGH USAGE</b></span>
+                          <div class="chart__axis">
+                            <span v-for="t in hourTicks" :key="t">{{ t }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- แถบการใช้พื้นที่รายชั้น -->
+                      <div class="panelbox">
+                        <span class="panelbox__title">SPACE UTILIZATION</span>
+                        <ul class="bars">
+                          <li v-for="(b, i) in floors" :key="b.name" v-reveal="120 + i * 90">
+                            <span class="bars__name font-thai">{{ b.name }}</span>
+                            <span class="bars__track"><i class="bars__fill" :style="{ '--w': b.value + '%', background: b.color }" /></span>
+                            <span class="bars__val">{{ b.value }}%</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="brief__row">
+                      <div class="panelbox panelbox--insight">
+                        <span class="panelbox__title">AI INSIGHT</span>
+                        <p class="font-thai">
+                          ช่วงเวลา 13:00 - 15:00 น. เป็นช่วงที่มีการใช้งานสูงที่สุด
+                          ควรเปิดพื้นที่ Collaboration Zone เพิ่มเติม
+                        </p>
+                      </div>
+                      <div class="panelbox">
+                        <span class="panelbox__title">RECOMMENDED ACTIONS</span>
+                        <ul class="todo">
+                          <li v-for="(a, i) in actions" :key="a" v-reveal="150 + i * 120">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              <rect x="3" y="3" width="18" height="18" rx="5" />
+                              <path class="todo__tick" d="M7.5 12.5l3 3 6-6.5" />
+                            </svg>
+                            <span class="font-thai">{{ a }}</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                     </div>
                   </div>
                 </div>
-
-                <!-- แถบการใช้พื้นที่รายชั้น -->
-                <div class="panelbox">
-                  <span class="panelbox__title">SPACE UTILIZATION</span>
-                  <ul class="bars">
-                    <li v-for="(b, i) in floors" :key="b.name" v-reveal="120 + i * 90">
-                      <span class="bars__name font-thai">{{ b.name }}</span>
-                      <span class="bars__track"><i class="bars__fill" :style="{ '--w': b.value + '%', background: b.color }" /></span>
-                      <span class="bars__val">{{ b.value }}%</span>
-                    </li>
-                  </ul>
-                </div>
               </div>
-
-              <div class="brief__row">
-                <div class="panelbox panelbox--insight">
-                  <span class="panelbox__title">AI INSIGHT</span>
-                  <p class="font-thai">
-                    ช่วงเวลา 13:00 - 15:00 น. เป็นช่วงที่มีการใช้งานสูงที่สุด
-                    ควรเปิดพื้นที่ Collaboration Zone เพิ่มเติม
-                  </p>
-                </div>
-                <div class="panelbox">
-                  <span class="panelbox__title">RECOMMENDED ACTIONS</span>
-                  <ul class="todo">
-                    <li v-for="(a, i) in actions" :key="a" v-reveal="150 + i * 120">
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="3" y="3" width="18" height="18" rx="5" />
-                        <path class="todo__tick" d="M7.5 12.5l3 3 6-6.5" />
-                      </svg>
-                      <span class="font-thai">{{ a }}</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              <span class="laptop__base" aria-hidden="true"><i class="laptop__notch" /></span>
             </div>
           </div>
 
           <!-- คอนโซลจำลองของ MOMAY ENLIGHTENED — ผังเดียวกับแดชบอร์ดจริง -->
-          <div v-else-if="sc.console" class="brief-showcase" v-reveal="140">
-            <div class="brief brief--en">
-              <div class="brief__head">
-                <span class="brief__title">ENLIGHTENED</span>
-                <span class="brief__meta">
-                  <em class="font-thai">{{ clock }}</em>
-                  <span class="live"><i /> LIVE</span>
-                </span>
-              </div>
+          <div v-else-if="sc.console" class="brief-showcase brief-showcase--laptop" v-reveal="140">
+            <!-- คอนโซลตัวนี้เป็นของจอแนวนอน — ใส่กรอบโน้ตบุ๊ค แล้วย่อผังขนาดจอคอมทั้งก้อนลงให้พอดีจอ -->
+            <div class="laptop">
+              <div class="laptop__lid">
+                <span class="laptop__cam" aria-hidden="true" />
+                <div class="laptop__screen">
+                  <div class="laptop__stage">
+                    <div class="brief brief--en">
+                    <div class="brief__head">
+                      <span class="brief__title">ENLIGHTENED</span>
+                      <span class="brief__meta">
+                        <em class="font-thai">{{ clock }}</em>
+                        <span class="live"><i /> LIVE</span>
+                      </span>
+                    </div>
 
-              <div class="en__blocks">
-                <!-- ═══ LAYER 1 (ซ้าย) ═══ -->
-                <section class="en__block en__block--green">
-                  <div class="en__lhead">
-                    <span class="en__lmark">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 3L6 13.5h4.6L9.8 21l7.7-10.7h-4.7z" /></svg>
-                    </span>
-                    <span class="en__ltitle">
-                      <b>LAYER 1: Real-Time <em class="font-thai">· ทั้งอาคาร</em></b>
-                      <small class="font-thai">เห็นสิ่งที่เกิดขึ้น ณ เวลาปัจจุบัน เพื่อตอบสนองและแจ้งเตือนได้ทันที</small>
-                    </span>
-                  </div>
-
-                  <div class="en__row3">
-                    <div class="en__box">
-                      <span class="en__btitle font-thai">ความหนาแน่นของโซน</span>
-                      <ul class="en__zones font-thai">
-                        <li v-for="(z, i) in enZones" :key="z.code" :class="{ 'is-hot': z.hot }" v-reveal="120 + i * 60">
-                          <span class="en__ring" :style="{ '--p': z.pct, '--c': z.color }">
-                            <b><span v-count="{ to: z.people }">0</span><em>คน</em></b>
+                    <div class="en__blocks">
+                      <!-- ═══ LAYER 1 (ซ้าย) ═══ -->
+                      <section class="en__block en__block--green">
+                        <div class="en__lhead">
+                          <span class="en__lmark">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 3L6 13.5h4.6L9.8 21l7.7-10.7h-4.7z" /></svg>
                           </span>
-                          <span class="en__ring" :style="{ '--p': z.pct, '--c': z.color }">
-                            <b><span v-count="{ to: z.pct }">0</span><em>%</em></b>
+                          <span class="en__ltitle">
+                            <b>LAYER 1: Real-Time <em class="font-thai">· ทั้งอาคาร</em></b>
+                            <small class="font-thai">เห็นสิ่งที่เกิดขึ้น ณ เวลาปัจจุบัน เพื่อตอบสนองและแจ้งเตือนได้ทันที</small>
                           </span>
-                          <span class="en__zinfo">
-                            <b :style="{ color: z.hot ? z.color : '#e8e8ee' }">{{ z.code }}<i class="en__livetag">LIVE</i></b>
-                            <small>{{ z.note }}</small>
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div class="en__box en__box--center">
-                      <span class="en__btitle font-thai">ระดับความหนาแน่น</span>
-                      <svg class="en__gauge" viewBox="0 0 120 74" aria-hidden="true">
-                        <path d="M12 62 A48 48 0 0 1 108 62" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3.4" stroke-linecap="round" />
-                        <path d="M12 62 A48 48 0 0 1 108 62" fill="none" :stroke="enGaugeColor" stroke-width="3.4" stroke-linecap="round"
-                              stroke-dasharray="150.8" :stroke-dashoffset="150.8 * (1 - enDensity / 100)" class="en__gaugearc" />
-                        <circle :cx="enGaugePt.x" :cy="enGaugePt.y" r="3.4" :fill="enGaugeColor" />
-                      </svg>
-                      <b class="en__mpct"><span v-count="{ to: enDensity }">0</span>%</b>
-                      <small class="en__mcap font-thai"><span v-count="{ to: enPeople }">0</span> คน · {{ enLevel }}</small>
-                      <small class="en__mtrend font-thai">แนวโน้มเพิ่มขึ้น ↗</small>
-                    </div>
-
-                    <div class="en__box en__box--center">
-                      <span class="en__btitle font-thai">แผนที่ความหนาแน่น</span>
-                      <svg class="en__iso" viewBox="4 6 156 106" aria-hidden="true">
-                        <!-- ผนังด้านหลังสองด้าน -->
-                        <path d="M16 76 L76 46 L76 14 L16 44 Z" fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                        <path d="M76 46 L145 70 L145 38 L76 14 Z" fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
-                        <!-- ความหนาของพื้น -->
-                        <path d="M16 76 L85 100 L85 107 L16 83 Z" fill="rgba(255,255,255,0.07)" />
-                        <path d="M85 100 L145 70 L145 77 L85 107 Z" fill="rgba(255,255,255,0.035)" />
-                        <!-- พื้นแบ่งเป็นสามโซน -->
-                        <path d="M16 76 L76 46 L99 54 L39 84 Z" fill="rgba(63,163,77,0.85)" />
-                        <path d="M39 84 L99 54 L122 62 L62 92 Z" fill="rgba(236,183,49,0.85)" />
-                        <path d="M62 92 L122 62 L145 70 L85 100 Z" fill="rgba(237,27,46,0.85)" />
-                        <g fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="1">
-                          <path d="M16 76 L76 46 L145 70 L85 100 Z" />
-                          <path d="M39 84 L99 54M62 92 L122 62" />
-                        </g>
-                        <g fill="#08110b" font-size="7.5" font-weight="700">
-                          <text x="40" y="70" transform="rotate(-24 40 70)">Zone A</text>
-                          <text x="63" y="78" transform="rotate(-24 63 78)">Zone B</text>
-                          <text x="86" y="86" transform="rotate(-24 86 86)">Zone C</text>
-                        </g>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <span class="en__strip"><i />REAL-TIME ENTRY &amp; EXIT</span>
-
-                  <div class="en__row3 en__row3--gates">
-                    <div class="en__box">
-                      <ul class="en__doors font-thai">
-                        <li v-for="d in enDoors" :key="d.name">
-                          <span class="en__ring en__ring--sm" :style="{ '--p': 70, '--c': '#3FA34D' }">
-                            <b><span v-count="{ to: d.in }">0</span><em>เข้า</em></b>
-                          </span>
-                          <span class="en__ring en__ring--sm" :style="{ '--p': 45, '--c': '#56A0D3' }">
-                            <b><span v-count="{ to: d.out }">0</span><em>ออก</em></b>
-                          </span>
-                          <span class="en__zinfo">
-                            <b>{{ d.name }}<i class="en__livetag">LIVE</i></b>
-                            <small>ทางเข้า-ออก · เข้า {{ d.in }} · ออก {{ d.out }}</small>
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="en__box en__box--center">
-                      <span class="en__big"><b><span v-count="{ to: enIn }">0</span></b><em class="font-thai">เข้า</em></span>
-                    </div>
-                    <div class="en__box en__box--center">
-                      <span class="en__big en__big--out"><b><span v-count="{ to: enOut }">0</span></b><em class="font-thai">ออก</em></span>
-                    </div>
-                  </div>
-                </section>
-
-                <!-- ═══ LAYER 2 (ขวา) ═══ -->
-                <section class="en__block en__block--blue">
-                  <div class="en__lhead">
-                    <span class="en__lmark en__lmark--blue">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.2a3 3 0 0 0-5.8 1 2.8 2.8 0 0 0-1.6 4.6 2.9 2.9 0 0 0 1.9 4.6A3 3 0 0 0 12 18.8z" /><path d="M12 5.2a3 3 0 0 1 5.8 1 2.8 2.8 0 0 1 1.6 4.6 2.9 2.9 0 0 1-1.9 4.6A3 3 0 0 1 12 18.8z" /></svg>
-                    </span>
-                    <span class="en__ltitle">
-                      <b>LAYER 2: <em class="is-blue">Enlightened Systems</em></b>
-                      <small class="font-thai">เรียนรู้พฤติกรรมจากข้อมูลย้อนหลัง เพื่อคาดการณ์และแนะนำล่วงหน้า · ข้อมูลสะสม 29 วัน</small>
-                    </span>
-                    <span class="en__pager font-thai"><i>‹</i><b>วันนี้</b><i>›</i></span>
-                  </div>
-
-                  <div class="en__row2">
-                    <div class="en__box">
-                      <span class="en__btitle font-thai">แนวโน้มการใช้งาน <em>· ที่นั่งรวม 228</em></span>
-                      <span class="en__legend"><i class="is-blue" />4 สัปดาห์ก่อน<i class="is-green" />วันนี้</span>
-                      <div class="en__plot">
-                        <span class="en__yaxis"><em style="--i:0">228</em><em style="--i:1">171</em><em style="--i:2">114</em><em style="--i:3">57</em><em style="--i:4">0</em></span>
-                        <span class="en__svgwrap">
-                        <svg viewBox="0 0 260 96" preserveAspectRatio="none" aria-hidden="true">
-                          <defs>
-                            <linearGradient id="enTrendFill" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stop-color="#8EC06C" stop-opacity="0.32" />
-                              <stop offset="100%" stop-color="#8EC06C" stop-opacity="0" />
-                            </linearGradient>
-                            <linearGradient id="enFadeX" x1="0" y1="0" x2="1" y2="0">
-                              <stop offset="0%" stop-color="#fff" stop-opacity="1" />
-                              <stop offset="62%" stop-color="#fff" stop-opacity="1" />
-                              <stop offset="100%" stop-color="#fff" stop-opacity="0" />
-                            </linearGradient>
-                            <mask id="enFadeMask">
-                              <rect x="0" y="0" width="125" height="96" fill="url(#enFadeX)" />
-                            </mask>
-                          </defs>
-                          <g stroke="rgba(255,255,255,0.05)" stroke-width="0.8">
-                            <line x1="0" y1="24" x2="260" y2="24" /><line x1="0" y1="48" x2="260" y2="48" /><line x1="0" y1="72" x2="260" y2="72" />
-                          </g>
-                          <line x1="0" y1="95.2" x2="260" y2="95.2" stroke="rgba(255,255,255,0.18)" stroke-width="0.9" vector-effect="non-scaling-stroke" />
-                          <path :d="enTodayArea" fill="url(#enTrendFill)" mask="url(#enFadeMask)" />
-                          <path :d="enPastLine" fill="none" stroke="#56A0D3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" vector-effect="non-scaling-stroke" />
-                          <path :d="enTodayLine" fill="none" stroke="#8EC06C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
-                        </svg>
-                        <i class="en__dot" :style="{ top: enTodayTop }" />
-                        </span>
-                      </div>
-                      <div class="en__xaxis"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
-                    </div>
-
-                    <div class="en__box">
-                      <span class="en__btitle font-thai">คาดการณ์ความหนาแน่น <em>(FORECAST)</em></span>
-                      <span class="en__legend"><i class="is-green" />Real-time<i class="is-orange" />Predicted</span>
-                      <div class="en__plot">
-                        <span class="en__yaxis"><em style="--i:0">228</em><em style="--i:1">171</em><em style="--i:2">114</em><em style="--i:3">57</em><em style="--i:4">0</em></span>
-                        <span class="en__svgwrap">
-                        <svg viewBox="0 0 260 96" preserveAspectRatio="none" aria-hidden="true">
-                          <g stroke="rgba(255,255,255,0.06)" stroke-width="0.8">
-                            <line x1="0" y1="24" x2="260" y2="24" /><line x1="0" y1="48" x2="260" y2="48" /><line x1="0" y1="72" x2="260" y2="72" />
-                          </g>
-                          <line x1="0" y1="95.2" x2="260" y2="95.2" stroke="rgba(255,255,255,0.18)" stroke-width="0.9" vector-effect="non-scaling-stroke" />
-                          <path :d="enRealArea" fill="url(#enTrendFill)" mask="url(#enFadeMask)" />
-                          <line x1="125" y1="0" x2="125" y2="95.2" stroke="#ECB731" stroke-width="1" stroke-dasharray="3 3" opacity="0.85" vector-effect="non-scaling-stroke" />
-                          <path :d="enRealLine" fill="none" stroke="#8EC06C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
-                          <path :d="enPredLine" fill="none" stroke="#ECB731" stroke-width="1.8" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
-                        </svg>
-                        <i class="en__dot" :style="{ top: enRealTop }" />
-                        </span>
-                        <span class="en__now font-thai">ตอนนี้</span>
-                        <span class="en__peak font-thai">คาดการณ์จุดพีค<br /><b>14:00 - 15:00</b></span>
-                      </div>
-                      <div class="en__xaxis"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
-                    </div>
-
-                    <div class="en__box">
-                      <span class="en__btitle font-thai">พฤติกรรมการใช้งานวันนี้ <em>(TIME × CAMERA)</em></span>
-                      <div class="en__heat">
-                        <div v-for="r in enHeatRows" :key="r.label" class="en__heatrow">
-                          <span>{{ r.label }}</span>
-                          <span class="en__cells"><i v-for="(c, i) in r.cells" :key="`${r.label}${i}`" :style="{ background: c }" /></span>
                         </div>
-                      </div>
-                      <div class="en__xaxis en__xaxis--heat"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
-                      <span class="en__scale font-thai">น้อย<i />มาก</span>
+
+                        <div class="en__row3">
+                          <div class="en__box">
+                            <span class="en__btitle font-thai">ความหนาแน่นของโซน</span>
+                            <ul class="en__zones font-thai">
+                              <li v-for="(z, i) in enZones" :key="z.code" :class="{ 'is-hot': z.hot }" v-reveal="120 + i * 60">
+                                <span class="en__ring" :style="{ '--p': z.pct, '--c': z.color }">
+                                  <b><span v-count="{ to: z.people }">0</span><em>คน</em></b>
+                                </span>
+                                <span class="en__ring" :style="{ '--p': z.pct, '--c': z.color }">
+                                  <b><span v-count="{ to: z.pct }">0</span><em>%</em></b>
+                                </span>
+                                <span class="en__zinfo">
+                                  <b :style="{ color: z.hot ? z.color : '#e8e8ee' }">{{ z.code }}<i class="en__livetag">LIVE</i></b>
+                                  <small>{{ z.note }}</small>
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div class="en__box en__box--center">
+                            <span class="en__btitle font-thai">ระดับความหนาแน่น</span>
+                            <svg class="en__gauge" viewBox="0 0 120 74" aria-hidden="true">
+                              <path d="M12 62 A48 48 0 0 1 108 62" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3.4" stroke-linecap="round" />
+                              <path d="M12 62 A48 48 0 0 1 108 62" fill="none" :stroke="enGaugeColor" stroke-width="3.4" stroke-linecap="round"
+                                    stroke-dasharray="150.8" :stroke-dashoffset="150.8 * (1 - enDensity / 100)" class="en__gaugearc" />
+                              <circle :cx="enGaugePt.x" :cy="enGaugePt.y" r="3.4" :fill="enGaugeColor" />
+                            </svg>
+                            <b class="en__mpct"><span v-count="{ to: enDensity }">0</span>%</b>
+                            <small class="en__mcap font-thai"><span v-count="{ to: enPeople }">0</span> คน · {{ enLevel }}</small>
+                            <small class="en__mtrend font-thai">แนวโน้มเพิ่มขึ้น ↗</small>
+                          </div>
+
+                          <div class="en__box en__box--center">
+                            <span class="en__btitle font-thai">แผนที่ความหนาแน่น</span>
+                            <svg class="en__iso" viewBox="4 6 156 106" aria-hidden="true">
+                              <!-- ผนังด้านหลังสองด้าน -->
+                              <path d="M16 76 L76 46 L76 14 L16 44 Z" fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                              <path d="M76 46 L145 70 L145 38 L76 14 Z" fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
+                              <!-- ความหนาของพื้น -->
+                              <path d="M16 76 L85 100 L85 107 L16 83 Z" fill="rgba(255,255,255,0.07)" />
+                              <path d="M85 100 L145 70 L145 77 L85 107 Z" fill="rgba(255,255,255,0.035)" />
+                              <!-- พื้นแบ่งเป็นสามโซน -->
+                              <path d="M16 76 L76 46 L99 54 L39 84 Z" fill="rgba(63,163,77,0.85)" />
+                              <path d="M39 84 L99 54 L122 62 L62 92 Z" fill="rgba(236,183,49,0.85)" />
+                              <path d="M62 92 L122 62 L145 70 L85 100 Z" fill="rgba(237,27,46,0.85)" />
+                              <g fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="1">
+                                <path d="M16 76 L76 46 L145 70 L85 100 Z" />
+                                <path d="M39 84 L99 54M62 92 L122 62" />
+                              </g>
+                              <g fill="#08110b" font-size="7.5" font-weight="700">
+                                <text x="40" y="70" transform="rotate(-24 40 70)">Zone A</text>
+                                <text x="63" y="78" transform="rotate(-24 63 78)">Zone B</text>
+                                <text x="86" y="86" transform="rotate(-24 86 86)">Zone C</text>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+
+                        <span class="en__strip"><i />REAL-TIME ENTRY &amp; EXIT</span>
+
+                        <div class="en__row3 en__row3--gates">
+                          <div class="en__box">
+                            <ul class="en__doors font-thai">
+                              <li v-for="d in enDoors" :key="d.name">
+                                <span class="en__ring en__ring--sm" :style="{ '--p': 70, '--c': '#3FA34D' }">
+                                  <b><span v-count="{ to: d.in }">0</span><em>เข้า</em></b>
+                                </span>
+                                <span class="en__ring en__ring--sm" :style="{ '--p': 45, '--c': '#56A0D3' }">
+                                  <b><span v-count="{ to: d.out }">0</span><em>ออก</em></b>
+                                </span>
+                                <span class="en__zinfo">
+                                  <b>{{ d.name }}<i class="en__livetag">LIVE</i></b>
+                                  <small>ทางเข้า-ออก · เข้า {{ d.in }} · ออก {{ d.out }}</small>
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="en__box en__box--center">
+                            <span class="en__big"><b><span v-count="{ to: enIn }">0</span></b><em class="font-thai">เข้า</em></span>
+                          </div>
+                          <div class="en__box en__box--center">
+                            <span class="en__big en__big--out"><b><span v-count="{ to: enOut }">0</span></b><em class="font-thai">ออก</em></span>
+                          </div>
+                        </div>
+                      </section>
+
+                      <!-- ═══ LAYER 2 (ขวา) ═══ -->
+                      <section class="en__block en__block--blue">
+                        <div class="en__lhead">
+                          <span class="en__lmark en__lmark--blue">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.2a3 3 0 0 0-5.8 1 2.8 2.8 0 0 0-1.6 4.6 2.9 2.9 0 0 0 1.9 4.6A3 3 0 0 0 12 18.8z" /><path d="M12 5.2a3 3 0 0 1 5.8 1 2.8 2.8 0 0 1 1.6 4.6 2.9 2.9 0 0 1-1.9 4.6A3 3 0 0 1 12 18.8z" /></svg>
+                          </span>
+                          <span class="en__ltitle">
+                            <b>LAYER 2: <em class="is-blue">Enlightened Systems</em></b>
+                            <small class="font-thai">เรียนรู้พฤติกรรมจากข้อมูลย้อนหลัง เพื่อคาดการณ์และแนะนำล่วงหน้า · ข้อมูลสะสม 29 วัน</small>
+                          </span>
+                          <span class="en__pager font-thai"><i>‹</i><b>วันนี้</b><i>›</i></span>
+                        </div>
+
+                        <div class="en__row2">
+                          <div class="en__box">
+                            <span class="en__btitle font-thai">แนวโน้มการใช้งาน <em>· ที่นั่งรวม 228</em></span>
+                            <span class="en__legend"><i class="is-blue" />4 สัปดาห์ก่อน<i class="is-green" />วันนี้</span>
+                            <div class="en__plot">
+                              <span class="en__yaxis"><em style="--i:0">228</em><em style="--i:1">171</em><em style="--i:2">114</em><em style="--i:3">57</em><em style="--i:4">0</em></span>
+                              <span class="en__svgwrap">
+                              <svg viewBox="0 0 260 96" preserveAspectRatio="none" aria-hidden="true">
+                                <defs>
+                                  <linearGradient id="enTrendFill" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#8EC06C" stop-opacity="0.32" />
+                                    <stop offset="100%" stop-color="#8EC06C" stop-opacity="0" />
+                                  </linearGradient>
+                                  <linearGradient id="enFadeX" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stop-color="#fff" stop-opacity="1" />
+                                    <stop offset="62%" stop-color="#fff" stop-opacity="1" />
+                                    <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+                                  </linearGradient>
+                                  <mask id="enFadeMask">
+                                    <rect x="0" y="0" width="125" height="96" fill="url(#enFadeX)" />
+                                  </mask>
+                                </defs>
+                                <g stroke="rgba(255,255,255,0.05)" stroke-width="0.8">
+                                  <line x1="0" y1="24" x2="260" y2="24" /><line x1="0" y1="48" x2="260" y2="48" /><line x1="0" y1="72" x2="260" y2="72" />
+                                </g>
+                                <line x1="0" y1="95.2" x2="260" y2="95.2" stroke="rgba(255,255,255,0.18)" stroke-width="0.9" vector-effect="non-scaling-stroke" />
+                                <path :d="enTodayArea" fill="url(#enTrendFill)" mask="url(#enFadeMask)" />
+                                <path :d="enPastLine" fill="none" stroke="#56A0D3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" vector-effect="non-scaling-stroke" />
+                                <path :d="enTodayLine" fill="none" stroke="#8EC06C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                              </svg>
+                              <i class="en__dot" :style="{ top: enTodayTop }" />
+                              </span>
+                            </div>
+                            <div class="en__xaxis"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
+                          </div>
+
+                          <div class="en__box">
+                            <span class="en__btitle font-thai">คาดการณ์ความหนาแน่น <em>(FORECAST)</em></span>
+                            <span class="en__legend"><i class="is-green" />Real-time<i class="is-orange" />Predicted</span>
+                            <div class="en__plot">
+                              <span class="en__yaxis"><em style="--i:0">228</em><em style="--i:1">171</em><em style="--i:2">114</em><em style="--i:3">57</em><em style="--i:4">0</em></span>
+                              <span class="en__svgwrap">
+                              <svg viewBox="0 0 260 96" preserveAspectRatio="none" aria-hidden="true">
+                                <g stroke="rgba(255,255,255,0.06)" stroke-width="0.8">
+                                  <line x1="0" y1="24" x2="260" y2="24" /><line x1="0" y1="48" x2="260" y2="48" /><line x1="0" y1="72" x2="260" y2="72" />
+                                </g>
+                                <line x1="0" y1="95.2" x2="260" y2="95.2" stroke="rgba(255,255,255,0.18)" stroke-width="0.9" vector-effect="non-scaling-stroke" />
+                                <path :d="enRealArea" fill="url(#enTrendFill)" mask="url(#enFadeMask)" />
+                                <line x1="125" y1="0" x2="125" y2="95.2" stroke="#ECB731" stroke-width="1" stroke-dasharray="3 3" opacity="0.85" vector-effect="non-scaling-stroke" />
+                                <path :d="enRealLine" fill="none" stroke="#8EC06C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                                <path :d="enPredLine" fill="none" stroke="#ECB731" stroke-width="1.8" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                              </svg>
+                              <i class="en__dot" :style="{ top: enRealTop }" />
+                              </span>
+                              <span class="en__now font-thai">ตอนนี้</span>
+                              <span class="en__peak font-thai">คาดการณ์จุดพีค<br /><b>14:00 - 15:00</b></span>
+                            </div>
+                            <div class="en__xaxis"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
+                          </div>
+
+                          <div class="en__box">
+                            <span class="en__btitle font-thai">พฤติกรรมการใช้งานวันนี้ <em>(TIME × CAMERA)</em></span>
+                            <div class="en__heat">
+                              <div v-for="r in enHeatRows" :key="r.label" class="en__heatrow">
+                                <span>{{ r.label }}</span>
+                                <span class="en__cells"><i v-for="(c, i) in r.cells" :key="`${r.label}${i}`" :style="{ background: c }" /></span>
+                              </div>
+                            </div>
+                            <div class="en__xaxis en__xaxis--heat"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>21:00</em></div>
+                            <span class="en__scale font-thai">น้อย<i />มาก</span>
+                          </div>
+
+                          <div class="en__box">
+                            <span class="en__btitle font-thai">การเลือกหนังสือแยกตามหมวดหมู่</span>
+                            <ul class="en__bars font-thai">
+                              <li v-for="b in enCompare" :key="b.label">
+                                <span>{{ b.label }}</span>
+                                <span class="en__track"><i :style="{ width: b.value + '%', background: b.color }" /></span>
+                                <em>{{ b.value }}%</em>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </section>
                     </div>
 
-                    <div class="en__box">
-                      <span class="en__btitle font-thai">การเลือกหนังสือแยกตามหมวดหมู่</span>
-                      <ul class="en__bars font-thai">
-                        <li v-for="b in enCompare" :key="b.label">
-                          <span>{{ b.label }}</span>
-                          <span class="en__track"><i :style="{ width: b.value + '%', background: b.color }" /></span>
-                          <em>{{ b.value }}%</em>
-                        </li>
-                      </ul>
+                    <!-- ═══ พลังงานของอาคารทั้งวัน ═══ -->
+                    <div class="en__block en__block--power">
+                      <div class="en__phead">
+                        <span class="en__chip font-thai">ทั้งอาคาร</span>
+                        <span class="en__date"><i>‹</i><b>{{ enDate }}</b><i>›</i></span>
+                        <span class="en__chip en__chip--ghost">Booking</span>
+                      </div>
+                      <div class="en__plot en__plot--power">
+                        <span class="en__yaxis en__yaxis--6"><em style="--i:0">250</em><em style="--i:1">200</em><em style="--i:2">150</em><em style="--i:3">100</em><em style="--i:4">50</em><em style="--i:5">0</em></span>
+                        <svg viewBox="0 0 640 62" preserveAspectRatio="none" aria-hidden="true">
+                          <path :d="enPowerArea" fill="url(#enPowerFill)" />
+                          <path :d="enPowerLine" fill="none" stroke="#ECB731" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                          <line x1="0" y1="50.6" x2="640" y2="50.6" stroke="#ECB731" stroke-width="1" stroke-dasharray="5 4" opacity="0.55" vector-effect="non-scaling-stroke" />
+                          <circle :cx="enPowerPeak.x" :cy="enPowerPeak.y" r="3.2" fill="#ED1B2E" />
+                          <defs>
+                            <linearGradient id="enPowerFill" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stop-color="#ECB731" stop-opacity="0.38" />
+                              <stop offset="100%" stop-color="#ECB731" stop-opacity="0" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </div>
+                      <div class="en__pfoot">
+                        <span class="en__xaxis en__xaxis--power"><em>00.00</em><em>06.00</em><em>12.00</em><em>18.00</em><em>24.00</em></span>
+                        <span class="en__chip en__chip--ghost">Total <span v-count="{ to: enPower }">0</span> kWh</span>
+                      </div>
+                    </div>
                     </div>
                   </div>
-                </section>
-              </div>
-
-              <!-- ═══ พลังงานของอาคารทั้งวัน ═══ -->
-              <div class="en__block en__block--power">
-                <div class="en__phead">
-                  <span class="en__chip font-thai">ทั้งอาคาร</span>
-                  <span class="en__date"><i>‹</i><b>{{ enDate }}</b><i>›</i></span>
-                  <span class="en__chip en__chip--ghost">Booking</span>
-                </div>
-                <div class="en__plot en__plot--power">
-                  <span class="en__yaxis en__yaxis--6"><em style="--i:0">250</em><em style="--i:1">200</em><em style="--i:2">150</em><em style="--i:3">100</em><em style="--i:4">50</em><em style="--i:5">0</em></span>
-                  <svg viewBox="0 0 640 62" preserveAspectRatio="none" aria-hidden="true">
-                    <path :d="enPowerArea" fill="url(#enPowerFill)" />
-                    <path :d="enPowerLine" fill="none" stroke="#ECB731" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
-                    <line x1="0" y1="50.6" x2="640" y2="50.6" stroke="#ECB731" stroke-width="1" stroke-dasharray="5 4" opacity="0.55" vector-effect="non-scaling-stroke" />
-                    <circle :cx="enPowerPeak.x" :cy="enPowerPeak.y" r="3.2" fill="#ED1B2E" />
-                    <defs>
-                      <linearGradient id="enPowerFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#ECB731" stop-opacity="0.38" />
-                        <stop offset="100%" stop-color="#ECB731" stop-opacity="0" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
-                <div class="en__pfoot">
-                  <span class="en__xaxis en__xaxis--power"><em>00.00</em><em>06.00</em><em>12.00</em><em>18.00</em><em>24.00</em></span>
-                  <span class="en__chip en__chip--ghost">Total <span v-count="{ to: enPower }">0</span> kWh</span>
                 </div>
               </div>
+              <span class="laptop__base" aria-hidden="true"><i class="laptop__notch" /></span>
             </div>
           </div>
 
@@ -1065,19 +1076,35 @@ const vSplit = {
     const scopeAttr = Array.from(el.attributes).find((a) => a.name.startsWith('data-v-'))
     el.textContent = ''
     el.classList.add('split')
-    graphemes(text).forEach((g, i) => {
+    // ตัวอักษรแต่ละตัวเป็น inline-block เบราว์เซอร์จึงขึ้นบรรทัดใหม่ตรงไหนก็ได้ รวมถึงกลางคำ
+    // บนจอแนวตั้งที่แคบ หัวเรื่องเลยขาดเป็น "SEE WHA / T" — ห่อทีละคำไว้ก่อน
+    // บรรทัดจะตัดได้เฉพาะตรงช่องว่างเหมือนข้อความปกติ
+    let i = 0
+    const makeCh = () => {
       const s = document.createElement('span')
       s.className = 'split__ch'
       if (scopeAttr) s.setAttribute(scopeAttr.name, '')
-      s.style.setProperty('--i', i)
+      s.style.setProperty('--i', i++)
       s.style.setProperty('--step', `${step}ms`)
-      if (g === ' ') {
-        s.classList.add('split__ch--space')
-        s.innerHTML = '&nbsp;'
-      } else {
-        s.textContent = g
+      return s
+    }
+    text.split(' ').forEach((word, wi) => {
+      if (wi > 0) {
+        const sp = makeCh()
+        sp.classList.add('split__ch--space')
+        sp.innerHTML = '&nbsp;'
+        el.appendChild(sp)
       }
-      el.appendChild(s)
+      if (!word) return
+      const w = document.createElement('span')
+      w.className = 'split__word'
+      if (scopeAttr) w.setAttribute(scopeAttr.name, '')
+      graphemes(word).forEach((g) => {
+        const s = makeCh()
+        s.textContent = g
+        w.appendChild(s)
+      })
+      el.appendChild(w)
     })
     observe(el)
   },
@@ -1152,7 +1179,6 @@ const scrolled = ref(false)
 const scrollProgress = ref(0)
 const heroY = ref(0)
 const heroReady = ref(false)
-const menuOpen = ref(false)
 const docOpen = ref(false)
 const contactOpen = ref(false)
 const customersOpen = ref(false)
@@ -1239,14 +1265,6 @@ const smoothScrollTo = (to, duration = 950) => {
 
 /* ══════════════ 3. เนื้อหา ══════════════ */
 const year = new Date().getFullYear()
-const navItems = [
-  { label: 'PRODUCTS', hash: '#products' },
-  { label: 'VISION', hash: '#approach' },
-  { label: 'SOLUTIONS', hash: '#solutions' },
-  { label: 'CASES', hash: '#trusted' },
-  { label: 'COMPANY', hash: '#contact' },
-]
-
 const heroChips = [
   {
     title: 'REAL DATA',
@@ -1839,16 +1857,27 @@ const slide = (dir) => {
 
 /* ══════════════ 8. การนำทาง ══════════════ */
 const open = (path) => {
-  menuOpen.value = false
   if (/^https?:\/\//i.test(path)) navigateTo(path, { external: true })
   else navigateTo(path)
 }
 const requestDemo = () => open('/contact')
 const goTo = (hash) => {
-  menuOpen.value = false
   const el = document.querySelector(hash)
   if (!el) return
   smoothScrollTo(el.getBoundingClientRect().top + window.scrollY - 72)
+}
+
+/* ══════════════ กรอบโน้ตบุ๊ค ══════════════ */
+/* ผังคอนโซลออกแบบไว้ที่ความกว้างจอคอม — ย่อทั้งผังลงให้พอดีจอโน้ตบุ๊ค
+   จะได้เห็นเป็นแดชบอร์ดจริงเหมือนถ่ายหน้าจอมา ไม่ใช่ผังที่ถูกบีบจนเพี้ยน
+   CSS หารความยาวกันเองไม่ได้ เลยต้องวัดแล้วส่ง --k เข้าไป */
+const LAPTOP_STAGE_W = 1180
+let laptopRO = null
+const fitLaptop = () => {
+  document.querySelectorAll('.laptop').forEach((el) => {
+    const screen = el.querySelector('.laptop__screen')
+    if (screen && screen.clientWidth) el.style.setProperty('--k', screen.clientWidth / LAPTOP_STAGE_W)
+  })
 }
 
 /* ══════════════ 9. วงจรชีวิตคอมโพเนนต์ ══════════════ */
@@ -1902,7 +1931,14 @@ onMounted(() => {
     if (!pauseAuto.value && !document.hidden) slide(1)
   }, 5000)
 
-  nextTick(() => requestAnimationFrame(() => { heroReady.value = true }))
+  nextTick(() => {
+    fitLaptop()
+    if (window.ResizeObserver) {
+      laptopRO = new ResizeObserver(fitLaptop)
+      document.querySelectorAll('.laptop__screen').forEach((el) => laptopRO.observe(el))
+    }
+    requestAnimationFrame(() => { heroReady.value = true })
+  })
 })
 
 onBeforeUnmount(() => {
@@ -1915,6 +1951,8 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(scrollAnimRaf)
   io && io.disconnect()
   io = null
+  laptopRO && laptopRO.disconnect()
+  laptopRO = null
 })
 </script>
 
@@ -1996,6 +2034,8 @@ section {
 /* ในบรรทัดที่มี mask ให้ไหลขึ้นจากใต้เส้นแทน */
 .line .split__ch { transform: translate3d(0, 110%, 0) rotate(5deg); filter: blur(3px); }
 .split__ch--space { transform: none !important; filter: none !important; }
+/* ห่อทีละคำ ไม่ให้บรรทัดตัดกลางคำเวลาที่จอแคบกว่าหัวเรื่อง */
+.split__word { display: inline-block; white-space: nowrap; }
 .mm-hero-ready .split__ch,
 .is-in .split__ch { opacity: 1; transform: none; filter: blur(0); will-change: auto; }
 
@@ -2041,14 +2081,16 @@ section {
 .mm-btn--ghost:hover { background: rgba(237, 27, 46, 0.14); transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 2px), 0); }
 
 /* ปุ่ม SEE CUSTOMERS บนแถบนำทาง — แสงวิ่งรอบขอบเหมือนปุ่มปิดท้ายของแต่ละผลิตภัณฑ์ */
-.mm-btn.nav__cta {
+.mm-btn.nav__cta,
+.chip--cta .mm-btn {
   position: relative;
   isolation: isolate;
   border: 0;
   background: transparent;
   color: #ffe6e8;
 }
-.mm-btn.nav__cta::before {
+.mm-btn.nav__cta::before,
+.chip--cta .mm-btn::before {
   content: '';
   position: absolute;
   inset: -1.2px;
@@ -2065,7 +2107,8 @@ section {
   );
   animation: btnSweep 4.2s linear infinite;
 }
-.mm-btn.nav__cta::after {
+.mm-btn.nav__cta::after,
+.chip--cta .mm-btn::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -2074,9 +2117,12 @@ section {
   background: rgba(10, 10, 16, 0.92);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
-.mm-btn.nav__cta:hover { background: transparent; }
-.mm-btn.nav__cta:hover::before { animation-duration: 1.8s; }
-.mm-btn.nav__cta:hover::after { background: rgba(30, 8, 12, 0.9); }
+.mm-btn.nav__cta:hover,
+.chip--cta .mm-btn:hover { background: transparent; }
+.mm-btn.nav__cta:hover::before,
+.chip--cta .mm-btn:hover::before { animation-duration: 1.8s; }
+.mm-btn.nav__cta:hover::after,
+.chip--cta .mm-btn:hover::after { background: rgba(30, 8, 12, 0.9); }
 .mm-btn__arrow { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.45s var(--ease); }
 .mm-btn:hover .mm-btn__arrow { transform: translateX(4px); }
 .mm-btn__arrow--tel { width: 16px; height: 16px; stroke-linejoin: round; }
@@ -2194,25 +2240,6 @@ section {
   font-variant-numeric: tabular-nums;
 }
 .navkpi__value em { font-style: normal; font-size: 0.58rem; letter-spacing: 0.08em; color: var(--muted); margin-left: 4px; }
-.nav__burger { display: none; background: none; border: 0; color: #fff; padding: 6px; cursor: pointer; }
-.nav__burger svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
-.nav__mobile {
-  display: none;
-  flex-direction: column;
-  gap: 4px;
-  padding: 0 6vw 18px;
-  background: rgba(6, 6, 10, 0.96);
-  border-bottom: 1px solid var(--line);
-}
-.nav__mobile a {
-  color: #d7d7dd;
-  text-decoration: none;
-  font-size: 0.82rem;
-  letter-spacing: 0.12em;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
 /* ══════════════ HERO ══════════════ */
 .mm-hero {
   position: relative;
@@ -2335,6 +2362,8 @@ section {
   list-style: none;
 }
 .chip { display: flex; align-items: center; gap: 11px; }
+/* ช่องปุ่มในแถวชิป — จอกว้างใช้ปุ่มบนแถบบนอยู่แล้ว */
+.chip--cta { display: none; }
 .chip__icon {
   display: grid;
   place-items: center;
@@ -2629,6 +2658,16 @@ section {
 .phone__tabs :deep(svg) { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ══════════════ คอนโซลจำลองของ ENLIGHTENED ══════════════ */
+/* ══════════════ กรอบโน้ตบุ๊ค (คอนโซล ENLIGHTENED) ══════════════ */
+/* จอคอม/แนวนอนไม่ต้องมีกรอบ — ยุบชิ้นส่วนกรอบทิ้งด้วย display:contents
+   คอนโซลจะกลับไปเป็นลูกตรงของ .brief-showcase เหมือนก่อนมีกรอบทุกประการ */
+.laptop,
+.laptop__lid,
+.laptop__screen,
+.laptop__stage { display: contents; }
+.laptop__cam,
+.laptop__base { display: none; }
+
 .brief--en { border-color: var(--line); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
 .brief--en .brief__title { color: #ecb731; text-shadow: 0 0 20px rgba(236, 183, 49, 0.45); }
 .brief--en .live { color: #ffd98a; }
@@ -3844,7 +3883,14 @@ section {
 
 
 @media (max-width: 767px) {
-  .thmap { height: min(48vh, 400px); }
+  /* เดิมย่อความสูงเฉพาะ .thmap ทำให้แผนที่กับพิกัดหมุด (คิดเป็น % ของ .thplane) คนละสเกล
+     หมุดเลยตกไปอยู่ใต้ตำแหน่งจริง — ต้องย่อทั้งแผ่นแทน แผนที่กับหมุดจะได้ขยับไปด้วยกัน */
+  .thplane { height: min(44vh, 360px); }
+  /* ป้ายชื่อลอยเหนือหมุด 74px — เว้นหัวไว้ให้พอ ไม่งั้นไปทับหัวเรื่อง */
+  .mapcard__stage { padding-top: clamp(58px, 10vh, 92px); }
+  .thpin__flag { padding: 5px 9px; }
+  .thpin__flag b { font-size: 0.6rem; }
+  .thpin__flag small { font-size: 0.52rem; }
 }
 
 .lightbox--contact { padding: 5vw; }
@@ -3934,9 +3980,6 @@ section {
 }
 @media (max-width: 975px) {
   .nav__live, .nav__cta { display: none; }
-  .nav__burger { display: block; margin-left: auto; }
-  .nav__mobile { display: flex; max-height: 0; overflow: hidden; padding-block: 0; transition: max-height 0.4s ease, padding 0.4s ease; }
-  .nav__mobile.is-open { max-height: 420px; padding-bottom: 18px; }
   .showcase-body--split { grid-template-columns: minmax(0, 1fr); }
   .showcase-body--split .phone { margin-top: 4px; }
   .mm-hero { min-height: auto; }
@@ -3949,8 +3992,6 @@ section {
 @media (orientation: landscape) and (min-width: 660px) and (max-width: 1100px) {
   .nav__live { display: flex; }
   .nav__cta { display: inline-flex; }
-  .nav__burger { display: none; }
-  .nav__mobile { display: none; }
   .showcase-body--split { grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: clamp(14px, 2.4vw, 30px); }
   .showcase-body--split .phone { margin-top: 0; }
   .mm-hero { min-height: 100svh; }
@@ -3973,7 +4014,9 @@ section {
 @media (max-width: 767px) {
   .purpose-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
   .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 10px; }
-  .flow__arrow { display: none; }
+  /* ลูกศรยังอยู่ แต่ตัวท้ายแถวไม่ต้องมี เพราะตัวถัดไปขึ้นแถวใหม่ */
+  .flow__arrow { display: block; }
+  .flow__step:nth-child(3n) .flow__arrow { display: none; }
   .products { grid-template-columns: minmax(0, 1fr); }
   .product { min-height: 340px; }
   .product__art { width: 88%; right: -6%; }
@@ -3988,8 +4031,269 @@ section {
 @media (max-width: 479px) {
   .purpose-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flow__step:nth-child(3n) .flow__arrow { display: block; }
+  .flow__step:nth-child(2n) .flow__arrow { display: none; }
   .product { min-height: 330px; }
   .product__art { width: 92%; right: -6%; }
+}
+
+/* ══════════════ จอแนวตั้ง ══════════════ */
+/* บนจอแนวตั้ง ตัวจำกัดจริงคือความกว้าง ไม่ใช่ความสูง
+   กฎที่ย่อขนาดตามความสูง (vh) และเลย์เอาต์หลายคอลัมน์ของคอม จึงกลายเป็นล้นขอบและอ่านไม่ออก
+   บล็อกนี้คลี่ทุกอย่างเป็นคอลัมน์เดียว แล้วคืนขนาดตัวอักษรให้อ่านได้ */
+@media (orientation: portrait) and (max-width: 1023px) {
+  /* คำไทยที่ต่อกันยาว ๆ ถูกยึดไว้ด้วย word-joiner จาก noSplit()
+     พอบรรทัดสั้นกว่าคำ มันเลยทะลุออกนอกจอ — ยอมให้ตัดได้เมื่อไม่มีทางอื่น */
+  .lead,
+  .mm-hero__thai,
+  .cta__thai,
+  .pcard p,
+  .product__note,
+  .en__ltitle small { overflow-wrap: break-word; }
+
+  /* section ที่บังคับ "จบในหนึ่งหน้าจอ" ก็เจอปัญหาเดียวกับฮีโร่ — เนื้อหาสั้นกว่าจอ
+     พอจัดกึ่งกลางเลยลอยห่างจากเส้นโค้งด้านบนไปมาก ให้ชิดบนแล้วสูงเท่าเนื้อหาแทน */
+  .section.section--fit {
+    min-height: auto;
+    align-content: start;
+    padding-top: clamp(52px, 7vh, 84px);
+    padding-bottom: clamp(40px, 6vh, 72px);
+  }
+
+  /* ───────── HERO ───────── */
+  .mm-hero {
+    min-height: auto;
+    padding: 0 0 clamp(40px, 6vh, 72px);
+  }
+  /* เดิมคือ max(8vw, 10vh) — บนจอแนวตั้ง 10vh ชนะเสมอ ตัวอักษรเลยกว้างเกินจอ */
+  .mm-hero__title { font-size: clamp(1.95rem, 13.5vw, 5rem); }
+  .mm-hero__copy .eyebrow { margin-bottom: clamp(12px, 2.4vh, 24px); }
+  .mm-hero__sub {
+    font-size: clamp(0.86rem, 3.4vw, 1.25rem);
+    letter-spacing: 0.11em;
+    margin-top: clamp(16px, 3.4vh, 30px);
+  }
+  .mm-hero__thai {
+    font-size: clamp(0.78rem, 3vw, 1rem);
+    line-height: 1.8;
+    margin-top: clamp(16px, 3.2vh, 30px);
+  }
+  .chip__label b { font-size: 0.62rem; letter-spacing: 0.09em; }
+  .chip__label small { font-size: 0.58rem; }
+  .mm-hero__chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 12px;
+    margin-top: clamp(20px, 4vh, 38px);
+  }
+  .chip--cta { display: flex; }
+  .chip--cta .mm-btn { width: 100%; justify-content: center; padding: 11px 12px; font-size: 0.66rem; }
+  /* สามปุ่มเรียงแถวแนวนอนทรงเดิม แค่ย่อไอคอนกับตัวหนังสือลงให้พอดีแถวเดียว */
+  .hero-demos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin: clamp(18px, 3.7vh, 34px) 0 0;
+  }
+  .demolink { gap: 5px; padding: 7px 9px 7px 6px; }
+  .demolink__icon { width: clamp(20px, 5.6vw, 32px); height: clamp(20px, 5.6vw, 32px); }
+  .demolink__icon :deep(svg) { width: clamp(11px, 3.1vw, 18px); height: clamp(11px, 3.1vw, 18px); }
+  .demolink__label { gap: 1px; min-width: 0; }
+  .demolink__label b {
+    font-size: clamp(0.42rem, 1.7vw, 0.62rem);
+    letter-spacing: 0.03em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .demolink__label small { font-size: clamp(0.35rem, 1.4vw, 0.5rem); letter-spacing: 0.07em; }
+
+  /* ───────── หัวข้อประจำ section ───────── */
+  .kicker { font-size: clamp(1.15rem, 5.4vw, 1.9rem); }
+  .h2 { font-size: clamp(0.92rem, 3.7vw, 1.5rem); letter-spacing: 0.1em; }
+  /* ตัวไทยเล็กลง คำจะพอดีบรรทัดโดยไม่ต้องหักกลางคำ */
+  .lead { font-size: clamp(0.74rem, 2.7vw, 0.9rem); line-height: 1.75; }
+
+  /* ───────── ส่วน STUDENT ───────── */
+  .showcase-body--split .purpose-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .showcase-body--split .pcard { max-width: none; }
+  .section--fit .showcase-body--split .pcard h3 { font-size: 0.76rem; }
+  .section--fit .showcase-body--split .pcard p { font-size: 0.72rem; }
+  .phone-duo { justify-content: center; }
+
+  /* ───────── CTA ───────── */
+  .h2--left { font-size: clamp(1.3rem, 6.2vw, 2.4rem); }
+  /* ปุ่มสองใบเรียงกันแล้วล้นขอบ — ให้ยืดเต็มแถว ถ้าไม่พอก็ตกลงมาเป็นอีกแถวเต็มความกว้าง */
+  .cta__actions .mm-btn { flex: 1 1 200px; justify-content: center; }
+}
+
+/* จอแนวตั้งเท่านั้นที่ใส่กรอบโน้ตบุ๊ค — คอนโซลเป็นผังของจอแนวนอน
+   บนจอแนวตั้งจึงต้องย่อทั้งก้อนใส่กรอบ แทนที่จะบีบผังจนเพี้ยน */
+@media (orientation: portrait) and (max-width: 1023px) {
+  /* ══════════════ กรอบโน้ตบุ๊ค (คอนโซล ENLIGHTENED) ══════════════ */
+  /* ปลุกชิ้นส่วนกรอบที่ถูกยุบด้วย display:contents ไว้กลับมา */
+  .laptop,
+  .laptop__lid,
+  .laptop__screen,
+  .laptop__stage { display: block; }
+  .laptop__cam { display: block; }
+  .laptop__base { display: block; }
+  /* คอนโซลเป็นของจอแนวนอน จึงวางไว้ในโน้ตบุ๊คแทนที่จะลอยเปล่า ๆ
+     จอเป็น 16:10 จริง ส่วนผังข้างในคงขนาดจอคอมไว้แล้วย่อทั้งก้อนด้วย --k ที่ JS วัดให้ */
+  .laptop {
+    --k: 1;
+    width: min(100%, 1080px, calc((100svh - 380px) * 1.6));
+    margin-inline: auto;
+  }
+  .laptop__lid {
+    position: relative;
+    display: block;
+    padding: 15px 13px 15px;
+    border-radius: 16px 16px 7px 7px;
+    background: linear-gradient(155deg, #4a4a55 0%, #23232c 16%, #101016 52%, #08080d 100%);
+    box-shadow:
+      0 50px 100px rgba(0, 0, 0, 0.7),
+      0 0 0 1px rgba(255, 255, 255, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  .laptop__cam {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #05050a;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  }
+  .laptop__screen {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: #07070c;
+  }
+  /* เวทีขนาดจอคอม (1180 x 738 = 16:10 พอดี) ย่อลงมาทั้งก้อน */
+  .laptop__stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1180px;
+    height: 738px;
+    transform: scale(var(--k));
+    transform-origin: 0 0;
+  }
+  /* ฐานเครื่องกับแป้นพิมพ์ */
+  .laptop__base {
+    position: relative;
+    display: block;
+    height: 13px;
+    margin: 0 -3%;
+    border-radius: 0 0 11px 11px;
+    background: linear-gradient(180deg, #3d3d47 0%, #22222a 44%, #131319 100%);
+    box-shadow: 0 24px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  }
+  .laptop__notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 13%;
+    height: 5px;
+    border-radius: 0 0 7px 7px;
+    background: #0d0d13;
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .brief-showcase--laptop { max-width: 1080px; }
+
+  /* ══════════════ ผังแผงสรุปผู้บริหารในเวที ══════════════ */
+  /* ค่าที่อิง vh ทั้งหมดต้องตรึงเป็น px เวทีถึงจะหน้าตาเดิมไม่ว่าจอสูงเท่าไหร่
+     แล้วให้สองแถวล่างยืดเก็บที่ว่างจนเต็มจอ 16:10 พอดี */
+  .laptop__stage .brief {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  /* กฎมือถือ (kpis 2 คอลัมน์, brief__row เรียงลง) ต้องไม่มีผลในเวที เพราะเวทีกว้าง 1180 เสมอ */
+  .laptop__stage .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 14px; gap: 12px; }
+  .laptop__stage .brief__row { grid-template-columns: 1.25fr 1fr; }
+  .laptop__stage .kpi { padding: 16px 14px; }
+  .laptop__stage .brief__row { flex: 1; min-height: 0; margin-top: 12px; gap: 12px; }
+  .laptop__stage .panelbox { display: flex; flex-direction: column; min-height: 0; padding: 14px 14px 15px; }
+  .laptop__stage .chart { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .laptop__stage .chart svg { flex: 1; height: auto; min-height: 0; }
+  .laptop__stage .bars { align-content: center; flex: 1; gap: 12px; }
+  .laptop__stage .todo { align-content: center; flex: 1; }
+  .laptop__stage .panelbox--insight { min-height: 0; }
+  .laptop__stage .panelbox--insight p { margin-block: auto; }
+
+  /* ══════════════ ผังคอนโซลในเวทีของโน้ตบุ๊ค ══════════════ */
+  /* เวทีเป็นผืนขนาดคงที่ 1180x738 แล้วย่อทั้งก้อน ผังข้างในจึงต้องไม่ขยับตามขนาดหน้าต่างจริง
+     วางไว้ท้ายสุดเพื่อทับกฎที่อิง vh/ความกว้างจอทั้งหมด */
+  .laptop__stage .brief--en { padding: 13px; }
+  .laptop__stage .en__blocks { flex: 1; min-height: 0; margin-top: 9px; }
+  .laptop__stage .en__block { gap: 5px; padding: 8px 9px 9px; }
+  .laptop__stage .en__lhead { margin-bottom: 0; }
+  .laptop__stage .en__ltitle small,
+  .laptop__stage .en__zinfo small { display: block; }
+  .laptop__stage .en__box { padding: 5px 7px 6px; }
+  /* LAYER 1 ไม่มีอะไรยืดเหมือน .en__row2 ของ LAYER 2 — ให้แถวบนกินที่ว่างที่เหลือ */
+  .laptop__stage .en__row3 { flex: 1; min-height: 0; }
+  .laptop__stage .en__row3--gates { flex: 0 0 auto; }
+  .laptop__stage .en__zones { gap: 3px; }
+  .laptop__stage .en__zones li { padding: 2px 3px; }
+  .laptop__stage .en__doors li { padding: 3px; }
+  .laptop__stage .en__cells i { height: auto; aspect-ratio: 1.4; }
+  .laptop__stage .en__row2 .en__plot { min-height: 40px; }
+  .laptop__stage .en__plot--power { min-height: 58px; }
+  .laptop__stage .en__gauge { max-width: 118px; }
+  .laptop__stage .en__iso { max-width: 168px; }
+  .laptop__stage .en__mpct { font-size: 0.92rem; }
+  .laptop__stage .en__big { width: min(100%, 60px); }
+  .laptop__stage .en__scale { display: inline-flex; }
+  .laptop__stage .en__pfoot em { font-size: 0.3rem; }
+}
+
+/* มือถือแนวตั้ง: แคบเกินกว่าจะวางของคู่กันได้ ต้องคลี่เป็นแถวเดียวทั้งหมด */
+@media (orientation: portrait) and (max-width: 767px) {
+  /* แท็บเล็ตด้านหลังเป็นภาพประกอบล้วน (aria-hidden) และกว้าง 430px
+     บนจอแคบมันดันเครื่องหน้าหลุดออกไปนอกจอทั้งเครื่อง — ตัดออก เหลือมือถือเครื่องเดียว */
+  .phone-duo { --pw: min(272px, 74vw); }
+  .phone-duo .tablet { display: none; }
+  .phone--front { transform: perspective(1500px) rotateY(-4deg) rotate(-1deg); }
+}
+
+/* จอแนวตั้งที่แถบบนไม่มีอะไรอยู่ข้างโลโก้แล้ว — เอาตัวเลขสดขึ้นมาเป็นแถวที่สองเต็มความกว้าง */
+@media (orientation: portrait) and (max-width: 975px) {
+  .nav__inner {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0;
+    padding: 13px 0 9px;
+  }
+  .nav__live {
+    display: flex;
+    flex: 1 0 100%;
+    margin: 9px 0 0;
+    padding-top: 9px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  /* ป้าย LIVE กินที่ไปเปล่า ๆ — ตัดออกให้ตัวเลขทั้งสี่ได้ความกว้างเต็ม */
+  .nav__live-tag { display: none; }
+  .navkpi,
+  .navkpi:last-child,
+  .navkpi:nth-last-child(-n+2) { display: flex; flex: 1; gap: 3px; padding: 0 7px; }
+  .navkpi:first-child { padding-left: 0; }
+  .navkpi:first-child::before { display: none; }
+  .navkpi__label { font-size: 0.46rem; letter-spacing: 0.05em; white-space: nowrap; }
+  .navkpi__value { font-size: 0.94rem; }
+  .navkpi__value em { font-size: 0.48rem; margin-left: 3px; }
+  /* แถบบนสูงขึ้นเพราะมีอีกแถว — ดันเนื้อหา hero ลงมาให้พ้น */
+  .mm-hero { padding-top: clamp(140px, 16vh, 168px); }
 }
 
 /* เคารพการตั้งค่า "ลดการเคลื่อนไหว" ของผู้ใช้ */
@@ -4005,4 +4309,5 @@ section {
   .product__art :deep(.tower) { opacity: 1 !important; transform: none !important; }
   .product__art :deep(.grow-g rect) { transform: scaleX(1) !important; }
 }
+
 </style>
