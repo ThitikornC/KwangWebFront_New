@@ -3042,7 +3042,7 @@ section {
   display: grid;
   grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
   gap: clamp(14px, 1.7vw, 26px);
-  width: min(calc(400px * var(--cols, 4)), 100%);
+  width: min(calc(300px * var(--cols, 4)), 100%);
   margin: clamp(24px, 4.2vh, 60px) auto 0;
 }
 .demolink {
@@ -3052,8 +3052,7 @@ section {
   gap: clamp(12px, 1.1vw, 18px);
   position: relative;
   isolation: isolate;
-  padding: clamp(14px, 1.35vh, 20px) clamp(20px, 1.7vw, 30px);
-  border: 0;
+ padding: clamp(14px, 1.35vh, 20px) clamp(10px, 1vw, 18px);  border: 0;
   border-radius: 999px;
   background: transparent;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
