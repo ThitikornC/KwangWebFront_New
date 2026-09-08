@@ -988,65 +988,86 @@
               </div>
             </div>
 
-            <!-- เครื่องหลัง: แท็บเล็ตแสดงรายละเอียดพื้นที่ -->
+            <!-- เครื่องขวา: แท็บเล็ตของแอปประชาชน MOMAY CITIZEN -->
             <div class="tablet" aria-hidden="true">
               <span class="tablet__cam" />
-              <div class="tablet__screen">
-                <div class="phone__top">
-                  <span class="phone__brand">
-                    <i class="phone__avatar">M</i>
-                    <b>MOMAY</b><em>STUDENT</em>
-                  </span>
-                  <span class="phone__meta">
-                    <em>{{ clockShort }}</em>
-                    <i class="phone__chip">TH</i>
-                  </span>
-                </div>
+              <div class="tablet__screen cz">
+                <aside class="cz__rail">
+                  <span class="cz__logo">M</span>
+                  <ul class="cz__nav">
+                    <li v-for="(n, i) in czNav" :key="n" :class="{ 'is-on': i === 0 }" v-html="n" />
+                  </ul>
+                </aside>
 
-                <div class="tablet__cols font-thai">
-                  <div class="tablet__col">
-                    <span class="phone__label">บริการรายชั้น</span>
-                    <ul class="phone__list">
-                      <li v-for="f in studentFloors.slice(0, 4)" :key="`t-${f.floor}`" :class="{ 'is-open': f.floor === '1' }">
-                        <span class="phone__row">
-                          <span class="phone__mix">
-                            <i v-for="c in floorMix(f)" :key="c" :style="{ background: c }" />
-                          </span>
-                          <span class="phone__floor">ชั้น <b>{{ f.floor }}</b></span>
-                          <span class="phone__info">
-                            <b :class="{ 'is-live': f.open }">{{ f.title }}</b>
-                            <small>{{ floorNote(f) }}</small>
-                          </span>
-                          <svg class="phone__go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
-                        </span>
-                      </li>
-                    </ul>
+                <div class="cz__main">
+                  <div class="cz__top">
+                    <span class="cz__search font-thai">ค้นหาสถานที่ ร้านค้า กิจกรรม…</span>
+                    <span class="cz__wx">29°C</span>
+                    <span class="cz__time">08:24</span>
                   </div>
 
-                  <div class="tablet__col">
-                    <div class="zonecard">
-                      <span class="zonecard__name">24-Hr Learning Commons</span>
-                      <b class="zonecard__big"><span v-count="{ to: enZones[0].people }">0</span><em>/131 ที่นั่ง</em></b>
-                      <span class="zonecard__bar"><i :style="{ width: Math.min(100, enZones[0].pct) + '%' }" /></span>
-                      <small>เปิด 24 ชม. · ที่นั่งว่างตอนนี้</small>
+                  <div class="cz__hero font-thai">
+                    <b>วันนี้…<br />คุณอยากทำอะไร?</b>
+                    <small>ให้ MOMAY แนะนำพื้นที่ที่เหมาะกับคุณ จากสถานการณ์จริงของเมือง</small>
+                    <em>Same City<br />A Better Day</em>
+                  </div>
+
+                  <ul class="cz__cats font-thai">
+                    <li v-for="(c, i) in czCats" :key="c.th" :class="{ 'is-on': i === 0 }" :style="{ '--c': c.color }">
+                      <i v-html="c.icon" />
+                      <b>{{ c.th }}</b>
+                      <small>{{ c.note }}</small>
+                    </li>
+                  </ul>
+
+                  <div class="cz__row">
+                    <div class="cz__box font-thai">
+                      <span class="cz__btitle">สถานการณ์ในขณะนี้<i class="live"><i />Live</i></span>
+                      <ul class="cz__stats">
+                        <li v-for="st in czStats" :key="st.label" :style="{ '--c': st.color }">
+                          <small>{{ st.label }}</small>
+                          <b>{{ st.value }}</b>
+                          <em>{{ st.note }}</em>
+                        </li>
+                      </ul>
                     </div>
 
-                    <span class="phone__label">ประเภทที่นั่ง</span>
-                    <ul class="phone__list">
-                      <li v-for="k in seatKinds" :key="k.name">
-                        <span class="phone__row">
-                          <span class="phone__floor phone__floor--icon" v-html="k.icon" />
-                          <span class="phone__info">
-                            <b>{{ k.name }}</b>
-                            <small>{{ k.note }}</small>
-                          </span>
-                          <span class="phone__seats"><b>{{ k.free }}<em>ว่าง</em></b></span>
-                        </span>
-                      </li>
-                    </ul>
-
-                    <span class="phone__cta">จองที่นั่ง</span>
+                    <div class="cz__map">
+                      <div class="cz__stage">
+                        <svg viewBox="0 0 320 200" preserveAspectRatio="none" aria-hidden="true">
+                          <path d="M-10 78C42 92 76 128 130 138S234 130 330 158" fill="none"
+                                stroke="#16405f" stroke-width="18" stroke-linecap="round" />
+                          <g stroke="rgba(180,208,238,0.14)" fill="none" stroke-width="1.3">
+                            <path d="M-10 116C48 104 96 68 168 64S276 82 330 60" />
+                            <path d="M28 -10 46 210M114 -10 98 210M202 -10 216 210M278 -10 268 210" />
+                          </g>
+                        </svg>
+                        <span v-for="(pn, i) in czPins" :key="`cp${i}`" class="cz__pin"
+                              :style="{ left: pn.x, top: pn.y, '--c': pn.color }" />
+                        <span v-for="pl in czSpots" :key="pl.name" class="cz__spot font-thai"
+                              :style="{ left: pl.x, top: pl.y }">{{ pl.name }}</span>
+                        <ul class="cz__legend font-thai">
+                          <li v-for="l in czLegend" :key="l.name" :style="{ '--c': l.color }"><i />{{ l.name }}</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
+
+                  <span class="cz__btitle cz__btitle--rec font-thai">MOMAY แนะนำสำหรับคุณ<em>เหมาะกับช่วงเวลานี้</em></span>
+                  <ul class="cz__recs font-thai">
+                    <li v-for="r in czPlaces" :key="r.name" :style="{ '--c': r.color }">
+                      <span class="cz__thumb"><i v-if="r.tag">{{ r.tag }}</i></span>
+                      <b>{{ r.name }}</b>
+                      <small>{{ r.note }}</small>
+                      <em>{{ r.time }}</em>
+                    </li>
+                  </ul>
+
+                  <p class="cz__foot">
+                    <b>MOMAY</b>
+                    <span class="font-thai">CITIZEN · เทศบาลนครพิษณุโลก</span>
+                    <em>People × Spaces × Better Tomorrows</em>
+                  </p>
                 </div>
               </div>
             </div>
@@ -2010,6 +2031,57 @@ const pixelRooms = [
   { floor: '2', name: '24-HR ZONE',  note: 'อ่านหนังสือ · เงียบ', free: 48, on: 3, color: '#35f58a' },
   { floor: '3', name: 'GROUP ROOM',  note: 'ทำงานกลุ่ม · จองได้', free: 12, on: 5, color: '#ffd84d' },
   { floor: '4', name: 'CYBERZONE',   note: 'ใช้เทคโนโลยี',        free: 5,  on: 7, color: '#ff4fd8' },
+]
+
+
+/* ── ม็อกอัพแอปประชาชน MOMAY CITIZEN (หน้าจอแท็บเล็ตในหมวด STUDENT) ── */
+const czNav = [
+  `<svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/></svg>`,
+  `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>`,
+  `<svg viewBox="0 0 24 24"><path d="M4 6.5 9.5 4.5l5 2 5-2v13l-5 2-5-2-5.5 2z"/><path d="M9.5 4.5v13M14.5 6.5v13"/></svg>`,
+  `<svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 10h16M9 3.5v4M15 3.5v4"/></svg>`,
+  `<svg viewBox="0 0 24 24"><path d="M4 16v-3l2-5h12l2 5v3"/><path d="M4 16h16v3H4z"/></svg>`,
+  `<svg viewBox="0 0 24 24"><path d="M12 5.5 14 9.5l4.5.6-3.2 3.1.8 4.4L12 15.5 7.9 17.6l.8-4.4L5.5 10l4.5-.5z"/></svg>`,
+]
+const czCats = [
+  { th: 'ออกกำลังกาย', note: 'เดิน วิ่ง ปั่น', color: '#8EC06C',
+    icon: `<svg viewBox="0 0 24 24"><circle cx="13.5" cy="5" r="2"/><path d="M11 21l2-5-3-2.5 1.5-4.5 3.5 2 3 1"/><path d="M8.5 12 6 14.5"/></svg>` },
+  { th: 'กิน / ตลาด', note: 'ของอร่อยใกล้คุณ', color: '#ED1B2E',
+    icon: `<svg viewBox="0 0 24 24"><path d="M7 3.5v8M7 11.5V21M5 3.5v5a2 2 0 0 0 4 0v-5"/><path d="M16.5 3.5c-1.5 1.5-2 3.5-2 5.5s1 3 2.5 3V21"/></svg>` },
+  { th: 'คาเฟ่ / พักผ่อน', note: 'นั่งชิล พบเพื่อน', color: '#ECB731',
+    icon: `<svg viewBox="0 0 24 24"><path d="M5 8h11v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 9.5h2a2 2 0 0 1 0 4h-2"/><path d="M4 20h13"/></svg>` },
+  { th: 'เดินเล่นริมน้ำ', note: 'ชมบรรยากาศ', color: '#56A0D3',
+    icon: `<svg viewBox="0 0 24 24"><path d="M12 3.5 17 11h-3.2l3.7 6H5.5l3.7-6H6z"/><path d="M12 17v4"/></svg>` },
+  { th: 'กิจกรรม / Event', note: 'งานเทศกาล', color: '#B9AEFF',
+    icon: `<svg viewBox="0 0 24 24"><path d="M9 18V5.5l10-2V16"/><circle cx="7" cy="18" r="2.2"/><circle cx="17" cy="16" r="2.2"/></svg>` },
+]
+const czStats = [
+  { label: 'ความหนาแน่นผู้คน', value: 'ปกติ', note: 'ประมาณ 40%', color: '#56A0D3' },
+  { label: 'คุณภาพอากาศ', value: 'ดี', note: 'PM2.5 18', color: '#8EC06C' },
+  { label: 'อุณหภูมิ', value: '29°C', note: 'รู้สึกสบาย', color: '#ECB731' },
+  { label: 'การจราจร', value: 'คล่องตัว', note: 'ไม่มีปัญหาหลัก', color: '#B9AEFF' },
+]
+const czPins = [
+  { x: '22%', y: '62%', color: '#8EC06C' }, { x: '34%', y: '55%', color: '#ED1B2E' },
+  { x: '46%', y: '48%', color: '#ECB731' }, { x: '58%', y: '44%', color: '#ED1B2E' },
+  { x: '70%', y: '42%', color: '#56A0D3' }, { x: '82%', y: '36%', color: '#8EC06C' },
+]
+const czSpots = [
+  { name: 'ตลาดเหนือ', x: '30%', y: '30%' },
+  { name: 'สะพานเอกาทศรถ', x: '18%', y: '78%' },
+  { name: 'ตลาดใต้', x: '62%', y: '72%' },
+  { name: 'วัดใหญ่', x: '86%', y: '20%' },
+]
+const czLegend = [
+  { name: 'หนาแน่นมาก', color: '#ED1B2E' },
+  { name: 'ค่อนข้างหนาแน่น', color: '#ECB731' },
+  { name: 'ปกติ', color: '#8EC06C' },
+  { name: 'ไม่หนาแน่น', color: '#3FA34D' },
+]
+const czPlaces = [
+  { name: 'ทางเดินริมน้ำน่าน', note: 'บรรยากาศดี คนไม่หนาแน่น', time: '4 นาที (300 ม.)', tag: 'แนะนำเลย', color: '#8EC06C' },
+  { name: 'ตลาดใต้', note: 'ของอร่อยพื้นเมือง', time: '6 นาที (450 ม.)', tag: 'กำลังนิยม', color: '#ED1B2E' },
+  { name: 'The River Cafe', note: 'วิวสวย นั่งสบาย', time: '8 นาที (600 ม.)', tag: '', color: '#ECB731' },
 ]
 
 const seatKinds = [
@@ -4238,6 +4310,236 @@ section {
 }
 /* แท็บเล็ตด้านหลัง */
 
+/* ══════════════ ม็อกอัพแอปประชาชน MOMAY CITIZEN ══════════════ */
+/* อยู่บนหน้าจอแท็บเล็ตของหมวด STUDENT — โทนน้ำเงินกลางคืนริมน้ำน่าน
+   ย่อผังของหน้าจริงลงมา เก็บเฉพาะ: ค้นหา · หมวดกิจกรรม · สถานการณ์ตอนนี้ · แผนที่ · ที่แนะนำ */
+.cz {
+  --cz-line: rgba(255, 255, 255, 0.09);
+  --cz-panel: rgba(255, 255, 255, 0.035);
+  --cz-dim: #92a6c4;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 7px;
+  padding: 8px 8px 9px;
+  background: linear-gradient(168deg, #0a1526 0%, #060a12 100%);
+  font-size: 0.42rem;
+  color: #e6ecf6;
+}
+.cz__rail { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.cz__logo {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  color: #071018;
+  background: linear-gradient(140deg, #7fd4ff, #3f8fd8);
+}
+.cz__nav { display: grid; gap: 3px; margin: 2px 0 0; padding: 0; list-style: none; }
+.cz__nav li { display: grid; place-items: center; width: 20px; height: 18px; border-radius: 5px; color: #6f86a8; }
+.cz__nav li.is-on { background: rgba(127, 212, 255, 0.18); color: #cfefff; }
+.cz__nav :deep(svg) {
+  width: 11px; height: 11px; fill: none; stroke: currentColor;
+  stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.cz__main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cz__top { display: flex; align-items: center; gap: 5px; }
+.cz__search {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--cz-line);
+  background: var(--cz-panel);
+  font-size: 0.4rem;
+  color: var(--cz-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cz__wx { font-size: 0.44rem; color: #ffd98a; }
+.cz__time { font-size: 0.46rem; font-weight: 700; }
+
+/* แถบภาพริมน้ำตอนค่ำ — ไล่สีแทนรูปถ่าย ให้ไฟล์ไม่ต้องพกภาพจริง */
+.cz__hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 9px 9px;
+  border-radius: 9px;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 120% at 78% 110%, rgba(255, 196, 120, 0.32), transparent 62%),
+    radial-gradient(60% 100% at 20% 0%, rgba(126, 92, 190, 0.42), transparent 66%),
+    linear-gradient(170deg, #23305c 0%, #142244 42%, #0a1226 100%);
+}
+.cz__hero b { font-size: 0.66rem; line-height: 1.35; }
+.cz__hero small { font-size: 0.38rem; line-height: 1.45; color: #c2d0e6; max-width: 60%; }
+.cz__hero em {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font-style: italic;
+  font-size: 0.42rem;
+  line-height: 1.35;
+  text-align: right;
+  color: #ffe7bd;
+}
+
+/* หมวด "จะไปทำอะไร" */
+.cz__cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.cz__cats li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 0;
+  padding: 5px 3px;
+  border-radius: 7px;
+  border: 1px solid var(--cz-line);
+  background: var(--cz-panel);
+  text-align: center;
+}
+.cz__cats li.is-on { border-color: color-mix(in srgb, var(--c, #7fd4ff) 60%, transparent); background: color-mix(in srgb, var(--c, #7fd4ff) 15%, transparent); }
+.cz__cats i { color: var(--c, #7fd4ff); }
+.cz__cats :deep(svg) {
+  width: 13px; height: 13px; fill: none; stroke: currentColor;
+  stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+}
+.cz__cats b { font-size: 0.36rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.cz__cats small { font-size: 0.3rem; color: var(--cz-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+/* สถานการณ์ตอนนี้ + แผนที่ */
+.cz__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 5px; }
+.cz__box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 7px 7px;
+  border-radius: 8px;
+  border: 1px solid var(--cz-line);
+  background: var(--cz-panel);
+}
+.cz__btitle { display: flex; align-items: center; gap: 5px; font-size: 0.42rem; font-weight: 700; }
+.cz__btitle .live { font-style: normal; font-size: 0.32rem; }
+.cz__btitle em { font-style: normal; margin-left: auto; font-size: 0.34rem; font-weight: 400; color: var(--cz-dim); }
+.cz__btitle--rec { font-size: 0.46rem; }
+.cz__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.cz__stats li {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 4px 5px;
+  border-radius: 6px;
+  border: 1px solid var(--cz-line);
+  border-left: 2px solid var(--c, #7fd4ff);
+  background: rgba(255, 255, 255, 0.03);
+}
+.cz__stats small { font-size: 0.3rem; color: var(--cz-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cz__stats b { font-size: 0.46rem; color: var(--c, #7fd4ff); }
+.cz__stats em { font-style: normal; font-size: 0.28rem; color: var(--cz-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cz__map { display: flex; min-width: 0; }
+.cz__stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--cz-line);
+  background:
+    radial-gradient(56% 40% at 26% 24%, rgba(126, 166, 214, 0.1), transparent 72%),
+    linear-gradient(158deg, #0d1a2c 0%, #060c15 100%);
+}
+.cz__stage svg { display: block; width: 100%; height: 100%; }
+.cz__pin {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--c, #8ec06c);
+  box-shadow: 0 0 0 2px rgba(6, 12, 21, 0.85), 0 0 8px var(--c, #8ec06c);
+}
+.cz__spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(6, 10, 18, 0.86);
+  font-size: 0.3rem;
+}
+.cz__legend {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 3px 4px;
+  list-style: none;
+  border-radius: 5px;
+  background: rgba(6, 10, 18, 0.8);
+}
+.cz__legend li { display: flex; align-items: center; gap: 3px; font-size: 0.26rem; color: var(--cz-dim); }
+.cz__legend i { width: 4px; height: 4px; border-radius: 50%; background: var(--c, #8ec06c); }
+
+/* ที่แนะนำสำหรับคุณ */
+.cz__recs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin: 0; padding: 0; list-style: none; }
+.cz__recs li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 5px 6px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--cz-line);
+  background: var(--cz-panel);
+}
+.cz__thumb {
+  position: relative;
+  height: 22px;
+  border-radius: 5px;
+  background:
+    radial-gradient(70% 120% at 76% 110%, rgba(255, 196, 120, 0.3), transparent 62%),
+    linear-gradient(160deg, color-mix(in srgb, var(--c, #8ec06c) 45%, #10203a), #0a1424);
+}
+.cz__thumb i {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  font-style: normal;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: var(--c, #8ec06c);
+  font-size: 0.26rem;
+  font-weight: 700;
+  color: #07121f;
+}
+.cz__recs b { font-size: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cz__recs small { font-size: 0.3rem; color: var(--cz-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cz__recs em { font-style: normal; font-size: 0.3rem; color: var(--c, #8ec06c); }
+
+.cz__foot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: auto 0 0;
+  padding-top: 5px;
+  border-top: 1px solid var(--cz-line);
+  font-size: 0.3rem;
+  color: var(--cz-dim);
+}
+.cz__foot b { letter-spacing: 0.1em; color: #e6ecf6; }
+.cz__foot em { font-style: normal; margin-left: auto; }
+
 /* ══════════════ ม็อกอัพเครื่องกลาง: ผิวพิกเซล 8-bit ══════════════ */
 /* ธีมนี้มีของอยู่ 4 อย่าง — จานสีจัด, มุมโค้ง 0, เงาแข็งไม่เบลอ, ฟอนต์พิกเซลเฉพาะเลข/อังกฤษ */
 .phone--pixel {
@@ -4249,7 +4551,9 @@ section {
   background: linear-gradient(155deg, #6a4aa8 0%, #33195c 18%, #1a0b32 55%, #0d0424 100%);
 }
 /* มุมโค้งเป็นศัตรูของธีมนี้ — บังคับเป็น 0 ทั้งหน้าจอทีเดียว ไม่ต้องไล่ลบทีละจุด */
-.px, .px * { border-radius: 0 !important; }
+/* บังคับมุมโค้งเป็น 0 เฉพาะของข้างใน — ตัวจอต้องคงมุมโค้ง 32px ไว้
+   ไม่งั้นมุมสี่เหลี่ยมของจอจะแทงทะลุขอบโค้งของตัวเครื่องออกมา */
+.px * { border-radius: 0 !important; }
 .px {
   background:
     radial-gradient(115% 62% at 50% -6%, #5a23b8 0%, #2e1068 45%, var(--px-bg) 100%);
@@ -4374,9 +4678,10 @@ section {
 .tablet {
   position: relative;
   z-index: 1;
-  width: min(336px, 100%);
+  width: min(314px, 100%);
   flex: none;
-  margin-left: -30px;
+  /* แยกออกจากคู่มือถือ ไม่ซ้อนกันแล้ว */
+  margin-left: 14px;
   margin-top: 30px;
   padding: 13px 11px;
   border-radius: 26px;
