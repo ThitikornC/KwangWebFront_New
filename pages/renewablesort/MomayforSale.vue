@@ -44,7 +44,7 @@
           </span>
         </div>
 
-        <button type="button" class="mm-btn mm-btn--ghost nav__cta" v-magnetic @click="customersOpen = true">SEE CUSTOMERS</button>
+        <button type="button" class="mm-btn mm-btn--ghost nav__cta" v-magnetic @click="customersOpen = true">MOMAY MAP</button>
       </div>
     </header>
 
@@ -122,31 +122,24 @@
           </p>
 
           <ul class="mm-hero__chips" v-reveal="720">
-            <li v-for="chip in heroChips" :key="chip.title" class="chip">
-              <span class="chip__icon" v-html="chip.icon" />
-              <span class="chip__label">
-                <b>{{ chip.title }}</b>
-                <small class="font-thai">{{ chip.note }}</small>
-              </span>
-            </li>
-            <!-- จอแนวตั้งไม่มีปุ่มนี้บนแถบบน — เติมลงช่องที่ว่างข้างชิปแทน -->
+            <!-- จอแนวตั้งไม่มีปุ่มนี้บนแถบบน — มาอยู่ในแถวนี้แทน -->
             <li class="chip chip--cta">
-              <button type="button" class="mm-btn mm-btn--ghost" v-magnetic @click="customersOpen = true">SEE CUSTOMERS</button>
+              <button type="button" class="mm-btn mm-btn--ghost" v-magnetic @click="customersOpen = true">MOMAY MAP</button>
             </li>
           </ul>
+        </div>
 
-          <!-- ทางลัดไปเดโมของทั้งสามผลิตภัณฑ์ -->
-          <div class="hero-demos" :style="{ '--cols': demoCols, '--cols-sm': demoColsSm }">
-            <button v-for="(d, i) in demoLinks" :key="d.key" type="button" class="demolink"
-                    :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
-                    v-reveal="820 + i * 90" @click="open(d.link)">
-              <span class="demolink__icon" v-html="d.icon" />
-              <span class="demolink__label">
-                <b>{{ d.label }}</b>
-                <small>VIEW DEMO</small>
-              </span>
-            </button>
-          </div>
+        <!-- ทางลัดไปเดโม — แถวของตัวเอง กึ่งกลางจอ ชิดขอบล่างของฮีโร่ -->
+        <div class="hero-demos" :style="{ '--cols': demoCols, '--cols-sm': demoColsSm }">
+          <button v-for="(d, i) in demoLinks" :key="d.key" type="button" class="demolink"
+                  :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
+                  v-reveal="820 + i * 90" @click="open(d.link)">
+            <span class="demolink__icon" v-html="d.icon" />
+            <span class="demolink__label">
+              <b>{{ d.label }}</b>
+              <small>VIEW DEMO</small>
+            </span>
+          </button>
         </div>
       </div>
 
@@ -914,12 +907,6 @@
     <Transition name="mapfx">
       <div v-if="customersOpen" class="lightbox lightbox--map" @click="customersOpen = false">
         <div class="mapcard">
-          <div class="mapcard__head">
-            <span class="mapcard__eyebrow">OUR CUSTOMERS</span>
-            <h3 class="font-thai">องค์กรที่ใช้งาน MOMAY</h3>
-            <p class="font-thai">{{ customerPins.length }} แห่งทั่วประเทศ</p>
-          </div>
-
           <div class="mapcard__stage">
             <div class="thscene">
               <div class="thplane">
@@ -1269,24 +1256,6 @@ const smoothScrollTo = (to, duration = 950) => {
 
 /* ══════════════ 3. เนื้อหา ══════════════ */
 const year = new Date().getFullYear()
-const heroChips = [
-  {
-    title: 'REAL DATA',
-    note: 'ข้อมูลจริงจากหน้างาน',
-    icon: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>`,
-  },
-  {
-    title: 'REAL BEHAVIOR',
-    note: 'พฤติกรรมการใช้พื้นที่',
-    icon: `<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20v-1.4A4.6 4.6 0 0 1 7.1 14h3.8a4.6 4.6 0 0 1 4.6 4.6V20"/><path d="M16 8.4a3 3 0 0 1 0 5.2"/><path d="M18 20v-1.5a4 4 0 0 0-1.6-3.2"/></svg>`,
-  },
-  {
-    title: 'REAL INSIGHT',
-    note: 'เข้าใจได้ทันที',
-    icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>`,
-  },
-]
-
 const purposes = [
   {
     title: 'READ',
@@ -2145,7 +2114,7 @@ section {
 .mm-btn--ghost { border-color: rgba(237, 27, 46, 0.65); color: #ffd9dc; }
 .mm-btn--ghost:hover { background: rgba(237, 27, 46, 0.14); transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 2px), 0); }
 
-/* ปุ่ม SEE CUSTOMERS บนแถบนำทาง — แสงวิ่งรอบขอบเหมือนปุ่มปิดท้ายของแต่ละผลิตภัณฑ์ */
+/* ปุ่ม MOMAY MAP บนแถบนำทาง — แสงวิ่งรอบขอบเหมือนปุ่มปิดท้ายของแต่ละผลิตภัณฑ์ */
 .mm-btn.nav__cta,
 .chip--cta .mm-btn {
   position: relative;
@@ -2268,22 +2237,25 @@ section {
 .nav__inner {
   display: flex;
   align-items: center;
-  gap: 18px;
-  height: 68px;
+  gap: clamp(14px, 1.5vw, 22px);
+  height: 92px;
+  /* ตัวหนังสือใหญ่ขึ้นเท่าตัว แถบบนจึงกินความกว้างมากกว่าเนื้อหาหน้า */
+  width: min(1720px, 95vw);
 }
-.brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: inherit; }
-.brand__mark { width: auto; height: 30px; flex: none; object-fit: contain; filter: drop-shadow(0 0 12px rgba(237, 27, 46, 0.45)); transition: filter 0.45s var(--ease), transform 0.45s var(--ease); }
+.brand { display: inline-flex; align-items: center; gap: 13px; text-decoration: none; color: inherit; }
+.brand__mark { width: auto; height: 42px; flex: none; object-fit: contain; filter: drop-shadow(0 0 12px rgba(237, 27, 46, 0.45)); transition: filter 0.45s var(--ease), transform 0.45s var(--ease); }
 .brand:hover .brand__mark { filter: drop-shadow(0 0 20px rgba(237, 27, 46, 0.8)); transform: translateY(-1px) scale(1.04); }
 .brand__text { display: flex; flex-direction: column; line-height: 1.05; }
-.brand__text strong { font-family: 'Poppins', 'Inter', sans-serif; font-size: 1.06rem; letter-spacing: 0.12em; }
-.brand__text small { font-size: 0.5rem; letter-spacing: 0.16em; color: var(--muted); }
+.brand__text strong { font-family: 'Poppins', 'Inter', sans-serif; font-size: 2.12rem; letter-spacing: 0.09em; }
+.brand__text small { font-size: 1rem; letter-spacing: 0.1em; white-space: nowrap; color: var(--muted); }
 .nav__live { display: flex; align-items: center; margin-left: auto; }
-.nav__live-tag { font-size: 0.58rem; padding-right: 20px; }
+.mm-btn.nav__cta { font-size: 1.1rem; letter-spacing: 0.07em; padding: 14px 28px; white-space: nowrap; }
+.nav__live-tag { font-size: 1.16rem; padding-right: 20px; }
 .navkpi {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 0 20px;
+  gap: 7px;
+  padding: 0 clamp(12px, 1.1vw, 20px);
   position: relative;
 }
 .navkpi::before {
@@ -2293,25 +2265,26 @@ section {
   top: 50%;
   transform: translateY(-50%);
   width: 1px;
-  height: 28px;
+  height: 40px;
   background: rgba(255, 255, 255, 0.09);
 }
-.navkpi__label { font-style: normal; font-size: 0.58rem; letter-spacing: 0.14em; color: var(--muted); }
+.navkpi__label { font-style: normal; font-size: 1.16rem; letter-spacing: 0.06em; white-space: nowrap; color: var(--muted); }
 .navkpi__value {
   font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 700;
-  font-size: 1.14rem;
+  font-size: 2.28rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.navkpi__value em { font-style: normal; font-size: 0.58rem; letter-spacing: 0.08em; color: var(--muted); margin-left: 4px; }
+.navkpi__value em { font-style: normal; font-size: 1.16rem; letter-spacing: 0.06em; color: var(--muted); margin-left: 6px; }
 /* ══════════════ HERO ══════════════ */
 .mm-hero {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   min-height: 100svh;
-  padding: clamp(104px, 13vh, 150px) 0 clamp(70px, 9vh, 110px);
+  /* แถบบนสูงขึ้นตามตัวหนังสือ และเว้นขอบล่างมากขึ้นให้ปุ่มเดโมไม่ติดขอบจอ */
+  padding: clamp(104px, 13vh, 158px) 0 clamp(96px, 14vh, 200px);
   overflow: hidden;
 }
 .mm-hero__bg { position: absolute; inset: 0; z-index: 0; }
@@ -2372,6 +2345,8 @@ section {
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  /* แถวข้อความกินที่ที่เหลือแล้วจัดกึ่งกลางในตัวมัน แถวปุ่มเดโมจึงตกไปชิดขอบล่างเสมอ */
+  grid-template-rows: 1fr auto;
   gap: clamp(28px, 4vw, 44px);
   align-items: center;
   perspective: 1400px;
@@ -2379,18 +2354,19 @@ section {
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-size: 0.66rem;
-  letter-spacing: 0.26em;
+  gap: 11px;
+  /* ขนาดเดียวกับ .mm-hero__sub (BEFORE IT IS TOO LATE.) */
+  font-size: clamp(0.95rem, max(1.7vw, 2vh), 1.6rem);
+  letter-spacing: 0.2em;
   color: #ffb3b9;
   margin-bottom: 16px;
 }
 .eyebrow__dot {
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--red);
-  box-shadow: 0 0 0 5px rgba(237, 27, 46, 0.16);
+  box-shadow: 0 0 0 6px rgba(237, 27, 46, 0.16);
   animation: pulseDot 2.4s ease-in-out infinite;
 }
 .mm-hero__copy { text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75); }
@@ -2419,35 +2395,14 @@ section {
   word-spacing: 0.06em;
 }
 .mm-hero__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(14px, 2.4vw, 30px);
-  margin: clamp(22px, 4vh, 56px) 0 0;
+  display: none;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 .chip { display: flex; align-items: center; gap: 11px; }
-/* ช่องปุ่มในแถวชิป — จอกว้างใช้ปุ่มบนแถบบนอยู่แล้ว */
+/* เหลือแค่ปุ่ม SEE CUSTOMERS ของจอแนวตั้ง — จอกว้างใช้ปุ่มบนแถบบนอยู่แล้ว */
 .chip--cta { display: none; }
-.chip__icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid rgba(237, 27, 46, 0.35);
-  background: rgba(237, 27, 46, 0.08);
-  color: var(--red);
-  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
-}
-.chip:hover .chip__icon { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(237, 27, 46, 0.25); }
-.chip__icon :deep(svg) {
-  width: 21px; height: 21px; fill: none; stroke: currentColor;
-  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
-}
-.chip__label { display: flex; flex-direction: column; line-height: 1.3; }
-.chip__label b { font-size: 0.7rem; letter-spacing: 0.13em; }
-.chip__label small { font-size: 0.66rem; color: var(--muted); }
 
 
 /* ══════════════ เส้นคั่นแบบขอบฟ้าอวกาศ ══════════════ */
@@ -3086,17 +3041,18 @@ section {
 .hero-demos {
   display: grid;
   grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
-  gap: clamp(10px, 1.2vw, 16px);
-  max-width: min(calc(220px * var(--cols, 4)), 100%);
-  margin-top: clamp(24px, 4.2vh, 60px);
+  gap: clamp(14px, 1.7vw, 26px);
+  width: min(calc(400px * var(--cols, 4)), 100%);
+  margin: clamp(24px, 4.2vh, 60px) auto 0;
 }
 .demolink {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: clamp(12px, 1.1vw, 18px);
   position: relative;
   isolation: isolate;
-  padding: 10px 16px 10px 11px;
+  padding: clamp(14px, 1.35vh, 20px) clamp(20px, 1.7vw, 30px);
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -3152,8 +3108,8 @@ section {
 .demolink__icon {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: clamp(45px, 3.2vw, 55px);
+  height: clamp(45px, 3.2vw, 55px);
   flex: none;
   border-radius: 50%;
   border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
@@ -3167,13 +3123,13 @@ section {
   transform: scale(1.06);
 }
 .demolink__icon :deep(svg) {
-  width: 19px; height: 19px; fill: none; stroke: currentColor;
+  width: clamp(24px, 1.75vw, 30px); height: clamp(24px, 1.75vw, 30px); fill: none; stroke: currentColor;
   stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
 }
-.demolink__label { display: flex; flex-direction: column; gap: 2px; line-height: 1.3; }
+.demolink__label { display: flex; flex-direction: column; gap: 3px; line-height: 1.3; }
 .demolink__label b {
   font-family: 'Poppins', 'Inter', sans-serif;
-  font-size: 0.64rem;
+  font-size: clamp(0.94rem, 1.18vw, 1.2rem);
   font-weight: 700;
   letter-spacing: 0.11em;
   color: var(--accent);
@@ -3182,8 +3138,8 @@ section {
 .demolink__label small {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.52rem;
+  gap: 5px;
+  font-size: clamp(0.74rem, 0.94vw, 0.96rem);
   letter-spacing: 0.13em;
   color: var(--muted);
   transition: color 0.35s var(--ease);
@@ -3780,14 +3736,11 @@ section {
   transition: transform 0.44s cubic-bezier(0.34, 0, 0.24, 1), opacity 0.4s ease 0.04s;
 }
 .mapfx-leave-to .mapcard { transform: translateY(-24px) scale(0.9); opacity: 0; }
-.mapfx-leave-active .mapcard__head { transition: transform 0.36s ease, opacity 0.26s ease; }
-.mapfx-leave-to .mapcard__head { transform: translateY(-14px); opacity: 0; }
 .mapcard {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: clamp(8px, 1.4vh, 18px);
+  grid-template-rows: minmax(0, 1fr);
   width: min(1100px, 96vw);
   max-height: 94vh;
   padding: 0;
@@ -3795,26 +3748,6 @@ section {
   background: none;
   box-shadow: none;
 }
-.mapcard__head { text-align: center; }
-.mapcard__eyebrow {
-  display: block;
-  font-family: 'Poppins', 'Inter', sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.4rem, 3vw, 2.1rem);
-  line-height: 1.1;
-  letter-spacing: 0.06em;
-  color: var(--red);
-  text-shadow: 0 0 38px rgba(237, 27, 46, 0.35);
-}
-.mapcard__head h3 {
-  font-family: 'Poppins', 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: clamp(1.05rem, 2.1vw, 1.75rem);
-  letter-spacing: 0.13em;
-  color: #e8e8ee;
-  margin: 10px 0 6px;
-}
-.mapcard__head p { font-size: clamp(0.88rem, 1.08vw, 1.02rem); line-height: 1.95; color: #eaeaf0; margin: 0; }
 .mapcard__stage { position: relative; display: grid; place-items: center; min-height: 0; padding-top: clamp(10px, 2vh, 26px); perspective: 1500px; }
 .thscene {
   position: relative;
@@ -4029,6 +3962,25 @@ section {
 @keyframes shine { 0%, 100% { background-position: 130% 0; } 50% { background-position: -30% 0; } }
 
 /* ══════════════ responsive ══════════════ */
+/* เบราว์เซอร์เต็มจอบนโน้ตบุ๊กเหลือความสูงจริงไม่ถึง 900px — หัวเรื่องที่ผูกกับความกว้าง
+   อย่างเดียวจะดันแถวปุ่มเดโมตกขอบล่าง บล็อกนี้ผูกกับความสูงจอด้วยแล้วบีบระยะลง */
+@media (orientation: landscape) and (max-height: 900px) and (min-width: 976px) {
+  .mm-hero { padding: clamp(100px, 13vh, 130px) 0 clamp(64px, 8vh, 96px); }
+  .mm-hero__title { font-size: clamp(2.6rem, min(7.4vw, 13vh), 6rem); }
+  .mm-hero__inner { gap: clamp(16px, 2.6vh, 30px); }
+  .mm-hero__sub { margin-top: clamp(10px, 2.2vh, 24px); }
+  .mm-hero__thai { margin-top: clamp(12px, 2.4vh, 26px); line-height: 1.8; }
+  .mm-hero__copy .eyebrow { margin-bottom: clamp(10px, 1.8vh, 22px); }
+  .hero-demos { margin-top: clamp(14px, 2.6vh, 34px); }
+}
+
+
+/* ตัวหนังสือบนแถบบนใหญ่ขึ้นเท่าตัว ที่บนแถบจึงหมดเร็วกว่าเดิม —
+   พอไม่พอก็ปล่อยตัวเลขสดทีละใบ แล้วค่อยตัดชื่อรองใต้โลโก้ */
+@media (max-width: 1500px) { .navkpi:last-child { display: none; } }
+@media (max-width: 1300px) { .navkpi:nth-last-child(-n+2) { display: none; } }
+@media (max-width: 1150px) { .brand__text small { display: none; } }
+
 /* iPad: คงจำนวนคอลัมน์เท่าจอคอม แค่ย่อระยะ/ตัวอักษรลงให้พอดี */
 @media (max-width: 1100px) {
   .purpose-grid { gap: 9px; }
@@ -4044,8 +3996,7 @@ section {
   .product__note { font-size: 0.72rem; }
   .product__link { padding: 9px 18px; font-size: 0.64rem; letter-spacing: 0.12em; }
   .navkpi { padding: 0 11px; }
-  .navkpi__value { font-size: 0.82rem; }
-  .navkpi:last-child { display: none; }
+  .navkpi:nth-last-child(-n+3) { display: none; }
 }
 @media (max-width: 975px) {
   .nav__live, .nav__cta { display: none; }
@@ -4071,8 +4022,7 @@ section {
   .flow__arrow { display: block; }
   .products { grid-template-columns: repeat(var(--cols-md, 2), minmax(0, 1fr)); }
   .navkpi { padding: 0 9px; }
-  .navkpi__value { font-size: 0.78rem; }
-  .navkpi:nth-last-child(-n+2) { display: none; }
+  .navkpi:nth-last-child(-n+3) { display: none; }
   /* จอเตี้ย บีบระยะหัวท้ายลงให้เนื้อหาจบในหน้าเดียวเหมือนบนคอม */
   .section.section--fit { padding-top: clamp(14px, 2.6vh, 34px); padding-bottom: clamp(12px, 2.2vh, 30px); }
   .section--fit .lead { margin-top: 8px; }
@@ -4091,7 +4041,6 @@ section {
   .product__art { width: 88%; right: -6%; }
   .brief__row { grid-template-columns: minmax(0, 1fr); }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .mm-hero__chips { gap: 14px 18px; }
   .pcard { padding: 16px 10px 14px; }
   .pcard h3 { font-size: 0.74rem; }
   .pcard p, .flow__step p { font-size: 0.7rem; }
@@ -4137,6 +4086,7 @@ section {
   /* เดิมคือ max(8vw, 10vh) — บนจอแนวตั้ง 10vh ชนะเสมอ ตัวอักษรเลยกว้างเกินจอ */
   .mm-hero__title { font-size: clamp(1.95rem, 13.5vw, 5rem); }
   .mm-hero__copy .eyebrow { margin-bottom: clamp(12px, 2.4vh, 24px); }
+  .eyebrow { font-size: clamp(0.86rem, 3.4vw, 1.25rem); letter-spacing: 0.1em; gap: 8px; }
   .mm-hero__sub {
     font-size: clamp(0.86rem, 3.4vw, 1.25rem);
     letter-spacing: 0.11em;
@@ -4147,12 +4097,8 @@ section {
     line-height: 1.8;
     margin-top: clamp(16px, 3.2vh, 30px);
   }
-  .chip__label b { font-size: 0.62rem; letter-spacing: 0.09em; }
-  .chip__label small { font-size: 0.58rem; }
   .mm-hero__chips {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 11px 12px;
+    display: block;
     margin-top: clamp(20px, 4vh, 38px);
   }
   .chip--cta { display: flex; }
@@ -4192,6 +4138,19 @@ section {
   .h2--left { font-size: clamp(1.3rem, 6.2vw, 2.4rem); }
   /* ปุ่มสองใบเรียงกันแล้วล้นขอบ — ให้ยืดเต็มแถว ถ้าไม่พอก็ตกลงมาเป็นอีกแถวเต็มความกว้าง */
   .cta__actions .mm-btn { flex: 1 1 200px; justify-content: center; }
+}
+
+/* มือถือแคบ: สามใบเรียงแถวเดียวทำให้ชื่อผลิตภัณฑ์โดนตัด — เรียงลงมาทีละใบแทน */
+@media (orientation: portrait) and (max-width: 560px) {
+  .hero-demos {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .demolink { justify-content: flex-start; gap: 9px; padding: 9px 14px 9px 9px; }
+  .demolink__icon { width: 32px; height: 32px; }
+  .demolink__icon :deep(svg) { width: 17px; height: 17px; }
+  .demolink__label b { font-size: 0.7rem; letter-spacing: 0.08em; }
+  .demolink__label small { font-size: 0.58rem; }
 }
 
 /* จอแนวตั้งเท่านั้นที่ใส่กรอบโน้ตบุ๊ค — คอนโซลเป็นผังของจอแนวนอน
@@ -4355,12 +4314,13 @@ section {
   .nav__live-tag { display: none; }
   .navkpi,
   .navkpi:last-child,
-  .navkpi:nth-last-child(-n+2) { display: flex; flex: 1; gap: 3px; padding: 0 7px; }
+  .navkpi:nth-last-child(-n+2),
+  .navkpi:nth-last-child(-n+3) { display: flex; flex: 1; min-width: 0; gap: 3px; padding: 0 7px; }
   .navkpi:first-child { padding-left: 0; }
   .navkpi:first-child::before { display: none; }
-  .navkpi__label { font-size: 0.46rem; letter-spacing: 0.05em; white-space: nowrap; }
-  .navkpi__value { font-size: 0.94rem; }
-  .navkpi__value em { font-size: 0.48rem; margin-left: 3px; }
+  .navkpi__label { font-size: 0.56rem; letter-spacing: 0.02em; }
+  .navkpi__value { font-size: 1.12rem; }
+  .navkpi__value em { font-size: 0.56rem; margin-left: 3px; }
   /* แถบบนสูงขึ้นเพราะมีอีกแถว — ดันเนื้อหา hero ลงมาให้พ้น */
   .mm-hero { padding-top: clamp(140px, 16vh, 168px); }
 }
