@@ -136,7 +136,7 @@
           </ul>
 
           <!-- ทางลัดไปเดโมของทั้งสามผลิตภัณฑ์ -->
-          <div class="hero-demos">
+          <div class="hero-demos" :style="{ '--cols': demoCols, '--cols-sm': demoColsSm }">
             <button v-for="(d, i) in demoLinks" :key="d.key" type="button" class="demolink"
                     :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
                     v-reveal="820 + i * 90" @click="open(d.link)">
@@ -773,8 +773,8 @@
         <p class="kicker" v-reveal>SEE MOMAY IN ACTION</p>
         <h2 class="h2" v-split="24">EXPLORE OUR PRODUCTS</h2>
 
-        <div class="products">
-          <article v-for="(p, i) in products" :key="p.name" class="product" v-reveal="i * 140"
+        <div class="products" :style="{ '--cols': productCols, '--cols-md': productColsMd }">
+          <article v-for="(p, i) in visibleProducts" :key="p.name" class="product" v-reveal="i * 140"
                    :style="{ '--accent': p.color, '--sweep-delay': `${i * -1.2}s` }" @click="open(p.link)">
             <div class="product__body">
               <h3 class="product__name">{{ p.name }}</h3>
@@ -1527,7 +1527,7 @@ const showcases = [
     title: 'FROM DATA TO AWARENESS.',
     lead: 'แพลตฟอร์มที่สามารถนำข้อมูลมาสร้าง Behavioral Intelligence ตั้งแต่การมองเห็นสถานการณ์ การทำความเข้าใจรูปแบบการใช้งาน การคาดการณ์แนวโน้ม ไปจนถึงการนำเสนอข้อมูลเพื่อช่วยให้ผู้บริหารสามารถตัดสินใจและบริหารทรัพยากรได้อย่างเหมาะสม',
     cta: 'EXPLORE MOMAY ENLIGHTENED',
-    link: '/momay/MomayPrototype',
+    link: '/momay/MomayDemo-ByJob',
     color: '#ECB731',
     console: true,
     cards: [],
@@ -1538,7 +1538,7 @@ const showcases = [
     title: 'WHAT ARE YOU HERE TO DO?',
     lead: 'ส่วนติดต่อสำหรับผู้ใช้บริการทั่วไป โดยออกแบบจากแนวคิดว่า ระบบไม่ควรเพียงแสดงข้อมูล แต่ควรช่วยให้ผู้ใช้ตัดสินใจเลือกพื้นที่ให้เหมาะกับสิ่งที่ต้องการทำ เช่น การอ่านหนังสือ การทำงานกลุ่ม การทำงานเงียบ ๆ การใช้เทคโนโลยี การสร้างสรรค์หรือนำเสนอผลงาน และการพักหรือพบปะ โดยระบบสามารถเชื่อมโยงไปยังพื้นที่จริง ห้อง และข้อมูลการให้บริการของสถานที่นั้น ๆ',
     cta: 'EXPLORE MOMAY STUDENT',
-    link: '/momay/MomayDemo-ByJob',
+    link: '/momay/MomayDemo-StudentPixel',
     color: '#8EC06C',
     phone: true,
     cards: purposes,
@@ -1601,7 +1601,7 @@ const products = [
     tagline: 'From Data to Behavioral Intelligence.',
     note: 'แพลตฟอร์มวิเคราะห์พฤติกรรมการใช้พื้นที่ เพื่อองค์กรและเมืองที่ฉลาดขึ้น',
     color: '#ECB731',
-    link: '/momay/MomayPrototype',
+    link: '/momay/MomayDemo-ByJob',
     art: `<svg viewBox="0 0 260 210" class="art art--city">
       <g class="float-c">
         
@@ -1626,7 +1626,7 @@ const products = [
     tagline: 'Find the right space.',
     note: 'ช่วยให้นักศึกษาและผู้ใช้พื้นที่ เลือกที่นั่งที่ใช่ได้ง่ายและสะดวกขึ้น',
     color: '#8EC06C',
-    link: '/momay/MomayDemo-ByJob',
+    link: '/momay/MomayDemo-StudentPixel',
     art: `<svg viewBox="0 0 220 260" class="art art--phone">
       <rect class="float-a" x="52" y="10" width="116" height="240" rx="18" fill="#111119" stroke="rgba(255,255,255,0.14)"/>
       <rect x="60" y="22" width="100" height="216" rx="12" fill="#08080f"/>
@@ -1687,6 +1687,7 @@ const products = [
   },
   {
     name: 'MOMAY STUDENT_PIXEL',
+    hidden: true, // ซ่อนไว้ก่อน — ปลดเมื่อพร้อมโชว์
     tagline: 'Find your seat. 8-bit style.',
     note: 'ที่นั่งชุดเดียวกับ MOMAY STUDENT ในสกิน 8-bit ที่เปิดดูสนุกกว่า',
     color: '#C15CF0',
@@ -1737,6 +1738,9 @@ const products = [
   },
 ]
 
+// ตัวที่ติดธง hidden จะไม่โผล่ทั้งการ์ดและปุ่ม demo
+const visibleProducts = products.filter((p) => !p.hidden)
+
 // ปุ่มใต้ Executive Brief — อ้างผลิตภัณฑ์ชุดเดียวกัน จะได้ไม่ต้องแก้ลิงก์สองที่
 const demoIcons = {
   'MOMAY ENLIGHTENED': `<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>`,
@@ -1745,13 +1749,19 @@ const demoIcons = {
   'MOMAY STUDENT_PIXEL': `<svg viewBox="0 0 24 24"><path d="M8.4 8h7.2a4.4 4.4 0 0 1 4.3 3.5l.9 4.4A2.6 2.6 0 0 1 16 17.6l-1-1.1H9l-1 1.1a2.6 2.6 0 0 1-4.8-1.7l.9-4.4A4.4 4.4 0 0 1 8.4 8z"/><path d="M7.4 11.4v2.4M6.2 12.6h2.4"/><path d="M15.6 11.9h.01M17.4 13.4h.01"/></svg>`,
 }
 
-const demoLinks = products.map((p) => ({
+const demoLinks = visibleProducts.map((p) => ({
   key: p.name,
   label: p.name.replace(/^MOMAY\s+/, ''),
   color: p.color,
   link: p.link,
   icon: demoIcons[p.name],
 }))
+
+// สี่ใบต่อแถวได้เฉพาะจอกว้าง พอเหลือน้อยกว่านั้นให้เรียงแถวเดียวไปเลย จะได้ไม่มีช่องว่างค้าง
+const productCols = visibleProducts.length
+const productColsMd = productCols >= 4 ? 2 : productCols
+const demoCols = demoLinks.length
+const demoColsSm = demoCols >= 4 ? 2 : demoCols
 
 const orgs = [
   { name: 'มหาวิทยาลัยนเรศวร', logo: '/NU_crest.png' },
@@ -3071,9 +3081,9 @@ section {
 }
 .hero-demos {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
   gap: clamp(10px, 1.2vw, 16px);
-  max-width: min(880px, 100%);
+  max-width: min(calc(220px * var(--cols, 4)), 100%);
   margin-top: clamp(24px, 4.2vh, 60px);
 }
 .demolink {
@@ -3473,10 +3483,10 @@ section {
 
 /* ══════════════ PRODUCTS ══════════════ */
 .section--products { background: linear-gradient(180deg, var(--ink2) 0%, var(--ink) 100%); }
-.products { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(30px, 4vw, 52px); }
+.products { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(30px, 4vw, 52px); }
 /* สี่ใบเรียงแถวเดียวได้เฉพาะจอกว้าง ที่แคบกว่านั้นตัดเป็นสองแถว */
 @media (max-width: 1240px) {
-  .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .products { grid-template-columns: repeat(var(--cols-md, 2), minmax(0, 1fr)); }
 }
 /* การ์ด: ภาพใหญ่เต็มการ์ด ข้อความวางทับแบบอาร์ต ๆ */
 .product {
@@ -4055,7 +4065,7 @@ section {
   .purpose-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .flow { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .flow__arrow { display: block; }
-  .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .products { grid-template-columns: repeat(var(--cols-md, 2), minmax(0, 1fr)); }
   .navkpi { padding: 0 9px; }
   .navkpi__value { font-size: 0.78rem; }
   .navkpi:nth-last-child(-n+2) { display: none; }
@@ -4145,7 +4155,7 @@ section {
   .chip--cta .mm-btn { width: 100%; justify-content: center; padding: 11px 12px; font-size: 0.66rem; }
   /* สี่ปุ่มในแถวเดียวแคบเกินไป — ตัดเป็นสองแถว ทรงปุ่มยังเป็นเม็ดยาเหมือนเดิม */
   .hero-demos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--cols-sm, 2), minmax(0, 1fr));
     gap: 7px;
     margin: clamp(18px, 3.7vh, 34px) 0 0;
   }
