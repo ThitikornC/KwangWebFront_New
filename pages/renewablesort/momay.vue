@@ -437,6 +437,15 @@
                   <span class="font-thai">Momay-Enligtend-Executive-Student</span>
                 </div>
               </div>
+              <div
+                @click="openSplineDesign('Momay-Student-Pixel')"
+                class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+              >
+                <div class="card-content">
+                  <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
+                  <span class="font-thai">Momay-Student-Pixel</span>
+                </div>
+              </div>
               </div>
             </div>
           </div>
@@ -497,6 +506,7 @@ const splineLinks: Record<string, string> = {
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
+  'Momay-Student-Pixel': '/momay/Momay-Student-Pixel',
   MomayTemplate: '/momay/MomayTemplate'
 }
 
