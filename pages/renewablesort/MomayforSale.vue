@@ -4149,13 +4149,20 @@ section {
 
 /* ══════════════ responsive ══════════════ */
 /* การ์ดคู่กว้างรวม 152% ของ 880px = 1338px — แคบกว่านี้เริ่มโดนตัดขอบ
-   จึงเลิกซ้อนการ์ด เหลือม็อกใบหน้าใบเดียวจัดกึ่งกลางตามปกติ */
+   แต่ยังอยากเห็นทั้งสองใบ (แท็บเล็ตด้วย) จึงลดระยะซ้อนเหลือ 26% แล้วคุมความกว้าง
+   ของทั้งชุดไม่ให้เกินจอ แทนที่จะซ่อนใบหลังทิ้ง */
 @media (max-width: 1360px) {
+  /* .brief-showcase--laptop ของจอแนวตั้งตั้ง max-width ไว้ทีหลัง จึงต้องเขียนสองคลาส
+     ให้ specificity ชนะ ไม่งั้นชุดการ์ดจะกว้างเกินจอบนแท็บเล็ตแนวตั้ง */
+  .brief-showcase--stack,
+  .brief-showcase--laptop.brief-showcase--stack {
+    max-width: min(880px, calc((100vw - 26px) / 1.26));
+    perspective-origin: 63% 50%;
+  }
   .brief-showcase--stack,
   .brief-showcase--stack.reveal,
-  .brief-showcase--stack.reveal.is-in { transform: none; }
-  .brief-showcase--stack { perspective-origin: 50% 50%; }
-  .brief-showcase--stack .en__backframe { display: none; }
+  .brief-showcase--stack.reveal.is-in { transform: translateX(-13%); }
+  .brief-showcase--stack .en__backframe { left: 26%; }
   .brief-showcase--stack .en__wordmark { display: none; }
 }
 /* เบราว์เซอร์เต็มจอบนโน้ตบุ๊กเหลือความสูงจริงไม่ถึง 900px — หัวเรื่องที่ผูกกับความกว้าง
