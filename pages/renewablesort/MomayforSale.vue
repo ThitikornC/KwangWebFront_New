@@ -168,9 +168,10 @@
 
           <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop brief-showcase--stack" :class="{ 'is-swapped': briefSwapped, 'is-animating': briefAnimating }" v-reveal="140">
             <!-- แผงสรุปเป็นของจอแนวนอนเหมือนคอนโซล — ใส่กรอบโน้ตบุ๊คแบบเดียวกัน -->
-            <button type="button" class="en__backframe" aria-label="สลับลำดับหน้าจอ Executive Brief" :aria-pressed="briefSwapped" @click="toggleBrief">
+            <div class="en__backframe" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Executive Brief"
+                 :aria-pressed="briefSwapped" @click="toggleBrief" @keydown.enter="toggleBrief" @keydown.space.prevent="toggleBrief">
               <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban</b></span>
-            </button>
+            </div>
             <div class="laptop">
               <div class="laptop__lid">
                 <span class="laptop__cam" aria-hidden="true" />
@@ -276,9 +277,195 @@
           <!-- คอนโซลจำลองของ MOMAY ENLIGHTENED — ผังเดียวกับแดชบอร์ดจริง -->
           <div v-else-if="sc.console" class="brief-showcase brief-showcase--laptop brief-showcase--stack" :class="{ 'is-swapped': enlightenedSwapped, 'is-animating': enlightenedAnimating }" v-reveal="140">
             <!-- คอนโซลตัวนี้เป็นของจอแนวนอน — ใส่กรอบโน้ตบุ๊ค แล้วย่อผังขนาดจอคอมทั้งก้อนลงให้พอดีจอ -->
-            <button type="button" class="en__backframe" aria-label="สลับลำดับหน้าจอ Enlightened" :aria-pressed="enlightenedSwapped" @click="toggleEnlightened">
+            <div class="en__backframe" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Enlightened"
+                 :aria-pressed="enlightenedSwapped" @click="toggleEnlightened" @keydown.enter="toggleEnlightened" @keydown.space.prevent="toggleEnlightened">
               <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Enlightened <b>Urban</b></span>
-            </button>
+
+              <!-- แดชบอร์ดระดับเมือง — ยกผังของหน้าจริงมา เก็บเฉพาะใจความ -->
+              <div class="ub" aria-hidden="true">
+                <aside class="ub__side">
+                  <span class="ub__logo">
+                    <i>M</i>
+                    <span><b>MOMAY</b><em>Enlightened</em></span>
+                  </span>
+                  <ul class="ub__nav font-thai">
+                    <li v-for="(n, i) in urbanNav" :key="n.label" :class="{ 'is-on': i === 0 }">
+                      <i v-html="n.icon" />{{ n.label }}
+                    </li>
+                  </ul>
+                  <span class="ub__out font-thai">ออกจากระบบ</span>
+                </aside>
+
+                <div class="ub__main">
+                  <div class="ub__top">
+                    <b>ENLIGHTENED</b>
+                    <span class="ub__temp">29°C</span>
+                    <span class="ub__org">
+                      <i>EU</i>
+                      <span><b>ENLIGHTEN URBAN</b><em class="font-thai">แพลตฟอร์มเมืองอัจฉริยะ</em></span>
+                    </span>
+                  </div>
+
+                  <!-- ═══ แถวบน: เกิดอะไรขึ้น · ผลกระทบ · แผนที่ ═══ -->
+                  <div class="ub__hero">
+                    <div class="ub__lead font-thai">
+                      <b>ปริมาณขยะในตลาด<br />สูงกว่าปกติ <em>42%</em></b>
+                      <small>ตั้งแต่เวลา 06:00 – 09:00 มีปริมาณขยะเพิ่มขึ้นจากค่าเฉลี่ยปกติ
+                        เนื่องจากกิจกรรมตลาดเช้าและการสัญจรที่หนาแน่น</small>
+                      <span class="ub__btn">ดูรายละเอียด →</span>
+                    </div>
+
+                    <div class="ub__impact font-thai">
+                      <ul>
+                        <li v-for="im in urbanImpacts" :key="im">{{ im }}</li>
+                      </ul>
+                      <p class="ub__cmp">เทียบกับสัปดาห์ที่ผ่านมา<b>▲ +42%</b></p>
+                    </div>
+
+                    <div class="ub__map">
+                      <div class="ub__stage">
+                        <!-- ฐานแผนที่: แม่น้ำ ถนนสายหลัก และบล็อกอาคาร -->
+                        <svg class="ub__base" viewBox="0 0 320 200" preserveAspectRatio="none" aria-hidden="true">
+                          <path d="M-10 64C40 78 74 118 128 128S232 120 330 150" fill="none"
+                                stroke="#1d3b57" stroke-width="17" stroke-linecap="round" opacity="0.85" />
+                          <g stroke="rgba(190,214,240,0.16)" fill="none" stroke-width="1.6">
+                            <path d="M-10 108C48 96 96 60 168 56S276 74 330 52" />
+                            <path d="M22 -10 40 210M108 -10 92 210M196 -10 210 210M272 -10 262 210" />
+                          </g>
+                          <g stroke="rgba(190,214,240,0.09)" fill="none" stroke-width="1">
+                            <path d="M-10 34H330M-10 78H330M-10 132H330M-10 176H330" />
+                            <path d="M60 -10 72 210M150 -10 140 210M238 -10 246 210M300 -10 296 210" />
+                          </g>
+                        </svg>
+
+                        <!-- แนวถนนที่เฝ้าดู (corridor) -->
+                        <svg class="ub__corridor" viewBox="0 0 320 200" preserveAspectRatio="none" aria-hidden="true">
+                          <path d="M18 150C66 138 106 106 168 100S262 108 306 86" fill="none"
+                                stroke="#cfe9ff" stroke-width="1.1" stroke-dasharray="6 5" opacity="0.55" />
+                        </svg>
+
+                        <!-- ชั้นความร้อน: วงขาวทับกันแล้วเบลอรวมทีเดียว จากนั้นแปลงความเข้ม
+                             เป็นสีด้วยตารางไล่สี วิธีเดียวกับ heatmap ของจริง ขอบจึงกลืนกันสนิท -->
+                        <svg class="ub__heat" viewBox="0 0 320 200" preserveAspectRatio="none" aria-hidden="true">
+                          <defs>
+                            <filter id="ubHeat" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+                              <feGaussianBlur stdDeviation="6" />
+                              <!-- ย้ายค่า alpha (ความหนาแน่น) ไปไว้ในช่องสีทั้งสาม เพื่อให้ไล่สีตามมันได้ -->
+                              <feColorMatrix type="matrix" values="0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 1 0" />
+                              <feComponentTransfer>
+                                <feFuncR type="table" tableValues="0.13 0.20 0.63 0.95 1 1" />
+                                <feFuncG type="table" tableValues="0.55 0.80 0.86 0.62 0.28 0.11" />
+                                <feFuncB type="table" tableValues="0.86 0.42 0.20 0.16 0.18 0.18" />
+                                <feFuncA type="table" tableValues="0 0.2 0.44 0.64 0.78 0.88" />
+                              </feComponentTransfer>
+                            </filter>
+                          </defs>
+                          <g filter="url(#ubHeat)" fill="#fff">
+                            <circle v-for="(b, i) in urbanHeat" :key="`hb${i}`"
+                                    :cx="b.x" :cy="b.y" :r="b.r" :opacity="b.o" />
+                          </g>
+                        </svg>
+
+                        <span v-for="pl in urbanPlaces" :key="pl.name" class="ub__place font-thai"
+                              :style="{ left: pl.x, top: pl.y }">{{ pl.name }}</span>
+
+                        <span class="ub__callout font-thai">ขยะสูงกว่าปกติ<b>+42%</b></span>
+                        <span class="ub__chip">Chom Nan 500M Corridor</span>
+
+                        <ul class="ub__legend font-thai">
+                          <li v-for="l in urbanLayers" :key="l.name" :class="{ 'is-on': l.on }">
+                            <i :style="{ background: l.color }" />{{ l.name }}
+                          </li>
+                        </ul>
+
+                        <span class="ub__zoom"><i>+</i><i>−</i></span>
+                        <span class="ub__full font-thai">ดูแผนที่แบบเต็มหน้าจอ ↗</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ═══ แถวกลาง: สาเหตุ · คาดการณ์ · จำลอง ═══ -->
+                  <div class="ub__row3">
+                    <div class="ub__box font-thai">
+                      <ul class="ub__drivers">
+                        <li v-for="d in urbanDrivers" :key="d.name">
+                          <span>{{ d.name }}</span><em :style="{ color: d.color }">{{ d.delta }}</em>
+                        </li>
+                      </ul>
+                      <p class="ub__chain"><i>↓</i><b>ปริมาณขยะเพิ่มขึ้น <em>+42%</em></b></p>
+                      <ul class="ub__effects">
+                        <li v-for="e in urbanEffects" :key="e">{{ e }}</li>
+                      </ul>
+                    </div>
+
+                    <div class="ub__box font-thai">
+                      <span class="ub__btitle"><em>วันนี้</em></span>
+                      <div class="ub__plot">
+                        <svg viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+                          <rect x="72" y="0" width="20" height="52" fill="rgba(237,27,46,0.16)" />
+                          <path :d="ubWasteArea" fill="url(#ubWasteFill)" />
+                          <path :d="ubWasteLine" fill="none" stroke="#8EA6FF" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                          <defs>
+                            <linearGradient id="ubWasteFill" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stop-color="#8EA6FF" stop-opacity="0.34" />
+                              <stop offset="100%" stop-color="#8EA6FF" stop-opacity="0" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                        <span class="ub__peak">คาดว่าจะสูงสุด<br /><b>09:00 - 10:00</b></span>
+                      </div>
+                      <span class="ub__xaxis"><em>00:00</em><em>06:00</em><em>12:00</em><em>18:00</em><em>24:00</em></span>
+                      <p class="ub__tip">ถ้ารูปแบบปัจจุบันยังคงดำเนินต่อไป ขยะช่วงเช้าอาจสูงกว่าปกติ 30–50% ในอีก 3 วันข้างหน้า</p>
+                    </div>
+
+                    <div class="ub__box font-thai">
+                      <span class="ub__btitle"><em>SIMULATE</em></span>
+                      <ul class="ub__sims">
+                        <li v-for="sm in urbanSims" :key="sm.key" :class="{ 'is-on': sm.key === 'A' }">
+                          <i>{{ sm.key }}</i><b>{{ sm.name }}</b>
+                        </li>
+                      </ul>
+                      <ul class="ub__res">
+                        <li v-for="r in urbanResults" :key="r.name">
+                          <span>{{ r.name }}</span><em :class="r.dir">{{ r.delta }}</em>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <!-- ═══ แถวล่าง: ข้อเสนอแนะ · ทางเลือกอื่น · สิ่งที่ควรพิจารณา ═══ -->
+                  <div class="ub__row3 ub__row3--last">
+                    <div class="ub__box ub__box--rec font-thai">
+                      <span class="ub__btitle">ข้อเสนอแนะหลัก</span>
+                      <b>ควรเพิ่มรอบเก็บขยะในช่วงเช้า 06:00 – 10:00</b>
+                      <small>เพื่อรองรับปริมาณขยะที่เพิ่มขึ้นจากกิจกรรม และลดผลกระทบต่อพื้นที่สาธารณะ</small>
+                      <em>คาดว่าจะลดขยะตกค้างได้ 32%</em>
+                    </div>
+
+                    <div class="ub__box font-thai">
+                      <span class="ub__btitle">ทางเลือกอื่น ๆ</span>
+                      <ul class="ub__alts">
+                        <li v-for="a in urbanAlts" :key="a"><span>{{ a }}</span><i>ดูผลลัพธ์</i></li>
+                      </ul>
+                    </div>
+
+                    <div class="ub__box font-thai">
+                      <span class="ub__btitle">สิ่งที่ควรพิจารณาเพิ่มเติม</span>
+                      <ul class="ub__notes">
+                        <li v-for="n in urbanNotes" :key="n">{{ n }}</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <p class="ub__foot">
+                    <b>MOMAY</b>
+                    <span>ENLIGHTEN URBAN</span>
+                    <em>One Intelligence Core &#8594; A Smarter City &#8594; A Better Tomorrow</em>
+                  </p>
+                </div>
+              </div>
+            </div>
             <div class="laptop">
               <div class="laptop__lid">
                 <span class="laptop__cam" aria-hidden="true" />
@@ -1436,6 +1623,80 @@ const enTodayArea = computed(() => `${enTodayLine.value} L125 96 L0 96 Z`)
 const enRealArea = computed(() => `${enRealLine.value} L125 96 L0 96 Z`)
 const enPowerLine = computed(() => toLine(enPowerSeries, 640, 62, POWER_TOP))
 const enPowerArea = computed(() => `${enPowerLine.value} L640 62 L0 62 Z`)
+
+/* ── แดชบอร์ดระดับเมือง ENLIGHTEN URBAN (กรอบที่ยังว่างของ section ENLIGHTENED) ──
+   ตัวเลขคงที่ทั้งหมด เป็นภาพจำลองของหน้าจอจริง ไม่ได้ต่อข้อมูลสด */
+const urbanNav = [
+  { label: 'ภาพรวม', icon: `<svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/></svg>` },
+  { label: 'การจราจร', icon: `<svg viewBox="0 0 24 24"><path d="M4 16v-3l2-5h12l2 5v3"/><path d="M4 16h16v3H4z"/></svg>` },
+  { label: 'สิ่งแวดล้อม', icon: `<svg viewBox="0 0 24 24"><path d="M20 5c0 8-5 13-12 13 0-8 5-13 12-13z"/><path d="M6 19c3-4 6-6 10-8"/></svg>` },
+  { label: 'ความปลอดภัย', icon: `<svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v6c0 4-3.2 7.2-7 8.5-3.8-1.3-7-4.5-7-8.5V6z"/></svg>` },
+  { label: 'การมีส่วนร่วม', icon: `<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 8.4a3 3 0 0 1 0 5.2"/></svg>` },
+  { label: 'รายงาน', icon: `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M9 12.5h6M9 16h4"/></svg>` },
+  { label: 'ตั้งค่า', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg>` },
+]
+const urbanImpacts = [
+  'พื้นที่สาธารณะสกปรกเร็วขึ้น',
+  'ภาระงานของเจ้าหน้าที่เพิ่มขึ้น',
+  'ความพึงพอใจของประชาชนลดลง',
+]
+const urbanEffects = ['พื้นที่สาธารณะใช้งานยากขึ้น', 'ภาระงานเก็บขยะเพิ่มขึ้น']
+const urbanLayers = [
+  { name: 'ขยะ', color: '#ED1B2E', on: true },
+  { name: 'ผู้คน', color: '#56A0D3', on: false },
+  { name: 'การจราจร', color: '#ECB731', on: false },
+  { name: 'คุณภาพอากาศ', color: '#8EC06C', on: false },
+  { name: 'สภาพแวดล้อม', color: '#B9AEFF', on: false },
+]
+const urbanAlts = [
+  'ติดตั้งถังขยะเพิ่มในจุดที่มีความหนาแน่น',
+  'สื่อสารและกระตุ้นพฤติกรรมผู้ค้า/ประชาชน',
+  'ปรับเส้นทางเก็บขยะเลี่ยงเวลาการเดินทาง',
+]
+const urbanNotes = [
+  'งบประมาณและทรัพยากร',
+  'การประสานงานกับผู้ค้าในตลาด',
+  'ผลกระทบต่อการจราจร',
+  'การติดตามผลหลังดำเนินการ',
+]
+const urbanSims = [
+  { key: 'A', name: 'เพิ่มรอบเก็บขยะช่วงเช้า' },
+  { key: 'B', name: 'จัดจุดทิ้งขยะเพิ่มเติม' },
+  { key: 'C', name: 'สื่อสารและกระตุ้นพฤติกรรม' },
+]
+/* จุดความหนาแน่นของชั้น heatmap — พิกัดอยู่ในระบบ viewBox 320x200 ของแผนที่
+   o = ความเข้มของจุดนั้น (ยิ่งซ้อนกันมาก สีจะไล่ไปทางแดงเอง ไม่ได้กำหนดสีทีละวง)
+   เกาะแนว corridor เป็นหลัก แล้วแต้มกลุ่มย่อยนอกแนวไว้บ้างให้ดูเป็นเมืองจริง */
+const urbanHeat = [
+  { x: 30, y: 152, r: 8, o: 0.2 }, { x: 55, y: 144, r: 9, o: 0.26 },
+  { x: 80, y: 132, r: 10, o: 0.32 }, { x: 104, y: 119, r: 11, o: 0.4 },
+  { x: 126, y: 111, r: 12, o: 0.52 }, { x: 146, y: 105, r: 13, o: 0.68 },
+  { x: 164, y: 101, r: 14, o: 0.88 }, { x: 178, y: 100, r: 14, o: 0.92 },
+  { x: 194, y: 101, r: 12, o: 0.7 }, { x: 214, y: 104, r: 11, o: 0.48 },
+  { x: 236, y: 106, r: 10, o: 0.36 }, { x: 260, y: 102, r: 9, o: 0.28 },
+  { x: 284, y: 94, r: 8, o: 0.22 }, { x: 304, y: 87, r: 7, o: 0.16 },
+  { x: 96, y: 166, r: 7, o: 0.16 }, { x: 216, y: 140, r: 7, o: 0.15 },
+  { x: 252, y: 70, r: 7, o: 0.14 }, { x: 148, y: 72, r: 6, o: 0.12 },
+]
+const urbanPlaces = [
+  { name: 'ตลาดเหนือ', x: '31%', y: '30%' },
+  { name: 'สะพานเอกาทศรถ', x: '15%', y: '55%' },
+  { name: 'ตลาดใต้', x: '58%', y: '72%' },
+  { name: 'วัดใหญ่', x: '86%', y: '24%' },
+]
+const urbanDrivers = [
+  { name: 'ผู้ใช้ตลาด', delta: '+38%', color: '#56A0D3' },
+  { name: 'ร้านค้าเปิดเพิ่ม', delta: '+25%', color: '#8EC06C' },
+  { name: 'การจราจรหนาแน่น', delta: '+30%', color: '#ECB731' },
+]
+const urbanResults = [
+  { name: 'ปริมาณขยะตกค้าง', delta: '-32%', dir: 'is-down' },
+  { name: 'เวลาทำความสะอาด', delta: '-20%', dir: 'is-down' },
+  { name: 'ความพึงพอใจประชาชน', delta: '+18%', dir: 'is-up' },
+]
+const ubWasteSeries = [120, 150, 230, 420, 660, 720, 540, 430, 470, 400, 330, 250, 190]
+const ubWasteLine = toLine(ubWasteSeries, 200, 52, 820)
+const ubWasteArea = `${ubWasteLine} L200 52 L0 52 Z`
 const enPowerPeak = computed(() => {
   const i = enPowerSeries.indexOf(Math.max(...enPowerSeries))
   const dx = 640 / (enPowerSeries.length - 1)
@@ -2651,8 +2912,8 @@ section {
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
-  /* ยังไม่มีข้อมูล — ใช้พื้นหลังทึบไปก่อน จะได้บังคอนโซลที่อยู่ข้างหลังได้จริงตอนกดสลับ */
-  background: linear-gradient(160deg, #14141c, #0a0a10);
+  /* พื้นทึบสีดำ จะได้บังคอนโซลที่อยู่ข้างหลังได้จริงตอนกดสลับ */
+  background: linear-gradient(160deg, #0b0b0e, #040405);
   box-shadow: 0 40px 90px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.035);
   pointer-events: auto;
   cursor: pointer;
@@ -2663,6 +2924,444 @@ section {
   transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.9s ease, border-color 0.7s ease, opacity 0.7s ease;
   will-change: transform;
 }
+
+/* ══════════════ แดชบอร์ดระดับเมือง ENLIGHTEN URBAN ══════════════ */
+/* อยู่ในกรอบใบหลังของ section ENLIGHTENED — ย่อผังของหน้าจริงลงมาทั้งก้อน
+   ใจความคือ เกิดอะไรขึ้น → เพราะอะไร → จะเป็นอย่างไรต่อ → ถ้าลงมือจะได้อะไร
+   ส่วนที่เป็นรายละเอียดปลีกย่อยของหน้าจริงถูกตัดออก ให้ตัวหนังสือใหญ่พอจะอ่านได้ */
+.ub {
+  --ub-line: rgba(255, 255, 255, 0.09);
+  --ub-panel: rgba(255, 255, 255, 0.03);
+  --ub-dim: #93a2bd;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: clamp(90px, 14.6%, 150px) minmax(0, 1fr);
+  border-radius: inherit;
+  overflow: hidden;
+  font-size: 0.63rem;
+  color: #e8ecf5;
+}
+
+/* ── แถบเมนูซ้าย ── */
+.ub__side {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 8px;
+  border-right: 1px solid var(--ub-line);
+  background: rgba(255, 255, 255, 0.022);
+  min-width: 0;
+}
+.ub__logo { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.ub__logo i {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 6px;
+  font-style: normal;
+  font-size: 0.655rem;
+  font-weight: 800;
+  color: #08101d;
+  background: linear-gradient(140deg, #8ea6ff, #56a0d3);
+}
+.ub__logo span { display: flex; flex-direction: column; min-width: 0; }
+.ub__logo b { font-size: 0.706rem; letter-spacing: 0.05em; }
+.ub__logo em { font-style: normal; font-size: 0.428rem; letter-spacing: 0.04em; color: var(--ub-dim); white-space: nowrap; }
+
+.ub__nav { display: grid; gap: 2px; margin: 2px 0 0; padding: 0; list-style: none; }
+.ub__nav li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 5px;
+  border-radius: 6px;
+  font-size: 0.58rem;
+  color: var(--ub-dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ub__nav li.is-on { background: rgba(142, 166, 255, 0.18); color: #fff; box-shadow: inset 0 0 0 1px rgba(142, 166, 255, 0.34); }
+.ub__nav :deep(svg) {
+  width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.ub__out { margin-top: auto; font-size: 0.504rem; color: var(--ub-dim); }
+
+/* ── ฝั่งเนื้อหา ── */
+.ub__main { display: flex; flex-direction: column; gap: 6px; padding: 9px 11px 8px; min-width: 0; }
+.ub__top { display: flex; align-items: center; gap: 7px; }
+.ub__top > b { font-size: 0.882rem; letter-spacing: 0.09em; }
+.ub__temp { font-size: 0.554rem; color: var(--ub-dim); }
+.ub__org { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.ub__org i {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-style: normal;
+  font-size: 0.454rem;
+  font-weight: 800;
+  color: #08101d;
+  background: #8ea6ff;
+}
+.ub__org span { display: flex; flex-direction: column; align-items: flex-end; }
+.ub__org b { font-size: 0.655rem; letter-spacing: 0.03em; }
+.ub__org em { font-style: normal; font-size: 0.428rem; color: var(--ub-dim); }
+
+/* ── แถวบน: เกิดอะไรขึ้น · ผลกระทบ · แผนที่ ── */
+.ub__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr) minmax(0, 1.65fr);
+  gap: 7px;
+  flex: 1.05;
+  min-height: 0;
+}
+.ub__lead, .ub__impact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 8px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--ub-line);
+  background: var(--ub-panel);
+}
+.ub__eyebrow { font-size: 0.479rem; letter-spacing: 0.14em; color: var(--ub-dim); }
+.ub__lead > b { font-size: 1.134rem; line-height: 1.3; }
+.ub__lead > b em { font-style: normal; color: #ff6b74; }
+.ub__lead small { font-size: 0.529rem; line-height: 1.45; color: var(--ub-dim); }
+.ub__btn {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(142, 166, 255, 0.5);
+  background: rgba(142, 166, 255, 0.14);
+  font-size: 0.554rem;
+  color: #cfd9ff;
+}
+.ub__impact ul { display: grid; gap: 3px; margin: 2px 0 0; padding: 0; list-style: none; }
+.ub__impact li {
+  position: relative;
+  padding-left: 9px;
+  font-size: 0.529rem;
+  line-height: 1.42;
+  color: #cfd6e6;
+}
+.ub__impact li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #8ea6ff;
+}
+.ub__cmp { margin: 4px 0 0; font-size: 0.504rem; color: var(--ub-dim); }
+.ub__cmp b { display: block; font-size: 0.706rem; color: #ff6b74; }
+
+/* ── แผนที่: ฐานเมือง + วงความร้อน ── */
+.ub__map { display: flex; min-width: 0; }
+.ub__stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(127, 212, 255, 0.22);
+  /* พื้นเมืองกลางคืน: บล็อกอาคารเป็นหย่อมสว่างจาง ๆ บนพื้นน้ำเงินเข้ม */
+  background:
+    radial-gradient(56% 40% at 24% 26%, rgba(126, 166, 214, 0.1), transparent 72%),
+    radial-gradient(50% 36% at 76% 70%, rgba(126, 166, 214, 0.08), transparent 74%),
+    linear-gradient(158deg, #0e1a2b 0%, #070d17 100%);
+}
+/* ตารางบล็อกอาคารเอียงตามผังเมือง วางทับพื้นอีกชั้น */
+.ub__stage::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background:
+    repeating-linear-gradient(72deg, transparent 0 15px, rgba(190, 214, 240, 0.05) 15px 16px),
+    repeating-linear-gradient(-16deg, transparent 0 19px, rgba(190, 214, 240, 0.04) 19px 20px);
+  pointer-events: none;
+}
+.ub__base, .ub__corridor { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ub__corridor { z-index: 1; }
+
+/* ชั้นความร้อน — ตัวไล่สีอยู่ในฟิลเตอร์ของ SVG แล้ว ที่นี่แค่วางทับพื้นแผนที่ */
+.ub__heat {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.ub__place {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  padding: 2px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(6, 10, 18, 0.86);
+  font-size: 0.554rem;
+  color: #e8ecf5;
+}
+.ub__callout {
+  position: absolute;
+  z-index: 4;
+  left: 52%;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  border: 1px solid rgba(237, 27, 46, 0.65);
+  background: rgba(60, 12, 20, 0.9);
+  font-size: 0.504rem;
+  line-height: 1.25;
+  color: #ffd9dc;
+}
+.ub__callout b { font-size: 0.756rem; color: #fff; }
+.ub__chip {
+  position: absolute;
+  z-index: 4;
+  left: 8px;
+  top: 8px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(6, 10, 18, 0.86);
+  font-size: 0.504rem;
+  color: #e8ecf5;
+}
+.ub__legend {
+  position: absolute;
+  z-index: 4;
+  right: 7px;
+  top: 7px;
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 5px 7px;
+  list-style: none;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(6, 10, 18, 0.8);
+}
+.ub__legend li { display: flex; align-items: center; gap: 4px; font-size: 0.479rem; color: var(--ub-dim); }
+.ub__legend li.is-on { color: #fff; }
+.ub__legend i { width: 5px; height: 5px; border-radius: 1px; }
+.ub__zoom {
+  position: absolute;
+  z-index: 4;
+  right: 7px;
+  bottom: 26px;
+  display: grid;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(6, 10, 18, 0.86);
+}
+.ub__zoom i {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 15px;
+  font-style: normal;
+  font-size: 0.554rem;
+  color: #e8ecf5;
+}
+.ub__zoom i + i { border-top: 1px solid rgba(255, 255, 255, 0.12); }
+.ub__full {
+  position: absolute;
+  z-index: 4;
+  right: 7px;
+  bottom: 7px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(6, 10, 18, 0.86);
+  font-size: 0.479rem;
+  color: #cfd6e6;
+}
+
+/* ── แถวกลาง: สาเหตุ · คาดการณ์ · จำลอง ── */
+.ub__row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; flex: 1.15; min-height: 0; }
+.ub__box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 6px 8px 7px;
+  border-radius: 8px;
+  border: 1px solid var(--ub-line);
+  background: var(--ub-panel);
+}
+.ub__btitle { display: flex; align-items: baseline; gap: 5px; font-size: 0.58rem; color: var(--ub-dim); }
+.ub__btitle em { font-style: normal; font-size: 0.479rem; color: #8ea6ff; margin-left: auto; }
+
+.ub__drivers, .ub__res, .ub__sims { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.ub__drivers li, .ub__res li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.554rem;
+  color: #cfd6e6;
+}
+.ub__drivers em, .ub__res em { font-style: normal; font-weight: 700; }
+.ub__res .is-down { color: #8ec06c; }
+.ub__res .is-up { color: #ffd98a; }
+.ub__chain { display: flex; align-items: center; gap: 5px; margin: 0; }
+.ub__chain i { font-style: normal; font-size: 0.63rem; color: var(--ub-dim); }
+.ub__chain b { flex: 1; padding: 3px 6px; border-radius: 5px; border: 1px solid rgba(237, 27, 46, 0.4); background: rgba(237, 27, 46, 0.12); font-size: 0.554rem; }
+.ub__chain em { font-style: normal; color: #ff6b74; }
+.ub__effects { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.ub__effects li { padding: 2px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.03); font-size: 0.479rem; color: var(--ub-dim); }
+
+.ub__plot { position: relative; flex: 1; min-height: 26px; }
+.ub__plot svg { display: block; width: 100%; height: 100%; }
+.ub__peak {
+  position: absolute;
+  right: 1px;
+  top: 0;
+  padding: 2px 5px;
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid rgba(236, 183, 49, 0.5);
+  background: rgba(236, 183, 49, 0.16);
+  font-size: 0.454rem;
+  line-height: 1.35;
+  color: #ffd98a;
+}
+.ub__xaxis { display: flex; justify-content: space-between; font-size: 0.454rem; color: var(--ub-dim); }
+.ub__xaxis em { font-style: normal; }
+.ub__tip {
+  margin: 0;
+  padding: 4px 6px;
+  border-radius: 5px;
+  background: rgba(236, 183, 49, 0.1);
+  border: 1px solid rgba(236, 183, 49, 0.28);
+  font-size: 0.454rem;
+  line-height: 1.5;
+  color: #e6d8b4;
+}
+
+.ub__sims li {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.529rem;
+  color: #cfd6e6;
+}
+.ub__sims li.is-on { border: 1px solid rgba(142, 166, 255, 0.5); background: rgba(142, 166, 255, 0.16); color: #fff; }
+.ub__sims i {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  font-style: normal;
+  font-size: 0.454rem;
+  font-weight: 700;
+  color: #08101d;
+  background: #8ea6ff;
+}
+.ub__sims b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* แถวล่างเตี้ยกว่าสองแถวบน เพราะเป็นข้อความล้วน ไม่มีกราฟหรือแผนที่ */
+.ub__row3--last { flex: 0.95; }
+.ub__box--rec { border-color: rgba(236, 183, 49, 0.4); background: rgba(236, 183, 49, 0.09); }
+.ub__box--rec > b { font-size: 0.63rem; line-height: 1.45; color: #fff; }
+.ub__box--rec small { font-size: 0.479rem; line-height: 1.5; color: #d8ccab; }
+.ub__box--rec em {
+  font-style: normal;
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(142, 192, 108, 0.16);
+  font-size: 0.479rem;
+  color: #a9d98a;
+}
+.ub__alts, .ub__notes { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; align-content: start; }
+.ub__alts li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.504rem;
+  line-height: 1.4;
+  color: #cfd6e6;
+}
+.ub__alts i {
+  flex: none;
+  font-style: normal;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(142, 166, 255, 0.45);
+  font-size: 0.428rem;
+  color: #cfd9ff;
+}
+.ub__notes li {
+  position: relative;
+  padding-left: 9px;
+  font-size: 0.504rem;
+  line-height: 1.4;
+  color: var(--ub-dim);
+}
+.ub__notes li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: #8ea6ff;
+}
+
+.ub__foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding-top: 5px;
+  border-top: 1px solid var(--ub-line);
+  font-size: 0.479rem;
+  color: var(--ub-dim);
+}
+.ub__foot b { letter-spacing: 0.12em; color: #e8ecf5; }
+.ub__foot em { font-style: normal; margin-left: auto; }
+
 .en__backframe::before {
   content: '';
   position: absolute;
@@ -3427,18 +4126,19 @@ section {
 .hero-demos {
   display: grid;
   grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
-  gap: clamp(14px, 1.7vw, 26px);
-  width: min(calc(300px * var(--cols, 4)), 100%);
+  gap: clamp(18px, 2.2vw, 34px);
+  width: min(calc(430px * var(--cols, 4)), 100%);
   margin: clamp(24px, 4.2vh, 60px) auto 0;
 }
 .demolink {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(12px, 1.1vw, 18px);
+  gap: clamp(14px, 1.4vw, 22px);
   position: relative;
   isolation: isolate;
- padding: clamp(14px, 1.35vh, 20px) clamp(10px, 1vw, 18px);  border: 0;
+  padding: clamp(18px, 1.8vh, 27px) clamp(22px, 2vw, 36px);
+  border: 0;
   border-radius: 999px;
   background: transparent;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
@@ -3493,8 +4193,8 @@ section {
 .demolink__icon {
   display: grid;
   place-items: center;
-  width: clamp(45px, 3.2vw, 55px);
-  height: clamp(45px, 3.2vw, 55px);
+  width: clamp(52px, 3.8vw, 66px);
+  height: clamp(52px, 3.8vw, 66px);
   flex: none;
   border-radius: 50%;
   border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
@@ -3508,13 +4208,14 @@ section {
   transform: scale(1.06);
 }
 .demolink__icon :deep(svg) {
-  width: clamp(24px, 1.75vw, 30px); height: clamp(24px, 1.75vw, 30px); fill: none; stroke: currentColor;
+  width: clamp(28px, 2.1vw, 36px); height: clamp(28px, 2.1vw, 36px); fill: none; stroke: currentColor;
   stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
 }
 .demolink__label { display: flex; flex-direction: column; gap: 3px; line-height: 1.3; }
 .demolink__label b {
   font-family: 'Poppins', 'Inter', sans-serif;
-  font-size: clamp(0.94rem, 1.18vw, 1.2rem);
+  /* ขนาดเดียวกับ .mm-hero__sub (BEFORE IT IS TOO LATE.) */
+  font-size: clamp(0.95rem, max(1.7vw, 2vh), 1.6rem);
   font-weight: 700;
   letter-spacing: 0.11em;
   color: var(--accent);
@@ -3524,7 +4225,7 @@ section {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: clamp(0.74rem, 0.94vw, 0.96rem);
+  font-size: clamp(0.8rem, max(1.15vw, 1.35vh), 1.1rem);
   letter-spacing: 0.13em;
   color: var(--muted);
   transition: color 0.35s var(--ease);
@@ -4552,8 +5253,9 @@ section {
   .demolink { justify-content: flex-start; gap: 9px; padding: 9px 14px 9px 9px; }
   .demolink__icon { width: 32px; height: 32px; }
   .demolink__icon :deep(svg) { width: 17px; height: 17px; }
-  .demolink__label b { font-size: 0.7rem; letter-spacing: 0.08em; }
-  .demolink__label small { font-size: 0.58rem; }
+  /* ขนาดเดียวกับ .mm-hero__sub ของจอแนวตั้ง */
+  .demolink__label b { font-size: clamp(0.86rem, 3.4vw, 1.25rem); letter-spacing: 0.06em; }
+  .demolink__label small { font-size: clamp(0.68rem, 2.7vw, 0.98rem); }
 }
 
 /* จอแนวตั้งเท่านั้นที่ใส่กรอบโน้ตบุ๊ค — คอนโซลเป็นผังของจอแนวนอน
