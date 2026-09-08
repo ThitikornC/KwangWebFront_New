@@ -166,14 +166,18 @@
           <h2 class="h2" v-split="24">{{ sc.title }}</h2>
           <p class="lead font-thai" v-reveal="160">{{ noSplit(sc.lead) }}</p>
 
-          <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop" v-reveal="140">
+          <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop brief-showcase--stack" :class="{ 'is-swapped': briefSwapped, 'is-animating': briefAnimating }" v-reveal="140">
             <!-- แผงสรุปเป็นของจอแนวนอนเหมือนคอนโซล — ใส่กรอบโน้ตบุ๊คแบบเดียวกัน -->
+            <button type="button" class="en__backframe" aria-label="สลับลำดับหน้าจอ Executive Brief" :aria-pressed="briefSwapped" @click="toggleBrief">
+              <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban</b></span>
+            </button>
             <div class="laptop">
               <div class="laptop__lid">
                 <span class="laptop__cam" aria-hidden="true" />
                 <div class="laptop__screen">
                   <div class="laptop__stage">
-                    <div class="brief">
+                    <div class="brief" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Executive Brief" @click="toggleBrief" @keydown.enter="toggleBrief" @keydown.space.prevent="toggleBrief">
+                    <span class="en__wordmark en__wordmark--library" aria-hidden="true">Executive <b>Library</b></span>
                     <div class="brief__head">
                       <span class="brief__title">EXECUTIVE BRIEF</span>
                       <span class="brief__meta">
@@ -270,14 +274,18 @@
           </div>
 
           <!-- คอนโซลจำลองของ MOMAY ENLIGHTENED — ผังเดียวกับแดชบอร์ดจริง -->
-          <div v-else-if="sc.console" class="brief-showcase brief-showcase--laptop" v-reveal="140">
+          <div v-else-if="sc.console" class="brief-showcase brief-showcase--laptop brief-showcase--stack" :class="{ 'is-swapped': enlightenedSwapped, 'is-animating': enlightenedAnimating }" v-reveal="140">
             <!-- คอนโซลตัวนี้เป็นของจอแนวนอน — ใส่กรอบโน้ตบุ๊ค แล้วย่อผังขนาดจอคอมทั้งก้อนลงให้พอดีจอ -->
+            <button type="button" class="en__backframe" aria-label="สลับลำดับหน้าจอ Enlightened" :aria-pressed="enlightenedSwapped" @click="toggleEnlightened">
+              <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Enlightened <b>Urban</b></span>
+            </button>
             <div class="laptop">
               <div class="laptop__lid">
                 <span class="laptop__cam" aria-hidden="true" />
                 <div class="laptop__screen">
                   <div class="laptop__stage">
-                    <div class="brief brief--en">
+                    <div class="brief brief--en" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Enlightened" @click="toggleEnlightened" @keydown.enter="toggleEnlightened" @keydown.space.prevent="toggleEnlightened">
+                    <span class="en__wordmark en__wordmark--library" aria-hidden="true">Enlightened <b>Library</b></span>
                     <div class="brief__head">
                       <span class="brief__title">ENLIGHTENED</span>
                       <span class="brief__meta">
@@ -1171,6 +1179,22 @@ const contactOpen = ref(false)
 const customersOpen = ref(false)
 const activePin = ref(0)
 const mapPath = ref(null)
+const enlightenedSwapped = ref(false)
+const enlightenedAnimating = ref(false)
+const briefSwapped = ref(false)
+const briefAnimating = ref(false)
+
+const toggleEnlightened = () => {
+  enlightenedSwapped.value = !enlightenedSwapped.value
+  enlightenedAnimating.value = true
+  window.setTimeout(() => { enlightenedAnimating.value = false }, 520)
+}
+
+const toggleBrief = () => {
+  briefSwapped.value = !briefSwapped.value
+  briefAnimating.value = true
+  window.setTimeout(() => { briefAnimating.value = false }, 520)
+}
 
 /* ภาษาไทยไม่มีช่องว่างระหว่างคำ เบราว์เซอร์จึงเดาที่ตัดเองแล้วมักได้คำขาดกลางคำ
    เชื่อมอักษรไทยที่ติดกันด้วย word joiner (U+2060) เพื่อให้ขึ้นบรรทัดใหม่ได้เฉพาะตรงช่องว่างจริง */
@@ -2484,6 +2508,168 @@ section {
 
 .brief__row { display: grid; grid-template-columns: 1.25fr 1fr; gap: 8px; margin-top: 8px; }
 .brief-showcase { max-width: 880px; margin: clamp(30px, 4vw, 52px) auto 0; }
+.brief-showcase--stack {
+  position: relative;
+  margin-inline: auto;
+  perspective: 1400px;
+  /* เลื่อนจุดรวมสายตาตามระยะที่ขยับทั้งชุด มุมมอง 3 มิติจะได้ยังอยู่กลางจอ
+     ไม่ใช่เบ้ไปข้างเดียวจนการ์ดดูเอียงผิดรูป */
+  perspective-origin: 76% 50%;
+}
+/* การ์ดใบหลังยื่นไปทางขวา 52% ของความกว้างตัวเอง — เลื่อนทั้งชุดกลับมาครึ่งหนึ่ง
+   ระยะห่างซ้าย-ขวาของการ์ดคู่จะได้เท่ากันตั้งแต่โหลดหน้า
+   (.reveal.is-in ตั้ง transform: none จึงต้องเขียนให้ specificity สูงกว่ามัน) */
+.brief-showcase--stack,
+.brief-showcase--stack.reveal,
+.brief-showcase--stack.reveal.is-in {
+  transform: translateX(-26%);
+}
+.brief-showcase--stack.reveal { opacity: 0; }
+.brief-showcase--stack.reveal.is-in { opacity: 1; }
+.en__wordmark {
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.02em;
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: clamp(1.45rem, 2.9vw, 3rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  transform-style: preserve-3d;
+  text-shadow:
+    1px 1px 0 rgba(255, 255, 255, 0.16),
+    3px 4px 0 rgba(6, 6, 10, 0.72),
+    8px 10px 18px rgba(0, 0, 0, 0.52),
+    0 0 30px rgba(237, 27, 46, 0.55),
+    0 0 58px rgba(237, 27, 46, 0.3);
+}
+/* คำแรกแดงตามแบรนด์ (เน้นให้เด่น) คำหลังขาวไว้ตัดกัน */
+.en__wordmark {
+  color: #ff2436;
+}
+.en__wordmark b {
+  font-weight: 700;
+  color: #f3f3f6;
+  text-shadow:
+    1px 1px 0 rgba(255, 255, 255, 0.22),
+    3px 4px 0 rgba(56, 56, 64, 0.72),
+    8px 10px 18px rgba(0, 0, 0, 0.55);
+}
+/* ชื่อไม่อยู่ในกรอบม็อกอัพ — วางนอกขอบขวาของคอนโซล กึ่งกลางแนวตั้ง
+   จะได้ไม่ไปทับกราฟข้างใน */
+.en__wordmark--library {
+  top: 50%;
+  left: 100%;
+  right: auto;
+  align-items: flex-start;
+  text-align: left;
+  transform: translate(22px, -50%) rotateY(12deg) rotateX(3deg);
+}
+/* การ์ดที่ยังว่าง — ทำแบบเดียวกันแต่สลับข้าง คือออกไปนอกขอบซ้ายของการ์ด
+   ชื่อของสองใบจึงชี้เข้าหากัน ใบไหนอยู่หน้าตอนกดสลับ ชื่อใบนั้นก็อยู่บนสุด */
+.en__wordmark--urban {
+  top: 50%;
+  right: 100%;
+  left: auto;
+  align-items: flex-end;
+  text-align: right;
+  transform: translate(-22px, -50%) rotateY(-12deg) rotateX(3deg);
+}
+.en__backframe {
+  position: absolute;
+  z-index: 0;
+  inset: 22px auto auto 52%;
+  width: 100%;
+  height: calc(100% - 22px);
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  /* ยังไม่มีข้อมูล — ใช้พื้นหลังทึบไปก่อน จะได้บังคอนโซลที่อยู่ข้างหลังได้จริงตอนกดสลับ */
+  background: linear-gradient(160deg, #14141c, #0a0a10);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  pointer-events: auto;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transform: rotateY(-3deg);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.9s ease, border-color 0.7s ease, opacity 0.7s ease;
+  will-change: transform;
+}
+.en__backframe::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background:
+    linear-gradient(rgba(236, 183, 49, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(86, 160, 211, 0.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(135deg, transparent 12%, #000 62%, transparent 100%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.en__backframe::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 30%, rgba(236, 183, 49, 0.24) 48%, transparent 66%);
+  background-size: 220% 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.en__backframe:hover,
+.en__backframe:focus-visible {
+  border-color: rgba(236, 183, 49, 0.5);
+  box-shadow: 0 34px 80px rgba(0, 0, 0, 0.5), 0 0 34px rgba(236, 183, 49, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+.en__backframe:hover::after,
+.en__backframe:focus-visible::after { animation: enFrameSweep 1.3s ease forwards; }
+.brief-showcase--stack .brief {
+  position: relative;
+  /* ม็อกทั้งสอง section กว้าง 880px เท่ากัน ล็อกอัตราส่วนไว้ความสูงจึงเท่ากันเสมอ
+     เนื้อหาที่สูงกว่านี้ยังดันกล่องให้ขยายได้ตามปกติ */
+  aspect-ratio: 880 / 576;
+  z-index: 1;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transform: rotateY(3deg);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s ease, opacity 0.7s ease;
+  will-change: transform;
+}
+.brief-showcase--stack .brief:focus-visible {
+  outline: 1px solid rgba(236, 183, 49, 0.72);
+  outline-offset: 5px;
+}
+.brief-showcase--stack.is-swapped .en__backframe {
+  z-index: 2;
+  pointer-events: auto;
+  transform: rotateY(-3deg);
+  border-color: rgba(236, 183, 49, 0.42);
+  box-shadow: 0 34px 86px rgba(0, 0, 0, 0.62), 0 0 44px rgba(236, 183, 49, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.brief-showcase--stack.is-swapped .en__backframe::after { animation: enFrameSweep 1.1s ease forwards; }
+.brief-showcase--stack.is-swapped .brief {
+  z-index: 0;
+  transform: rotateY(3deg);
+  filter: brightness(0.72) saturate(0.72);
+  opacity: 0.82;
+}
+.brief-showcase--stack.is-animating .en__backframe {
+  transform: translate3d(10%, 0, 0) scale(1.018) rotateY(-9deg);
+}
+.brief-showcase--stack.is-animating .brief {
+  transform: translate3d(-10%, 0, 0) scale(0.982) rotateY(9deg);
+}
 /* ส่วน STUDENT — การ์ดฝั่งซ้าย ภาพจำลองแอปฝั่งขวา */
 .showcase-body--split {
   display: grid;
@@ -3959,8 +4145,19 @@ section {
 @keyframes waveRun { to { stroke-dashoffset: -320; } }
 @keyframes twinkle { 0%, 100% { opacity: 0.18; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.6); } }
 @keyframes shine { 0%, 100% { background-position: 130% 0; } 50% { background-position: -30% 0; } }
+@keyframes enFrameSweep { from { background-position: 120% 0; opacity: 0; } 30% { opacity: 1; } to { background-position: -30% 0; opacity: 0; } }
 
 /* ══════════════ responsive ══════════════ */
+/* การ์ดคู่กว้างรวม 152% ของ 880px = 1338px — แคบกว่านี้เริ่มโดนตัดขอบ
+   จึงเลิกซ้อนการ์ด เหลือม็อกใบหน้าใบเดียวจัดกึ่งกลางตามปกติ */
+@media (max-width: 1360px) {
+  .brief-showcase--stack,
+  .brief-showcase--stack.reveal,
+  .brief-showcase--stack.reveal.is-in { transform: none; }
+  .brief-showcase--stack { perspective-origin: 50% 50%; }
+  .brief-showcase--stack .en__backframe { display: none; }
+  .brief-showcase--stack .en__wordmark { display: none; }
+}
 /* เบราว์เซอร์เต็มจอบนโน้ตบุ๊กเหลือความสูงจริงไม่ถึง 900px — หัวเรื่องที่ผูกกับความกว้าง
    อย่างเดียวจะดันแถวปุ่มเดโมตกขอบล่าง บล็อกนี้ผูกกับความสูงจอด้วยแล้วบีบระยะลง */
 @media (orientation: landscape) and (max-height: 900px) and (min-width: 976px) {
