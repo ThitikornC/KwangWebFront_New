@@ -1685,6 +1685,56 @@ const products = [
       <rect x="70" y="184" width="120" height="6" rx="3" fill="rgba(255,255,255,0.16)"/>
     </svg>`,
   },
+  {
+    name: 'MOMAY STUDENT_PIXEL',
+    tagline: 'Find your seat. 8-bit style.',
+    note: 'ที่นั่งชุดเดียวกับ MOMAY STUDENT ในสกิน 8-bit ที่เปิดดูสนุกกว่า',
+    color: '#C15CF0',
+    link: 'https://momaymodelbuu-production.up.railway.app/BuuStudent8bit',
+    art: `<svg viewBox="0 0 240 220" class="art art--pixel" shape-rendering="crispEdges">
+      <g class="float-a">
+        <!-- ตัวเครื่อง: มุมเป็นขั้นบันไดแทนการมน ให้เข้ากับงานพิกเซล -->
+        <path d="M26 18h188v8h8v160h-8v8H26v-8h-8V26h8z" fill="#160f28" stroke="rgba(193,92,240,0.55)" stroke-width="2"/>
+        <path d="M38 32h164v140H38z" fill="#07050e"/>
+        <!-- แถบหัวจอ -->
+        <g fill="#C15CF0"><rect x="46" y="40" width="8" height="8"/><rect x="58" y="40" width="8" height="8"/><rect x="70" y="40" width="28" height="8"/></g>
+        <g fill="#5FE6FF"><rect x="166" y="40" width="28" height="8"/></g>
+        <!-- ตารางที่นั่ง: ว่าง/ใกล้เต็ม/เต็ม -->
+        <g class="pulse-g" fill="#8EC06C">
+          <rect x="46" y="60" width="12" height="12"/><rect x="64" y="60" width="12" height="12"/>
+          <rect x="118" y="78" width="12" height="12"/><rect x="46" y="96" width="12" height="12"/>
+          <rect x="154" y="96" width="12" height="12"/><rect x="82" y="114" width="12" height="12"/>
+        </g>
+        <g fill="#ECB731">
+          <rect x="82" y="60" width="12" height="12"/><rect x="136" y="60" width="12" height="12"/>
+          <rect x="64" y="78" width="12" height="12"/><rect x="172" y="78" width="12" height="12"/>
+          <rect x="100" y="96" width="12" height="12"/><rect x="46" y="114" width="12" height="12"/>
+        </g>
+        <g fill="#ED1B2E">
+          <rect x="100" y="60" width="12" height="12"/><rect x="46" y="78" width="12" height="12"/>
+          <rect x="136" y="96" width="12" height="12"/><rect x="118" y="114" width="12" height="12"/>
+        </g>
+        <g fill="rgba(255,255,255,0.09)">
+          <rect x="118" y="60" width="12" height="12"/><rect x="154" y="60" width="12" height="12"/>
+          <rect x="172" y="60" width="12" height="12"/><rect x="82" y="78" width="12" height="12"/>
+          <rect x="100" y="78" width="12" height="12"/><rect x="136" y="78" width="12" height="12"/>
+          <rect x="154" y="78" width="12" height="12"/><rect x="64" y="96" width="12" height="12"/>
+          <rect x="82" y="96" width="12" height="12"/><rect x="118" y="96" width="12" height="12"/>
+          <rect x="172" y="96" width="12" height="12"/><rect x="64" y="114" width="12" height="12"/>
+          <rect x="100" y="114" width="12" height="12"/><rect x="136" y="114" width="12" height="12"/>
+          <rect x="154" y="114" width="12" height="12"/><rect x="172" y="114" width="12" height="12"/>
+        </g>
+        <!-- เส้นแนวโน้มแบบขั้นบันได วาดตัวเองตอนเลื่อนมาถึง -->
+        <path class="draw" d="M46 156h18v-12h18v-12h18v18h18v-24h18v12h18v-18h18" fill="none"
+              stroke="#5FE6FF" stroke-width="4" shape-rendering="auto"/>
+      </g>
+      <!-- ดาวพิกเซลรอบ ๆ -->
+      <g class="spark" fill="#C15CF0">
+        <rect x="10" y="52" width="5" height="5"/><rect x="222" y="86" width="5" height="5"/>
+        <rect x="18" y="176" width="5" height="5"/><rect x="216" y="196" width="5" height="5"/>
+      </g>
+    </svg>`,
+  },
 ]
 
 // ปุ่มใต้ Executive Brief — อ้างผลิตภัณฑ์ชุดเดียวกัน จะได้ไม่ต้องแก้ลิงก์สองที่
@@ -1692,6 +1742,7 @@ const demoIcons = {
   'MOMAY ENLIGHTENED': `<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>`,
   'MOMAY STUDENT': `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0"/></svg>`,
   'MOMAY EXECUTIVE BRIEF': `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M13.5 3.7V8.2H18"/><path d="M9 12.5h6M9 16h4"/></svg>`,
+  'MOMAY STUDENT_PIXEL': `<svg viewBox="0 0 24 24"><path d="M8.4 8h7.2a4.4 4.4 0 0 1 4.3 3.5l.9 4.4A2.6 2.6 0 0 1 16 17.6l-1-1.1H9l-1 1.1a2.6 2.6 0 0 1-4.8-1.7l.9-4.4A4.4 4.4 0 0 1 8.4 8z"/><path d="M7.4 11.4v2.4M6.2 12.6h2.4"/><path d="M15.6 11.9h.01M17.4 13.4h.01"/></svg>`,
 }
 
 const demoLinks = products.map((p) => ({
@@ -3020,9 +3071,9 @@ section {
 }
 .hero-demos {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(12px, 1.4vw, 18px);
-  max-width: min(660px, 100%);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1.2vw, 16px);
+  max-width: min(880px, 100%);
   margin-top: clamp(24px, 4.2vh, 60px);
 }
 .demolink {
@@ -3422,7 +3473,11 @@ section {
 
 /* ══════════════ PRODUCTS ══════════════ */
 .section--products { background: linear-gradient(180deg, var(--ink2) 0%, var(--ink) 100%); }
-.products { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(30px, 4vw, 52px); }
+.products { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(30px, 4vw, 52px); }
+/* สี่ใบเรียงแถวเดียวได้เฉพาะจอกว้าง ที่แคบกว่านั้นตัดเป็นสองแถว */
+@media (max-width: 1240px) {
+  .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 /* การ์ด: ภาพใหญ่เต็มการ์ด ข้อความวางทับแบบอาร์ต ๆ */
 .product {
   position: relative;
@@ -4000,7 +4055,7 @@ section {
   .purpose-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .flow { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .flow__arrow { display: block; }
-  .products { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .navkpi { padding: 0 9px; }
   .navkpi__value { font-size: 0.78rem; }
   .navkpi:nth-last-child(-n+2) { display: none; }
@@ -4088,23 +4143,23 @@ section {
   }
   .chip--cta { display: flex; }
   .chip--cta .mm-btn { width: 100%; justify-content: center; padding: 11px 12px; font-size: 0.66rem; }
-  /* สามปุ่มเรียงแถวแนวนอนทรงเดิม แค่ย่อไอคอนกับตัวหนังสือลงให้พอดีแถวเดียว */
+  /* สี่ปุ่มในแถวเดียวแคบเกินไป — ตัดเป็นสองแถว ทรงปุ่มยังเป็นเม็ดยาเหมือนเดิม */
   .hero-demos {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
     margin: clamp(18px, 3.7vh, 34px) 0 0;
   }
-  .demolink { gap: 5px; padding: 7px 9px 7px 6px; }
-  .demolink__icon { width: clamp(20px, 5.6vw, 32px); height: clamp(20px, 5.6vw, 32px); }
-  .demolink__icon :deep(svg) { width: clamp(11px, 3.1vw, 18px); height: clamp(11px, 3.1vw, 18px); }
+  .demolink { gap: 6px; padding: 8px 10px 8px 7px; }
+  .demolink__icon { width: clamp(24px, 6.4vw, 32px); height: clamp(24px, 6.4vw, 32px); }
+  .demolink__icon :deep(svg) { width: clamp(13px, 3.5vw, 18px); height: clamp(13px, 3.5vw, 18px); }
   .demolink__label { gap: 1px; min-width: 0; }
   .demolink__label b {
-    font-size: clamp(0.42rem, 1.7vw, 0.62rem);
-    letter-spacing: 0.03em;
+    font-size: clamp(0.5rem, 2.2vw, 0.64rem);
+    letter-spacing: 0.04em;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .demolink__label small { font-size: clamp(0.35rem, 1.4vw, 0.5rem); letter-spacing: 0.07em; }
+  .demolink__label small { font-size: clamp(0.4rem, 1.8vw, 0.52rem); letter-spacing: 0.08em; }
 
   /* ───────── หัวข้อประจำ section ───────── */
   .kicker { font-size: clamp(1.15rem, 5.4vw, 1.9rem); }
