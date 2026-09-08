@@ -621,6 +621,52 @@
               </div>
             </div>
 
+
+            <!-- เครื่องกลาง: ผิว 8-bit ของ MOMAY STUDENT PIXEL
+                 ยกจานสี กรอบเหลี่ยม และเงาแข็งมาจาก BuuStudent8bit.jsx -->
+            <div class="phone phone--pixel" aria-hidden="true">
+              <span class="phone__notch" aria-hidden="true" />
+              <span class="phone__btn phone__btn--power" aria-hidden="true" />
+              <span class="phone__btn phone__btn--vol" aria-hidden="true" />
+              <div class="phone__screen px">
+                <div class="px__top">
+                  <span class="px__brand">
+                    <i class="px__avatar">M</i>
+                    <b>MOMAY</b><em>PIXEL</em>
+                  </span>
+                  <span class="px__time">{{ clockShort }}</span>
+                </div>
+
+                <p class="px__hello font-thai">
+                  วันนี้จะมาทำอะไร<b>?</b>
+                </p>
+
+                <ul class="px__acts font-thai">
+                  <li v-for="a in pixelActs" :key="a.en" :style="{ '--c': a.color }">
+                    <i class="px__glyph"><span v-for="n in 9" :key="n" :class="{ 'is-on': a.bits[n - 1] === '1' }" /></i>
+                    <b>{{ a.th }}</b>
+                    <small>{{ a.en }}</small>
+                  </li>
+                </ul>
+
+                <span class="px__label font-thai">ที่นั่งว่างตอนนี้</span>
+
+                <ul class="px__rooms font-thai">
+                  <li v-for="r in pixelRooms" :key="r.name" :style="{ '--c': r.color }">
+                    <span class="px__floor">{{ r.floor }}</span>
+                    <span class="px__rinfo">
+                      <b>{{ r.name }}</b>
+                      <small>{{ r.note }}</small>
+                    </span>
+                    <span class="px__meter"><i v-for="n in 8" :key="n" :class="{ 'is-on': n <= r.on }" /></span>
+                    <span class="px__free">{{ r.free }}</span>
+                  </li>
+                </ul>
+
+                <span class="px__cta font-thai">จองที่นั่ง</span>
+              </div>
+            </div>
+
             <!-- เครื่องหลัง: แท็บเล็ตแสดงรายละเอียดพื้นที่ -->
             <div class="tablet" aria-hidden="true">
               <span class="tablet__cam" />
@@ -1501,6 +1547,22 @@ const floorNote = (f) => {
   const total = f.zones.reduce((a, z) => a + z.total, 0)
   return `${f.zones.length} พื้นที่ · ${used} คน · ${total} ที่นั่ง${f.rooms ? ` · ${f.rooms} ห้อง` : ''}`
 }
+
+
+/* ── ม็อกอัพ MOMAY STUDENT PIXEL (ผิว 8-bit) ──
+   จานสีกับหน้าตายกมาจาก BuuStudent8bit.jsx · ตัวเลขคงที่ ไม่ได้ต่อข้อมูลสด
+   bits = บิตแมป 3x3 ของไอคอน เขียนเป็นสตริง แล้ววาดทีละพิกเซลด้วย <span> */
+const pixelActs = [
+  { th: 'อ่านหนังสือ', en: 'READ',   color: '#b06cff', bits: '111101111' },
+  { th: 'ทำงานกลุ่ม',  en: 'GROUP',  color: '#35f58a', bits: '101111101' },
+  { th: 'ทำงานเงียบ',  en: 'FOCUS',  color: '#3ad0ff', bits: '010111010' },
+  { th: 'พัก / พบปะ',  en: 'SOCIAL', color: '#ffd84d', bits: '110111011' },
+]
+const pixelRooms = [
+  { floor: '2', name: '24-HR ZONE',  note: 'อ่านหนังสือ · เงียบ', free: 48, on: 3, color: '#35f58a' },
+  { floor: '3', name: 'GROUP ROOM',  note: 'ทำงานกลุ่ม · จองได้', free: 12, on: 5, color: '#ffd84d' },
+  { floor: '4', name: 'CYBERZONE',   note: 'ใช้เทคโนโลยี',        free: 5,  on: 7, color: '#ff4fd8' },
+]
 
 const seatKinds = [
   { name: 'โต๊ะเดี่ยว', note: 'โซนเงียบ · ปลั๊กทุกที่นั่ง', free: 24, icon: `<svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="3" rx="1.2"/><path d="M6 12v7M18 12v7"/><path d="M9 9V6h6v3"/></svg>` },
@@ -2693,7 +2755,9 @@ section {
 .showcase-body--split .pcard__icon :deep(svg) { width: 18px; height: 18px; }
 .showcase-body--split .pcard h3 { grid-column: 2; align-self: end; font-size: 0.68rem; margin: 0; }
 .showcase-body--split .pcard p { grid-column: 2; align-self: start; font-size: 0.72rem; line-height: 1.65; }
-.phone-duo { --pw: min(252px, 44vw, 52vh); display: flex; align-items: center; justify-content: flex-end; min-width: 0; }
+/* สามเครื่องในแถวเดียว — โทรศัพท์คู่กันตรงกลาง แท็บเล็ตอยู่ขวาสุด
+   ย่อ --pw ลงจากตอนมีสองเครื่อง ไม่งั้นแถวนี้กว้างเกินคอลัมน์ขวาของ section */
+.phone-duo { --pw: min(198px, 32vw, 42vh); display: flex; align-items: center; justify-content: center; min-width: 0; }
 .phone {
   position: relative;
   width: var(--pw, 252px);
@@ -2711,7 +2775,9 @@ section {
     inset 0 -1px 0 rgba(255, 255, 255, 0.06);
   transition: transform 0.7s var(--ease);
 }
-.phone--front { z-index: 2; transform: perspective(1500px) rotateY(-11deg) rotateX(2deg) rotate(-2deg); }
+.phone--front { z-index: 4; transform: perspective(1500px) rotateY(-13deg) rotateX(2deg) rotate(-2.5deg); }
+.phone--pixel { margin-left: -26px; transform: perspective(1500px) rotateY(-5deg) rotateX(1deg) rotate(-0.5deg) scale(0.97); }
+.phone-duo:hover .phone--pixel { transform: perspective(1500px) rotateY(-2deg) rotate(0deg) scale(0.99); }
 .phone-duo:hover .phone--front { transform: perspective(1500px) rotateY(-6deg) rotate(-1deg); }
 /* รอยบากด้านบน */
 .phone__notch {
@@ -2989,12 +3055,146 @@ section {
   min-height: 0;
 }
 /* แท็บเล็ตด้านหลัง */
+
+/* ══════════════ ม็อกอัพเครื่องกลาง: ผิวพิกเซล 8-bit ══════════════ */
+/* ธีมนี้มีของอยู่ 4 อย่าง — จานสีจัด, มุมโค้ง 0, เงาแข็งไม่เบลอ, ฟอนต์พิกเซลเฉพาะเลข/อังกฤษ */
+.phone--pixel {
+  --px-bg: #16062f;
+  --px-panel: #1b0940;
+  --px-line: #5f2fae;
+  --px-dim: #b7a6e8;
+  z-index: 3;
+  background: linear-gradient(155deg, #6a4aa8 0%, #33195c 18%, #1a0b32 55%, #0d0424 100%);
+}
+/* มุมโค้งเป็นศัตรูของธีมนี้ — บังคับเป็น 0 ทั้งหน้าจอทีเดียว ไม่ต้องไล่ลบทีละจุด */
+.px, .px * { border-radius: 0 !important; }
+.px {
+  background:
+    radial-gradient(115% 62% at 50% -6%, #5a23b8 0%, #2e1068 45%, var(--px-bg) 100%);
+  border-color: rgba(176, 108, 255, 0.35);
+  padding: 11px 11px 0;
+  gap: 7px;
+  overflow: hidden;
+}
+/* ฟอนต์พิกเซลไม่มีสระไทย จึงใช้เฉพาะตัวเลขกับอังกฤษสั้น ๆ เหมือนต้นฉบับ */
+.px__brand b, .px__brand em, .px__time, .px__acts small,
+.px__rinfo b, .px__floor, .px__free {
+  font-family: 'Press Start 2P', 'Poppins', monospace;
+  font-weight: 400;
+  font-synthesis: none;
+}
+
+.px__top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.px__brand { display: inline-flex; align-items: center; gap: 5px; font-size: 0.4rem; color: #fff; }
+.px__brand em { font-style: normal; color: #22e8ff; }
+.px__avatar {
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  font-style: normal;
+  font-size: 0.42rem;
+  font-weight: 800;
+  color: #16062f;
+  background: #b06cff;
+  box-shadow: 2px 2px 0 #ff4fd8;
+}
+.px__time { font-size: 0.36rem; color: var(--px-dim); }
+
+.px__hello { font-size: 0.52rem; line-height: 1.5; color: #fff; margin: 0; }
+.px__hello b { color: #35f58a; }
+
+/* สี่เหลี่ยมกิจกรรม — ขอบนีออนหนา 2px + เงาแข็งเยื้อง 3px เหมือนสไปรต์วางบนพื้น */
+.px__acts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.px__acts li {
+  display: grid;
+  grid-template-columns: 15px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 6px;
+  padding: 5px 6px;
+  background: var(--px-panel);
+  border: 2px solid var(--c, #b06cff);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.85);
+}
+.px__acts b { grid-column: 2; font-size: 0.4rem; font-weight: 700; color: #fff; }
+.px__acts small { grid-column: 2; font-size: 0.28rem; color: var(--c, #b06cff); }
+.px__glyph {
+  grid-row: span 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  width: 15px;
+  height: 15px;
+}
+.px__glyph span { background: rgba(255, 255, 255, 0.08); }
+.px__glyph span.is-on { background: var(--c, #b06cff); box-shadow: 0 0 4px var(--c, #b06cff); }
+
+.px__label {
+  display: block;
+  font-size: 0.36rem;
+  letter-spacing: 0.06em;
+  color: #c9b8ff;
+  border-left: 3px solid #22e8ff;
+  padding-left: 5px;
+}
+
+.px__rooms { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.px__rooms li {
+  display: grid;
+  grid-template-columns: 17px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 6px;
+  padding: 4px 5px;
+  background: var(--px-panel);
+  border: 2px solid var(--px-line);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.85);
+}
+.px__floor {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  font-size: 0.42rem;
+  color: #fff;
+  background: var(--c, #b06cff);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+.px__rinfo { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.px__rinfo b { font-size: 0.32rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px__rinfo small { font-size: 0.3rem; color: var(--px-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px__free { grid-column: 3; grid-row: 1; font-size: 0.46rem; color: var(--c, #b06cff); }
+/* แถบวัด — บล็อกทึบเรียงกัน ไม่ใช่แถบไล่สี ให้เข้ากับความเป็นพิกเซล */
+.px__meter { grid-column: 2 / -1; grid-row: 2; display: flex; gap: 2px; }
+.px__meter i { flex: 1; height: 4px; background: #22104f; }
+.px__meter i.is-on { background: var(--c, #b06cff); box-shadow: 0 0 5px var(--c, #b06cff); }
+
+.px__cta {
+  display: block;
+  margin-top: auto;
+  margin-bottom: 9px;
+  padding: 7px;
+  text-align: center;
+  font-size: 0.42rem;
+  font-weight: 800;
+  color: #16062f;
+  background: linear-gradient(90deg, #22e8ff 0%, #b06cff 50%, #ff4fd8 100%);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.85);
+}
+
 .tablet {
   position: relative;
   z-index: 1;
-  width: min(430px, 100%);
+  width: min(336px, 100%);
   flex: none;
-  margin-left: -34px;
+  margin-left: -30px;
   margin-top: 30px;
   padding: 13px 11px;
   border-radius: 26px;
@@ -4493,7 +4693,9 @@ section {
 @media (orientation: portrait) and (max-width: 767px) {
   /* แท็บเล็ตด้านหลังเป็นภาพประกอบล้วน (aria-hidden) และกว้าง 430px
      บนจอแคบมันดันเครื่องหน้าหลุดออกไปนอกจอทั้งเครื่อง — ตัดออก เหลือมือถือเครื่องเดียว */
-  .phone-duo { --pw: min(272px, 74vw); }
+  /* จอแคบเหลือสองเครื่อง (แท็บเล็ตถูกซ่อน) — ย่อลงให้ทั้งคู่อยู่ในจอ ไม่ล้นขอบ */
+  .phone-duo { --pw: min(210px, 47vw); }
+  .phone--pixel { margin-left: -34px; }
   .phone-duo .tablet { display: none; }
   .phone--front { transform: perspective(1500px) rotateY(-4deg) rotate(-1deg); }
 }
