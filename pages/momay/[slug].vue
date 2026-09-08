@@ -48,6 +48,10 @@ const targets: Record<string, string> = {
   MomayInsights: 'https://momaymodelbuu-production.up.railway.app/usage',
   MomayBUUStudent: 'https://momaymodelbuu-production.up.railway.app/buustudent',
   MomayTemplate: 'https://momaymodelbuu-production-dafb.up.railway.app/allmomay',
+  // ชุดเดโมของหน้าขาย MomayforSale (โฮสต์ -dafb ใต้ /demo)
+  'MomayDemo-StudentPixel': 'https://momaymodelbuu-production-dafb.up.railway.app/demo/buustudent8bit',
+  'MomayDemo-Executive': 'https://momaymodelbuu-production-dafb.up.railway.app/demo/momay-exec',
+  'MomayDemo-ByJob': 'https://momaymodelbuu-production-dafb.up.railway.app/demo/momaymodel-by-job',
   // หลังบ้านสำหรับควบคุมแอร์ (ไม่มีปุ่มบนหน้า momay)
   MomayControl: 'https://momaymodelbuu-production.up.railway.app/settings'
 }

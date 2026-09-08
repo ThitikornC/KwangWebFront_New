@@ -1538,7 +1538,7 @@ const showcases = [
     title: 'WHAT ARE YOU HERE TO DO?',
     lead: 'ส่วนติดต่อสำหรับผู้ใช้บริการทั่วไป โดยออกแบบจากแนวคิดว่า ระบบไม่ควรเพียงแสดงข้อมูล แต่ควรช่วยให้ผู้ใช้ตัดสินใจเลือกพื้นที่ให้เหมาะกับสิ่งที่ต้องการทำ เช่น การอ่านหนังสือ การทำงานกลุ่ม การทำงานเงียบ ๆ การใช้เทคโนโลยี การสร้างสรรค์หรือนำเสนอผลงาน และการพักหรือพบปะ โดยระบบสามารถเชื่อมโยงไปยังพื้นที่จริง ห้อง และข้อมูลการให้บริการของสถานที่นั้น ๆ',
     cta: 'EXPLORE MOMAY STUDENT',
-    link: '/momay/MomayBUUStudent',
+    link: '/momay/MomayDemo-ByJob',
     color: '#8EC06C',
     phone: true,
     cards: purposes,
@@ -1549,7 +1549,7 @@ const showcases = [
     title: 'ONE PAGE. ONE MINUTE. ONE BETTER DECISION.',
     lead: 'สรุปข้อมูลสำคัญขององค์กรในรูปแบบที่กระชับและนำไปใช้ประกอบการตัดสินใจได้ทันที ภายใต้แนวคิด “One Page. One Minute. One Better Decision.”',
     cta: 'EXPLORE MOMAY EXECUTIVE BRIEF',
-    link: '/momay/MomayBUU-Executive',
+    link: '/momay/MomayDemo-Executive',
     color: '#ED1B2E',
     panel: true,
     cards: [],
@@ -1626,7 +1626,7 @@ const products = [
     tagline: 'Find the right space.',
     note: 'ช่วยให้นักศึกษาและผู้ใช้พื้นที่ เลือกที่นั่งที่ใช่ได้ง่ายและสะดวกขึ้น',
     color: '#8EC06C',
-    link: '/momay/MomayBUUStudent',
+    link: '/momay/MomayDemo-ByJob',
     art: `<svg viewBox="0 0 220 260" class="art art--phone">
       <rect class="float-a" x="52" y="10" width="116" height="240" rx="18" fill="#111119" stroke="rgba(255,255,255,0.14)"/>
       <rect x="60" y="22" width="100" height="216" rx="12" fill="#08080f"/>
@@ -1653,7 +1653,7 @@ const products = [
     tagline: 'One Page. One Minute. One Better Decision.',
     note: 'สรุปข้อมูลสำคัญของพื้นที่ในหน้าเดียว เพื่อการตัดสินใจที่ดีกว่า',
     color: '#ED1B2E',
-    link: '/momay/MomayBUU-Executive',
+    link: '/momay/MomayDemo-Executive',
     art: `<svg viewBox="0 0 260 200" class="art art--dash">
       <rect class="float-b" x="14" y="12" width="232" height="150" rx="10" fill="#101017" stroke="rgba(255,255,255,0.14)"/>
       <rect x="22" y="20" width="216" height="134" rx="6" fill="#07070d"/>
@@ -1690,7 +1690,7 @@ const products = [
     tagline: 'Find your seat. 8-bit style.',
     note: 'ที่นั่งชุดเดียวกับ MOMAY STUDENT ในสกิน 8-bit ที่เปิดดูสนุกกว่า',
     color: '#C15CF0',
-    link: 'https://momaymodelbuu-production.up.railway.app/BuuStudent8bit',
+    link: '/momay/MomayDemo-StudentPixel',
     art: `<svg viewBox="0 0 240 220" class="art art--pixel" shape-rendering="crispEdges">
       <g class="float-a">
         <!-- ตัวเครื่อง: มุมเป็นขั้นบันไดแทนการมน ให้เข้ากับงานพิกเซล -->
