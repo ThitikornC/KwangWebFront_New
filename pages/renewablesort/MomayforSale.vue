@@ -171,6 +171,140 @@
             <div class="en__backframe" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Executive Brief"
                  :aria-pressed="briefSwapped" @click="toggleBrief" @keydown.enter="toggleBrief" @keydown.space.prevent="toggleBrief">
               <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban</b></span>
+
+              <!-- แดชบอร์ดผู้บริหารระดับเมือง — ธีมสว่าง เก็บเฉพาะใจความของหน้าจริง -->
+              <div class="ex" aria-hidden="true">
+                <aside class="ex__side">
+                  <span class="ex__logo"><i>M</i></span>
+                  <ul class="ex__nav">
+                    <li v-for="(n, i) in urbanNav" :key="`ex${n.label}`" :class="{ 'is-on': i === 0 }" v-html="n.icon" />
+                  </ul>
+                </aside>
+
+                <div class="ex__main">
+                  <div class="ex__top">
+                    <span class="ex__brand">
+                      <b>MOMAY EXECUTIVE</b>
+                      <em class="font-thai">วิเคราะห์สถานการณ์ของเมือง แล้วคัดเฉพาะประเด็นที่มีนัยสำคัญต่อการตัดสินใจ</em>
+                    </span>
+                    <span class="ex__org">
+                      <em>29°C</em>
+                      <b>EXECUTIVE URBAN</b>
+                    </span>
+                  </div>
+
+                  <!-- ═══ ประเด็นที่ควรรู้วันนี้ ═══ -->
+                  <ul class="ex__cards font-thai">
+                    <li v-for="c in execCards" :key="c.title" :style="{ '--c': c.color }">
+                      <span class="ex__ctop">
+                        <i v-html="c.icon" />
+                        <em>{{ c.kind }}</em>
+                      </span>
+                      <b>{{ c.title }}</b>
+                      <small>{{ c.note }}</small>
+                      <span class="ex__tags"><i v-for="t in c.tags" :key="t">{{ t }}</i></span>
+                    </li>
+                    <li class="ex__quote font-thai">
+                      <span>“ข้อมูลที่ดีไม่ได้แค่บอกว่าเกิดอะไรขึ้น แต่ช่วยให้เราตัดสินใจเพื่อเมืองที่ดีขึ้นได้”</span>
+                      <em>— MOMAY</em>
+                    </li>
+                  </ul>
+
+                  <!-- ═══ ประเด็นหลัก + ทางเลือกที่ควรพิจารณา ═══ -->
+                  <div class="ex__body">
+                    <div class="ex__panel font-thai">
+                      <span class="ex__phead">
+                        <i>01</i>
+                        <b>คาดว่าปริมาณขยะจะเพิ่มสูงช่วงเช้าวันนี้ (09:00 – 10:00)</b>
+                        <em>NEEDS ATTENTION</em>
+                      </span>
+
+                      <div class="ex__grid">
+                        <div class="ex__stats">
+                          <p>จากรูปแบบข้อมูลในอดีตและกิจกรรมที่เกิดขึ้น คาดว่าปริมาณขยะจะเพิ่มขึ้นกว่าปกติ</p>
+                          <span class="ex__stat"><b>+32%</b><small>ปริมาณขยะ เทียบค่าเฉลี่ย</small></span>
+                          <span class="ex__stat"><b>09:00 – 10:00</b><small>ช่วงที่คาดว่าจะสูงสุด</small></span>
+                          <div class="ex__bars">
+                            <i v-for="(b, i) in execBars" :key="`eb${i}`" :class="{ 'is-peak': b.peak }"
+                               :style="{ height: `${b.v}%` }" />
+                          </div>
+                          <span class="ex__baxis"><em>06:00</em><em>10:00</em><em>14:00</em></span>
+                        </div>
+
+                        <div class="ex__map">
+                          <span class="ex__mtitle">ความหนาแน่นของผู้คน (คาดการณ์)</span>
+                          <div class="ex__stage">
+                            <svg class="ub__base" viewBox="0 0 320 200" preserveAspectRatio="none" aria-hidden="true">
+                              <path d="M-10 70C40 84 74 122 128 132S232 124 330 154" fill="none"
+                                    stroke="#1d3b57" stroke-width="16" stroke-linecap="round" opacity="0.9" />
+                              <g stroke="rgba(190,214,240,0.15)" fill="none" stroke-width="1.4">
+                                <path d="M-10 112C48 100 96 64 168 60S276 78 330 56" />
+                                <path d="M26 -10 44 210M112 -10 96 210M200 -10 214 210M276 -10 266 210" />
+                              </g>
+                            </svg>
+                            <svg class="ub__heat" viewBox="0 0 320 200" preserveAspectRatio="none" aria-hidden="true">
+                              <defs>
+                                <filter id="exHeat" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+                                  <feGaussianBlur stdDeviation="6" />
+                                  <feColorMatrix type="matrix" values="0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 1 0" />
+                                  <feComponentTransfer>
+                                    <feFuncR type="table" tableValues="0.13 0.20 0.63 0.95 1 1" />
+                                    <feFuncG type="table" tableValues="0.55 0.80 0.86 0.62 0.28 0.11" />
+                                    <feFuncB type="table" tableValues="0.86 0.42 0.20 0.16 0.18 0.18" />
+                                    <feFuncA type="table" tableValues="0 0.2 0.44 0.64 0.78 0.88" />
+                                  </feComponentTransfer>
+                                </filter>
+                              </defs>
+                              <g filter="url(#exHeat)" fill="#fff">
+                                <circle v-for="(b, i) in urbanHeat" :key="`exh${i}`"
+                                        :cx="b.x" :cy="b.y" :r="b.r" :opacity="b.o" />
+                              </g>
+                            </svg>
+                            <span v-for="pl in urbanPlaces" :key="`exp${pl.name}`" class="ub__place font-thai"
+                                  :style="{ left: pl.x, top: pl.y }">{{ pl.name }}</span>
+                            <ul class="ex__legend font-thai">
+                              <li v-for="l in execLayers" :key="l">{{ l }}</li>
+                            </ul>
+                            <span class="ub__zoom"><i>+</i><i>−</i></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="ex__side2 font-thai">
+                      <span class="ex__stitle">What Should You Consider?</span>
+                      <ul class="ex__opts">
+                        <li v-for="o in execOpts" :key="o.key" :class="{ 'is-on': o.pick }">
+                          <span class="ex__okey">Option {{ o.key }}<em v-if="o.pick">แนะนำ ↓</em></span>
+                          <b>{{ o.name }}</b>
+                          <small>ความเสี่ยงขยะล้น <em>{{ o.risk }}</em><i v-if="o.drop">({{ o.drop }})</i></small>
+                        </li>
+                      </ul>
+                      <span class="ex__save">บันทึกเพื่อพิจารณา →</span>
+                    </div>
+                  </div>
+
+                  <!-- ═══ ภาพรวมเมืองวันนี้ + แนวโน้ม 7 วัน ═══ -->
+                  <div class="ex__glance">
+                    <ul class="ex__stats2 font-thai">
+                      <li v-for="g in execGlance" :key="g.label">
+                        <small>{{ g.label }}</small><b>{{ g.value }}</b>
+                      </li>
+                    </ul>
+                    <ul class="ex__week font-thai">
+                      <li v-for="d in execWeek" :key="d.day" :class="{ 'is-warn': d.warn }">
+                        <small>{{ d.day }}</small><em>{{ d.note }}</em>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <p class="ex__foot">
+                    <b>MOMAY</b>
+                    <span>EXECUTIVE URBAN</span>
+                    <em class="font-thai">People × Spaces × Better Tomorrows</em>
+                  </p>
+                </div>
+              </div>
             </div>
             <div class="laptop">
               <div class="laptop__lid">
@@ -1635,6 +1769,59 @@ const urbanNav = [
   { label: 'รายงาน', icon: `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M9 12.5h6M9 16h4"/></svg>` },
   { label: 'ตั้งค่า', icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg>` },
 ]
+
+/* ── แดชบอร์ดผู้บริหารระดับเมือง EXECUTIVE URBAN (กรอบที่ยังว่างของ section EXECUTIVE BRIEF) ── */
+const execCards = [
+  {
+    kind: 'Risk ↑', color: '#e2483f',
+    title: 'คาดว่าปริมาณขยะจะเพิ่มสูงช่วงเช้าวันนี้ (09:00 – 10:00)',
+    note: 'จากกิจกรรมตลาดใต้ และจำนวนนักท่องเที่ยวที่เพิ่มขึ้นกว่าปกติ',
+    tags: ['ขยะ', 'ตลาดใต้', 'การจัดเก็บ'],
+    icon: `<svg viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7z"/><path d="M9.5 7V4.5h5V7"/></svg>`,
+  },
+  {
+    kind: 'Event ↑', color: '#e08a2b',
+    title: 'กิจกรรมริมแม่น้ำน่านช่วงเย็น คาดว่ามีผู้เข้าร่วมเพิ่มขึ้น 18–24%',
+    note: 'อาจส่งผลต่อการจราจร ที่จอดรถ และการดูแลความปลอดภัย',
+    tags: ['กิจกรรม', 'การจราจร', 'ที่จอดรถ'],
+    icon: `<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 8.4a3 3 0 0 1 0 5.2"/></svg>`,
+  },
+  {
+    kind: 'Trend ↓', color: '#2f9e6b',
+    title: 'การใช้พลังงานช่วงกลางคืน ลดลงต่อเนื่อง 4 สัปดาห์',
+    note: 'จากมาตรการควบคุมการใช้งานและการปรับเวลาไฟสาธารณะ',
+    tags: ['พลังงาน', 'สิ่งแวดล้อม', 'ความยั่งยืน'],
+    icon: `<svg viewBox="0 0 24 24"><path d="M20 5c0 8-5 13-12 13 0-8 5-13 12-13z"/><path d="M6 19c3-4 6-6 10-8"/></svg>`,
+  },
+]
+/* แท่งกราฟคาดการณ์ปริมาณขยะ 06:00–14:00 — แท่งพีคคือช่วง 09:00–10:00 */
+const execBars = [
+  { v: 26 }, { v: 34 }, { v: 30 }, { v: 46 }, { v: 58 }, { v: 96, peak: true },
+  { v: 74 }, { v: 62 }, { v: 54 }, { v: 44 }, { v: 38 }, { v: 30 },
+]
+const execLayers = ['ผู้คน', 'ขยะ', 'การจราจร', 'ที่จอดรถ', 'กิจกรรม']
+const execOpts = [
+  { key: 'A', name: 'คงแผนเดิม', risk: '72%' },
+  { key: 'B', name: 'ขยับเวลาเก็บขยะเร็วขึ้น 30 นาที', risk: '41%', drop: '↓ 31%', pick: true },
+  { key: 'C', name: 'เพิ่มจุดเก็บขยะชั่วคราว', risk: '35%', drop: '↓ 37%' },
+]
+const execGlance = [
+  { label: 'นักท่องเที่ยว', value: '12,480' },
+  { label: 'การจราจรหลัก', value: 'ปกติ' },
+  { label: 'คุณภาพอากาศ', value: 'ดี' },
+  { label: 'ที่จอดรถ', value: 'ว่าง 62%' },
+  { label: 'เหตุการณ์วันนี้', value: '3 กิจกรรม' },
+]
+const execWeek = [
+  { day: 'วันนี้', note: 'ปกติ' },
+  { day: 'พรุ่งนี้', note: 'ปกติ' },
+  { day: 'ศุกร์', note: 'เฝ้าระวัง', warn: true },
+  { day: 'เสาร์', note: 'เฝ้าระวัง', warn: true },
+  { day: 'อาทิตย์', note: 'ฝนเล็กน้อย' },
+  { day: 'จันทร์', note: 'ปกติ' },
+  { day: 'อังคาร', note: 'ปกติ' },
+]
+
 const urbanImpacts = [
   'พื้นที่สาธารณะสกปรกเร็วขึ้น',
   'ภาระงานของเจ้าหน้าที่เพิ่มขึ้น',
@@ -3361,6 +3548,302 @@ section {
 }
 .ub__foot b { letter-spacing: 0.12em; color: #e8ecf5; }
 .ub__foot em { font-style: normal; margin-left: auto; }
+
+/* ══════════════ แดชบอร์ดผู้บริหารระดับเมือง EXECUTIVE URBAN ══════════════ */
+/* อยู่ในกรอบใบหลังของ section EXECUTIVE BRIEF — ธีมสว่างคนละโทนกับ ENLIGHTEN URBAN
+   เพื่อให้แยกออกทันทีว่าเป็นคนละผลิตภัณฑ์ ไม่ใช่หน้าจอเดียวกันสองสี */
+.ex {
+  --ex-bg: #eef2f7;
+  --ex-card: #ffffff;
+  --ex-line: #dde5f0;
+  --ex-ink: #1b2a3d;
+  --ex-dim: #6b7c92;
+  --ex-blue: #2f6bff;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  border-radius: inherit;
+  overflow: hidden;
+  background: var(--ex-bg);
+  font-size: 0.6rem;
+  color: var(--ex-ink);
+}
+
+/* แถบไอคอนซ้าย — หน้าจริงมีชื่อเมนูด้วย แต่กรอบนี้แคบ เหลือแค่ไอคอน */
+.ex__side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 0;
+  background: linear-gradient(180deg, #12203a, #0b1626);
+}
+.ex__logo i {
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  border-radius: 6px;
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #0b1626;
+  background: linear-gradient(140deg, #7fb0ff, #2f6bff);
+}
+.ex__nav { display: grid; gap: 3px; margin: 2px 0 0; padding: 0; list-style: none; }
+.ex__nav li {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 21px;
+  border-radius: 6px;
+  color: #7f93b3;
+}
+.ex__nav li.is-on { background: rgba(127, 176, 255, 0.2); color: #fff; }
+.ex__nav :deep(svg) {
+  width: 13px; height: 13px; fill: none; stroke: currentColor;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.ex__main { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 7px; min-width: 0; }
+.ex__top { display: flex; align-items: flex-start; gap: 8px; }
+.ex__brand { display: flex; flex-direction: column; min-width: 0; }
+.ex__brand b { font-size: 0.72rem; letter-spacing: 0.06em; }
+.ex__brand em { font-style: normal; font-size: 0.48rem; color: var(--ex-dim); }
+.ex__org { display: flex; align-items: center; gap: 7px; margin-left: auto; white-space: nowrap; }
+.ex__org em { font-style: normal; font-size: 0.5rem; color: var(--ex-dim); }
+.ex__org b {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #12203a;
+  font-size: 0.5rem;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+
+/* ── ประเด็นที่ควรรู้วันนี้ ── */
+.ex__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 0.72fr);
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex__cards > li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--ex-line);
+  background: var(--ex-card);
+}
+.ex__ctop { display: flex; align-items: center; gap: 5px; }
+.ex__ctop i {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 6px;
+  color: var(--c, #e2483f);
+  background: color-mix(in srgb, var(--c, #e2483f) 14%, transparent);
+}
+.ex__ctop :deep(svg) {
+  width: 11px; height: 11px; fill: none; stroke: currentColor;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.ex__ctop em {
+  margin-left: auto;
+  font-style: normal;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c, #e2483f) 12%, transparent);
+  font-size: 0.44rem;
+  font-weight: 700;
+  color: var(--c, #e2483f);
+}
+.ex__cards b { font-size: 0.58rem; line-height: 1.4; }
+.ex__cards small { font-size: 0.46rem; line-height: 1.4; color: var(--ex-dim); }
+.ex__tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: auto; }
+.ex__tags i {
+  font-style: normal;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #eef2f8;
+  font-size: 0.42rem;
+  color: var(--ex-dim);
+}
+.ex__quote {
+  justify-content: center;
+  gap: 5px !important;
+  background: #f5f8fc !important;
+  border-style: dashed !important;
+}
+.ex__quote span { font-size: 0.5rem; line-height: 1.55; color: #33465f; }
+.ex__quote em { font-style: normal; font-size: 0.44rem; color: var(--ex-dim); }
+
+/* ── ประเด็นหลัก + ทางเลือก ── */
+.ex__body { display: grid; grid-template-columns: minmax(0, 2.05fr) minmax(0, 1fr); gap: 6px; flex: 1; min-height: 0; }
+.ex__panel, .ex__side2 {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--ex-line);
+  background: var(--ex-card);
+}
+.ex__phead { display: flex; align-items: center; gap: 6px; }
+.ex__phead i {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 17px;
+  flex: none;
+  border-radius: 5px;
+  font-style: normal;
+  font-size: 0.46rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--ex-blue);
+}
+.ex__phead b { font-size: 0.6rem; line-height: 1.35; }
+.ex__phead em {
+  margin-left: auto;
+  flex: none;
+  font-style: normal;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(226, 72, 63, 0.12);
+  font-size: 0.42rem;
+  font-weight: 700;
+  color: #e2483f;
+}
+.ex__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 6px; flex: 1; min-height: 0; }
+.ex__stats { display: flex; flex-direction: column; gap: 4px; min-width: 0; min-height: 0; }
+.ex__stats p { margin: 0; font-size: 0.46rem; line-height: 1.45; color: var(--ex-dim); }
+.ex__stat {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: #f2f6fb;
+}
+.ex__stat b { font-family: 'Poppins', 'Inter', sans-serif; font-size: 0.72rem; color: var(--ex-blue); }
+.ex__stat small { font-size: 0.42rem; color: var(--ex-dim); }
+.ex__bars { display: flex; align-items: flex-end; gap: 2px; flex: 1; min-height: 22px; }
+.ex__bars i { flex: 1; border-radius: 2px 2px 0 0; background: #b9cdea; }
+.ex__bars i.is-peak { background: #e2483f; }
+.ex__baxis { display: flex; justify-content: space-between; font-size: 0.42rem; color: var(--ex-dim); }
+.ex__baxis em { font-style: normal; }
+
+.ex__map { display: flex; flex-direction: column; gap: 4px; min-width: 0; min-height: 0; }
+.ex__mtitle {
+  padding: 3px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--ex-line);
+  background: #f7fafd;
+  font-size: 0.46rem;
+  color: var(--ex-dim);
+}
+.ex__stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: 7px;
+  overflow: hidden;
+  background:
+    radial-gradient(56% 40% at 24% 26%, rgba(126, 166, 214, 0.1), transparent 72%),
+    linear-gradient(158deg, #0e1a2b 0%, #070d17 100%);
+}
+.ex__legend {
+  position: absolute;
+  z-index: 4;
+  right: 5px;
+  top: 5px;
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 4px 6px;
+  list-style: none;
+  border-radius: 5px;
+  background: rgba(6, 10, 18, 0.78);
+}
+.ex__legend li { font-size: 0.42rem; color: #cfd6e6; }
+
+.ex__stitle { font-size: 0.56rem; font-weight: 700; }
+.ex__opts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ex__opts li {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 7px;
+  border-radius: 7px;
+  border: 1px solid var(--ex-line);
+  background: #f8fafd;
+}
+.ex__opts li.is-on { border-color: var(--ex-blue); background: rgba(47, 107, 255, 0.07); }
+.ex__okey { display: flex; align-items: center; gap: 5px; font-size: 0.44rem; font-weight: 700; color: var(--ex-blue); }
+.ex__okey em { margin-left: auto; font-style: normal; font-size: 0.4rem; color: #2f9e6b; }
+.ex__opts b { font-size: 0.52rem; line-height: 1.35; }
+.ex__opts small { font-size: 0.44rem; color: var(--ex-dim); }
+.ex__opts small em { font-style: normal; font-weight: 700; color: var(--ex-ink); }
+.ex__opts small i { font-style: normal; margin-left: 3px; color: #2f9e6b; }
+.ex__save {
+  margin-top: auto;
+  padding: 5px;
+  border-radius: 7px;
+  text-align: center;
+  background: var(--ex-blue);
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ── ภาพรวมเมือง + แนวโน้ม 7 วัน ── */
+.ex__glance { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 6px; }
+.ex__stats2, .ex__week { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ex__stats2 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.ex__week { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.ex__stats2 li, .ex__week li {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  padding: 4px 5px;
+  border-radius: 7px;
+  border: 1px solid var(--ex-line);
+  background: var(--ex-card);
+  text-align: center;
+}
+.ex__stats2 small, .ex__week small { font-size: 0.42rem; color: var(--ex-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex__stats2 b { font-size: 0.56rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex__week em { font-style: normal; font-size: 0.44rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex__week li.is-warn { border-color: rgba(224, 138, 43, 0.5); background: rgba(224, 138, 43, 0.09); }
+.ex__week li.is-warn em { color: #b96e14; }
+
+.ex__foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding-top: 5px;
+  border-top: 1px solid var(--ex-line);
+  font-size: 0.44rem;
+  color: var(--ex-dim);
+}
+.ex__foot b { letter-spacing: 0.12em; color: var(--ex-ink); }
+.ex__foot em { font-style: normal; margin-left: auto; }
 
 .en__backframe::before {
   content: '';
