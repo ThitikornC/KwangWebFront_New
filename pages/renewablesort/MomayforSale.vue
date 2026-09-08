@@ -166,11 +166,14 @@
           <h2 class="h2" v-split="24">{{ sc.title }}</h2>
           <p class="lead font-thai" v-reveal="160">{{ noSplit(sc.lead) }}</p>
 
-          <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop brief-showcase--stack" :class="{ 'is-swapped': briefSwapped, 'is-animating': briefAnimating }" v-reveal="140">
+          <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop brief-showcase--stack"
+               :class="{ 'is-front': stackOpen.brief === 'front', 'is-back': stackOpen.brief === 'back' }" v-reveal="140">
+            <span class="en__wordmark en__wordmark--library" aria-hidden="true">Executive <b>Brief</b></span>
+            <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban</b></span>
             <!-- แผงสรุปเป็นของจอแนวนอนเหมือนคอนโซล — ใส่กรอบโน้ตบุ๊คแบบเดียวกัน -->
-            <div class="en__backframe" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Executive Brief"
-                 :aria-pressed="briefSwapped" @click="toggleBrief" @keydown.enter="toggleBrief" @keydown.space.prevent="toggleBrief">
-              <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban</b></span>
+            <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Urban"
+                 :aria-pressed="stackOpen.brief === 'back'" @click="toggleStack('brief', 'back')"
+                 @keydown.enter="toggleStack('brief', 'back')" @keydown.space.prevent="toggleStack('brief', 'back')">
 
               <!-- แดชบอร์ดผู้บริหารระดับเมือง — ธีมสว่าง เก็บเฉพาะใจความของหน้าจริง -->
               <div class="ex" aria-hidden="true">
@@ -311,8 +314,9 @@
                 <span class="laptop__cam" aria-hidden="true" />
                 <div class="laptop__screen">
                   <div class="laptop__stage">
-                    <div class="brief" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Executive Brief" @click="toggleBrief" @keydown.enter="toggleBrief" @keydown.space.prevent="toggleBrief">
-                    <span class="en__wordmark en__wordmark--library" aria-hidden="true">Executive <b>Library</b></span>
+                    <div class="brief" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Brief"
+                         :aria-pressed="stackOpen.brief === 'front'" @click="toggleStack('brief', 'front')"
+                         @keydown.enter="toggleStack('brief', 'front')" @keydown.space.prevent="toggleStack('brief', 'front')">
                     <div class="brief__head">
                       <span class="brief__title">EXECUTIVE BRIEF</span>
                       <span class="brief__meta">
@@ -409,11 +413,14 @@
           </div>
 
           <!-- คอนโซลจำลองของ MOMAY ENLIGHTENED — ผังเดียวกับแดชบอร์ดจริง -->
-          <div v-else-if="sc.console" class="brief-showcase brief-showcase--laptop brief-showcase--stack" :class="{ 'is-swapped': enlightenedSwapped, 'is-animating': enlightenedAnimating }" v-reveal="140">
+          <div v-else-if="sc.console" class="brief-showcase brief-showcase--laptop brief-showcase--stack"
+               :class="{ 'is-front': stackOpen.enlightened === 'front', 'is-back': stackOpen.enlightened === 'back' }" v-reveal="140">
+            <span class="en__wordmark en__wordmark--library" aria-hidden="true">Enlightened <b>Library</b></span>
+            <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Enlightened <b>Urban</b></span>
             <!-- คอนโซลตัวนี้เป็นของจอแนวนอน — ใส่กรอบโน้ตบุ๊ค แล้วย่อผังขนาดจอคอมทั้งก้อนลงให้พอดีจอ -->
-            <div class="en__backframe" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Enlightened"
-                 :aria-pressed="enlightenedSwapped" @click="toggleEnlightened" @keydown.enter="toggleEnlightened" @keydown.space.prevent="toggleEnlightened">
-              <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Enlightened <b>Urban</b></span>
+            <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Urban"
+                 :aria-pressed="stackOpen.enlightened === 'back'" @click="toggleStack('enlightened', 'back')"
+                 @keydown.enter="toggleStack('enlightened', 'back')" @keydown.space.prevent="toggleStack('enlightened', 'back')">
 
               <!-- แดชบอร์ดระดับเมือง — ยกผังของหน้าจริงมา เก็บเฉพาะใจความ -->
               <div class="ub" aria-hidden="true">
@@ -605,8 +612,9 @@
                 <span class="laptop__cam" aria-hidden="true" />
                 <div class="laptop__screen">
                   <div class="laptop__stage">
-                    <div class="brief brief--en" role="button" tabindex="0" aria-label="สลับลำดับหน้าจอ Enlightened" @click="toggleEnlightened" @keydown.enter="toggleEnlightened" @keydown.space.prevent="toggleEnlightened">
-                    <span class="en__wordmark en__wordmark--library" aria-hidden="true">Enlightened <b>Library</b></span>
+                    <div class="brief brief--en" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Library"
+                         :aria-pressed="stackOpen.enlightened === 'front'" @click="toggleStack('enlightened', 'front')"
+                         @keydown.enter="toggleStack('enlightened', 'front')" @keydown.space.prevent="toggleStack('enlightened', 'front')">
                     <div class="brief__head">
                       <span class="brief__title">ENLIGHTENED</span>
                       <span class="brief__meta">
@@ -1567,21 +1575,11 @@ const contactOpen = ref(false)
 const customersOpen = ref(false)
 const activePin = ref(0)
 const mapPath = ref(null)
-const enlightenedSwapped = ref(false)
-const enlightenedAnimating = ref(false)
-const briefSwapped = ref(false)
-const briefAnimating = ref(false)
-
-const toggleEnlightened = () => {
-  enlightenedSwapped.value = !enlightenedSwapped.value
-  enlightenedAnimating.value = true
-  window.setTimeout(() => { enlightenedAnimating.value = false }, 520)
-}
-
-const toggleBrief = () => {
-  briefSwapped.value = !briefSwapped.value
-  briefAnimating.value = true
-  window.setTimeout(() => { briefAnimating.value = false }, 520)
+/* การ์ดคู่ของแต่ละ section — '' คือกว้างเท่ากัน ส่วน 'front'/'back' คือใบที่กดให้ขยาย
+   กดใบเดิมซ้ำจะกลับไปเท่ากัน จะได้เทียบสองหน้าจอข้างกันได้ด้วย */
+const stackOpen = reactive({ enlightened: '', brief: '' })
+const toggleStack = (key, which) => {
+  stackOpen[key] = stackOpen[key] === which ? '' : which
 }
 
 /* ภาษาไทยไม่มีช่องว่างระหว่างคำ เบราว์เซอร์จึงเดาที่ตัดเองแล้วมักได้คำขาดกลางคำ
@@ -3090,24 +3088,59 @@ section {
 
 .brief__row { display: grid; grid-template-columns: 1.25fr 1fr; gap: 8px; margin-top: 8px; }
 .brief-showcase { max-width: 880px; margin: clamp(30px, 4vw, 52px) auto 0; }
-.brief-showcase--stack {
+/* การ์ดสองใบวางแยกซ้าย-ขวา ไม่ซ้อนกันแล้ว — เริ่มต้นกว้างเท่ากัน
+   กดใบไหน คอลัมน์ของใบนั้นจะยืดออก อีกใบหดลงเป็นตัวอย่างข้าง ๆ */
+.brief-showcase--laptop.brief-showcase--stack {
   position: relative;
-  margin-inline: auto;
-  perspective: 1400px;
-  /* เลื่อนจุดรวมสายตาตามระยะที่ขยับทั้งชุด มุมมอง 3 มิติจะได้ยังอยู่กลางจอ
-     ไม่ใช่เบ้ไปข้างเดียวจนการ์ดดูเอียงผิดรูป */
-  perspective-origin: 76% 50%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: clamp(12px, 1.6vw, 28px);
+  width: min(1840px, 94vw);
+  max-width: none;
+  /* ชุดการ์ดกว้างกว่า .wrap ที่ครอบอยู่ — margin auto จะกลายเป็น 0 แล้วล้นไปทางขวาข้างเดียว
+     คิดระยะเองให้มันยื่นออกทั้งสองข้างเท่ากัน */
+  margin-inline: calc((100% - min(1840px, 94vw)) / 2);
+  margin-top: 0;
+  perspective: 1900px;
+  transition: grid-template-columns 0.85s cubic-bezier(0.16, 1, 0.3, 1);
 }
-/* การ์ดใบหลังยื่นไปทางขวา 52% ของความกว้างตัวเอง — เลื่อนทั้งชุดกลับมาครึ่งหนึ่ง
-   ระยะห่างซ้าย-ขวาของการ์ดคู่จะได้เท่ากันตั้งแต่โหลดหน้า
-   (.reveal.is-in ตั้ง transform: none จึงต้องเขียนให้ specificity สูงกว่ามัน) */
-.brief-showcase--stack,
-.brief-showcase--stack.reveal,
-.brief-showcase--stack.reveal.is-in {
-  transform: translateX(-26%);
+/* ── กดแล้วเด้งมากลางหน้าจอ ──
+   position: fixed จะยึดกับ viewport ได้ก็ต่อเมื่อไม่มีบรรพบุรุษตั้ง transform/filter/perspective
+   ตัวชุดการ์ดเองมีทั้ง perspective และ filter (จาก .reveal) จึงต้องปิดทิ้งตอนเปิด */
+.brief-showcase--stack.is-front,
+.brief-showcase--stack.is-back {
+  perspective: none;
+  filter: none;
 }
-.brief-showcase--stack.reveal { opacity: 0; }
-.brief-showcase--stack.reveal.is-in { opacity: 1; }
+.brief-showcase--stack.is-front::before,
+.brief-showcase--stack.is-back::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(4, 4, 8, 0.86);
+  backdrop-filter: blur(7px);
+  animation: fadeIn 0.35s ease forwards;
+}
+.brief-showcase--stack.is-front .brief,
+.brief-showcase--stack.is-back .en__backframe {
+  position: fixed;
+  z-index: 90;
+  left: 50%;
+  top: 50%;
+  /* ไม่ให้สูงเกินจอ — 880/576 คืออัตราส่วนของการ์ด */
+  width: min(1240px, 94vw, calc(86vh * 880 / 576));
+  transform: translate(-50%, -50%);
+  filter: none;
+  opacity: 1;
+  box-shadow: 0 60px 140px rgba(0, 0, 0, 0.72);
+}
+/* บนจอกว้าง กรอบโน้ตบุ๊คถูกยุบด้วย display:contents — ลูกที่เป็นคอลัมน์จริงคือ .brief
+   ส่วนบนจอแนวตั้งกรอบกลับมาเป็นกล่องจริง จึงตั้ง order ไว้ทั้งสองตัว */
+.brief-showcase--stack .laptop,
+.brief-showcase--stack .brief { order: 1; min-width: 0; }
+.brief-showcase--stack .en__backframe { order: 2; }
 .en__wordmark {
   position: absolute;
   z-index: 1;
@@ -3115,7 +3148,7 @@ section {
   flex-direction: column;
   gap: 0.02em;
   font-family: 'Poppins', 'Inter', sans-serif;
-  font-size: clamp(1.45rem, 2.9vw, 3rem);
+  font-size: clamp(1rem, 2vw, 2.1rem);
   font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.04em;
@@ -3142,32 +3175,29 @@ section {
     3px 4px 0 rgba(56, 56, 64, 0.72),
     8px 10px 18px rgba(0, 0, 0, 0.55);
 }
-/* ชื่อไม่อยู่ในกรอบม็อกอัพ — วางนอกขอบขวาของคอนโซล กึ่งกลางแนวตั้ง
-   จะได้ไม่ไปทับกราฟข้างใน */
+/* ชื่ออยู่เหนือการ์ดของตัวเอง ไม่ทับเนื้อหาข้างใน */
 .en__wordmark--library {
-  top: 50%;
-  left: 100%;
+  top: 0;
+  left: 0;
   right: auto;
   align-items: flex-start;
   text-align: left;
-  transform: translate(22px, -50%) rotateY(12deg) rotateX(3deg);
+  transform: translateY(-102%) rotateY(8deg) rotateX(3deg);
 }
-/* การ์ดที่ยังว่าง — ทำแบบเดียวกันแต่สลับข้าง คือออกไปนอกขอบซ้ายของการ์ด
-   ชื่อของสองใบจึงชี้เข้าหากัน ใบไหนอยู่หน้าตอนกดสลับ ชื่อใบนั้นก็อยู่บนสุด */
 .en__wordmark--urban {
-  top: 50%;
-  right: 100%;
+  top: 0;
+  right: 0;
   left: auto;
   align-items: flex-end;
   text-align: right;
-  transform: translate(-22px, -50%) rotateY(-12deg) rotateX(3deg);
+  transform: translateY(-102%) rotateY(-8deg) rotateX(3deg);
 }
 .en__backframe {
-  position: absolute;
-  z-index: 0;
-  inset: 22px auto auto 52%;
-  width: 100%;
-  height: calc(100% - 22px);
+  position: relative;
+  min-width: 0;
+  /* รูปทรงเดียวกับคอนโซลฝั่งซ้าย สองใบจะได้สูงเท่ากันเมื่อกว้างเท่ากัน */
+  aspect-ratio: 880 / 576;
+  overflow: hidden;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
@@ -3179,8 +3209,8 @@ section {
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  transform: rotateY(-3deg);
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.9s ease, border-color 0.7s ease, opacity 0.7s ease;
+  transform: rotateY(-4deg);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.9s ease, border-color 0.7s ease, opacity 0.7s ease, filter 0.9s ease;
   will-change: transform;
 }
 
@@ -3953,12 +3983,13 @@ section {
   /* ม็อกทั้งสอง section กว้าง 880px เท่ากัน ล็อกอัตราส่วนไว้ความสูงจึงเท่ากันเสมอ
      เนื้อหาที่สูงกว่านี้ยังดันกล่องให้ขยายได้ตามปกติ */
   aspect-ratio: 880 / 576;
+  overflow: hidden;
   z-index: 1;
   cursor: pointer;
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  transform: rotateY(3deg);
+  transform: rotateY(4deg);
   transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s ease, opacity 0.7s ease;
   will-change: transform;
 }
@@ -3966,26 +3997,14 @@ section {
   outline: 1px solid rgba(236, 183, 49, 0.72);
   outline-offset: 5px;
 }
-.brief-showcase--stack.is-swapped .en__backframe {
-  z-index: 2;
-  pointer-events: auto;
-  transform: rotateY(-3deg);
+/* ใบที่ถูกกดจะตั้งตรงและสว่างเต็ม ส่วนอีกใบหรี่ลงเป็นตัวอย่างข้าง ๆ */
+.brief-showcase--stack.is-back .en__backframe {
   border-color: rgba(236, 183, 49, 0.42);
   box-shadow: 0 34px 86px rgba(0, 0, 0, 0.62), 0 0 44px rgba(236, 183, 49, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-.brief-showcase--stack.is-swapped .en__backframe::after { animation: enFrameSweep 1.1s ease forwards; }
-.brief-showcase--stack.is-swapped .brief {
-  z-index: 0;
-  transform: rotateY(3deg);
-  filter: brightness(0.72) saturate(0.72);
-  opacity: 0.82;
-}
-.brief-showcase--stack.is-animating .en__backframe {
-  transform: translate3d(10%, 0, 0) scale(1.018) rotateY(-9deg);
-}
-.brief-showcase--stack.is-animating .brief {
-  transform: translate3d(-10%, 0, 0) scale(0.982) rotateY(9deg);
-}
+.brief-showcase--stack.is-back .en__backframe::after { animation: enFrameSweep 1.1s ease forwards; }
+.brief-showcase--stack.is-back .brief,
+.brief-showcase--stack.is-front .en__backframe { filter: brightness(0.5) saturate(0.6); }
 /* ส่วน STUDENT — การ์ดฝั่งซ้าย ภาพจำลองแอปฝั่งขวา */
 .showcase-body--split {
   display: grid;
@@ -4844,6 +4863,9 @@ section {
 }
 .section--fit .center { margin-top: clamp(10px, 1.5vh, 20px); }
 .section--fit .brief-showcase { margin-top: clamp(14px, 2.2vh, 26px); }
+/* ชุดการ์ดคู่ต้องเว้นที่เหนือการ์ดไว้ให้ชื่อของแต่ละใบ ไม่งั้นชื่อไปชนคำบรรยายของ section */
+.section--fit .brief-showcase--laptop.brief-showcase--stack,
+.brief-showcase--laptop.brief-showcase--stack { margin-top: clamp(112px, 11vw, 176px); }
 .section--fit .brief { padding: clamp(9px, 1.05vw, 14px); }
 .section--fit .brief__head { padding-bottom: 9px; }
 
@@ -5837,21 +5859,15 @@ section {
 @keyframes enFrameSweep { from { background-position: 120% 0; opacity: 0; } 30% { opacity: 1; } to { background-position: -30% 0; opacity: 0; } }
 
 /* ══════════════ responsive ══════════════ */
-/* การ์ดคู่กว้างรวม 152% ของ 880px = 1338px — แคบกว่านี้เริ่มโดนตัดขอบ
-   แต่ยังอยากเห็นทั้งสองใบ (แท็บเล็ตด้วย) จึงลดระยะซ้อนเหลือ 26% แล้วคุมความกว้าง
-   ของทั้งชุดไม่ให้เกินจอ แทนที่จะซ่อนใบหลังทิ้ง */
-@media (max-width: 1360px) {
-  /* .brief-showcase--laptop ของจอแนวตั้งตั้ง max-width ไว้ทีหลัง จึงต้องเขียนสองคลาส
-     ให้ specificity ชนะ ไม่งั้นชุดการ์ดจะกว้างเกินจอบนแท็บเล็ตแนวตั้ง */
-  .brief-showcase--stack,
-  .brief-showcase--laptop.brief-showcase--stack {
-    max-width: min(880px, calc((100vw - 26px) / 1.26));
-    perspective-origin: 63% 50%;
+/* จอแคบกว่า ~1024px สองคอลัมน์จะบีบจนม็อกอ่านไม่ออก — เรียงลงมาทีละใบแทน */
+@media (max-width: 1023px) {
+  .brief-showcase--laptop.brief-showcase--stack,
+  .brief-showcase--stack.is-front,
+  .brief-showcase--stack.is-back {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(46px, 8vw, 78px);
+    margin-top: clamp(52px, 9vw, 84px);
   }
-  .brief-showcase--stack,
-  .brief-showcase--stack.reveal,
-  .brief-showcase--stack.reveal.is-in { transform: translateX(-13%); }
-  .brief-showcase--stack .en__backframe { left: 26%; }
   .brief-showcase--stack .en__wordmark { display: none; }
 }
 /* เบราว์เซอร์เต็มจอบนโน้ตบุ๊กเหลือความสูงจริงไม่ถึง 900px — หัวเรื่องที่ผูกกับความกว้าง
