@@ -174,7 +174,7 @@
             <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Urban"
                  :aria-pressed="stackOpen.brief === 'back'" @click="toggleStack('brief', 'back')"
                  @keydown.enter="toggleStack('brief', 'back')" @keydown.space.prevent="toggleStack('brief', 'back')">
-              <img class="mockup-image mockup-image--executive" src="/momay/Excotive.png" alt="Executive Urban dashboard" />
+              <img class="mockup-image mockup-image--executive" src="/momay/Excotive2.png" alt="Executive Urban dashboard" />
 
               <!-- แดชบอร์ดผู้บริหารระดับเมือง — ธีมสว่าง เก็บเฉพาะใจความของหน้าจริง -->
               <div class="ex" aria-hidden="true">
@@ -423,7 +423,7 @@
             <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Urban"
                  :aria-pressed="stackOpen.enlightened === 'back'" @click="toggleStack('enlightened', 'back')"
                  @keydown.enter="toggleStack('enlightened', 'back')" @keydown.space.prevent="toggleStack('enlightened', 'back')">
-              <img class="mockup-image mockup-image--enlightened" src="/momay/Enlitened.png" alt="Enlightened Urban dashboard" />
+              <img class="mockup-image mockup-image--enlightened" src="/momay/Enlitened2.png" alt="Enlightened Urban dashboard" />
 
               <!-- แดชบอร์ดระดับเมือง — ยกผังของหน้าจริงมา เก็บเฉพาะใจความ -->
               <div class="ub" aria-hidden="true">
@@ -1006,7 +1006,7 @@
             <div class="tablet" aria-hidden="true">
               <span class="tablet__cam" />
               <div class="tablet__screen cz">
-                <img class="mockup-image mockup-image--citizen" src="/momay/ciztizen.png" alt="MOMAY Citizen dashboard" />
+                <img class="mockup-image mockup-image--citizen" src="/momay/ciztizen2.png" alt="MOMAY Citizen dashboard" />
                 <aside class="cz__rail">
                   <span class="cz__logo">M</span>
                   <ul class="cz__nav">
