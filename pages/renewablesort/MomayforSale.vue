@@ -169,11 +169,12 @@
           <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop brief-showcase--stack"
                :class="{ 'is-front': stackOpen.brief === 'front', 'is-back': stackOpen.brief === 'back' }" v-reveal="140">
             <span class="en__wordmark en__wordmark--library" aria-hidden="true">Executive <b>Brief</b></span>
-            <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban</b></span>
+            <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban City</b></span>
             <!-- แผงสรุปเป็นของจอแนวนอนเหมือนคอนโซล — ใส่กรอบโน้ตบุ๊คแบบเดียวกัน -->
             <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Urban"
                  :aria-pressed="stackOpen.brief === 'back'" @click="toggleStack('brief', 'back')"
                  @keydown.enter="toggleStack('brief', 'back')" @keydown.space.prevent="toggleStack('brief', 'back')">
+              <img class="mockup-image mockup-image--executive" src="/momay/Excotive.png" alt="Executive Urban dashboard" />
 
               <!-- แดชบอร์ดผู้บริหารระดับเมือง — ธีมสว่าง เก็บเฉพาะใจความของหน้าจริง -->
               <div class="ex" aria-hidden="true">
@@ -416,11 +417,12 @@
           <div v-else-if="sc.console" class="brief-showcase brief-showcase--laptop brief-showcase--stack"
                :class="{ 'is-front': stackOpen.enlightened === 'front', 'is-back': stackOpen.enlightened === 'back' }" v-reveal="140">
             <span class="en__wordmark en__wordmark--library" aria-hidden="true">Enlightened <b>Library</b></span>
-            <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Enlightened <b>Urban</b></span>
+            <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Enlightened <b>Urban City</b></span>
             <!-- คอนโซลตัวนี้เป็นของจอแนวนอน — ใส่กรอบโน้ตบุ๊ค แล้วย่อผังขนาดจอคอมทั้งก้อนลงให้พอดีจอ -->
             <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Urban"
                  :aria-pressed="stackOpen.enlightened === 'back'" @click="toggleStack('enlightened', 'back')"
                  @keydown.enter="toggleStack('enlightened', 'back')" @keydown.space.prevent="toggleStack('enlightened', 'back')">
+              <img class="mockup-image mockup-image--enlightened" src="/momay/Enlitened.png" alt="Enlightened Urban dashboard" />
 
               <!-- แดชบอร์ดระดับเมือง — ยกผังของหน้าจริงมา เก็บเฉพาะใจความ -->
               <div class="ub" aria-hidden="true">
@@ -1000,6 +1002,7 @@
             <div class="tablet" aria-hidden="true">
               <span class="tablet__cam" />
               <div class="tablet__screen cz">
+                <img class="mockup-image mockup-image--citizen" src="/momay/ciztizen.png" alt="MOMAY Citizen dashboard" />
                 <aside class="cz__rail">
                   <span class="cz__logo">M</span>
                   <ul class="cz__nav">
@@ -3224,6 +3227,18 @@ section {
   transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.9s ease, border-color 0.7s ease, opacity 0.7s ease, filter 0.9s ease;
   will-change: transform;
 }
+.en__backframe > .mockup-image {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.en__backframe > .ex,
+.en__backframe > .ub { display: none; }
 
 /* ══════════════ แดชบอร์ดระดับเมือง ENLIGHTEN URBAN ══════════════ */
 /* อยู่ในกรอบใบหลังของ section ENLIGHTENED — ย่อผังของหน้าจริงลงมาทั้งก้อน
@@ -4751,12 +4766,26 @@ section {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 .tablet__screen {
+  position: relative;
+  aspect-ratio: 1225 / 1284;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: #08080e;
-  padding: 11px 11px 12px;
+  padding: 0;
   overflow: hidden;
 }
+.tablet__screen > .mockup-image {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.tablet__screen > .cz__rail,
+.tablet__screen > .cz__main { display: none; }
 .tablet__cols { display: grid; grid-template-columns: 1fr 1.05fr; gap: 11px; margin-top: 11px; }
 .tablet__col { min-width: 0; }
 .tablet .phone__row { cursor: default; grid-template-columns: 22px 30px minmax(0, 1fr) 10px; gap: 6px; padding: 6px 7px; }
