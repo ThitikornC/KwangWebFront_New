@@ -618,7 +618,7 @@
                     <div class="brief brief--en brief--library-image" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Library"
                          :aria-pressed="stackOpen.enlightened === 'front'" @click="toggleStack('enlightened', 'front')"
                          @keydown.enter="toggleStack('enlightened', 'front')" @keydown.space.prevent="toggleStack('enlightened', 'front')">
-                    <img class="mockup-image" src="/momay/Enlighted_Lib.png" alt="Enlightened library dashboard" />
+                    <img class="mockup-image" src="/momay/Enlighted_Lib2.png" alt="Enlightened library dashboard" />
                     <div class="brief__head">
                       <span class="brief__title">ENLIGHTENED</span>
                       <span class="brief__meta">
