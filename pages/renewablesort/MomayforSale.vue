@@ -2688,7 +2688,7 @@ section {
     text-shadow: none;
     animation: shine 6s ease-in-out 2.2s infinite;
   }
-  .line__in--red.split .split__ch { color: transparent; }
+  .line__in--red.split .split__ch { color: var(--red); }
 }
 
 /* ══════════════ ปุ่ม ══════════════ */
@@ -3123,7 +3123,7 @@ section {
   backdrop-filter: blur(7px);
   animation: fadeIn 0.35s ease forwards;
 }
-.brief-showcase--stack.is-front .brief,
+.brief-showcase--stack.is-front .laptop__stage,
 .brief-showcase--stack.is-back .en__backframe {
   position: fixed;
   z-index: 90;
@@ -3139,7 +3139,17 @@ section {
 /* บนจอกว้าง กรอบโน้ตบุ๊คถูกยุบด้วย display:contents — ลูกที่เป็นคอลัมน์จริงคือ .brief
    ส่วนบนจอแนวตั้งกรอบกลับมาเป็นกล่องจริง จึงตั้ง order ไว้ทั้งสองตัว */
 .brief-showcase--stack .laptop,
-.brief-showcase--stack .brief { order: 1; min-width: 0; }
+.brief-showcase--stack .laptop__stage { order: 1; min-width: 0; }
+.brief-showcase--stack .laptop__stage {
+  container-type: inline-size;
+  aspect-ratio: 880 / 576;
+  overflow: hidden;
+  border-radius: 18px;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  transform: rotateY(4deg);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s ease, opacity 0.7s ease;
+}
 .brief-showcase--stack .en__backframe { order: 2; }
 .en__wordmark {
   position: absolute;
@@ -3194,6 +3204,7 @@ section {
 }
 .en__backframe {
   position: relative;
+  container-type: inline-size;
   min-width: 0;
   /* รูปทรงเดียวกับคอนโซลฝั่งซ้าย สองใบจะได้สูงเท่ากันเมื่อกว้างเท่ากัน */
   aspect-ratio: 880 / 576;
@@ -3222,9 +3233,16 @@ section {
   --ub-line: rgba(255, 255, 255, 0.09);
   --ub-panel: rgba(255, 255, 255, 0.03);
   --ub-dim: #93a2bd;
-  position: absolute;
-  inset: 0;
   z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* ขนาดออกแบบคงที่ แล้วย่อ/ขยายทั้งก้อนตามความกว้างจริงของการ์ด
+     (การ์ดตั้ง container-type ไว้ 100cqw จึงเท่ากับความกว้างการ์ด) */
+  width: 880px;
+  height: 576px;
+  transform-origin: 0 0;
+  transform: scale(calc(100cqw / 880px));
   display: grid;
   grid-template-columns: clamp(90px, 14.6%, 150px) minmax(0, 1fr);
   border-radius: inherit;
@@ -3661,9 +3679,16 @@ section {
   --ex-ink: #1b2a3d;
   --ex-dim: #6b7c92;
   --ex-blue: #2f6bff;
-  position: absolute;
-  inset: 0;
   z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* ขนาดออกแบบคงที่ แล้วย่อ/ขยายทั้งก้อนตามความกว้างจริงของการ์ด
+     (การ์ดตั้ง container-type ไว้ 100cqw จึงเท่ากับความกว้างการ์ด) */
+  width: 880px;
+  height: 576px;
+  transform-origin: 0 0;
+  transform: scale(calc(100cqw / 880px));
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr);
   border-radius: inherit;
@@ -3979,20 +4004,19 @@ section {
 .en__backframe:hover::after,
 .en__backframe:focus-visible::after { animation: enFrameSweep 1.3s ease forwards; }
 .brief-showcase--stack .brief {
-  position: relative;
-  /* ม็อกทั้งสอง section กว้าง 880px เท่ากัน ล็อกอัตราส่วนไว้ความสูงจึงเท่ากันเสมอ
-     เนื้อหาที่สูงกว่านี้ยังดันกล่องให้ขยายได้ตามปกติ */
-  aspect-ratio: 880 / 576;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* ขนาดออกแบบคงที่ แล้วย่อ/ขยายทั้งก้อนตามความกว้างการ์ด เหมือนฝั่งม็อกเมือง */
+  width: 880px;
+  height: 576px;
   overflow: hidden;
   z-index: 1;
   cursor: pointer;
-  transform-origin: 50% 50%;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  transform: rotateY(4deg);
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s ease, opacity 0.7s ease;
-  will-change: transform;
+  transform-origin: 0 0;
+  transform: scale(calc(100cqw / 880px));
 }
+.brief-showcase--stack .laptop__stage:focus-within,
 .brief-showcase--stack .brief:focus-visible {
   outline: 1px solid rgba(236, 183, 49, 0.72);
   outline-offset: 5px;
@@ -4003,7 +4027,7 @@ section {
   box-shadow: 0 34px 86px rgba(0, 0, 0, 0.62), 0 0 44px rgba(236, 183, 49, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 .brief-showcase--stack.is-back .en__backframe::after { animation: enFrameSweep 1.1s ease forwards; }
-.brief-showcase--stack.is-back .brief,
+.brief-showcase--stack.is-back .laptop__stage,
 .brief-showcase--stack.is-front .en__backframe { filter: brightness(0.5) saturate(0.6); }
 /* ส่วน STUDENT — การ์ดฝั่งซ้าย ภาพจำลองแอปฝั่งขวา */
 .showcase-body--split {
@@ -4208,8 +4232,9 @@ section {
    คอนโซลจะกลับไปเป็นลูกตรงของ .brief-showcase เหมือนก่อนมีกรอบทุกประการ */
 .laptop,
 .laptop__lid,
-.laptop__screen,
-.laptop__stage { display: contents; }
+.laptop__screen { display: contents; }
+/* .laptop__stage เป็นกล่องของการ์ดใบหน้า — คุมขนาดจริง ส่วนคอนโซลข้างในเป็นขนาดออกแบบคงที่ */
+.laptop__stage { display: block; position: relative; }
 .laptop__cam,
 .laptop__base { display: none; }
 
