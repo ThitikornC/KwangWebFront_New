@@ -168,7 +168,7 @@
 
           <div v-if="sc.panel" class="brief-showcase brief-showcase--laptop brief-showcase--stack"
                :class="{ 'is-front': stackOpen.brief === 'front', 'is-back': stackOpen.brief === 'back' }" v-reveal="140">
-            <span class="en__wordmark en__wordmark--library" aria-hidden="true">Executive <b>Brief</b></span>
+            <span class="en__wordmark en__wordmark--library" aria-hidden="true">Executive <b>Libraly</b></span>
             <span class="en__wordmark en__wordmark--urban" aria-hidden="true">Executive <b>Urban City</b></span>
             <!-- แผงสรุปเป็นของจอแนวนอนเหมือนคอนโซล — ใส่กรอบโน้ตบุ๊คแบบเดียวกัน -->
             <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Urban"
