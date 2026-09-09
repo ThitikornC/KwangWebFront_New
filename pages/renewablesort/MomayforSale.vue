@@ -315,9 +315,10 @@
                 <span class="laptop__cam" aria-hidden="true" />
                 <div class="laptop__screen">
                   <div class="laptop__stage">
-                    <div class="brief" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Brief"
+                    <div class="brief brief--library-image" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Brief"
                          :aria-pressed="stackOpen.brief === 'front'" @click="toggleStack('brief', 'front')"
                          @keydown.enter="toggleStack('brief', 'front')" @keydown.space.prevent="toggleStack('brief', 'front')">
+                    <img class="mockup-image" src="/momay/Excotive_Lib.png" alt="Executive Brief library dashboard" />
                     <div class="brief__head">
                       <span class="brief__title">EXECUTIVE BRIEF</span>
                       <span class="brief__meta">
@@ -614,9 +615,10 @@
                 <span class="laptop__cam" aria-hidden="true" />
                 <div class="laptop__screen">
                   <div class="laptop__stage">
-                    <div class="brief brief--en" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Library"
+                    <div class="brief brief--en brief--library-image" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Library"
                          :aria-pressed="stackOpen.enlightened === 'front'" @click="toggleStack('enlightened', 'front')"
                          @keydown.enter="toggleStack('enlightened', 'front')" @keydown.space.prevent="toggleStack('enlightened', 'front')">
+                    <img class="mockup-image" src="/momay/Enlighted_Lib.png" alt="Enlightened library dashboard" />
                     <div class="brief__head">
                       <span class="brief__title">ENLIGHTENED</span>
                       <span class="brief__meta">
@@ -874,7 +876,8 @@
               <span class="phone__notch" aria-hidden="true" />
               <span class="phone__btn phone__btn--power" aria-hidden="true" />
               <span class="phone__btn phone__btn--vol" aria-hidden="true" />
-              <div class="phone__screen">
+              <div class="phone__screen phone__screen--library">
+                <img class="mockup-image" src="/momay/Student_Lib.png" alt="MOMAY Student library dashboard" />
                 <div class="phone__top">
                   <span class="phone__brand">
                     <i class="phone__avatar">M</i>
@@ -959,7 +962,8 @@
               <span class="phone__notch" aria-hidden="true" />
               <span class="phone__btn phone__btn--power" aria-hidden="true" />
               <span class="phone__btn phone__btn--vol" aria-hidden="true" />
-              <div class="phone__screen px">
+              <div class="phone__screen px phone__screen--library">
+                <img class="mockup-image" src="/momay/Student_pixel_Lib.png" alt="MOMAY Student Pixel library dashboard" />
                 <div class="px__top">
                   <span class="px__brand">
                     <i class="px__avatar">M</i>
@@ -4031,6 +4035,21 @@ section {
   transform-origin: 0 0;
   transform: scale(calc(100cqw / 880px));
 }
+.brief--library-image {
+  padding: 0;
+  background: #05070d;
+}
+.brief--library-image > .mockup-image {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.brief--library-image > :not(.mockup-image) { display: none; }
 .brief-showcase--stack .laptop__stage:focus-within,
 .brief-showcase--stack .brief:focus-visible {
   outline: 1px solid rgba(236, 183, 49, 0.72);
@@ -4120,6 +4139,20 @@ section {
   display: flex;
   flex-direction: column;
 }
+.phone__screen--library {
+  padding: 0;
+}
+.phone__screen--library > .mockup-image {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.phone__screen--library > :not(.mockup-image) { display: none; }
 .phone__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .phone__brand { display: inline-flex; align-items: center; gap: 5px; font-size: 0.54rem; letter-spacing: 0.1em; }
 .phone__brand b { color: #fff; }
