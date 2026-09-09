@@ -4149,7 +4149,7 @@ section {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain ;
+  object-fit: cover;
   object-position: center;
 }
 .phone__screen--library > :not(.mockup-image) { display: none; }
