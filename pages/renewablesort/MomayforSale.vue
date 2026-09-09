@@ -174,7 +174,7 @@
             <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Executive Urban"
                  :aria-pressed="stackOpen.brief === 'back'" @click="toggleStack('brief', 'back')"
                  @keydown.enter="toggleStack('brief', 'back')" @keydown.space.prevent="toggleStack('brief', 'back')">
-              <img class="mockup-image mockup-image--executive" src="/momay/Excotive3.png" alt="Executive Urban dashboard" />
+              <img class="mockup-image mockup-image--executive" src="/momay/Excotive4.png" alt="Executive Urban dashboard" />
 
               <!-- แดชบอร์ดผู้บริหารระดับเมือง — ธีมสว่าง เก็บเฉพาะใจความของหน้าจริง -->
               <div class="ex" aria-hidden="true">
@@ -423,7 +423,7 @@
             <div class="en__backframe" role="button" tabindex="0" aria-label="ขยายหน้าจอ Enlightened Urban"
                  :aria-pressed="stackOpen.enlightened === 'back'" @click="toggleStack('enlightened', 'back')"
                  @keydown.enter="toggleStack('enlightened', 'back')" @keydown.space.prevent="toggleStack('enlightened', 'back')">
-              <img class="mockup-image mockup-image--enlightened" src="/momay/Enlitened3.png" alt="Enlightened Urban dashboard" />
+              <img class="mockup-image mockup-image--enlightened" src="/momay/Enlitened4.png" alt="Enlightened Urban dashboard" />
 
               <!-- แดชบอร์ดระดับเมือง — ยกผังของหน้าจริงมา เก็บเฉพาะใจความ -->
               <div class="ub" aria-hidden="true">
