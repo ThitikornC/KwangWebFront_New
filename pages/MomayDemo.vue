@@ -367,7 +367,7 @@
           <h2 class="h-en upper">Why does it matter?</h2>
           <p class="h-th font-thai">ทำไมสิ่งนี้สำคัญ</p>
 
-          <div class="cols">
+          <div class="cols cols-relate">
             <div class="ring-wrap relations">
               <svg class="ring-lines web" viewBox="0 0 100 100">
                 <defs>
@@ -1803,10 +1803,15 @@ onMounted(() => {
 
 /* ── ปุ่ม / แถบล่าง ── */
 .nav {
-  position: sticky; bottom: 0; z-index: 5;
+  /* ไม่ใช้ sticky — แถบที่ยึดขอบล่าง viewport จะขยับตามแถบที่อยู่ของเบราว์เซอร์มือถือ
+     ที่ยุบ/กางตลอดเวลา ทำให้ปุ่มเลื่อนขึ้นลงเอง ปล่อยให้อยู่ท้ายเนื้อหาแทน
+     (.app สูงอย่างน้อย 100svh + .body ยืดเต็ม ปุ่มจึงอยู่ก้นจอเองเมื่อเนื้อหาสั้น) */
+  position: relative; z-index: 5;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 16px 18px 22px;
-  background: linear-gradient(180deg, rgba(3, 11, 24, 0) 0%, var(--bg) 46%);
+  /* ห้ามใช้ backdrop-filter ที่นี่ — บน element ที่เป็น sticky เบราว์เซอร์ต้อง
+     คำนวณเบลอใหม่ทุกเฟรมที่เลื่อน ทำให้แถบสั่นขึ้นลง ใช้เฉดทึบแทน */
+  background: linear-gradient(180deg, rgba(3, 11, 24, 0) 0%, rgba(3, 11, 24, 0.97) 38%, var(--bg) 100%);
 }
 .btn-next {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1881,6 +1886,109 @@ onMounted(() => {
   .cover-img { height: 100%; min-height: 150px; }
   .sig-grid { grid-template-columns: repeat(6, 1fr); }
   .nav { padding: 10px 16px 14px; }
+}
+
+/* ── แท็บเล็ต / จอใหญ่ — ขยายตัวหนังสือและองค์ประกอบให้ได้สัดส่วนกับจอ ── */
+@media (min-width: 1000px) {
+  .brand-bar, .progbar, .nav, .body { max-width: 1120px; }
+
+  .h-en { font-size: 40px; }
+  .h-en.upper { font-size: 34px; }
+  .h-th { font-size: 15px; }
+  .tag { font-size: 12px; max-width: 200px; }
+  .list-title { font-size: 16px; }
+
+  /* 01 */
+  .org-row { padding: 16px 18px; }
+  .org-en { font-size: 15px; }
+  .org-th { font-size: 12px; }
+  .quote-mini { font-size: 14px; }
+
+  /* 02 */
+  .screen-narrow { max-width: 640px; }
+  .field { padding: 18px; }
+  .field-label { font-size: 14px; }
+  .field-note { font-size: 12px; }
+  .field-input input { font-size: 22px; padding: 12px 15px; }
+  .field-unit { font-size: 12.5px; }
+  .field-hint { font-size: 12px; }
+
+  /* 03 */
+  .sig { padding: 20px 10px 16px; }
+  .sig-en { font-size: 13.5px; }
+  .sig-th { font-size: 11px; }
+  .sub-q { font-size: 16px; }
+  .peak { font-size: 13.5px; padding: 11px 18px; }
+
+  /* 04 · 06 */
+  .ring-wrap { max-width: 100%; margin: 0 auto; }
+  .ring-wrap.relations { max-width: 100%; }
+
+  /* หน้า 04 · 06 — คอลัมน์กว้างตามเนื้อหาจริงแล้วจัดทั้งคู่ไว้กลางจอ
+     (1fr 1fr ทำให้วงกลมยืดเต็มครึ่งซ้ายส่วนข้อความสั้นกว่าคอลัมน์ขวา ภาพเลยเทซ้าย)
+     align-items: center ทำให้ข้อความอยู่ระดับกลางวงพอดี */
+  .cols-awaken, .cols-relate {
+    /* คอลัมน์ขวาเป็น auto = กว้างเท่าข้อความจริง ไม่ล็อกความกว้างตายตัว
+       ไม่งั้นจะเหลือที่ว่างท้ายคอลัมน์ แล้วกลุ่มภาพดูเทไปทางซ้าย */
+    grid-template-columns: minmax(0, 520px) auto;
+    justify-content: center;
+    align-items: center;
+    gap: 46px;
+  }
+  .cols-awaken > .await-list,
+  .cols-relate > div:last-child { max-width: 440px; }
+  .ring-core { font-size: 28px; }
+  .core-halo { width: 240px; height: 240px; }
+  .node-label { font-size: 13px; }
+  .await-en { font-size: 14px; }
+  .await-th { font-size: 11.5px; }
+  .rel-label { font-size: 14px; }
+  .rel-val { font-size: 15px; }
+  .rel-node.lead .rel-label { font-size: 15px; }
+  .rel-node.lead .rel-val { font-size: 17px; }
+  .ins-en { font-size: 14px; }
+  .ins-th { font-size: 11.5px; }
+
+  /* 05 */
+  .flag-en { font-size: 15px; }
+  .flag-th { font-size: 12.5px; }
+  .peak-time { font-size: 17px; }
+  .peak-cap { font-size: 11px; }
+  .tile { padding: 16px 14px 17px; }
+  .tile-head { font-size: 12px; }
+  .tile-chip { width: 26px; height: 26px; }
+  .tile-val { font-size: 28px; }
+  .tile-cap { font-size: 10.5px; }
+
+  /* 07 */
+  .scn-tab { font-size: 14px; padding: 14px 10px; }
+  .slider-head { font-size: 14px; }
+  .slider-bubble { font-size: 12.5px; padding: 4px 13px; }
+  .sim-table { font-size: 14.5px; }
+  .sim-table th, .sim-table td { padding: 16px 18px; }
+  .sim-table thead th { font-size: 12px; }
+
+  /* 08 */
+  .reco-en { font-size: 18px; }
+  .reco-th { font-size: 13px; }
+  .why-k { font-size: 14px; }
+  .why-en { font-size: 14px; }
+  .why-th { font-size: 12.5px; }
+  .impact { font-size: 11.5px; padding: 18px 10px; }
+  .closing p { font-size: 15px; }
+  .share-link { font-size: 13px; }
+
+  /* ปุ่ม — ไม่ให้ปุ่มบันทึกยืดเต็มความกว้างจนเสียสัดส่วน */
+  .btn-next, .btn-outline { font-size: 14.5px; padding: 13px 26px; }
+  .final-row .btn-next { flex: 0 1 auto; min-width: 320px; }
+
+  /* จอสูงมาก: หัวข้ออยู่บน แล้วเนื้อหาหลักลอยกึ่งกลางพื้นที่ที่เหลือ
+     ไม่ปล่อยให้กองอยู่ครึ่งบนแล้วเหลือช่องว่างท้ายหน้า */
+  .screen:not(.screen-fill) { display: flex; flex-direction: column; }
+  .screen:not(.screen-fill) > .cols { margin-top: auto; margin-bottom: auto; }
+  .screen-narrow > .field-list { margin-top: auto; margin-bottom: auto; }
+  .screen > .sig-grid { margin-top: auto; }
+  .screen > .peak-row { margin-bottom: auto; }
 }
 
 /* เคารพการตั้งค่าลดการเคลื่อนไหวของเครื่อง */
