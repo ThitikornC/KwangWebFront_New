@@ -443,7 +443,7 @@
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
-                  <span class="font-thai card-label-sm">Momay-Student-Pixel <span class="card-date">07/09/2026</span></span>
+                  <span class="font-thai">Momay Student Pixel (100926)</span>
                 </div>
               </div>
               <div
@@ -452,7 +452,7 @@
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel-V2" class="w-12 h-12 object-contain" />
-                  <span class="font-thai card-label-sm">Momay-Student-Pixel-V2 <span class="card-date">13/09/2026</span></span>
+                  <span class="font-thai">Momay Student Pixel (130926)</span>
                 </div>
               </div>
               </div>

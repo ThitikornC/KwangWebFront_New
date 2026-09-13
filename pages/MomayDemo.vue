@@ -1188,15 +1188,16 @@ onMounted(() => {
 .screen-fill .peak-badge { margin-top: auto; }
 .screen-fill .tiles { margin-top: auto; }
 
-/* หน้า 07 — เกลี่ยช่องว่างลงระหว่างบล็อก ให้เนื้อหาไล่ลงไปจบใกล้ปุ่มเหมือนตัวอย่าง */
-.fill-sim .slider-box,
-.fill-sim .table-wrap,
-.fill-sim .flag { margin-top: auto; }
+/* หน้า 07 — หัวข้ออยู่บนสุด ส่วนที่เหลือชิดกันเป็นกลุ่มเดียวแล้วจัดกึ่งกลาง
+   พื้นที่ว่างจึงถูกแบ่งเท่ากันบน-ล่าง ไม่เป็นหลุมโบ๋ช่องเดียว */
+.fill-sim .scn-tabs { margin-top: auto; }
+.fill-sim .flag { margin-bottom: auto; }
 
 /* หน้า 08 — เกลี่ยช่องว่างเช่นกัน และให้ปุ่มบันทึกกว้างกว่าปุ่มเริ่มใหม่ */
-/* margin auto ใช้ได้เฉพาะลูกโดยตรงของ flex container จึงเกลี่ยที่ .cols กับแถวปุ่ม */
-.fill-decide > .cols,
+/* margin auto ใช้ได้เฉพาะลูกโดยตรงของ flex container — ดันเฉพาะแถวปุ่มลงล่าง
+   เนื้อหาด้านบนเรียงชิดกันตามตัวอย่าง */
 .fill-decide > .final-row { margin-top: auto; }
+.fill-decide > .cols { margin-top: 20px; }
 .fill-decide .closing { margin-top: 22px; }
 .final-row .btn-outline { flex: 0 0 auto; }
 .final-row .btn-next { flex: 1 1 auto; justify-content: center; }
