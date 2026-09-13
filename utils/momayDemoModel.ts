@@ -11,7 +11,7 @@
 
 export type OrgId = 'municipality' | 'university' | 'hotel' | 'business' | 'library' | 'other'
 export type SignalId = 'people' | 'traffic' | 'parking' | 'energy' | 'waste' | 'events'
-export type PeakId = 'morning' | 'midday' | 'evening' | 'event' | 'unsure'
+export type PeakId = 'morning' | 'midday' | 'evening' | 'event'
 export type ScenarioId = 'normal' | 'weekend' | 'event'
 export type InputKey = 'people' | 'capacity' | 'energy'
 
@@ -55,7 +55,6 @@ export const PEAKS: PeakDef[] = [
   { id: 'midday',  th: 'กลางวัน',    share: 0.34, window: '10:00 - 14:00' },
   { id: 'evening', th: 'เย็น',       share: 0.32, window: '16:00 - 19:00' },
   { id: 'event',   th: 'ช่วงจัดงาน', share: 0.42, window: '17:00 - 21:00' },
-  { id: 'unsure',  th: 'ไม่แน่ใจ',   share: 0.32, window: '10:00 - 15:00' },
 ]
 
 export const PEAK_MAP: Record<PeakId, PeakDef> =

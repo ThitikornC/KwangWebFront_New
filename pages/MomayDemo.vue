@@ -135,16 +135,37 @@
 
         <!-- ═════════ 04 · Awakening ═════════ -->
         <section v-else-if="step === 4" class="screen">
-          <Transition name="stage" mode="out-in">
-            <div :key="stage.en" class="stage-head">
-              <h2 class="h-en center glow">{{ stage.en }}</h2>
-              <p class="h-th center font-thai">{{ stage.th }}</p>
-            </div>
-          </Transition>
+          <!-- ครอบด้วยกล่องที่ไม่ถูกถอดออก เพื่อจองความสูงไว้ตอนสลับข้อความ
+               ไม่งั้นช่วงที่โหนดเก่าออกแล้วโหนดใหม่ยังไม่เข้า หน้าจะหดแล้วเด้งกลับ -->
+          <div class="stage-slot">
+            <Transition name="stage" mode="out-in">
+              <div :key="stage.en" class="stage-head">
+                <h2 class="h-en center glow">{{ stage.en }}</h2>
+                <p class="h-th center font-thai">{{ stage.th }}</p>
+              </div>
+            </Transition>
+          </div>
 
           <div class="cols cols-awaken">
             <div class="ring-wrap awakening" :class="{ ready: awakenDone }">
-              <div class="ring-bg" />
+              <div class="ring-bg photo-slot" />
+
+              <!-- โดมโฮโลแกรมกลางวง + อนุภาคเรืองแสง -->
+              <div class="holo-dome">
+                <span class="dome-core" />
+                <span class="dome-arc" />
+                <span class="dome-arc a2" />
+                <span
+                  v-for="(pt, i) in HOLO_PARTICLES"
+                  :key="'pt' + i"
+                  class="particle"
+                  :style="{
+                    left: pt.x + '%', top: pt.y + '%',
+                    width: pt.size + 'px', height: pt.size + 'px',
+                    animationDelay: pt.delay + 's',
+                  }"
+                />
+              </div>
 
               <!-- เมืองโฮโลแกรม -->
               <svg class="holo-city" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
@@ -348,71 +369,53 @@
 
           <div class="cols">
             <div class="ring-wrap relations">
-              <span class="orbit slow" />
               <svg class="ring-lines web" viewBox="0 0 100 100">
                 <defs>
-                  <linearGradient
-                    v-for="(l, i) in relationLines"
-                    :key="'wg' + i"
-                    :id="'mdRel' + i"
-                    gradientUnits="userSpaceOnUse"
-                    :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
-                  >
-                    <stop offset="0%" :stop-color="l.from" stop-opacity="0.6" />
-                    <stop offset="50%" stop-color="#4fd8ff" stop-opacity="0.3" />
-                    <stop offset="100%" :stop-color="l.color" stop-opacity="0.6" />
-                  </linearGradient>
-                  <!-- หัวลูกศรสองทาง บอกว่าปัจจัยส่งผลถึงกัน -->
+                  <!-- หัวลูกศรสองทาง: เขียวสำหรับเส้นที่ออกจาก People ที่เหลือฟ้า -->
                   <marker
-                    id="mdArrow" viewBox="0 0 10 10" refX="8" refY="5"
-                    markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"
+                    id="mdArrow" viewBox="0 0 10 10" refX="10" refY="5"
+                    markerUnits="userSpaceOnUse"
+                    markerWidth="4.4" markerHeight="4.4" orient="auto-start-reverse"
                   >
-                    <path d="M0 1.5 L9 5 L0 8.5 Z" fill="#6fe0ff" />
+                    <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#6fe0ff" />
+                  </marker>
+                  <marker
+                    id="mdArrowLead" viewBox="0 0 10 10" refX="10" refY="5"
+                    markerUnits="userSpaceOnUse"
+                    markerWidth="4.8" markerHeight="4.8" orient="auto-start-reverse"
+                  >
+                    <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#41e0a3" />
+                  </marker>
+                  <marker
+                    id="mdArrowWeb" viewBox="0 0 10 10" refX="10" refY="5"
+                    markerUnits="userSpaceOnUse"
+                    markerWidth="3.4" markerHeight="3.4" orient="auto-start-reverse"
+                  >
+                    <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#5f89ab" />
                   </marker>
                 </defs>
 
-                <!-- เส้นบางพาดกลางวง แสดงว่าทุกปัจจัยโยงถึงกันหมด -->
+                <!-- ลูกศรตรงสองหัว วางอยู่ในช่องว่างระหว่างวง -->
                 <line
-                  v-for="(l, i) in relationLines"
+                  v-for="(l, i) in arrowLines"
                   :key="'w' + i"
-                  class="ln cross"
+                  class="rel-arrow"
+                  :class="l.tone"
                   :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
-                  :stroke="`url(#mdRel${i})`"
+                  :marker-start="`url(#${l.tone === 'near' ? 'mdArrowLead' : l.tone === 'web' ? 'mdArrowWeb' : 'mdArrow'})`"
+                  :marker-end="`url(#${l.tone === 'near' ? 'mdArrowLead' : l.tone === 'web' ? 'mdArrowWeb' : 'mdArrow'})`"
                 />
 
-                <!-- ลูกศรโค้งสองหัวระหว่างโหนดที่ติดกัน -->
-                <path
-                  v-for="(a, i) in relationArcs"
-                  :key="'arc' + i"
-                  class="arc"
-                  :d="a.d"
-                  marker-start="url(#mdArrow)"
-                  marker-end="url(#mdArrow)"
+                <!-- ข้อมูลวิ่งไปตามเส้น -->
+                <line
+                  v-for="(l, i) in flowLines"
+                  :key="'fl' + i"
+                  class="rel-flow"
+                  :class="l.tone"
+                  :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
+                  path-length="100"
+                  :style="{ animationDelay: (i * 0.28).toFixed(2) + 's' }"
                 />
-
-                <!-- จุดแสงวิ่งออกจาก People ไปยังปัจจัยที่เกี่ยวข้อง -->
-                <circle
-                  v-for="(l, i) in leadLines"
-                  :key="'ws' + i"
-                  class="spark"
-                  r="1"
-                  :fill="l.color"
-                >
-                  <animateMotion
-                    :path="`M ${l.x1} ${l.y1} L ${l.x2} ${l.y2}`"
-                    dur="3.2s"
-                    repeatCount="indefinite"
-                    :begin="`${i * 0.42}s`"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    dur="3.2s"
-                    repeatCount="indefinite"
-                    values="0;1;1;0"
-                    keyTimes="0;0.14;0.82;1"
-                    :begin="`${i * 0.42}s`"
-                  />
-                </circle>
               </svg>
               <div
                 v-for="(n, i) in relationNodes"
@@ -423,7 +426,7 @@
               >
                 <Ico :name="n.def.icon" />
                 <span class="rel-label">{{ n.def.en }}</span>
-                <span class="rel-val">↑ <NumTicker :value="n.value" suffix="%" /></span>
+                <span class="rel-val" :style="{ color: valueTone[n.id] }">↑ <NumTicker :value="n.value" suffix="%" /></span>
               </div>
             </div>
 
@@ -875,9 +878,23 @@ const ringRank = (id: SignalId) => {
 }
 
 /** หน้า 04 — โชว์ทุก signal ที่ระบบเชื่อมโยงได้ */
+/** หน้า 04 มี Events ด้วย ลำดับจึงต่างจากหน้า 06: Traffic อยู่บนซ้าย Parking อยู่ล่างซ้าย */
+const AWAKEN_ORDER: SignalId[] = ['people', 'energy', 'waste', 'events', 'parking', 'traffic']
 const awakenNodes = computed(() =>
-  placeOnRing(RING_ORDER.map(id => ({ id, value: 0 })), 29),
+  placeOnRing(AWAKEN_ORDER.map(id => ({ id, value: 0 })), 29),
 )
+
+/** จุดอนุภาคในโดมโฮโลแกรม — กระจายด้วยมุมทองให้ไม่จับกลุ่ม */
+const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
+  const a = (i * 137.5 * Math.PI) / 180
+  const r = 7 + (i % 8) * 2.6
+  return {
+    x: 50 + r * Math.cos(a),
+    y: 50 + r * Math.sin(a) * 0.82,
+    size: 2 + (i % 3),
+    delay: ((i % 9) * 0.42).toFixed(2),
+  }
+})
 
 /** หน้า 06 — People เป็นจุดนำที่ 12 นาฬิกา ตามด้วย signal ที่เลือก */
 const relationNodes = computed(() => {
@@ -887,80 +904,79 @@ const relationNodes = computed(() => {
       .map(r => ({ id: r.id, value: r.value }))
       .sort((a, b) => ringRank(a.id) - ringRank(b.id)),
   ]
-  return placeOnRing(items, items.length <= 3 ? 30 : 34)
+  return placeOnRing(items, items.length <= 3 ? 31 : 34)
 })
 
 interface RelLine {
   x1: number; y1: number; x2: number; y2: number
-  /** สีต้นทาง–ปลายทาง ใช้ไล่เฉดให้เห็นทิศของความสัมพันธ์ */
-  from: string; color: string
-  /** เส้นที่ออกจาก People (โหนดนำ) */
-  lead: boolean
+  /** near = People↔เพื่อนบ้าน (เขียว) · far = People↔ตัวไกล (ฟ้าหนา)
+      link = คู่ล่างสุด (ฟ้า) · web = เส้นทแยงด้านหลัง (จาง) */
+  tone: 'near' | 'far' | 'link' | 'web'
 }
 
 /** รัศมีวงโหนดในหน่วย viewBox (%) — ใช้ตัดปลายเส้นให้หยุดที่ขอบวง หัวลูกศรจะได้ไม่ถูกบัง
     ต้องตรงกับความกว้าง % ของ .rel-node ใน CSS (26% / lead 29%) บวกระยะเผื่อหัวลูกศร */
-const REL_R_LEAD = 16.1
-const REL_R_NODE = 14.6
+const REL_R_LEAD = 14.2
+const REL_R_NODE = 12.7
 
-const relationLines = computed<RelLine[]>(() => {
-  const ns = relationNodes.value
-  const out: RelLine[] = []
-  for (let i = 0; i < ns.length; i++) {
-    for (let j = i + 1; j < ns.length; j++) {
-      const a = ns[i]
-      const b = ns[j]
-      const dx = b.x - a.x
-      const dy = b.y - a.y
-      const len = Math.hypot(dx, dy) || 1
-      const ux = dx / len
-      const uy = dy / len
-      const ra = (i === 0 ? REL_R_LEAD : REL_R_NODE)
-      const rb = REL_R_NODE
-      out.push({
-        x1: a.x + ux * ra, y1: a.y + uy * ra,
-        x2: b.x - ux * rb, y2: b.y - uy * rb,
-        from: a.def.color, color: b.def.color,
-        lead: i === 0,
-      })
-    }
-  }
-  return out
-})
-
-/** ยิงจุดแสงเฉพาะเส้นที่ออกจาก People ไม่ให้ภาพรกเกินไป */
-const leadLines = computed(() => relationLines.value.filter(l => l.lead))
-
-/** ลูกศรโค้งสองหัวระหว่างโหนดที่อยู่ติดกันรอบวง (โก่งออกนอกวง) */
-const relationArcs = computed(() => {
+/**
+ * เส้นเชื่อมตามแบบ
+ *  · People ต่อกับทุกตัว — คู่ที่อยู่ติดกันเป็นเขียว คู่ที่อยู่ไกลเป็นฟ้าเส้นหนา
+ *  · คู่ล่างสุดที่ติดกัน เป็นฟ้าเส้นปกติ
+ *  · คู่ทแยงที่ไม่เกี่ยวกับ People เป็นเส้นจางบาง ไขว้กันอยู่ด้านหลัง
+ */
+const arrowLines = computed<RelLine[]>(() => {
   const ns = relationNodes.value
   const n = ns.length
-  if (n < 2) return [] as { d: string; color: string }[]
+  if (n < 2) return []
 
-  return ns.map((a, i) => {
-    const b = ns[(i + 1) % n]
+  const out: RelLine[] = []
+  const link = (ia: number, ib: number, tone: RelLine['tone']) => {
+    const a = ns[ia]
+    const b = ns[ib]
     const dx = b.x - a.x
     const dy = b.y - a.y
     const len = Math.hypot(dx, dy) || 1
     const ux = dx / len
     const uy = dy / len
-    const ra = (a.id === 'people' ? REL_R_LEAD : REL_R_NODE) + 1
-    const rb = (b.id === 'people' ? REL_R_LEAD : REL_R_NODE) + 1
+    const ra = ia === 0 ? REL_R_LEAD : REL_R_NODE
+    const rb = ib === 0 ? REL_R_LEAD : REL_R_NODE
+    out.push({
+      x1: a.x + ux * ra, y1: a.y + uy * ra,
+      x2: b.x - ux * rb, y2: b.y - uy * rb,
+      tone,
+    })
+  }
 
-    const ax = a.x + ux * ra
-    const ay = a.y + uy * ra
-    const bx = b.x - ux * rb
-    const by = b.y - uy * rb
+  // เส้นจางด้านหลังก่อน แล้วค่อยวาดเส้นเด่นทับ
+  for (let i = 1; i < n; i++) {
+    for (let j = i + 2; j < n; j++) {
+      if (i === 1 && j === n - 1) continue
+      link(i, j, 'web')
+    }
+  }
 
-    // ดันจุดควบคุมออกจากศูนย์กลางให้เส้นโก่งอ้อมนอกวง
-    const mx = (ax + bx) / 2
-    const my = (ay + by) / 2
-    const od = Math.hypot(mx - 50, my - 50) || 1
-    const cx = 50 + ((mx - 50) / od) * (od + 10)
-    const cy = 50 + ((my - 50) / od) * (od + 10)
+  const mid = Math.floor(n / 2)
+  if (mid >= 1 && mid + 1 <= n - 1) link(mid, mid + 1, 'link')
 
-    return { d: `M ${ax} ${ay} Q ${cx} ${cy} ${bx} ${by}`, color: b.def.color }
+  for (let j = 1; j < n; j++) {
+    link(0, j, j === 1 || j === n - 1 ? 'near' : 'far')
+  }
+
+  return out
+})
+
+/** ยิงจุดแสงบนเส้นที่ออกจาก People */
+/** เส้นที่ให้ข้อมูลวิ่ง — เว้นเส้นทแยงจางด้านหลังไว้ให้เงียบ */
+const flowLines = computed(() => arrowLines.value.filter(l => l.tone !== 'web'))
+
+/** สีตัวเลข: ตัวที่ตึงตัวที่สุดเป็นแดง รองลงมาเป็นส้ม ที่เหลือเขียว (People เขียวเสมอ) */
+const valueTone = computed<Record<string, string>>(() => {
+  const tone: Record<string, string> = { people: '#34d399' }
+  rankMetrics(base.value.metrics, loadSignals.value).forEach((r, i) => {
+    tone[r.id] = i === 0 ? '#f05252' : i === 1 ? '#fbbf24' : '#34d399'
   })
+  return tone
 })
 
 /* ─────────── หน้า 04: ลำดับการวิเคราะห์ ─────────── */
@@ -1154,7 +1170,10 @@ onMounted(() => {
   --danger: #f05252;
   --good: #22c55e;
 
-  min-height: 100dvh;
+  /* svh = ความสูง viewport ตอนแถบเบราว์เซอร์แสดงอยู่ (เล็กสุด) เป็นค่าคงที่
+     ต่างจาก dvh ที่เปลี่ยนตามแถบยุบ/กาง ทำให้ความสูงหน้าขยับแล้วสกรอลล์กระตุก */
+  min-height: 100vh;
+  min-height: 100svh;
   color: var(--text);
   font-family: 'Inter', sans-serif;
   background:
@@ -1167,7 +1186,8 @@ onMounted(() => {
 
 /* กริดเรืองแสงจาง ๆ ทับพื้นหลัง ให้ดูเป็นจอวิเคราะห์ข้อมูล */
 .momay-demo::before {
-  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  content: ''; position: fixed; top: 0; left: 0; z-index: 0; pointer-events: none;
+  width: 100vw; height: 100vh; height: 100lvh;
   background-image:
     linear-gradient(rgba(79, 216, 255, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(79, 216, 255, 0.05) 1px, transparent 1px);
@@ -1176,7 +1196,12 @@ onMounted(() => {
   mask-image: radial-gradient(90% 65% at 50% 0%, #000 0%, transparent 78%);
 }
 
-.app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100dvh; }
+.app {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+}
 .brand-bar, .progbar, .nav { flex: none; }
 /* flex-shrink ต้องเป็น 0 ทั้งคู่ ไม่งั้นเนื้อหาที่สูงกว่าจอจะถูกบีบให้พอดีจอ
    ทำให้ความสูงเอกสารไม่โต → เลื่อนหน้าลงไม่ได้และเนื้อหาท้ายโดนตัด */
@@ -1195,7 +1220,8 @@ onMounted(() => {
 
 /* หน้า 08 — เกลี่ยช่องว่างเช่นกัน และให้ปุ่มบันทึกกว้างกว่าปุ่มเริ่มใหม่ */
 .fill-decide > .cols { margin-top: 22px; }
-.fill-decide > .final-row { margin-top: auto; }
+/* auto จะยุบเหลือ 0 เมื่อเนื้อหายาวกว่าจอ จึงต้องมีระยะขั้นต่ำกันปุ่มติดการ์ด */
+.fill-decide > .final-row { margin-top: auto; padding-top: 26px; }
 .fill-decide .closing { margin-top: 24px; }
 .final-row .btn-outline { flex: 0 0 auto; }
 .final-row .btn-next { flex: 1 1 auto; justify-content: center; }
@@ -1281,7 +1307,15 @@ onMounted(() => {
 .cover-enter-from, .cover-leave-to { opacity: 0; }
 
 /* ภาพเมืองเต็มจอเป็นฉากหลังของหน้า — คลุมผ้ามืดให้เนื้อหายังอ่านง่าย */
-.screen-photo { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.5; }
+.screen-photo {
+  position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none;
+  width: 100vw;
+  /* ใช้ lvh (ความสูง viewport ตอนแถบเบราว์เซอร์ยุบ = ใหญ่สุด) ไม่ใช่ inset:0
+     ความสูงจึงคงที่ ภาพไม่ถูกคำนวณ cover ใหม่ตอนแถบที่อยู่ยุบ/กาง = ไม่ดิ้น */
+  height: 100vh;
+  height: 100lvh;
+  opacity: 0.5;
+}
 .screen-photo.photo-03 { --bg-photo: url('/momay/demo-bg-03.webp'); }
 .screen-photo.photo-05 { --bg-photo: url('/momay/demo-bg-05.webp'); opacity: 1; }
 .screen-photo::after {
@@ -1374,18 +1408,58 @@ onMounted(() => {
 /* ── วงความสัมพันธ์ (04 / 06) ── */
 /* วงเต็มความกว้างเนื้อหา เผื่อที่ให้ป้ายชื่อของโหนดฝั่งขวาไม่ล้นขอบจอ */
 .ring-wrap { position: relative; width: 100%; max-width: 404px; margin: 22px auto; aspect-ratio: 1; }
-.ring-wrap.relations { max-width: 360px; }
-/* วงหน้า 04 ใช้เมืองโฮโลแกรม SVG อย่างเดียว ไม่ใช้ภาพถ่าย */
+.ring-wrap.relations { max-width: 404px; }
+/* วงหน้า 04 — ภาพเมืองอยู่ในวงกลม ขอบไล่จางกลืนพื้นหลัง */
 .ring-bg {
   position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(22, 66, 118, 0.5), rgba(6, 18, 34, 0.18) 68%, transparent 100%);
+  --bg-photo: url('/momay/demo-bg-04.webp');
+  opacity: 0.62;
+  -webkit-mask-image: radial-gradient(closest-side, #000 58%, rgba(0, 0, 0, 0.35) 86%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 58%, rgba(0, 0, 0, 0.35) 86%, transparent 100%);
+}
+
+/* ── โดมโฮโลแกรมกลางวง ── */
+.holo-dome { position: absolute; inset: 0; pointer-events: none; }
+.holo-dome > * { position: absolute; }
+.dome-core {
+  left: 50%; top: 50%; width: 130px; height: 130px;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(closest-side,
+    rgba(150, 240, 255, 0.34), rgba(70, 175, 240, 0.16) 48%, transparent 100%);
+  animation: domePulse 4.2s ease-in-out infinite;
+}
+.dome-arc {
+  left: 50%; top: 50%; width: 168px; height: 168px;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  border: 1px solid rgba(130, 225, 255, 0.22);
+  border-bottom-color: transparent; border-right-color: transparent;
+  animation: spin 18s linear infinite;
+}
+.dome-arc.a2 {
+  width: 210px; height: 210px;
+  border-color: rgba(130, 225, 255, 0.14);
+  border-top-color: transparent; border-left-color: transparent;
+  animation-duration: 26s; animation-direction: reverse;
+}
+.particle {
+  border-radius: 50%; background: #cdf4ff;
+  box-shadow: 0 0 8px rgba(140, 230, 255, 0.95);
+  animation: particleFloat 5s ease-in-out infinite;
+}
+@keyframes domePulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.07); }
+}
+@keyframes particleFloat {
+  0%, 100% { opacity: 0; transform: translateY(6px); }
+  35%, 65% { opacity: 0.95; transform: translateY(-4px); }
 }
 
 /* ── เมืองโฮโลแกรมในวง ── */
 .holo-city {
   position: absolute; inset: 6%; width: 88%; height: 88%;
   border-radius: 50%; overflow: hidden; pointer-events: none;
-  opacity: 0.75;
+  opacity: 0.62;
 }
 .holo-grid line { stroke: rgba(79, 216, 255, 0.13); stroke-width: 0.45; }
 .holo-bld rect { stroke: rgba(120, 232, 255, 0.45); stroke-width: 0.5; }
@@ -1406,7 +1480,28 @@ onMounted(() => {
 .ring-lines .ln { stroke-width: 0.55; stroke-linecap: round; }
 .ring-lines.web .ln { stroke-width: 0.45; }
 .ring-lines .ln.cross { stroke-dasharray: 2 2.4; opacity: 0.65; }
-.ring-lines .arc { fill: none; stroke: rgba(125, 232, 255, 0.9); stroke-width: 0.95; }
+.ring-lines .rel-arrow { stroke-linecap: butt; }
+.ring-lines .rel-arrow { shape-rendering: geometricPrecision; }
+.ring-lines .rel-arrow.near { stroke: #41e0a3; stroke-width: 0.8; }
+.ring-lines .rel-arrow.far  { stroke: #6fe0ff; stroke-width: 1; }
+.ring-lines .rel-arrow.link { stroke: #6fe0ff; stroke-width: 0.8; }
+.ring-lines .rel-arrow.web  { stroke: #5f89ab; stroke-width: 0.55; opacity: 0.75; }
+
+/* ประกายข้อมูลวิ่งไปตามเส้น — pathLength=100 ทำให้ยาวเท่ากันทุกเส้นไม่ว่าเส้นจริงจะสั้นยาวแค่ไหน */
+.ring-lines .rel-flow {
+  fill: none; stroke-linecap: round;
+  stroke-dasharray: 10 90; stroke-dashoffset: 100;
+  animation: relFlow 2.6s linear infinite;
+}
+.ring-lines .rel-flow.near { stroke: #b9ffe4; stroke-width: 0.8; }
+.ring-lines .rel-flow.far  { stroke: #d6f7ff; stroke-width: 1; }
+.ring-lines .rel-flow.link { stroke: #d6f7ff; stroke-width: 0.8; }
+@keyframes relFlow {
+  0% { stroke-dashoffset: 100; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
 
 /* จุดแสงข้อมูลวิ่งไปตามเส้น */
 .ring-lines .spark { filter: drop-shadow(0 0 1.6px currentColor); }
@@ -1438,9 +1533,12 @@ onMounted(() => {
 .ring-core {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   display: flex; flex-direction: column; align-items: center; gap: 3px;
-  font-size: 21px; font-weight: 700; letter-spacing: 0.02em;
-  color: #ffffff; text-align: center; white-space: nowrap;
-  text-shadow: 0 0 22px rgba(79, 216, 255, 0.55), 0 2px 14px rgba(0, 0, 0, 0.85);
+  font-size: 20px; font-weight: 300; letter-spacing: 0.16em;
+  color: #eaf9ff; text-align: center; white-space: nowrap;
+  text-shadow:
+    0 0 10px rgba(170, 240, 255, 0.9),
+    0 0 26px rgba(79, 216, 255, 0.6),
+    0 2px 16px rgba(0, 0, 0, 0.8);
 }
 .core-en { position: relative; z-index: 1; }
 .core-halo {
@@ -1505,10 +1603,10 @@ onMounted(() => {
 
 /* ── หน้า 06: โหนดเป็นวงกลม มีไอคอน ชื่อ และตัวเลขอยู่ในวง ── */
 .rel-node {
-  --bub: 84px;
   position: absolute; transform: translate(-50%, -50%);
   display: grid; place-content: center; justify-items: center; gap: 1px;
-  width: var(--bub); height: var(--bub); border-radius: 50%;
+  /* คิดเป็น % ของกรอบวง ต้องตรงกับ REL_R_NODE / REL_R_LEAD ในสคริปต์ */
+  width: 23%; height: 23%; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(6, 20, 38, 0.96), rgba(5, 14, 28, 0.88));
   border: 2px solid var(--sig);
   box-shadow:
@@ -1518,9 +1616,9 @@ onMounted(() => {
   animation: nodeIn 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.3) backwards;
   animation-delay: calc(var(--i, 0) * 0.09s);
 }
-.rel-node.lead { --bub: 96px; }
-.rel-node :deep(.ic) { width: 24px; height: 24px; }
-.rel-node.lead :deep(.ic) { width: 28px; height: 28px; }
+.rel-node.lead { width: 26%; height: 26%; }
+.rel-node :deep(.ic) { width: 25px; height: 25px; stroke-width: 2.2; }
+.rel-node.lead :deep(.ic) { width: 29px; height: 29px; stroke-width: 2.2; }
 .rel-label { font-size: 12px; font-weight: 600; color: #eaf5ff; white-space: nowrap; }
 .rel-val { font-size: 13px; font-weight: 800; color: var(--sig); white-space: nowrap; }
 .rel-node.lead .rel-label { font-size: 13px; }
@@ -1539,7 +1637,8 @@ onMounted(() => {
 .ring-wrap.ready .core-halo { border-color: rgba(52, 211, 153, 0.45); box-shadow: inset 0 0 40px rgba(52, 211, 153, 0.18); }
 
 /* หัวเรื่องเปลี่ยนข้อความแบบเฟด */
-.stage-head { min-height: 76px; }
+.stage-slot { min-height: 84px; }
+.stage-head { min-height: 84px; }
 .h-en.glow { text-shadow: 0 0 26px rgba(79, 216, 255, 0.35); }
 .stage-enter-active, .stage-leave-active { transition: opacity 0.16s ease, transform 0.16s ease; }
 .stage-enter-from { opacity: 0; transform: translateY(8px); }
@@ -1655,6 +1754,15 @@ onMounted(() => {
 .sim-table td.up { color: var(--good); }
 .sim-table td.down { color: #7fb6ff; }
 .cell-ic { display: inline-grid; place-items: center; vertical-align: -4px; margin-right: 7px; color: var(--sig); }
+
+/* จอแคบ: บีบระยะและตัวอักษรให้ตารางพอดีความกว้าง ไม่ต้องเลื่อนแนวนอน */
+@media (max-width: 439px) {
+  .sim-table { font-size: 11.5px; }
+  .sim-table th, .sim-table td { padding: 11px 5px; }
+  .sim-table thead th { font-size: 9.5px; }
+  .cell-ic { margin-right: 5px; }
+  .cell-ic :deep(.ic) { width: 12px; height: 12px; }
+}
 .cell-ic :deep(.ic) { width: 14px; height: 14px; }
 
 /* ── 08 ── */
@@ -1758,12 +1866,12 @@ onMounted(() => {
   .node-label { font-size: 11.5px; }
   .ring-core { font-size: 16px; }
   .core-halo { width: 130px; height: 130px; }
-  .rel-node { --bub: 66px; }
-  .rel-node.lead { --bub: 76px; }
-  .rel-node :deep(.ic) { width: 18px; height: 18px; }
+  .rel-node { width: 26%; height: 26%; }
+  .rel-node.lead { width: 29%; height: 29%; }
+  .rel-node :deep(.ic) { width: 22px; height: 22px; }
   .rel-label { font-size: 10px; }
   .rel-val { font-size: 11px; }
-  .stage-head { min-height: 0; }
+  .stage-slot, .stage-head { min-height: 0; }
   .field-list { gap: 10px; margin-top: 14px; max-width: 520px; }
   .screen-narrow { max-width: 520px; margin-inline: auto; }
   .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin-top: 14px; }
