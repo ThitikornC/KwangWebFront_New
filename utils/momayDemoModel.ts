@@ -448,8 +448,6 @@ export function keyUnderstandings(signals: SignalId[]): Insight[] {
     out.push({ en: 'More people increase parking demand', th: 'คนมากขึ้น ทำให้ความต้องการที่จอดรถสูงขึ้น' })
   if (signals.includes('energy'))
     out.push({ en: 'High activity leads to higher energy use', th: 'กิจกรรมหนาแน่นขึ้น ทำให้การใช้พลังงานเพิ่มขึ้น' })
-  if (signals.includes('traffic'))
-    out.push({ en: 'Arrival peaks concentrate traffic on the same routes', th: 'ช่วงคนเข้าพร้อมกัน ทำให้การจราจรกระจุกอยู่เส้นทางเดิม' })
   if (signals.includes('events') || signals.includes('waste'))
     out.push({ en: 'Events can significantly impact traffic and waste', th: 'งาน/กิจกรรมส่งผลต่อการจราจรและปริมาณขยะอย่างมีนัยสำคัญ' })
   out.push({ en: 'These factors are connected and affect each other', th: 'ปัจจัยเหล่านี้เชื่อมโยงกันและส่งผลต่อกัน' })

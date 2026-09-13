@@ -144,17 +144,17 @@
 
           <div class="cols cols-awaken">
             <div class="ring-wrap awakening" :class="{ ready: awakenDone }">
-              <div class="ring-bg photo-slot" />
+              <div class="ring-bg" />
 
               <!-- เมืองโฮโลแกรม -->
               <svg class="holo-city" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="holoBld" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#6fe6ff" stop-opacity="0.3" />
-                    <stop offset="100%" stop-color="#2f9fd6" stop-opacity="0.03" />
+                    <stop offset="0%" stop-color="#6fe6ff" stop-opacity="0.1" />
+                    <stop offset="100%" stop-color="#2f9fd6" stop-opacity="0.01" />
                   </linearGradient>
                   <pattern id="holoWin" width="4" height="5.5" patternUnits="userSpaceOnUse">
-                    <rect x="1" y="1.4" width="1.7" height="2.1" fill="#bff3ff" opacity="0.26" />
+                    <rect x="1" y="1.4" width="1.7" height="2.1" fill="#bff3ff" opacity="0.16" />
                   </pattern>
                   <!-- จางลงที่ขอบวง ให้เป็นฉากหลังไม่แย่งสายตา -->
                   <radialGradient id="holoFade" cx="0.5" cy="0.58" r="0.55">
@@ -266,6 +266,7 @@
                 v-for="(n, i) in awakenNodes"
                 :key="n.id"
                 class="ring-node"
+                :class="{ flip: n.x < 49.5 }"
                 :style="{ left: n.x + '%', top: n.y + '%', '--sig': n.def.color, '--i': i }"
               >
                 <span class="node-pill"><span class="node-label">{{ n.def.en }}</span></span>
@@ -364,7 +365,7 @@
                   <!-- หัวลูกศรสองทาง บอกว่าปัจจัยส่งผลถึงกัน -->
                   <marker
                     id="mdArrow" viewBox="0 0 10 10" refX="8" refY="5"
-                    markerWidth="5" markerHeight="5" orient="auto-start-reverse"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"
                   >
                     <path d="M0 1.5 L9 5 L0 8.5 Z" fill="#6fe0ff" />
                   </marker>
@@ -442,7 +443,7 @@
         </section>
 
         <!-- ═════════ 07 · Anticipate & Simulate ═════════ -->
-        <section v-else-if="step === 7" class="screen">
+        <section v-else-if="step === 7" class="screen screen-fill fill-sim">
           <h2 class="h-en upper">What happens next?</h2>
           <p class="h-th font-thai">ถ้าจำนวนผู้ใช้พื้นที่เพิ่มขึ้น ...</p>
 
@@ -514,7 +515,7 @@
         </section>
 
         <!-- ═════════ 08 · Decide ═════════ -->
-        <section v-else class="screen">
+        <section v-else class="screen screen-fill fill-decide">
           <h2 class="h-en upper">Momay recommends</h2>
           <p class="h-th font-thai">ข้อเสนอแนะจาก MOMAY</p>
 
@@ -732,7 +733,8 @@ const form = reactive({
   people: 2500,
   capacity: 180,
   energy: 120000,
-  signals: ['people', 'traffic', 'parking', 'energy'] as SignalId[],
+  // ค่าเริ่มต้นให้ตรงกับภาพตัวอย่าง: ติ๊กทุกอย่างยกเว้น Events
+  signals: ['people', 'traffic', 'parking', 'energy', 'waste'] as SignalId[],
   peak: 'midday' as PeakId,
   scenario: 'normal' as ScenarioId,
   delta: 20,
@@ -839,28 +841,28 @@ function placeOnRing(items: { id: SignalId; value: number }[], radius: number): 
    วาดบนกริดสี่เหลี่ยมจัตุรัส 200×200 (พอดีวงกลม ไม่ถูกซูม)
    ระดับพื้น y = 132 · ตึกวาดขึ้นจากพื้น · เงาสะท้อนทิ้งลงใต้พื้น            */
 
-const HOLO_GROUND_Y = 132
+const HOLO_GROUND_Y = 152
 
 /** ตึกในเส้นขอบฟ้า: [x, กว้าง, สูง, มีเสาอากาศ] */
 const HOLO_BUILDINGS: { x: number; w: number; h: number; mast?: number }[] = [
-  { x: 0, w: 13, h: 26 },
-  { x: 15, w: 9, h: 43 },
-  { x: 26, w: 15, h: 21 },
-  { x: 43, w: 11, h: 52, mast: 10 },
-  { x: 56, w: 17, h: 33 },
-  { x: 75, w: 10, h: 63, mast: 13 },
-  { x: 87, w: 14, h: 39 },
-  { x: 103, w: 12, h: 29 },
-  { x: 117, w: 16, h: 49, mast: 8 },
-  { x: 135, w: 9, h: 25 },
-  { x: 146, w: 14, h: 43 },
-  { x: 162, w: 11, h: 33 },
-  { x: 175, w: 15, h: 23 },
-  { x: 192, w: 8, h: 37 },
+  { x: 0, w: 13, h: 16 },
+  { x: 15, w: 9, h: 26 },
+  { x: 26, w: 15, h: 13 },
+  { x: 43, w: 11, h: 31, mast: 7 },
+  { x: 56, w: 17, h: 20 },
+  { x: 75, w: 10, h: 38, mast: 9 },
+  { x: 87, w: 14, h: 23 },
+  { x: 103, w: 12, h: 17 },
+  { x: 117, w: 16, h: 29, mast: 6 },
+  { x: 135, w: 9, h: 15 },
+  { x: 146, w: 14, h: 26 },
+  { x: 162, w: 11, h: 20 },
+  { x: 175, w: 15, h: 14 },
+  { x: 192, w: 8, h: 22 },
 ]
 
 /** เส้นพื้นแนวนอน — ถี่ใกล้ขอบฟ้า ห่างเมื่อเข้าใกล้ผู้ชม */
-const HOLO_GROUND = [1, 2, 3, 4, 5, 6, 7].map(i => HOLO_GROUND_Y + i * i * 1.3)
+const HOLO_GROUND = [1, 2, 3, 4, 5, 6].map(i => HOLO_GROUND_Y + i * i * 1.3)
 
 /** เส้นพื้นแนวลึก พุ่งเข้าหาจุดรวมสายตากลางภาพ */
 const HOLO_RAYS = Array.from({ length: 13 }, (_, i) => 100 + (i - 6) * 46)
@@ -874,7 +876,7 @@ const ringRank = (id: SignalId) => {
 
 /** หน้า 04 — โชว์ทุก signal ที่ระบบเชื่อมโยงได้ */
 const awakenNodes = computed(() =>
-  placeOnRing(RING_ORDER.map(id => ({ id, value: 0 })), 31),
+  placeOnRing(RING_ORDER.map(id => ({ id, value: 0 })), 29),
 )
 
 /** หน้า 06 — People เป็นจุดนำที่ 12 นาฬิกา ตามด้วย signal ที่เลือก */
@@ -1186,20 +1188,55 @@ onMounted(() => {
 .screen-fill .peak-badge { margin-top: auto; }
 .screen-fill .tiles { margin-top: auto; }
 
+/* หน้า 07 — เกลี่ยช่องว่างลงระหว่างบล็อก ให้เนื้อหาไล่ลงไปจบใกล้ปุ่มเหมือนตัวอย่าง */
+.fill-sim .slider-box,
+.fill-sim .table-wrap,
+.fill-sim .flag { margin-top: auto; }
+
+/* หน้า 08 — เกลี่ยช่องว่างเช่นกัน และให้ปุ่มบันทึกกว้างกว่าปุ่มเริ่มใหม่ */
+/* margin auto ใช้ได้เฉพาะลูกโดยตรงของ flex container จึงเกลี่ยที่ .cols กับแถวปุ่ม */
+.fill-decide > .cols,
+.fill-decide > .final-row { margin-top: auto; }
+.fill-decide .closing { margin-top: 22px; }
+.final-row .btn-outline { flex: 0 0 auto; }
+.final-row .btn-next { flex: 1 1 auto; justify-content: center; }
+
 /* ── แบรนด์ ── */
-.brand-bar { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 16px 18px 12px; }
-.logo { display: flex; align-items: baseline; gap: 7px; }
-.logo-main { font-weight: 800; font-size: 15px; letter-spacing: 0.08em; }
+.brand-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px 10px; overflow: visible; }
+.logo { display: flex; align-items: baseline; gap: 9px; overflow: visible; }
+.logo-main { font-weight: 800; font-size: 18px; letter-spacing: 0.08em; }
 .logo-script {
   font-family: 'Great Vibes', cursive;
-  font-size: 23px;
-  line-height: 1;
-  background: linear-gradient(95deg, #ff8ad4 0%, #a78bfa 45%, #4fd8ff 100%);
+  font-size: 31px;
+  /* Great Vibes มีหางตัวอักษรยาว ถ้า line-height ชิดเกินหาง p จะโดนตัด */
+  line-height: 1.45;
+  padding: 0 3px 4px;
+  /* ไล่เฉดหลัก + แถบแสงขาวคาดกลาง แล้วเลื่อนตำแหน่งพื้นหลังให้แสงกวาดผ่านตัวอักษร */
+  background-image: linear-gradient(
+    100deg,
+    #ff8ad4 0%,
+    #c78bfa 16%,
+    #4fd8ff 32%,
+    #ffffff 44%,
+    #eaf9ff 50%,
+    #4fd8ff 62%,
+    #a78bfa 80%,
+    #ff8ad4 100%
+  );
+  background-size: 300% 100%;
+  background-position: 140% 0;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 0 9px rgba(130, 190, 255, 0.35));
+  animation: logoShine 5s ease-in-out infinite;
 }
-.tag { font-size: 9.5px; line-height: 1.45; text-align: right; color: var(--dim); max-width: 150px; }
+@keyframes logoShine {
+  0% { background-position: 140% 0; }
+  45% { background-position: -40% 0; }
+  100% { background-position: -40% 0; }
+}
+.tag { font-size: 10.5px; line-height: 1.45; text-align: right; color: var(--dim); max-width: 160px; }
 
 /* ── progress ── */
 .progbar { display: flex; align-items: center; gap: 12px; padding: 0 18px 18px; }
@@ -1340,16 +1377,19 @@ onMounted(() => {
 .ring-wrap { position: relative; width: 100%; max-width: 404px; margin: 22px auto; aspect-ratio: 1; }
 .ring-wrap.relations { max-width: 360px; }
 /* วงหน้า 04 ใช้เมืองโฮโลแกรม SVG อย่างเดียว ไม่ใช้ภาพถ่าย */
-.ring-bg { position: absolute; inset: 6%; border-radius: 50%; opacity: 0.55; }
+.ring-bg {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(22, 66, 118, 0.5), rgba(6, 18, 34, 0.18) 68%, transparent 100%);
+}
 
 /* ── เมืองโฮโลแกรมในวง ── */
 .holo-city {
   position: absolute; inset: 6%; width: 88%; height: 88%;
   border-radius: 50%; overflow: hidden; pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 .holo-grid line { stroke: rgba(79, 216, 255, 0.13); stroke-width: 0.45; }
-.holo-bld rect { stroke: rgba(120, 232, 255, 0.34); stroke-width: 0.45; }
+.holo-bld rect { stroke: rgba(120, 232, 255, 0.45); stroke-width: 0.5; }
 .holo-bld line { stroke: rgba(150, 240, 255, 0.42); stroke-width: 0.45; }
 .holo-reflect { opacity: 0.18; }
 .holo-scan {
@@ -1367,7 +1407,7 @@ onMounted(() => {
 .ring-lines .ln { stroke-width: 0.55; stroke-linecap: round; }
 .ring-lines.web .ln { stroke-width: 0.45; }
 .ring-lines .ln.cross { stroke-dasharray: 2 2.4; opacity: 0.65; }
-.ring-lines .arc { fill: none; stroke: rgba(111, 224, 255, 0.65); stroke-width: 0.6; }
+.ring-lines .arc { fill: none; stroke: rgba(125, 232, 255, 0.9); stroke-width: 0.95; }
 
 /* จุดแสงข้อมูลวิ่งไปตามเส้น */
 .ring-lines .spark { filter: drop-shadow(0 0 1.6px currentColor); }
@@ -1434,7 +1474,7 @@ onMounted(() => {
   position: absolute; left: 50%; top: 50%; z-index: 1;
   transform: translateY(-50%);
   display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px;
-  padding: 8px 15px 8px calc(var(--dot) / 2 + 13px);
+  padding: 8px 13px 8px calc(var(--dot) / 2 + 12px);
   border-radius: 999px;
   background: rgba(5, 16, 31, 0.86);
   border: 1px solid color-mix(in srgb, var(--sig) 52%, transparent);
@@ -1442,6 +1482,12 @@ onMounted(() => {
     0 0 20px color-mix(in srgb, var(--sig) 20%, transparent),
     inset 0 0 20px rgba(4, 14, 28, 0.55);
   line-height: 1.25;
+}
+/* โหนดฝั่งซ้าย (Parking / Traffic) ให้ป้ายชื่ออยู่ทางซ้ายของไอคอน ชี้ออกนอกวง */
+.ring-node.flip .node-pill {
+  left: auto; right: 50%;
+  align-items: flex-end;
+  padding: 8px calc(var(--dot) / 2 + 12px) 8px 13px;
 }
 @keyframes nodeIn {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0.55); }
@@ -1455,7 +1501,7 @@ onMounted(() => {
   border: 1.5px solid var(--sig); box-shadow: 0 0 16px color-mix(in srgb, var(--sig) 45%, transparent);
 }
 .node-dot :deep(.ic) { width: calc(var(--dot) * 0.5); height: calc(var(--dot) * 0.5); }
-.node-label { font-size: 12px; font-weight: 600; color: #eaf5ff; white-space: nowrap; }
+.node-label { font-size: 11.5px; font-weight: 600; color: #eaf5ff; white-space: nowrap; }
 .node-val { font-size: 12px; font-weight: 700; color: var(--sig); }
 
 /* ── หน้า 06: โหนดเป็นวงกลม มีไอคอน ชื่อ และตัวเลขอยู่ในวง ── */
@@ -1628,8 +1674,8 @@ onMounted(() => {
 
 .impacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
 .impact {
-  display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center;
-  padding: 13px 7px; border-radius: 12px; font-size: 9.5px; line-height: 1.35;
+  display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center;
+  padding: 10px 6px; border-radius: 11px; font-size: 9px; line-height: 1.3;
   background: var(--card); border: 1px solid var(--line);
 }
 .impact.good { color: #6ee7a0; border-color: rgba(34, 197, 94, 0.32); }

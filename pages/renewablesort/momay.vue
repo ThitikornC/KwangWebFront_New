@@ -443,7 +443,7 @@
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay-Student-Pixel</span>
+                  <span class="font-thai card-label-sm">Momay-Student-Pixel <span class="card-date">07/09/2026</span></span>
                 </div>
               </div>
               <div
@@ -452,7 +452,7 @@
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel-V2" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay-Student-Pixel-V2</span>
+                  <span class="font-thai card-label-sm">Momay-Student-Pixel-V2 <span class="card-date">13/09/2026</span></span>
                 </div>
               </div>
               </div>
@@ -882,6 +882,21 @@ function openSplineDesign(key: string) {
   .card-content span {
     font-size: 16px;
   }
+}
+
+/* วันที่ต่อท้ายชื่อการ์ด — ตัวเล็กและจางกว่าชื่อ ขึ้นบรรทัดใหม่เสมอ */
+.card-content span.card-date {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-top: 2px;
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .card-content span.card-date { font-size: 12px; }
 }
 
 /* Compact label for long card titles so they fit without overflowing */
