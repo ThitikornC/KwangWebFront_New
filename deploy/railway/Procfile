@@ -1,0 +1,1 @@
+web: node ./deploy/railway/deploy-external.js

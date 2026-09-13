@@ -25,18 +25,33 @@ onMounted(() => {
 });
 </script>
 <template>
-  <div class="relative w-full h-64 overflow-hidden">
+  <section class="relative w-full h-64 overflow-hidden rounded-lg card-hero" aria-label="Promotion banners">
     <div class="absolute inset-0 w-full h-full">
       <img
         v-for="(banner, index) in BannerProduct"
         :key="index"
         :src="banner.image"
-        :class="{ 'opacity-100': currentImageIndex === index, 'opacity-0': currentImageIndex !== index }"
-        class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000"
-        alt="Promotion Banner"
+        :alt="banner.alt || 'Promotion Banner'"
+        :aria-hidden="currentImageIndex !== index"
+        :class="[
+          'absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700',
+          currentImageIndex === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
+        ]"
       />
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
     </div>
-  </div>
+
+    <!-- Dots -->
+    <div class="absolute left-1/2 transform -translate-x-1/2 bottom-3 flex gap-2 z-20">
+      <button
+        v-for="(_, i) in BannerProduct"
+        :key="i"
+        @click="currentImageIndex = i"
+        :aria-label="`Show banner ${i + 1}`"
+        :class="['w-3 h-3 rounded-full transition-all', currentImageIndex === i ? 'bg-reddeep scale-110' : 'bg-white/30']"
+      ></button>
+    </div>
+  </section>
 </template>
 
 
