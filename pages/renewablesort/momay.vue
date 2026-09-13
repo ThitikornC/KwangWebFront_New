@@ -31,427 +31,211 @@
     </client-only>
   </div>
 
-  <div class="momay-sections max-w-6xl mx-auto px-4 mt-8 sm:mt-10">
+  <div class="flex gap-3 sm:gap-4 flex-wrap justify-center mt-8 sm:mt-10 px-4 max-w-6xl mx-auto">
+    <!-- New order: Humen - Phama - Bangkrong - Wongpanit - Ps - Clinic - hospital_Noenmaprang_v1 - hospital_Noenmaprang - Naresuan Library -->
 
-    <section class="momay-section">
-      <div class="section-head">
-        <h2 class="section-title font-thai">Momay</h2>
+    <div
+      @click="openSplineDesign('Mpmay_human')"
+      class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay Human" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Human_NU</span>
       </div>
-      <div class="flex gap-3 sm:gap-4 flex-wrap justify-center">
-      <div
-        @click="openSplineDesign('Mpmay_human')"
-        class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay Human" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Human_NU</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('Momay_pharmacy')"
-        class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay Pharmacy" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Pharmacy_NU</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_BanKlongResort')"
-        class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="BanKlong Resort" class="w-12 h-12 object-contain" />
-          <span class="font-thai">BanKlong Resort</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('wongpanit_sukhothai')"
-        class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Wongpanit Sukhothai</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay2')"
-        class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momay 2</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('clinic')"
-        class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Clinic</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('hospital_Noenmaprang_v1')"
-        class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Hospital Noenmaprang V1</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('hospital_Noenmaprang')"
-        class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Hospital Noenmaprang</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_doc_99_99')"
-        class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay 99/99" class="w-12 h-12 object-contain" />
-          <span class="font-thai">99/99</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_88_31_khun_deer')"
-        class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="คุณเดียร์" class="w-12 h-12 object-contain" />
-          <span class="font-thai">คุณเดียร์</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_khun_sand')"
-        class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="คุณแซน" class="w-12 h-12 object-contain" />
-          <span class="font-thai">คุณแซน</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_khun_nak')"
-        class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay คุณนัก" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momay คุณนัก</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momaynew')"
-        class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="คุณนิว" class="w-12 h-12 object-contain" />
-          <span class="font-thai">คุณนิว</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_bangkrong')"
-        class="neon-btn spline-link-card hover:from-teal-100 hover:to-teal-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="บ้านคลองรีสอร์ท" class="w-12 h-12 object-contain" />
-          <span class="font-thai">บ้านคลองรีสอร์ท</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('demo')"
-        class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Demo Momay" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Demo Momay</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_khun_taeng')"
-        class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay คุณเท้ง" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momay คุณเท้ง</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_khun_eat')"
-        class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay คุณอิ๊ด" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momay คุณอิ๊ด</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('dashboard')"
-        class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay Dashboard" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momay Dashboard</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('naresuan_library')"
-        class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Naresuan Library" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Naresuan University Library</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_mom')"
-        class="neon-btn spline-link-card hover:from-rose-100 hover:to-rose-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay แม่พี่เอิน" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momay แม่พี่เอิน</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('momay_kae')"
-        class="neon-btn spline-link-card hover:from-fuchsia-100 hover:to-fuchsia-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momay คุณเก๋" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momay คุณเก๋</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('MomayDP')"
-        class="neon-btn spline-link-card hover:from-purple-100 hover:to-purple-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="MomayDP" class="w-12 h-12 object-contain" />
-          <span class="font-thai">MomayDP</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('MomayChamp')"
-        class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Momayเต็งหนามคอฟฟี่" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Momayเต็งหนามคอฟฟี่</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('MomayTopSoccer')"
-        class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="ปั้มแก๊ส" class="w-12 h-12 object-contain" />
-          <span class="font-thai">ปั้มแก๊ส</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('MomayAnan')"
-        class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="top soccer" class="w-12 h-12 object-contain" />
-          <span class="font-thai">top soccer</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('MomayKorn')"
-        class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="คุณกร" class="w-12 h-12 object-contain" />
-          <span class="font-thai">คุณกร</span>
-        </div>
-      </div>
-      <div
-        @click="openSplineDesign('SmartLibrary')"
-        class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
-      >
-        <div class="card-content">
-          <img src="/MOMAY_logo.png" alt="Borrow and Return Service" class="w-12 h-12 object-contain" />
-          <span class="font-thai">Borrow and Return Service</span>
-        </div>
-      </div>
-      </div>
-    </section>
+    </div>
 
-    <section class="momay-section">
-      <div class="flex justify-center">
-        <div
-          @click="openBuu"
-          class="neon-btn spline-link-card buu-entry-card"
-          role="button"
-          tabindex="0"
-          @keydown.enter="openBuu"
-          @keydown.space.prevent="openBuu"
-        >
-          <div class="card-content">
-            <img src="/MOMAY_logo.png" alt="BUU" class="w-12 h-12 object-contain" />
-            <span class="font-thai">BUU</span>
-          </div>
-        </div>
+    <div
+      @click="openSplineDesign('Momay_pharmacy')"
+      class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay Pharmacy" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Pharmacy_NU</span>
       </div>
-    </section>
+    </div>
 
+    <div
+      @click="openSplineDesign('momay_BanKlongResort')"
+      class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="BanKlong Resort" class="w-12 h-12 object-contain" />
+        <span class="font-thai">BanKlong Resort</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('wongpanit_sukhothai')"
+      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Wongpanit Sukhothai</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay2')"
+      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay 2</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('clinic')"
+      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Clinic</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('hospital_Noenmaprang_v1')"
+      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Hospital Noenmaprang V1</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('hospital_Noenmaprang')"
+      class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Hospital Noenmaprang</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_doc_99_99')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay 99/99" class="w-12 h-12 object-contain" />
+        <span class="font-thai">99/99</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_88_31_khun_deer')"
+      class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณเดียร์" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณเดียร์</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_khun_sand')"
+      class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณแซน" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณแซน</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_khun_nak')"
+      class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay คุณนัก" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay คุณนัก</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momaynew')"
+      class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="คุณนิว" class="w-12 h-12 object-contain" />
+        <span class="font-thai">คุณนิว</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_bangkrong')"
+      class="neon-btn spline-link-card hover:from-teal-100 hover:to-teal-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="บ้านคลองรีสอร์ท" class="w-12 h-12 object-contain" />
+        <span class="font-thai">บ้านคลองรีสอร์ท</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('demo')"
+      class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Demo Momay" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Demo Momay</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_khun_taeng')"
+      class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay คุณเท้ง" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay คุณเท้ง</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momay_khun_eat')"
+      class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay คุณอิ๊ด" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay คุณอิ๊ด</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('dashboard')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Momay Dashboard" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Momay Dashboard</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('naresuan_library')"
+      class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="Naresuan Library" class="w-12 h-12 object-contain" />
+        <span class="font-thai">Naresuan University Library</span>
+      </div>
+    </div>
+
+    <div
+      @click="openSplineDesign('momayBUU')"
+      class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
+    >
+      <div class="card-content">
+        <img src="/MOMAY_logo.png" alt="momayBUU" class="w-12 h-12 object-contain" />
+        <span class="font-thai">momayBUU</span>
+      </div>
+    </div>
   </div>
 
   <!-- Flipbook Viewer using FlipbookVue Component -->
-
-  <!-- BUU: กดการ์ด BUU แล้วค่อยเข้ามาดูรายการข้างใน -->
-  <Teleport to="body">
-    <div v-if="isBuuOpen" class="buu-modal-overlay" @click.self="closeBuu">
-      <div class="buu-modal" role="dialog" aria-modal="true" aria-label="BUU">
-        <button type="button" class="buu-modal-close" aria-label="ปิด" @click="closeBuu">&times;</button>
-        <div class="section-head">
-          <h2 class="section-title font-thai">BUU</h2>
-        </div>
-          <div class="buu-subsections">
-            <div class="buu-subsection">
-              <div class="subsection-head">
-                <h3 class="subsection-title font-thai">เก็บไว้เช็คประวัติ</h3>
-              </div>
-              <div class="flex gap-3 sm:gap-4 flex-wrap justify-center">
-              <div
-                @click="openSplineDesign('momayBUU')"
-                class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="momayBUU" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">momayBUU</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayHMV1')"
-                class="neon-btn spline-link-card hover:from-cyan-100 hover:to-cyan-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="MomayHMV1" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayHMV1</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayModel')"
-                class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="MomayModel" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayModel</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayBUU-Student')"
-                class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="MomayBUU-Student" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayBUU-Student</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayInsights')"
-                class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="Momay-Insights" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay-Insights</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayTemplate')"
-                class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="momay-template" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">momay-template</span>
-                </div>
-              </div>
-              <!-- ขีดฆ่าในโน้ต — เก็บไว้ท้ายสุด -->
-              <div
-                @click="openSplineDesign('MomayGreedy')"
-                class="neon-btn spline-link-card hover:from-lime-100 hover:to-lime-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="MomayGreedy" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayGreedy</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayBUU')"
-                class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="MomayBUU" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayBUU</span>
-                </div>
-              </div>
-              </div>
-            </div>
-
-            <div class="buu-subsection">
-              <div class="subsection-head">
-                <h3 class="subsection-title font-thai">ส่งงาน</h3>
-              </div>
-              <div class="flex gap-3 sm:gap-4 flex-wrap justify-center">
-              <div
-                @click="openSplineDesign('MomayBUU-ByJob')"
-                class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="MomayBUU by Job" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayBUU by Job</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayBUUStudent')"
-                class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="Momay-BUU-Student" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay-BUU-Student</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayBUU-Executive')"
-                class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="MomayBUU-Executive" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayBUU-Executive</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('MomayPrototype')"
-                class="neon-btn spline-link-card label-tight hover:from-violet-100 hover:to-violet-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="Momay-Enligtend-Executive-Student" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay-Enligtend-Executive-Student</span>
-                </div>
-              </div>
-              <div
-                @click="openSplineDesign('Momay-Student-Pixel')"
-                class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
-              >
-                <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay-Student-Pixel</span>
-                </div>
-              </div>
-              </div>
-            </div>
-          </div>
-      </div>
-    </div>
-  </Teleport>
 
   <div class="pdf-download-bar">
     <a href="/Sale Kit Momay181125 .pdf" download class="pdf-download-btn">
@@ -487,27 +271,7 @@ const splineLinks: Record<string, string> = {
   demo: '/momay/demo',
   dashboard: '/momay/dashboard',
   momay_khun_taeng: '/momay/momay_khun_taeng',
-  momay_khun_eat: '/momay/momay_khun_eat',
-  momay_mom: '/momay/momay_mom',
-  momay_kae: '/momay/momay_kae',
-  MomayHMV1: '/momay/MomayHMV1',
-  MomayGreedy: '/momay/MomayGreedy',
-  MomayDP: '/momay/MomayDP',
-  MomayModel: '/momay/MomayModel',
-  MomayChamp: '/momay/MomayChamp',
-  'MomayBUU-Executive': '/momay/MomayBUU-Executive',
-  'MomayBUU-Student': '/momay/MomayBUU-Student',
-  'MomayBUU-ByJob': '/momay/MomayBUU-ByJob',
-  MomayBUU: '/momay/MomayBUU',
-  MomayTopSoccer: '/momay/MomayTopSoccer',
-  MomayAnan: '/momay/MomayAnan',
-  MomayKorn: '/momay/MomayKorn',
-  MomayPrototype: '/momay/MomayPrototype',
-  SmartLibrary: '/momay/SmartLibrary',
-  MomayInsights: '/momay/MomayInsights',
-  MomayBUUStudent: '/momay/MomayBUUStudent',
-  'Momay-Student-Pixel': '/momay/Momay-Student-Pixel',
-  MomayTemplate: '/momay/MomayTemplate'
+  momay_khun_eat: '/momay/momay_khun_eat'
 }
 
 const pages = [
@@ -560,8 +324,6 @@ onMounted(() => {
   onBeforeUnmount(() => {
     if (typeof window !== 'undefined') {
       window.removeEventListener('resize', updateIsMobile)
-      window.removeEventListener('keydown', onBuuKeydown)
-      document.body.style.overflow = ''
     }
     if (observer) {
       observer.disconnect()
@@ -569,28 +331,6 @@ onMounted(() => {
     }
   })
 })
-
-const isBuuOpen = ref(false)
-
-function onBuuKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') closeBuu()
-}
-
-function openBuu() {
-  isBuuOpen.value = true
-  if (typeof window !== 'undefined') {
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', onBuuKeydown)
-  }
-}
-
-function closeBuu() {
-  isBuuOpen.value = false
-  if (typeof window !== 'undefined') {
-    document.body.style.overflow = ''
-    window.removeEventListener('keydown', onBuuKeydown)
-  }
-}
 
 function openSplineDesign(key: string) {
   const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
@@ -615,7 +355,7 @@ function openSplineDesign(key: string) {
   }
 
   const url = splineLinks[key]
-  if (url) window.open(url, '_blank', 'noopener,noreferrer')
+  if (url) navigateTo(url)
 }
 </script>
 
@@ -686,139 +426,6 @@ function openSplineDesign(key: string) {
   100% { transform: translateX(-50%); } 
 }
 
-/* Section headings for the momay link groups */
-.momay-sections {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(2rem, 5vw, 3.25rem);
-}
-
-.section-head {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.25rem;
-}
-
-.section-title {
-  margin: 0;
-  color: #fff6de;
-  font-weight: 800;
-  font-size: clamp(1.125rem, 2.4vw, 1.75rem);
-  letter-spacing: 0.02em;
-  text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.55);
-  position: relative;
-  z-index: 10;
-}
-
-/* การ์ด BUU: ประตูเข้าไปดูรายการ BUU ทั้งหมด */
-.buu-entry-card {
-  background: linear-gradient(180deg, #fdf6df 0%, #fffdf3 45%, #fff1cd 55%, #efe2bd 100%);
-}
-
-.buu-entry-card .card-content {
-  justify-content: center;
-}
-
-.buu-entry-card .card-content span {
-  flex-grow: 0;
-  font-size: 18px;
-  letter-spacing: 0.06em;
-}
-
-/* ชื่อยาวเกินการ์ด — ย่อขนาดตัวอักษรให้พออยู่ในการ์ด */
-.label-tight .card-content span {
-  font-size: 12px;
-  line-height: 1.2;
-}
-
-@media (min-width: 640px) {
-  .label-tight .card-content span {
-    font-size: 13px;
-  }
-}
-
-/* Modal รวมของ BUU */
-.buu-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(0.75rem, 3vw, 2rem);
-  background: rgba(20, 16, 2, 0.72);
-  backdrop-filter: blur(4px);
-  overflow-y: auto;
-}
-
-.buu-modal {
-  position: relative;
-  width: 100%;
-  max-width: 1100px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: clamp(1.5rem, 3.5vw, 2.5rem) clamp(1rem, 3vw, 2rem) clamp(1.75rem, 4vw, 2.5rem);
-  border: 3px solid #74640a;
-  border-radius: 20px;
-  background: linear-gradient(180deg, #6b5f2e 0%, #3b3305 100%);
-  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6), -6px 4px #241f04, 0 0 28px rgba(255, 230, 160, 0.35);
-}
-
-.buu-modal-close {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.9rem;
-  width: 2.25rem;
-  height: 2.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #74640a;
-  border-radius: 9999px;
-  background: linear-gradient(180deg, #f8f6f0 0%, #f5f0e5 100%);
-  color: #3b3305;
-  font-size: 1.5rem;
-  line-height: 1;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.buu-modal-close:hover {
-  transform: scale(1.08);
-}
-
-.buu-subsections {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.5rem, 3.5vw, 2.5rem);
-}
-
-.subsection-head {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.subsection-title {
-  margin: 0;
-  color: #fff6de;
-  font-weight: 700;
-  font-size: clamp(1rem, 1.8vw, 1.35rem);
-  letter-spacing: 0.02em;
-  text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.55);
-}
-
-@media (max-width: 640px) {
-  .buu-modal {
-    border-width: 2px;
-    border-radius: 16px;
-  }
-}
-
-
 .spline-link-card {
   width: 200px;
   height: 70px;
@@ -871,20 +478,6 @@ function openSplineDesign(key: string) {
 @media (min-width: 640px) {
   .card-content span {
     font-size: 16px;
-  }
-}
-
-/* Compact label for long card titles so they fit without overflowing */
-.card-content span.card-label-sm {
-  font-size: 11px;
-  line-height: 1.15;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-@media (min-width: 640px) {
-  .card-content span.card-label-sm {
-    font-size: 12px;
   }
 }
 
