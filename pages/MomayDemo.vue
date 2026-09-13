@@ -1175,8 +1175,10 @@ onMounted(() => {
 
 .app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100dvh; }
 .brand-bar, .progbar, .nav { flex: none; }
-.body { flex: 1 1 auto; padding: 0 18px; display: flex; flex-direction: column; }
-.screen { flex: 1 1 auto; padding-bottom: 8px; }
+/* flex-shrink ต้องเป็น 0 ทั้งคู่ ไม่งั้นเนื้อหาที่สูงกว่าจอจะถูกบีบให้พอดีจอ
+   ทำให้ความสูงเอกสารไม่โต → เลื่อนหน้าลงไม่ได้และเนื้อหาท้ายโดนตัด */
+.body { flex: 1 0 auto; padding: 0 18px; display: flex; flex-direction: column; }
+.screen { flex: 1 0 auto; padding-bottom: 8px; }
 
 /* หน้าที่ต้องกระจายเนื้อหาให้เต็มความสูงจอ (ระยะว่างไปอยู่ที่ margin auto) */
 .screen-fill { display: flex; flex-direction: column; }
