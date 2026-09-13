@@ -412,11 +412,11 @@
               </div>
               <div
                 @click="openSplineDesign('MomayBUUStudent')"
-                class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+                class="neon-btn spline-link-card card-detail hover:from-violet-100 hover:to-violet-300"
               >
                 <div class="card-content">
-                  <img src="/MOMAY_logo.png" alt="Momay-BUU-Student" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay-BUU-Student</span>
+                  <img src="/MOMAY_logo.png" alt="Momay BUU Student (070926)" class="w-12 h-12 object-contain" />
+                  <span class="font-thai">Momay BUU Student<span class="card-note">(070926) สีดำ V.1 — พี่จ๊อบออก V.1 ยังไม่สนุก ทางการมาก</span></span>
                 </div>
               </div>
               <div
@@ -439,20 +439,20 @@
               </div>
               <div
                 @click="openSplineDesign('Momay-Student-Pixel')"
-                class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
+                class="neon-btn spline-link-card card-detail hover:from-violet-100 hover:to-violet-300"
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay Student Pixel (100926)</span>
+                  <span class="font-thai">Momay Student Pixel<span class="card-note">(100926) ตัวเลขยังเป็น Pixel</span></span>
                 </div>
               </div>
               <div
                 @click="openSplineDesign('Momay-Student-Pixel-V2')"
-                class="neon-btn spline-link-card hover:from-fuchsia-100 hover:to-fuchsia-300"
+                class="neon-btn spline-link-card card-detail hover:from-fuchsia-100 hover:to-fuchsia-300"
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel-V2" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay Student Pixel (130926)</span>
+                  <span class="font-thai">Momay Student Pixel<span class="card-note">(130926) ปรับตัวหนังสือชัด ตามพี่ตูน</span></span>
                 </div>
               </div>
               </div>
@@ -882,6 +882,34 @@ function openSplineDesign(key: string) {
   .card-content span {
     font-size: 16px;
   }
+}
+
+/* คำอธิบายใต้ชื่อการ์ด — ตัวเล็กจางกว่าชื่อ ตัดบรรทัดได้ */
+.card-content span.card-note {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.28;
+  opacity: 0.72;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* การ์ดที่มีคำอธิบายให้สูงตามเนื้อหา แทนความสูงคงที่ 70px */
+.spline-link-card.card-detail {
+  /* คงความสูงเท่าการ์ดอื่น (70px) แล้วย่อตัวหนังสือให้พอดีแทน
+     เผื่อ auto ไว้กรณีจอแคบมากที่ข้อความยาวเกินจริง ๆ */
+  height: auto;
+  min-height: 70px;
+}
+.card-detail .card-content > span {
+  font-size: 13px;
+  line-height: 1.15;
+}
+@media (min-width: 640px) {
+  .card-detail .card-content > span { font-size: 14px; }
+  .spline-link-card.card-detail { min-height: 80px; }
 }
 
 /* วันที่ต่อท้ายชื่อการ์ด — ตัวเล็กและจางกว่าชื่อ ขึ้นบรรทัดใหม่เสมอ */
