@@ -131,15 +131,15 @@
           </ul>
         </div>
 
-        <!-- ทางลัดไปเดโม — แถวของตัวเอง กึ่งกลางจอ ชิดขอบล่างของฮีโร่ -->
+        <!-- ทางลัดใต้ฮีโร่ — สองทาง: เดโม MOMAY SURPRISE กับแผนที่ลูกค้า -->
         <div class="hero-demos" :style="{ '--cols': demoCols, '--cols-sm': demoColsSm }">
-          <button v-for="(d, i) in demoLinks" :key="d.key" type="button" class="demolink"
+          <button v-for="(d, i) in heroLinks" :key="d.key" type="button" class="demolink"
                   :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
-                  v-reveal="820 + i * 90" @click="open(d.link)">
+                  v-reveal="820 + i * 90" @click="d.go()">
             <span class="demolink__icon" v-html="d.icon" />
             <span class="demolink__label">
               <b>{{ d.label }}</b>
-              <small>VIEW DEMO</small>
+              <small>{{ d.cta }}</small>
             </span>
           </button>
         </div>
@@ -2327,27 +2327,29 @@ const products = [
 // ตัวที่ติดธง hidden จะไม่โผล่ทั้งการ์ดและปุ่ม demo
 const visibleProducts = products.filter((p) => !p.hidden)
 
-// ปุ่มใต้ Executive Brief — อ้างผลิตภัณฑ์ชุดเดียวกัน จะได้ไม่ต้องแก้ลิงก์สองที่
-const demoIcons = {
-  'MOMAY ENLIGHTENED': `<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>`,
-  'MOMAY STUDENT': `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0"/></svg>`,
-  'MOMAY EXECUTIVE BRIEF': `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M13.5 3.7V8.2H18"/><path d="M9 12.5h6M9 16h4"/></svg>`,
-  'MOMAY STUDENT_PIXEL': `<svg viewBox="0 0 24 24"><path d="M8.4 8h7.2a4.4 4.4 0 0 1 4.3 3.5l.9 4.4A2.6 2.6 0 0 1 16 17.6l-1-1.1H9l-1 1.1a2.6 2.6 0 0 1-4.8-1.7l.9-4.4A4.4 4.4 0 0 1 8.4 8z"/><path d="M7.4 11.4v2.4M6.2 12.6h2.4"/><path d="M15.6 11.9h.01M17.4 13.4h.01"/></svg>`,
-}
+// ปุ่มใต้ฮีโร่ — เหลือสองทางหลัก: ลองเดโม MOMAY SURPRISE กับเปิดแผนที่ลูกค้า
+const heroLinks = [
+  {
+    key: 'surprise',
+    label: 'MOMAY SURPRISE',
+    cta: 'VIEW DEMO',
+    color: '#ECB731',
+    go: () => open('/MomaySurpriseOrganize'),
+    icon: `<svg viewBox="0 0 24 24"><path d="M4 10.4h16v9.1a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/><path d="M2.8 6.9h18.4v3.5H2.8z"/><path d="M12 6.9v14.1"/><path d="M12 6.9S10.9 3 8.6 3a1.95 1.95 0 0 0 0 3.9z"/><path d="M12 6.9S13.1 3 15.4 3a1.95 1.95 0 0 1 0 3.9z"/></svg>`,
+  },
+  {
+    key: 'map',
+    label: 'MOMAY MAP',
+    cta: 'VIEW MAP',
+    color: '#ED1B2E',
+    go: () => { customersOpen.value = true },
+    icon: `<svg viewBox="0 0 24 24"><path d="M9 3.4 3.3 5.8v14.8L9 18.2l6 2.4 5.7-2.4V3.4L15 5.8z"/><path d="M9 3.4v14.8M15 5.8v14.8"/></svg>`,
+  },
+]
 
-const demoLinks = visibleProducts.map((p) => ({
-  key: p.name,
-  label: p.name.replace(/^MOMAY\s+/, ''),
-  color: p.color,
-  link: p.link,
-  icon: demoIcons[p.name],
-}))
-
-// สี่ใบต่อแถวได้เฉพาะจอกว้าง พอเหลือน้อยกว่านั้นให้เรียงแถวเดียวไปเลย จะได้ไม่มีช่องว่างค้าง
-const productCols = visibleProducts.length
-const productColsMd = productCols >= 4 ? 2 : productCols
-const demoCols = demoLinks.length
-const demoColsSm = demoCols >= 4 ? 2 : demoCols
+// สองใบเท่ากันทุกจอ ไม่ต้องหักแถว
+const demoCols = heroLinks.length
+const demoColsSm = heroLinks.length
 
 const orgs = [
   { name: 'มหาวิทยาลัยนเรศวร', logo: '/NU_crest.png' },
@@ -2937,19 +2939,49 @@ section {
      80vh   = กันไม่ให้สูงเกินฮีโร่จนโดน overflow: hidden ตัดหัวท้าย
      100vw - 620px = พื้นที่ที่เหลือจริงหลังกันที่ให้คอลัมน์ข้อความ
                      (ผูกกับ vw ล้วนไม่ได้ พอจอแคบลงวงจะโตเกินจนทับหัวเรื่อง) */
-  width: min(780px, 80vh, calc(100vw - 620px));
+  --ring-size: min(780px, 80vh, calc(100vw - 620px));
+  --ring-lift: clamp(20px, 4.5vh, 52px);
+  width: var(--ring-size);
   /* ครึ่งหนึ่งของความกว้าง = กึ่งกลางแนวตั้งพอดี (วงเป็นสี่เหลี่ยมจัตุรัส)
      แล้วยกขึ้นอีกช่วงหนึ่ง ให้พ้นแถวปุ่มเดโมที่อยู่ชิดขอบล่างของฮีโร่ */
-  margin-top: calc(min(780px, 80vh, calc(100vw - 620px)) / -2 - clamp(20px, 4.5vh, 52px));
+  margin-top: calc(var(--ring-size) / -2 - var(--ring-lift));
   pointer-events: none;
 }
 /* ภาพเมืองอยู่ในวงกลมนี้ที่เดียว จึงเปิดเต็มที่เหมือนหน้าเดโม */
 .mm-hero__ring :deep(.ring-bg) { opacity: 0.72; }
 /* วงมาพร้อม max-width 404px ของหน้าเดโม — ในฮีโร่ให้เต็มกรอบที่จองไว้แทน */
 .mm-hero__ring :deep(.ring-wrap) { max-width: 100%; margin: 0; }
-/* จอแคบ: วงจะบังข้อความ จึงซ่อนไว้ แล้วให้ภาพเมืองทำหน้าที่ฉากหลังแทน */
-@media (max-width: 1100px) {
-  .mm-hero__ring { display: none; }
+/* แท็บเล็ต/มือถือแนวนอน: ยังมีที่ว่างฝั่งขวา เก็บวงไว้ที่เดิม แค่ย่อลงตามจอ */
+@media (orientation: landscape) and (max-width: 1100px) {
+  .mm-hero__ring {
+    --ring-size: min(48vw, 62vh);
+    --ring-lift: clamp(8px, 2.4vh, 26px);
+    right: clamp(4px, 2.4vw, 34px);
+  }
+}
+/* แท็บเล็ต/มือถือแนวตั้ง: ไม่มีที่ว่างข้างข้อความแล้ว — ยกวงขึ้นไปเป็นภาพเปิดเหนือหัวเรื่อง
+   แล้วเว้นที่ด้านบนของคอลัมน์ข้อความเท่าความสูงวง จะได้ไม่ทับกัน */
+@media (orientation: portrait) and (max-width: 1100px) {
+  .mm-hero {
+    --ring-band: min(74vw, 32vh);
+    /* เท่ากับ padding-top ของฮีโร่ — วงจึงเริ่มใต้แถบบนพอดี */
+    --ring-top: clamp(104px, 13vh, 158px);
+  }
+  .mm-hero__inner { padding-top: calc(var(--ring-band) + clamp(12px, 2.4vh, 26px)); }
+  .mm-hero__ring {
+    --ring-size: var(--ring-band);
+    top: var(--ring-top);
+    left: 50%;
+    right: auto;
+    margin: 0 0 0 calc(var(--ring-size) / -2);
+  }
+  /* ปุ่ม MOMAY MAP เต็มแถวซ้ำกับปุ่มในแถวล่างแล้ว — เหลือใบเดียวพอ
+     (เจาะจงกว่ากฎ .chip--cta ของบล็อกจอแนวตั้งด้านล่าง จึงชนะโดยไม่ต้องพึ่งลำดับ) */
+  .mm-hero__chips .chip--cta { display: none; }
+}
+/* แถบบนสองแถวดันฮีโร่ลงมา — วงต้องขยับลงตามด้วย */
+@media (orientation: portrait) and (max-width: 975px) {
+  .mm-hero { --ring-top: clamp(140px, 16vh, 168px); }
 }
 
 .mm-hero__particles { inset: 0; }
