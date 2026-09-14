@@ -241,7 +241,10 @@
               <span class="radar" style="animation-delay: 0s" />
               <span class="radar" style="animation-delay: 1.2s" />
               <span class="radar" style="animation-delay: 2.4s" />
-              <span class="orbit" />
+              <!-- orbit เป็นกล่องสี่เหลี่ยมที่หมุน กรอบนอกของมันจะพองตอนหมุนถึง 45°
+                   ถ้าปล่อยไว้จะไปดันความสูงเอกสาร ทำให้สกรอลล์บาร์เกิด-หายเป็นจังหวะจนหน้าเด้งเอง
+                   จึงครอบด้วยกล่องตัดขอบ (วงกลมหมุนอยู่กับที่ ไม่มีอะไรถูกตัดให้เห็น) -->
+              <span class="orbit-shell"><span class="orbit" /></span>
 
               <svg class="ring-lines" viewBox="0 0 100 100">
                 <defs>
@@ -1616,6 +1619,8 @@ onMounted(() => {
 }
 
 /* วงโคจรเส้นประ + จุดเดินรอบวง */
+/* กันไม่ให้กรอบของ .orbit ที่หมุนอยู่ไปเพิ่มพื้นที่สกรอลล์ของหน้า */
+.orbit-shell { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; pointer-events: none; }
 .orbit {
   position: absolute; inset: 5%; border-radius: 50%;
   border: 1px dashed rgba(79, 216, 255, 0.2);
@@ -2131,9 +2136,9 @@ onMounted(() => {
 @media (min-width: 1000px) {
   .brand-bar, .progbar, .nav-inner, .body { max-width: 1120px; }
 
-  .h-en { font-size: 40px; }
-  .h-en.upper { font-size: 34px; }
-  .h-th { font-size: 15px; }
+  .h-en { font-size: 33px; }
+  .h-en.upper { font-size: 30px; }
+  .h-th { font-size: 14px; }
   .tag { font-size: 12px; max-width: 200px; }
   .list-title { font-size: 16px; }
 
@@ -2161,7 +2166,7 @@ onMounted(() => {
   .sub-q { font-size: 16px; }
   .peak { font-size: 13.5px; padding: 11px 18px; }
 
-  .stage-slot { height: 132px; }
+  .stage-slot { height: 100px; }
 
   /* 04 · 06 */
   .ring-wrap { max-width: 100%; margin: 0 auto; }
@@ -2178,13 +2183,22 @@ onMounted(() => {
     align-items: center;
     gap: 46px;
   }
+  /* วงกินพื้นที่แนวตั้งที่เหลือให้มากที่สุด แต่ไม่เกินจนตกขอบล่าง
+     240px = แถบแบรนด์ + progress + ช่องหัวข้อ + ระยะหายใจบน-ล่าง
+     (ด้านของวง = ความกว้างคอลัมน์ซ้าย เพราะ aspect-ratio 1) */
+  .cols-awaken { grid-template-columns: minmax(0, min(620px, 100svh - 240px)) auto; }
   .cols-awaken > .await-list,
-  .cols-relate > div:last-child { max-width: 440px; }
-  .ring-core { font-size: 28px; }
-  .core-halo { width: 240px; height: 240px; }
-  .node-label { font-size: 13px; }
-  .await-en { font-size: 14px; }
-  .await-th { font-size: 11.5px; }
+  .cols-relate > div:last-child { max-width: 460px; }
+  .ring-core { font-size: 33px; }
+  .core-halo { width: 280px; height: 280px; }
+  .ring-node { --dot: 60px; }
+  .node-label { font-size: 14.5px; }
+  .await-list { gap: 15px; }
+  .await-list li { grid-template-columns: 22px 1fr; gap: 13px; }
+  .await-mark :deep(.ic) { width: 19px; height: 19px; }
+  .hollow, .spin { width: 18px; height: 18px; }
+  .await-en { font-size: 17px; }
+  .await-th { font-size: 13px; }
   .rel-label { font-size: 14px; }
   .rel-val { font-size: 15px; }
   .rel-node.lead .rel-label { font-size: 15px; }
