@@ -1576,7 +1576,7 @@ const canAdvance = computed(() => {
 const DEMO_LINKS = [
   {
     key: 'enlightened',
-    label: 'ENLIGHTENED',
+    label: 'MOMAY ENLIGHTENED',
     cta: 'พูดคุยรายละเอียด',
     color: '#ECB731',
     link: '/momay/MomayDemo-ByJob',
@@ -1584,7 +1584,7 @@ const DEMO_LINKS = [
   },
   {
     key: 'citizen',
-    label: 'CITIZEN / STUDENT',
+    label: 'MOMAY CITIZEN / STUDENT',
     cta: 'คลิ๊กเพื่อดู',
     color: '#4ADE80',
     link: '/momay/MomayDemo-StudentPixel',
@@ -1593,7 +1593,7 @@ const DEMO_LINKS = [
   },
   {
     key: 'executive',
-    label: 'EXECUTIVE BRIEF',
+    label: 'MOMAY EXECUTIVE BRIEF',
     cta: 'พูดคุยรายละเอียด',
     color: '#ED1B2E',
     link: '/momay/MomayDemo-Executive',
@@ -2855,7 +2855,7 @@ onMounted(() => {
   font-size: 14px; font-weight: 800; letter-spacing: 0.09em;
   color: var(--accent); white-space: nowrap;
 }
-.demolink__label small { font-size: 11.5px; letter-spacing: 0.06em; color: var(--muted); transition: color 0.35s var(--ease); }
+.demolink__label small { font-size: 11.5px; letter-spacing: 0.06em; text-align: center; color: var(--muted); transition: color 0.35s var(--ease); }
 .demolink:hover .demolink__label small { color: #eaf6ff; }
 
 /* ── ปุ่มกลาง — ตัวหลักของแถว ──
@@ -2917,6 +2917,17 @@ onMounted(() => {
     box-shadow: 0 20px 46px rgba(2, 10, 22, 0.6),
                 0 0 38px -6px color-mix(in srgb, var(--accent) 85%, transparent);
   }
+}
+
+/* จอกลาง: ยังเรียงสามปุ่ม แต่ชื่อยาวขึ้นหลังเติม MOMAY — หดตัวอักษรกันชื่อล้นปุ่ม */
+@media (min-width: 821px) and (max-width: 1080px) {
+  .demo-row { gap: 12px; }
+  .demolink { gap: 10px; padding: 13px 14px; }
+  .demolink__icon { width: 40px; height: 40px; }
+  .demolink--lead .demolink__icon { width: 42px; height: 42px; }
+  .demolink__label b { font-size: 12px; letter-spacing: 0.05em; }
+  .demolink--lead .demolink__label b { font-size: 12.5px; letter-spacing: 0.055em; }
+  .demolink__label small { font-size: 10.5px; }
 }
 
 /* จอแคบ: สามปุ่มเรียงกันไม่ไหว ให้ซ้อนลงมาเป็นแถวเดียว */
