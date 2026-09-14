@@ -1,5 +1,5 @@
 /**
- * MOMAY Surprise — โมเดลคำนวณของหน้า /MomayDemo
+ * MOMAY Surprise — โมเดลคำนวณของหน้า /MomayDemoV2
  *
  * ทุกตัวเลขบนหน้า 05–08 คำนวณจาก 3 ค่าที่ผู้ใช้กรอกในหน้า 02
  * (จำนวนคน / ความจุ / ค่าไฟ) ร่วมกับ signal ที่เลือก และช่วงเวลาที่หนาแน่น
@@ -29,12 +29,12 @@ export interface SignalDef {
 }
 
 export const SIGNALS: SignalDef[] = [
-  { id: 'people',  en: 'People',  th: 'จำนวนคน',        icon: 'user',     color: '#34d399', unit: 'count', metricTh: 'ความหนาแน่นของผู้ใช้พื้นที่' },
-  { id: 'traffic', en: 'Traffic', th: 'การจราจร',       icon: 'car',      color: '#38bdf8', unit: '%',     metricTh: 'ความหนาแน่นการจราจร' },
-  { id: 'parking', en: 'Parking', th: 'ที่จอดรถ',        icon: 'parking',  color: '#3b82f6', unit: '%',     metricTh: 'การใช้ที่จอดรถ' },
-  { id: 'energy',  en: 'Energy',  th: 'พลังงาน / ค่าไฟ', icon: 'bolt',     color: '#fbbf24', unit: '%',     metricTh: 'ความต้องการพลังงาน' },
-  { id: 'waste',   en: 'Waste',   th: 'ขยะ',            icon: 'trash',    color: '#2dd4bf', unit: '%',     metricTh: 'ปริมาณขยะเทียบความสามารถจัดเก็บ' },
-  { id: 'events',  en: 'Events',  th: 'กิจกรรม / งาน',   icon: 'calendar', color: '#a78bfa', unit: '%',     metricTh: 'แรงกดดันจากกิจกรรม' },
+  { id: 'people',  en: 'People',  th: 'จำนวนคน',        icon: 'user',     color: '#34d399', unit: 'count', metricTh: 'คนที่ใช้พื้นที่ต่อวัน' },
+  { id: 'traffic', en: 'Traffic', th: 'การจราจร',       icon: 'car',      color: '#38bdf8', unit: '%',     metricTh: 'รถบนถนนเทียบที่รับได้' },
+  { id: 'parking', en: 'Parking', th: 'ที่จอดรถ',        icon: 'parking',  color: '#3b82f6', unit: '%',     metricTh: 'ที่จอดรถที่ถูกใช้ไป' },
+  { id: 'energy',  en: 'Energy',  th: 'พลังงาน / ค่าไฟ', icon: 'bolt',     color: '#fbbf24', unit: '%',     metricTh: 'ไฟที่ใช้เทียบกำลังที่มี' },
+  { id: 'waste',   en: 'Waste',   th: 'ขยะ',            icon: 'trash',    color: '#2dd4bf', unit: '%',     metricTh: 'ขยะเทียบกำลังที่เก็บไหว' },
+  { id: 'events',  en: 'Events',  th: 'กิจกรรม / งาน',   icon: 'calendar', color: '#a78bfa', unit: '%',     metricTh: 'ภาระในวันที่มีงาน' },
 ]
 
 export const SIGNAL_MAP: Record<SignalId, SignalDef> =
@@ -432,24 +432,24 @@ export function headlineAlert(ranked: RankedMetric[]): Insight | null {
   if (!b) {
     return {
       en: `Your busiest period is also when ${a.def.en.toLowerCase()} pressure is highest.`,
-      th: `ช่วงเวลาที่คนหนาแน่นที่สุด เป็นช่วงเดียวกับที่${a.def.th}ตึงตัวที่สุด`,
+      th: `${a.def.th}หนักที่สุด ในช่วงเดียวกับตอนที่คนเยอะที่สุดพอดี`,
     }
   }
   return {
     en: `Your busiest period is also when ${a.def.en.toLowerCase()} pressure and ${b.def.en.toLowerCase()} demand are highest.`,
-    th: `ช่วงเวลาที่คนหนาแน่นที่สุด เป็นช่วงเดียวกับที่${a.def.th}และ${b.def.th}อยู่ในจุดที่ตึงตัวที่สุด`,
+    th: `${a.def.th}และ${b.def.th}หนักที่สุด ในช่วงเดียวกับตอนที่คนเยอะที่สุดพอดี`,
   }
 }
 
 export function keyUnderstandings(signals: SignalId[]): Insight[] {
   const out: Insight[] = []
   if (signals.includes('parking'))
-    out.push({ en: 'More people increase parking demand', th: 'คนมากขึ้น ทำให้ความต้องการที่จอดรถสูงขึ้น' })
+    out.push({ en: 'More people increase parking demand', th: 'คนเยอะขึ้น รถก็ต้องการที่จอดมากขึ้น' })
   if (signals.includes('energy'))
-    out.push({ en: 'High activity leads to higher energy use', th: 'กิจกรรมหนาแน่นขึ้น ทำให้การใช้พลังงานเพิ่มขึ้น' })
+    out.push({ en: 'High activity leads to higher energy use', th: 'คนใช้พื้นที่มากขึ้น ค่าไฟก็ขึ้นตาม' })
   if (signals.includes('events') || signals.includes('waste'))
-    out.push({ en: 'Events can significantly impact traffic and waste', th: 'งาน/กิจกรรมส่งผลต่อการจราจรและปริมาณขยะอย่างมีนัยสำคัญ' })
-  out.push({ en: 'These factors are connected and affect each other', th: 'ปัจจัยเหล่านี้เชื่อมโยงกันและส่งผลต่อกัน' })
+    out.push({ en: 'Events can significantly impact traffic and waste', th: 'วันที่มีงาน รถจะติดและขยะจะเยอะกว่าปกติมาก' })
+  out.push({ en: 'These factors are connected and affect each other', th: 'ทุกเรื่องนี้โยงกันหมด ขยับเรื่องหนึ่ง อีกเรื่องก็ขยับตาม' })
   return out.slice(0, 4)
 }
 
@@ -468,79 +468,79 @@ export interface Recommendation {
 const RECOMMENDATIONS: Record<SignalId | 'balanced', Omit<Recommendation, 'key' | 'badge'>> = {
   parking: {
     titleEn: 'Prioritize parking-flow management before adding infrastructure.',
-    titleTh: 'ควรให้ความสำคัญกับการบริหารการจราจรและที่จอดรถ ก่อนการลงทุนเพิ่มเติม',
+    titleTh: 'จัดระบบที่จอดรถให้คล่องขึ้นก่อน ยังไม่ต้องรีบสร้างเพิ่ม',
     whyEn: 'Parking reaches capacity before energy or waste operations become critical.',
-    whyTh: 'ที่จอดรถมีแนวโน้มถึงขีดความสามารถก่อน ในขณะที่พลังงานและการจัดการขยะยังไม่ถึงจุดวิกฤต',
+    whyTh: 'ที่จอดรถจะเต็มก่อนเรื่องอื่น ส่วนค่าไฟกับขยะยังพอรับไหว',
     impacts: [
-      { dir: 'down', tone: 'good', th: 'ลดความแออัด' },
-      { dir: 'up',   tone: 'good', th: 'เพิ่มการไหลเวียน' },
-      { dir: 'down', tone: 'warn', th: 'ลดการลงทุนก่อนกำหนด' },
+      { dir: 'down', tone: 'good', th: 'รถแออัดน้อยลง' },
+      { dir: 'up',   tone: 'good', th: 'รถเข้าออกคล่องขึ้น' },
+      { dir: 'down', tone: 'warn', th: 'ยังไม่ต้องลงทุนเพิ่ม' },
     ],
   },
   energy: {
     titleEn: 'Shift and shave peak energy demand before expanding capacity.',
-    titleTh: 'ควรกระจายและลดยอดการใช้พลังงานช่วงพีค ก่อนขยายกำลังไฟ',
+    titleTh: 'เกลี่ยการใช้ไฟไม่ให้กระจุกช่วงคนเยอะก่อน ยังไม่ต้องเพิ่มกำลังไฟ',
     whyEn: 'Energy demand is the first factor to reach its limit under higher activity.',
-    whyTh: 'ความต้องการพลังงานเป็นปัจจัยแรกที่ถึงขีดจำกัดเมื่อกิจกรรมเพิ่มขึ้น',
+    whyTh: 'พอคนใช้พื้นที่มากขึ้น ไฟฟ้าจะตันเป็นเรื่องแรก',
     impacts: [
-      { dir: 'down', tone: 'good', th: 'ลดยอดพีคค่าไฟ' },
-      { dir: 'up',   tone: 'good', th: 'เพิ่มประสิทธิภาพระบบ' },
-      { dir: 'down', tone: 'warn', th: 'ลดการลงทุนก่อนกำหนด' },
+      { dir: 'down', tone: 'good', th: 'ค่าไฟช่วงพีคลดลง' },
+      { dir: 'up',   tone: 'good', th: 'ใช้ไฟได้คุ้มขึ้น' },
+      { dir: 'down', tone: 'warn', th: 'ยังไม่ต้องเพิ่มกำลังไฟ' },
     ],
   },
   traffic: {
     titleEn: 'Manage arrival flow and access routes before widening roads.',
-    titleTh: 'ควรบริหารจังหวะการเข้าออกและเส้นทางเข้าถึง ก่อนขยายผิวจราจร',
+    titleTh: 'จัดจังหวะรถเข้า-ออกและเส้นทางก่อน ยังไม่ต้องขยายถนน',
     whyEn: 'Traffic becomes constrained before the other operations do.',
-    whyTh: 'การจราจรจะตึงตัวก่อนงานด้านอื่นของพื้นที่คุณ',
+    whyTh: 'รถจะติดก่อนเรื่องอื่นในพื้นที่ของคุณ',
     impacts: [
-      { dir: 'down', tone: 'good', th: 'ลดการติดขัด' },
-      { dir: 'up',   tone: 'good', th: 'เพิ่มการไหลเวียน' },
-      { dir: 'down', tone: 'warn', th: 'ลดต้นทุนขยายถนน' },
+      { dir: 'down', tone: 'good', th: 'รถติดน้อยลง' },
+      { dir: 'up',   tone: 'good', th: 'รถเคลื่อนตัวคล่องขึ้น' },
+      { dir: 'down', tone: 'warn', th: 'ยังไม่ต้องขยายถนน' },
     ],
   },
   waste: {
     titleEn: 'Match collection schedule to the real peak before adding bins.',
-    titleTh: 'ควรปรับรอบการจัดเก็บให้ตรงกับช่วงพีคจริง ก่อนเพิ่มจุดทิ้ง',
+    titleTh: 'ปรับเวลาเก็บขยะให้ตรงกับช่วงคนเยอะก่อน ยังไม่ต้องเพิ่มถัง',
     whyEn: 'Waste handling saturates earlier than parking or energy at this activity level.',
-    whyTh: 'การจัดการขยะจะตันก่อนที่จอดรถและพลังงาน ที่ระดับกิจกรรมเท่านี้',
+    whyTh: 'ที่จำนวนคนเท่านี้ ขยะจะล้นก่อนที่จอดรถและค่าไฟ',
     impacts: [
-      { dir: 'down', tone: 'good', th: 'ลดขยะตกค้าง' },
-      { dir: 'up',   tone: 'good', th: 'เพิ่มรอบจัดเก็บที่ตรงจุด' },
-      { dir: 'down', tone: 'warn', th: 'ลดต้นทุนอุปกรณ์เกินจำเป็น' },
+      { dir: 'down', tone: 'good', th: 'ขยะตกค้างน้อยลง' },
+      { dir: 'up',   tone: 'good', th: 'เก็บขยะตรงช่วงที่ต้องเก็บ' },
+      { dir: 'down', tone: 'warn', th: 'ยังไม่ต้องซื้ออุปกรณ์เพิ่ม' },
     ],
   },
   events: {
     titleEn: 'Plan event days separately before scaling everyday capacity.',
-    titleTh: 'ควรวางแผนเฉพาะวันจัดงาน ก่อนขยายความจุของวันปกติ',
+    titleTh: 'วางแผนรับมือเฉพาะวันที่มีงานก่อน ยังไม่ต้องขยายของวันปกติ',
     whyEn: 'Pressure is driven by event peaks rather than by everyday demand.',
-    whyTh: 'แรงกดดันมาจากพีคช่วงจัดงาน มากกว่าความต้องการในวันปกติ',
+    whyTh: 'ปัญหาเกิดเฉพาะวันที่มีงาน ไม่ใช่วันธรรมดา',
     impacts: [
-      { dir: 'down', tone: 'good', th: 'ลดความแออัดวันงาน' },
-      { dir: 'up',   tone: 'good', th: 'เพิ่มความพร้อมล่วงหน้า' },
-      { dir: 'down', tone: 'warn', th: 'ลดการลงทุนก่อนกำหนด' },
+      { dir: 'down', tone: 'good', th: 'วันมีงานแออัดน้อยลง' },
+      { dir: 'up',   tone: 'good', th: 'เตรียมงานได้ล่วงหน้า' },
+      { dir: 'down', tone: 'warn', th: 'ยังไม่ต้องลงทุนเพิ่ม' },
     ],
   },
   people: {
     titleEn: 'Spread activity across the day before expanding the space.',
-    titleTh: 'ควรกระจายกิจกรรมให้ทั่วทั้งวัน ก่อนขยายพื้นที่',
+    titleTh: 'กระจายให้คนมาไม่พร้อมกันก่อน ยังไม่ต้องขยายพื้นที่',
     whyEn: 'The space itself is the binding constraint at peak hours.',
-    whyTh: 'ตัวพื้นที่เองคือข้อจำกัดหลักในช่วงเวลาเร่งด่วน',
+    whyTh: 'ช่วงคนเยอะ พื้นที่เองนี่แหละที่ไม่พอ',
     impacts: [
-      { dir: 'down', tone: 'good', th: 'ลดความแออัด' },
-      { dir: 'up',   tone: 'good', th: 'เพิ่มการใช้พื้นที่นอกพีค' },
-      { dir: 'down', tone: 'warn', th: 'ลดการลงทุนก่อนกำหนด' },
+      { dir: 'down', tone: 'good', th: 'คนแออัดน้อยลง' },
+      { dir: 'up',   tone: 'good', th: 'ใช้พื้นที่ช่วงคนน้อยได้คุ้มขึ้น' },
+      { dir: 'down', tone: 'warn', th: 'ยังไม่ต้องขยายพื้นที่' },
     ],
   },
   balanced: {
     titleEn: 'Keep monitoring — no single factor is constrained yet.',
-    titleTh: 'ยังไม่มีปัจจัยใดตึงตัว ควรเฝ้าติดตามต่อเนื่องเพื่อจับสัญญาณล่วงหน้า',
+    titleTh: 'ตอนนี้ยังไม่มีเรื่องไหนตึง เก็บข้อมูลต่อไปเพื่อรู้ก่อนเกิดปัญหา',
     whyEn: 'All tracked factors stay within a comfortable range in this scenario.',
-    whyTh: 'ทุกปัจจัยที่ติดตามยังอยู่ในช่วงที่รับได้ในสถานการณ์นี้',
+    whyTh: 'ทุกเรื่องยังอยู่ในระดับที่รับไหวในสถานการณ์นี้',
     impacts: [
-      { dir: 'up',   tone: 'good', th: 'เพิ่มความแม่นของข้อมูล' },
-      { dir: 'up',   tone: 'good', th: 'เห็นสัญญาณได้เร็วขึ้น' },
-      { dir: 'down', tone: 'warn', th: 'ลดการลงทุนก่อนกำหนด' },
+      { dir: 'up',   tone: 'good', th: 'ข้อมูลแม่นขึ้น' },
+      { dir: 'up',   tone: 'good', th: 'รู้ปัญหาได้เร็วขึ้น' },
+      { dir: 'down', tone: 'warn', th: 'ยังไม่ต้องลงทุนเพิ่ม' },
     ],
   },
 }
@@ -549,8 +549,27 @@ export function recommend(scenarioMetrics: Metrics, signals: SignalId[]): Recomm
   const ranked = rankMetrics(scenarioMetrics, signals)
   const top = ranked[0]
   const key: SignalId | 'balanced' = !top || top.value < 70 ? 'balanced' : top.id
-  const badge = !top ? 'WATCH' : top.value >= 115 ? 'CRITICAL' : top.value >= 85 ? 'PRIORITY' : 'WATCH'
+  const badge = !top ? 'WATCH' : badgeOf(top.value)
   return { key, badge, ...RECOMMENDATIONS[key] }
+}
+
+/** เกณฑ์ที่ถือว่าปัจจัยนั้น "ล้น" ขีดความสามารถแล้ว (ตรงกับตัวเลขสีแดงในตาราง) */
+export const OVER_CAPACITY = 100
+
+/** ป้ายระดับความเร่งด่วน — ใช้เกณฑ์เดียวกับตัวเลขสีแดงในตาราง (ล้น 100% = วิกฤต) */
+function badgeOf(value: number): string {
+  return value >= OVER_CAPACITY ? 'CRITICAL' : value >= 85 ? 'PRIORITY' : 'WATCH'
+}
+
+/**
+ * ข้อเสนอแนะของทุกปัจจัยที่ล้นขีดความสามารถพร้อมกัน เรียงจากหนักสุดไปเบาสุด
+ * (recommend() ให้แค่ตัวที่หนักที่สุดตัวเดียว ซึ่งไม่พอเมื่อหลายปัจจัยวิกฤตพร้อมกัน)
+ * ถ้าล้นตัวเดียวหรือไม่ล้นเลย จะได้ข้อเสนอแนะหลักตัวเดียวตามเดิม
+ */
+export function recommendAll(scenarioMetrics: Metrics, signals: SignalId[]): Recommendation[] {
+  const over = rankMetrics(scenarioMetrics, signals).filter(r => r.value >= OVER_CAPACITY)
+  if (over.length < 2) return [recommend(scenarioMetrics, signals)]
+  return over.map(r => ({ key: r.id, badge: badgeOf(r.value), ...RECOMMENDATIONS[r.id] }))
 }
 
 /** ข้อความเตือนใต้ตารางหน้า 07 */
@@ -560,6 +579,6 @@ export function constraintWarning(scenarioMetrics: Metrics, signals: SignalId[])
   if (!top || top.value < 95) return null
   return {
     en: `${top.def.en} becomes constrained first.`,
-    th: `${top.def.th}แนวโน้มจะถึงขีดจำกัดก่อนปัจจัยอื่น`,
+    th: `${top.def.th}จะถึงขีดจำกัดก่อนเรื่องอื่น`,
   }
 }

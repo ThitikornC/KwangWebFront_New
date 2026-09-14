@@ -1,7 +1,7 @@
 <template>
   <div class="momay-demo">
     <!-- ══════════════════ หน้าจอ (ซ่อนตอนพิมพ์) ══════════════════ -->
-    <div class="app">
+    <div class="app" :class="{ 'app-wide': step === TOTAL }">
       <!-- ── แถบแบรนด์ ── -->
       <header class="brand-bar">
         <div class="logo">
@@ -38,23 +38,108 @@
               </div>
             </div>
 
-            <div>
+            <div class="org-col">
               <div class="org-list">
-                <button
-                  v-for="o in ORG_TYPES"
-                  :key="o.id"
-                  type="button"
-                  class="org-row"
-                  :class="{ active: form.org === o.id }"
-                  @click="pickOrg(o.id)"
-                >
-                  <span class="org-ic"><Ico :name="o.icon" /></span>
-                  <span class="org-label">
-                    <span class="org-en">{{ o.en }}</span>
-                    <span class="org-th font-thai">{{ o.th }}</span>
-                  </span>
-                  <span v-if="form.org === o.id" class="org-go"><Ico name="arrow-right" /></span>
-                </button>
+                <template v-for="o in ORG_TYPES" :key="o.id">
+                  <button
+                    type="button"
+                    class="org-row"
+                    :class="{ active: form.org === o.id, open: openOrg === o.id }"
+                    @click="pickOrg(o.id)"
+                  >
+                    <span class="org-ic"><Ico :name="o.icon" /></span>
+                    <span class="org-label">
+                      <span class="org-en">{{ o.en }}</span>
+                      <span class="org-th font-thai">{{ o.th }}</span>
+                    </span>
+                    <span v-if="form.org === o.id" class="org-go">
+                      <Ico :name="openOrg === o.id ? 'arrow-down' : 'arrow-right'" />
+                    </span>
+                  </button>
+
+                  <!-- ── ดร๊อปดาวน์กรอกข้อมูล (ยุบหน้า 02 + 03 เดิมมาไว้ตรงนี้) ── -->
+                  <Transition name="dd">
+                    <div v-if="openOrg === o.id" class="dd">
+                      <div class="dd-inner">
+                        <!-- ตัวเลขพื้นฐานของพื้นที่ -->
+                        <p class="dd-title">
+                          Tell us a little about <span class="accent">your {{ o.subject }}</span>
+                        </p>
+                        <p class="dd-sub font-thai">บอกเราเล็กน้อยเกี่ยวกับพื้นที่ของคุณ</p>
+
+                        <div class="field-list">
+                          <div v-for="f in fieldList" :key="f.key" class="field">
+                            <span class="field-ic"><Ico :name="f.icon" /></span>
+                            <div class="field-main">
+                              <div class="field-label font-thai">
+                                {{ f.label }}<br /><span class="field-note">{{ f.note }}</span>
+                              </div>
+                              <div class="field-input">
+                                <input
+                                  :value="displayValue(f.key)"
+                                  inputmode="numeric"
+                                  class="font-thai"
+                                  @focus="focusedKey = f.key"
+                                  @blur="focusedKey = null"
+                                  @input="onNumInput(f.key, $event)"
+                                />
+                                <span class="field-unit font-thai">{{ f.unit }}</span>
+                              </div>
+                              <div class="field-hint font-thai">{{ f.hint }}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- สิ่งที่เปลี่ยนแปลงระหว่างวัน -->
+                        <p class="dd-title dd-gap">What usually changes<br />throughout the day?</p>
+                        <p class="dd-sub font-thai">อะไรบ้างที่เปลี่ยนไปในแต่ละช่วงของวัน</p>
+
+                        <div class="sig-grid">
+                          <button
+                            v-for="sg in SIGNALS"
+                            :key="sg.id"
+                            type="button"
+                            class="sig"
+                            :class="{ on: form.signals.includes(sg.id) }"
+                            :style="{ '--sig': sg.color }"
+                            @click="toggleSignal(sg.id)"
+                          >
+                            <span class="sig-mark">
+                              <span v-if="form.signals.includes(sg.id)" class="sig-check"><Ico name="check" /></span>
+                              <span v-else class="sig-ring" />
+                            </span>
+                            <span class="sig-ic"><Ico :name="sg.icon" /></span>
+                            <span class="sig-en">{{ sg.en }}</span>
+                            <span class="sig-th font-thai">{{ sg.th }}</span>
+                          </button>
+                        </div>
+
+                        <!-- ช่วงเวลาหนาแน่น -->
+                        <p class="dd-title dd-gap font-thai">ช่วงไหนของวันที่คนเยอะที่สุด?</p>
+                        <div class="peak-row">
+                          <button
+                            v-for="pk in PEAKS"
+                            :key="pk.id"
+                            type="button"
+                            class="peak font-thai"
+                            :class="{ on: form.peak === pk.id }"
+                            @click="form.peak = pk.id"
+                          >{{ pk.th }}</button>
+                        </div>
+
+                        <!-- ปุ่มไปต่อท้ายดร๊อปดาวน์ กรอกเสร็จกดได้เลยไม่ต้องเลื่อนลงไปท้ายหน้า -->
+                        <div class="dd-next">
+                          <button
+                            type="button"
+                            class="btn-next font-thai"
+                            :disabled="!canAdvance"
+                            @click="next"
+                          >ต่อไป <Ico name="arrow-right" /></button>
+                        </div>
+                      </div>
+                    </div>
+                  </Transition>
+                </template>
               </div>
               <p class="quote-mini">
                 <span class="qm">“</span>Small data.<br />Big possibilities.”
@@ -63,78 +148,8 @@
           </div>
         </section>
 
-        <!-- ═════════ 02 · Quick Input ═════════ -->
-        <section v-else-if="step === 2" class="screen screen-narrow">
-          <h2 class="h-en">Tell us a little<br />about <span class="accent">your {{ org.subject }}</span></h2>
-          <p class="h-th font-thai">บอกเราเล็กน้อยเกี่ยวกับพื้นที่ของคุณ</p>
-
-          <div class="field-list">
-            <div v-for="f in fieldList" :key="f.key" class="field">
-              <span class="field-ic"><Ico :name="f.icon" /></span>
-              <div class="field-main">
-                <div class="field-label font-thai">
-                  {{ f.label }}<br /><span class="field-note">{{ f.note }}</span>
-                </div>
-                <div class="field-input">
-                  <input
-                    :value="displayValue(f.key)"
-                    inputmode="numeric"
-                    class="font-thai"
-                    @focus="focusedKey = f.key"
-                    @blur="focusedKey = null"
-                    @input="onNumInput(f.key, $event)"
-                  />
-                  <span class="field-unit font-thai">{{ f.unit }}</span>
-                </div>
-                <div class="field-hint font-thai">{{ f.hint }}</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ═════════ 03 · Select Signals ═════════ -->
-        <section v-else-if="step === 3" class="screen">
-          <!-- ภาพเมืองเต็มจอเป็นฉากหลังของหน้านี้ -->
-          <div class="screen-photo photo-slot photo-03" />
-
-          <h2 class="h-en">What usually changes<br />throughout the day?</h2>
-          <p class="h-th font-thai">อะไรที่เปลี่ยนแปลงในแต่ละวันของพื้นที่คุณ</p>
-
-          <div class="sig-grid">
-            <button
-              v-for="s in SIGNALS"
-              :key="s.id"
-              type="button"
-              class="sig"
-              :class="{ on: form.signals.includes(s.id) }"
-              :style="{ '--sig': s.color }"
-              @click="toggleSignal(s.id)"
-            >
-              <span class="sig-mark">
-                <span v-if="form.signals.includes(s.id)" class="sig-check"><Ico name="check" /></span>
-                <span v-else class="sig-ring" />
-              </span>
-              <span class="sig-ic"><Ico :name="s.icon" /></span>
-              <span class="sig-en">{{ s.en }}</span>
-              <span class="sig-th font-thai">{{ s.th }}</span>
-            </button>
-          </div>
-
-          <h3 class="sub-q font-thai">ช่วงเวลาไหนที่มีกิจกรรมหนาแน่นที่สุด?</h3>
-          <div class="peak-row">
-            <button
-              v-for="p in PEAKS"
-              :key="p.id"
-              type="button"
-              class="peak font-thai"
-              :class="{ on: form.peak === p.id }"
-              @click="form.peak = p.id"
-            >{{ p.th }}</button>
-          </div>
-        </section>
-
-        <!-- ═════════ 04 · Awakening ═════════ -->
-        <section v-else-if="step === 4" class="screen">
+        <!-- ═════════ 02 · Awakening ═════════ -->
+        <section v-else-if="step === 2" class="screen">
           <!-- ครอบด้วยกล่องที่ไม่ถูกถอดออก เพื่อจองความสูงไว้ตอนสลับข้อความ
                ไม่งั้นช่วงที่โหนดเก่าออกแล้วโหนดใหม่ยังไม่เข้า หน้าจะหดแล้วเด้งกลับ -->
           <div class="stage-slot">
@@ -311,278 +326,289 @@
           </div>
         </section>
 
-        <!-- ═════════ 05 · See ═════════ -->
-        <section v-else-if="step === 5" class="screen screen-fill">
-          <!-- ภาพเมืองช่วงพีคเป็นพื้นหลังเต็มจอของหน้านี้ -->
-          <div class="screen-photo photo-slot photo-05" />
+        <!-- ═════════ 03 · Result — รวม See / Understand / Simulate / Decide ไว้หน้าเดียว ═════════ -->
+        <section v-else class="screen screen-result">
+          <div class="panels">
+            <!-- ── แผง 01 · See ── -->
+            <section class="panel panel-see">
+              <!-- ภาพเมืองช่วงพีคเป็นพื้นหลังของแผงนี้ -->
+              <div class="screen-photo photo-slot photo-05" />
 
-          <h2 class="h-en upper">What matters now?</h2>
-          <p class="h-th font-thai">สิ่งที่น่าสนใจในตอนนี้</p>
+              <h2 class="h-en upper">What matters now?</h2>
+              <p class="h-th font-thai">ตอนนี้มีอะไรที่ต้องรู้บ้าง</p>
 
-          <div v-if="alert" class="flag">
-            <span class="flag-ic"><Ico name="alert" /></span>
-            <div>
-              <p class="flag-en">{{ alert.en }}</p>
-              <p class="flag-th font-thai">{{ alert.th }}</p>
-            </div>
-          </div>
-
-          <div class="peak-badge">
-            <div>
-              <div class="peak-time">{{ base.peakWindow }}</div>
-              <div class="peak-cap font-thai">Peak Activity · ช่วงเวลาหน้าแน่น</div>
-            </div>
-            <span class="peak-chip"><Ico name="clock" /></span>
-          </div>
-
-          <div class="tiles">
-            <div class="tile" style="--sig: #34d399; --i: 0">
-              <div class="tile-head">
-                <span class="tile-chip"><Ico name="user" /></span><span>People</span>
-              </div>
-              <div class="tile-val"><NumTicker :value="form.people" comma /></div>
-              <div class="tile-cap font-thai">คน / วัน</div>
-            </div>
-            <div
-              v-for="(r, i) in topRanked"
-              :key="r.id"
-              class="tile"
-              :style="{ '--sig': r.def.color, '--i': i + 1 }"
-            >
-              <div class="tile-head">
-                <span class="tile-chip"><Ico :name="r.def.icon" /></span><span>{{ r.def.en }}</span>
-              </div>
-              <div class="tile-val"><NumTicker :value="r.value" suffix="%" /></div>
-              <div class="tile-cap font-thai">{{ r.def.metricTh }}</div>
-            </div>
-          </div>
-
-          <p class="quote-mini">
-            <span class="qm">“</span>When more people come,<br />things are connected.”
-          </p>
-        </section>
-
-        <!-- ═════════ 06 · Understand ═════════ -->
-        <section v-else-if="step === 6" class="screen">
-          <h2 class="h-en upper">Why does it matter?</h2>
-          <p class="h-th font-thai">ทำไมสิ่งนี้สำคัญ</p>
-
-          <div class="cols cols-relate">
-            <div class="ring-wrap relations">
-              <svg class="ring-lines web" viewBox="0 0 100 100">
-                <defs>
-                  <!-- หัวลูกศรสองทาง: เขียวสำหรับเส้นที่ออกจาก People ที่เหลือฟ้า -->
-                  <marker
-                    id="mdArrow" viewBox="0 0 10 10" refX="10" refY="5"
-                    markerUnits="userSpaceOnUse"
-                    markerWidth="4.4" markerHeight="4.4" orient="auto-start-reverse"
-                  >
-                    <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#6fe0ff" />
-                  </marker>
-                  <marker
-                    id="mdArrowLead" viewBox="0 0 10 10" refX="10" refY="5"
-                    markerUnits="userSpaceOnUse"
-                    markerWidth="4.8" markerHeight="4.8" orient="auto-start-reverse"
-                  >
-                    <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#41e0a3" />
-                  </marker>
-                  <marker
-                    id="mdArrowWeb" viewBox="0 0 10 10" refX="10" refY="5"
-                    markerUnits="userSpaceOnUse"
-                    markerWidth="3.4" markerHeight="3.4" orient="auto-start-reverse"
-                  >
-                    <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#5f89ab" />
-                  </marker>
-                </defs>
-
-                <!-- ลูกศรตรงสองหัว วางอยู่ในช่องว่างระหว่างวง -->
-                <line
-                  v-for="(l, i) in arrowLines"
-                  :key="'w' + i"
-                  class="rel-arrow"
-                  :class="l.tone"
-                  :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
-                  :marker-start="`url(#${l.tone === 'near' ? 'mdArrowLead' : l.tone === 'web' ? 'mdArrowWeb' : 'mdArrow'})`"
-                  :marker-end="`url(#${l.tone === 'near' ? 'mdArrowLead' : l.tone === 'web' ? 'mdArrowWeb' : 'mdArrow'})`"
-                />
-
-                <!-- ข้อมูลวิ่งไปตามเส้น -->
-                <line
-                  v-for="(l, i) in flowLines"
-                  :key="'fl' + i"
-                  class="rel-flow"
-                  :class="l.tone"
-                  :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
-                  path-length="100"
-                  :style="{ animationDelay: (i * 0.28).toFixed(2) + 's' }"
-                />
-              </svg>
-              <div
-                v-for="(n, i) in relationNodes"
-                :key="n.id"
-                class="rel-node"
-                :class="{ lead: n.id === 'people' }"
-                :style="{ left: n.x + '%', top: n.y + '%', '--sig': n.def.color, '--i': i }"
-              >
-                <Ico :name="n.def.icon" />
-                <span class="rel-label">{{ n.def.en }}</span>
-                <span class="rel-val" :style="{ color: valueTone[n.id] }">↑ <NumTicker :value="n.value" suffix="%" /></span>
-              </div>
-            </div>
-
-            <div>
-              <h3 class="list-title">Key Understandings</h3>
-              <ol class="insight-list">
-                <li v-for="(k, i) in insights" :key="k.en">
-                  <span class="num">{{ i + 1 }}</span>
-                  <span>
-                    <span class="ins-en">{{ k.en }}</span>
-                    <span class="ins-th font-thai">{{ k.th }}</span>
-                  </span>
-                </li>
-              </ol>
-            </div>
-          </div>
-        </section>
-
-        <!-- ═════════ 07 · Anticipate & Simulate ═════════ -->
-        <section v-else-if="step === 7" class="screen screen-fill fill-sim">
-          <h2 class="h-en upper">What happens next?</h2>
-          <p class="h-th font-thai">ถ้าจำนวนผู้ใช้พื้นที่เพิ่มขึ้น ...</p>
-
-          <div class="scn-tabs">
-            <button
-              v-for="sc in SCENARIOS"
-              :key="sc.id"
-              type="button"
-              class="scn-tab"
-              :class="{ on: form.scenario === sc.id }"
-              @click="form.scenario = sc.id"
-            >{{ sc.en }}</button>
-          </div>
-
-          <div class="slider-box">
-            <div class="slider-head font-thai">
-              <span>ปรับจำนวนผู้ใช้พื้นที่</span>
-              <span class="slider-bubble">{{ signed(form.delta) }}%</span>
-            </div>
-            <div class="slider-rail" :style="{ '--p': sliderPct + '%' }">
-              <input
-                v-model.number="form.delta"
-                type="range"
-                min="-20"
-                max="40"
-                step="5"
-                class="slider"
-              />
-            </div>
-            <div class="slider-ends"><span>-20%</span><span>+40%</span></div>
-          </div>
-
-          <div class="table-wrap">
-            <table class="sim-table">
-              <thead>
-                <tr>
-                  <th class="font-thai">Metric</th>
-                  <th>Current</th>
-                  <th>{{ signed(form.delta) }}% Scenario</th>
-                  <th>Change</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="cell-ic" style="--sig: #34d399"><Ico name="user" /></span>People</td>
-                  <td>{{ nf(form.people) }}</td>
-                  <td>{{ nf(sim.peopleCount) }}</td>
-                  <td :class="deltaTone(peopleChange)">{{ signed(peopleChange) }}% {{ arrow(peopleChange) }}</td>
-                </tr>
-                <tr v-for="r in simRows" :key="r.id">
-                  <td>
-                    <span class="cell-ic" :style="{ '--sig': r.def.color }"><Ico :name="r.def.icon" /></span>{{ r.def.en }}
-                  </td>
-                  <td>{{ pct(r.current) }}</td>
-                  <td :class="{ over: r.next >= 100 }">{{ pct(r.next) }}</td>
-                  <td :class="deltaTone(r.change)">{{ signed(r.change) }}% {{ arrow(r.change) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div v-if="warning" class="flag">
-            <span class="flag-ic"><Ico name="alert" /></span>
-            <div>
-              <p class="flag-en">{{ warning.en }}</p>
-              <p class="flag-th font-thai">{{ warning.th }}</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- ═════════ 08 · Decide ═════════ -->
-        <section v-else class="screen screen-fill fill-decide">
-          <h2 class="h-en upper">Momay recommends</h2>
-          <p class="h-th font-thai">ข้อเสนอแนะจาก MOMAY</p>
-
-          <div class="cols">
-            <div>
-              <div class="reco">
-                <span class="pill" :class="rec.badge.toLowerCase()">{{ rec.badge }}</span>
+              <div v-if="alert" class="flag">
+                <span class="flag-ic"><Ico name="alert" /></span>
                 <div>
-                  <p class="reco-en">{{ rec.titleEn }}</p>
-                  <p class="reco-th font-thai">{{ rec.titleTh }}</p>
+                  <p class="flag-en">{{ alert.en }}</p>
+                  <p class="flag-th font-thai">{{ alert.th }}</p>
                 </div>
               </div>
 
-              <div class="why">
-                <span class="why-k">Why?</span>
+              <div class="peak-badge">
                 <div>
-                  <p class="why-en">{{ rec.whyEn }}</p>
-                  <p class="why-th font-thai">{{ rec.whyTh }}</p>
+                  <div class="peak-time">{{ base.peakWindow }}</div>
+                  <div class="peak-cap font-thai">ช่วงที่คนเยอะที่สุดของวัน</div>
                 </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 class="list-title">Expected Impact</h3>
-              <div class="impacts">
-                <div v-for="im in rec.impacts" :key="im.th" class="impact" :class="im.tone">
-                  <Ico :name="im.dir === 'up' ? 'arrow-up' : 'arrow-down'" />
-                  <span class="font-thai">{{ im.th }}</span>
-                </div>
+                <span class="peak-chip"><Ico name="clock" /></span>
               </div>
 
-              <div class="closing">
-                <span class="closing-ic"><Ico name="leaf" /></span>
-                <p>“Small changes today<br />create a better tomorrow.”</p>
+              <div class="tiles">
+                <div class="tile" style="--sig: #34d399; --i: 0">
+                  <div class="tile-head">
+                    <span class="tile-chip"><Ico name="user" /></span><span>People</span>
+                  </div>
+                  <div class="tile-val"><NumTicker :value="form.people" comma /></div>
+                  <div class="tile-cap font-thai">คน / วัน</div>
+                </div>
+                <div
+                  v-for="(r, i) in topRanked"
+                  :key="r.id"
+                  class="tile"
+                  :style="{ '--sig': r.def.color, '--i': i + 1 }"
+                >
+                  <div class="tile-head">
+                    <span class="tile-chip"><Ico :name="r.def.icon" /></span><span>{{ r.def.en }}</span>
+                  </div>
+                  <div class="tile-val"><NumTicker :value="r.value" suffix="%" /></div>
+                  <div class="tile-cap font-thai">{{ r.def.metricTh }}</div>
+                </div>
               </div>
-            </div>
+
+              <p class="quote-mini">
+                <span class="qm">“</span>When more people come,<br />things are connected.”
+              </p>
+            </section>
+
+            <!-- ── แผง 02 · Understand ── -->
+            <section class="panel panel-relate">
+              <h2 class="h-en upper">Why does it matter?</h2>
+              <p class="h-th font-thai">ทำไมเรื่องนี้ถึงสำคัญ</p>
+
+              <div class="cols cols-relate">
+                <div class="ring-wrap relations">
+                  <svg class="ring-lines web" viewBox="0 0 100 100">
+                    <defs>
+                      <!-- หัวลูกศรสองทาง: เขียวสำหรับเส้นที่ออกจาก People ที่เหลือฟ้า -->
+                      <marker
+                        id="mdArrow" viewBox="0 0 10 10" refX="10" refY="5"
+                        markerUnits="userSpaceOnUse"
+                        markerWidth="4.4" markerHeight="4.4" orient="auto-start-reverse"
+                      >
+                        <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#6fe0ff" />
+                      </marker>
+                      <marker
+                        id="mdArrowLead" viewBox="0 0 10 10" refX="10" refY="5"
+                        markerUnits="userSpaceOnUse"
+                        markerWidth="4.8" markerHeight="4.8" orient="auto-start-reverse"
+                      >
+                        <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#41e0a3" />
+                      </marker>
+                      <marker
+                        id="mdArrowWeb" viewBox="0 0 10 10" refX="10" refY="5"
+                        markerUnits="userSpaceOnUse"
+                        markerWidth="3.4" markerHeight="3.4" orient="auto-start-reverse"
+                      >
+                        <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#5f89ab" />
+                      </marker>
+                    </defs>
+
+                    <!-- ลูกศรตรงสองหัว วางอยู่ในช่องว่างระหว่างวง -->
+                    <line
+                      v-for="(l, i) in arrowLines"
+                      :key="'w' + i"
+                      class="rel-arrow"
+                      :class="l.tone"
+                      :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
+                      :marker-start="`url(#${l.tone === 'near' ? 'mdArrowLead' : l.tone === 'web' ? 'mdArrowWeb' : 'mdArrow'})`"
+                      :marker-end="`url(#${l.tone === 'near' ? 'mdArrowLead' : l.tone === 'web' ? 'mdArrowWeb' : 'mdArrow'})`"
+                    />
+
+                    <!-- ข้อมูลวิ่งไปตามเส้น -->
+                    <line
+                      v-for="(l, i) in flowLines"
+                      :key="'fl' + i"
+                      class="rel-flow"
+                      :class="l.tone"
+                      :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
+                      path-length="100"
+                      :style="{ animationDelay: (i * 0.28).toFixed(2) + 's' }"
+                    />
+                  </svg>
+                  <div
+                    v-for="(n, i) in relationNodes"
+                    :key="n.id"
+                    class="rel-node"
+                    :class="{ lead: n.id === 'people' }"
+                    :style="{ left: n.x + '%', top: n.y + '%', '--sig': n.def.color, '--i': i }"
+                  >
+                    <Ico :name="n.def.icon" />
+                    <span class="rel-label">{{ n.def.en }}</span>
+                    <span class="rel-val" :style="{ color: valueTone[n.id] }">↑ <NumTicker :value="n.value" suffix="%" /></span>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="list-title">Key Understandings</h3>
+                  <ol class="insight-list">
+                    <li v-for="(k, i) in insights" :key="k.en">
+                      <span class="num">{{ i + 1 }}</span>
+                      <span>
+                        <span class="ins-en">{{ k.en }}</span>
+                        <span class="ins-th font-thai">{{ k.th }}</span>
+                      </span>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── แผง 03 · Anticipate & Simulate ── -->
+            <section class="panel panel-sim">
+              <h2 class="h-en upper">What happens next?</h2>
+              <p class="h-th font-thai">ถ้าคนใช้พื้นที่มากขึ้น จะเป็นอย่างไร</p>
+
+              <div class="scn-tabs">
+                <button
+                  v-for="sc in SCENARIOS"
+                  :key="sc.id"
+                  type="button"
+                  class="scn-tab"
+                  :class="{ on: form.scenario === sc.id }"
+                  @click="form.scenario = sc.id"
+                >{{ sc.en }}</button>
+              </div>
+
+              <div class="slider-box">
+                <div class="slider-head font-thai">
+                  <span>เลื่อนเพื่อเพิ่ม-ลดจำนวนคน</span>
+                  <span class="slider-bubble">{{ signed(form.delta) }}%</span>
+                </div>
+                <div class="slider-rail" :style="{ '--p': sliderPct + '%' }">
+                  <input
+                    v-model.number="form.delta"
+                    type="range"
+                    min="-20"
+                    max="40"
+                    step="5"
+                    class="slider"
+                  />
+                </div>
+                <div class="slider-ends"><span>-20%</span><span>+40%</span></div>
+              </div>
+
+              <div class="table-wrap">
+                <table class="sim-table">
+                  <thead>
+                    <tr>
+                      <th class="font-thai">Metric</th>
+                      <th>Current</th>
+                      <th>{{ signed(form.delta) }}% Scenario</th>
+                      <th>Change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="cell-ic" style="--sig: #34d399"><Ico name="user" /></span>People</td>
+                      <td>{{ nf(form.people) }}</td>
+                      <td>{{ nf(sim.peopleCount) }}</td>
+                      <td :class="deltaTone(peopleChange)">{{ signed(peopleChange) }}% {{ arrow(peopleChange) }}</td>
+                    </tr>
+                    <tr v-for="r in simRows" :key="r.id">
+                      <td>
+                        <span class="cell-ic" :style="{ '--sig': r.def.color }"><Ico :name="r.def.icon" /></span>{{ r.def.en }}
+                      </td>
+                      <td>{{ pct(r.current) }}</td>
+                      <td :class="{ over: r.next >= 100 }">{{ pct(r.next) }}</td>
+                      <td :class="deltaTone(r.change)">{{ signed(r.change) }}% {{ arrow(r.change) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div v-if="warning" class="flag">
+                <span class="flag-ic"><Ico name="alert" /></span>
+                <div>
+                  <p class="flag-en">{{ warning.en }}</p>
+                  <p class="flag-th font-thai">{{ warning.th }}</p>
+                </div>
+              </div>
+            </section>
+
+            <!-- ── แผง 04 · Decide ── -->
+            <section class="panel panel-decide">
+              <h2 class="h-en upper">Momay recommends</h2>
+              <p class="h-th font-thai">ข้อเสนอแนะจาก MOMAY</p>
+
+              <div class="cols">
+                <div>
+                  <div class="reco">
+                    <span class="pill" :class="rec.badge.toLowerCase()">{{ rec.badge }}</span>
+                    <div>
+                      <p class="reco-en">{{ rec.titleEn }}</p>
+                      <p class="reco-th font-thai">{{ rec.titleTh }}</p>
+                    </div>
+                  </div>
+
+                  <div class="why">
+                    <span class="why-k">Why?</span>
+                    <div>
+                      <p class="why-en">{{ rec.whyEn }}</p>
+                      <p class="why-th font-thai">{{ rec.whyTh }}</p>
+                    </div>
+                  </div>
+
+                  <!-- ปัจจัยอื่นที่ล้นขีดความสามารถพร้อมกัน (ไม่ได้มีแค่ตัวที่หนักที่สุด) -->
+                  <div v-if="moreRecs.length" class="more-recs">
+                    <h3 class="list-title font-thai">เรื่องอื่นที่ต้องจัดการพร้อมกัน</h3>
+                    <div v-for="m in moreRecs" :key="m.key" class="more-rec">
+                      <span class="pill" :class="m.badge.toLowerCase()">{{ m.badge }}</span>
+                      <div>
+                        <p class="more-en">{{ m.titleEn }}</p>
+                        <p class="more-th font-thai">{{ m.titleTh }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="list-title">Expected Impact</h3>
+                  <div class="impacts">
+                    <div v-for="im in rec.impacts" :key="im.th" class="impact" :class="im.tone">
+                      <Ico :name="im.dir === 'up' ? 'arrow-up' : 'arrow-down'" />
+                      <span class="font-thai">{{ im.th }}</span>
+                    </div>
+                  </div>
+
+                  <div class="closing">
+                    <span class="closing-ic"><Ico name="leaf" /></span>
+                    <p>“Small changes today<br />create a better tomorrow.”</p>
+                  </div>
+                </div>
+              </div>
+
+            </section>
           </div>
+        </section>
+      </main>
 
-          <div class="final-row">
-            <button type="button" class="btn-outline font-thai" @click="restart">
-              <Ico name="arrow-left" /> เริ่มใหม่
+      <!-- ── แถบปุ่มล่าง — มีเฉพาะหน้าผลลัพธ์
+           หน้า 01 ใช้ปุ่มในดร๊อปดาวน์ · หน้า 02 ไม่มีปุ่ม เพราะเด้งเองเมื่อวิเคราะห์ครบเวลา ── -->
+      <nav v-if="step === TOTAL" class="nav">
+        <div class="nav-inner">
+          <button type="button" class="btn-back font-thai" @click="restart">
+            <Ico name="arrow-left" /> เริ่มใหม่
+          </button>
+
+          <div class="nav-actions">
+            <button type="button" class="share-link font-thai" @click="shareResult">
+              {{ shareLabel }}
             </button>
             <button type="button" class="btn-next font-thai" @click="saveReport">
               บันทึกรายงานนี้ <Ico name="arrow-right" />
             </button>
           </div>
-          <button type="button" class="share-link font-thai" @click="shareResult">
-            {{ shareLabel }}
-          </button>
-        </section>
-      </main>
-
-      <!-- ── แถบปุ่มล่าง ── -->
-      <nav v-if="step < TOTAL" class="nav">
-        <button v-if="step > 1" type="button" class="btn-back font-thai" @click="prev">
-          <Ico name="arrow-left" /> กลับ
-        </button>
-        <span v-else />
-        <button
-          type="button"
-          class="btn-next font-thai"
-          :disabled="!canAdvance"
-          @click="next"
-        >ต่อไป <Ico name="arrow-right" /></button>
+        </div>
       </nav>
     </div>
 
@@ -598,8 +624,8 @@
             <th>{{ f.label }} {{ f.note }}</th>
             <td>{{ nf(form[f.key]) }} {{ f.unit }}</td>
           </tr>
-          <tr><th>สิ่งที่เปลี่ยนแปลงตามเวลา</th><td>{{ signalNames }}</td></tr>
-          <tr><th>ช่วงเวลาหนาแน่น</th><td>{{ PEAK_MAP[form.peak].th }} ({{ base.peakWindow }})</td></tr>
+          <tr><th>สิ่งที่เปลี่ยนไปในแต่ละช่วงของวัน</th><td>{{ signalNames }}</td></tr>
+          <tr><th>ช่วงที่คนเยอะที่สุด</th><td>{{ PEAK_MAP[form.peak].th }} ({{ base.peakWindow }})</td></tr>
         </tbody>
       </table>
 
@@ -632,7 +658,14 @@
       <p class="rp-why"><strong>เหตุผล:</strong> {{ rec.whyTh }}</p>
       <p class="rp-impact"><strong>ผลที่คาดหวัง:</strong> {{ rec.impacts.map(i => i.th).join(' · ') }}</p>
 
-      <p class="rp-foot">MOMAY Surprise · ตัวเลขทั้งหมดคำนวณจากข้อมูลที่กรอก เพื่อใช้ประกอบการตัดสินใจเบื้องต้น</p>
+      <template v-if="moreRecs.length">
+        <h2>เรื่องอื่นที่ต้องจัดการพร้อมกัน</h2>
+        <ol class="rp-list">
+          <li v-for="m in moreRecs" :key="m.key">[{{ m.badge }}] {{ m.titleTh }} <em>({{ m.whyTh }})</em></li>
+        </ol>
+      </template>
+
+      <p class="rp-foot">MOMAY Surprise · ตัวเลขทั้งหมดคำนวณจากข้อมูลที่กรอกไว้ ใช้เป็นแนวทางประกอบการตัดสินใจเบื้องต้น</p>
     </div>
   </div>
 </template>
@@ -642,7 +675,7 @@ import { h, ref, reactive, computed, watch, onMounted, onBeforeUnmount, defineCo
 import {
   ORG_TYPES, ORG_MAP, SIGNALS, SIGNAL_MAP, PEAKS, PEAK_MAP, SCENARIOS,
   computeBaseline, simulate, rankMetrics, ringMetrics,
-  headlineAlert, keyUnderstandings, recommend, constraintWarning,
+  headlineAlert, keyUnderstandings, recommend, recommendAll, constraintWarning,
   type OrgId, type SignalId, type PeakId, type ScenarioId, type InputKey,
 } from '~/utils/momayDemoV2/model'
 
@@ -650,10 +683,10 @@ definePageMeta({ name: 'momay-demo-v2', layout: false })
 useHead({
   title: 'MOMAY Surprise — Demo V2',
   // พื้นหลังเข้มถึงขอบจอ (เอาออกเองเมื่อออกจากหน้านี้)
-  style: [{ children: 'html,body{background:#030b18;}' }],
+  style: [{ children: 'html,body{background:#030b18 !important;}' }],
 })
 
-const TOTAL = 8
+const TOTAL = 3
 
 /* ─────────── icons ─────────── */
 
@@ -746,11 +779,19 @@ const form = reactive({
 const org = computed(() => ORG_MAP[form.org] ?? ORG_MAP.municipality)
 const fieldList = computed(() => [org.value.fields.people, org.value.fields.capacity, org.value.fields.energy])
 
-/** เปลี่ยนประเภทองค์กร → เติมค่าตั้งต้นชุดใหม่ (ถ้าผู้ใช้ยังไม่ได้แก้เอง) */
+/** หมวดที่กางดร๊อปดาวน์กรอกข้อมูลอยู่ — เริ่มต้นกางของหมวดที่เลือกไว้ให้เลย */
+const openOrg = ref<OrgId | null>(form.org)
+
+/** เปลี่ยนประเภทองค์กร → เติมค่าตั้งต้นชุดใหม่ (ถ้าผู้ใช้ยังไม่ได้แก้เอง)
+    กดซ้ำที่หมวดเดิม = พับดร๊อปดาวน์เก็บ */
 const touched = ref(false)
 function pickOrg(id: OrgId) {
-  if (form.org === id) return
+  if (form.org === id) {
+    openOrg.value = openOrg.value === id ? null : id
+    return
+  }
   form.org = id
+  openOrg.value = id
   if (!touched.value) {
     const f = ORG_MAP[id].fields
     form.people = f.people.default
@@ -804,7 +845,10 @@ const loadSignals = computed(() => form.signals.filter(s => s !== 'people'))
 const topRanked = computed(() => rankMetrics(base.value.metrics, loadSignals.value).slice(0, 2))
 const alert = computed(() => headlineAlert(rankMetrics(base.value.metrics, loadSignals.value)))
 const insights = computed(() => keyUnderstandings(form.signals))
-const rec = computed(() => recommend(sim.value.metrics, loadSignals.value))
+const recs = computed(() => recommendAll(sim.value.metrics, loadSignals.value))
+const rec = computed(() => recs.value[0])
+/** ปัจจัยอื่นที่ล้นขีดความสามารถพร้อมกัน — แสดงต่อจากข้อเสนอแนะหลัก */
+const moreRecs = computed(() => recs.value.slice(1))
 const warning = computed(() => constraintWarning(sim.value.metrics, loadSignals.value))
 
 const peopleChange = computed(() => (sim.value.growth - 1) * 100)
@@ -877,8 +921,8 @@ const ringRank = (id: SignalId) => {
   return i < 0 ? RING_ORDER.length : i
 }
 
-/** หน้า 04 — โชว์ทุก signal ที่ระบบเชื่อมโยงได้ */
-/** หน้า 04 มี Events ด้วย ลำดับจึงต่างจากหน้า 06: Traffic อยู่บนซ้าย Parking อยู่ล่างซ้าย */
+/** หน้า 02 — โชว์ทุก signal ที่ระบบเชื่อมโยงได้ */
+/** หน้า 02 มี Events ด้วย ลำดับจึงต่างจากหน้า 04: Traffic อยู่บนซ้าย Parking อยู่ล่างซ้าย */
 const AWAKEN_ORDER: SignalId[] = ['people', 'energy', 'waste', 'events', 'parking', 'traffic']
 const awakenNodes = computed(() =>
   placeOnRing(AWAKEN_ORDER.map(id => ({ id, value: 0 })), 29),
@@ -896,7 +940,7 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
   }
 })
 
-/** หน้า 06 — People เป็นจุดนำที่ 12 นาฬิกา ตามด้วย signal ที่เลือก */
+/** หน้า 04 — People เป็นจุดนำที่ 12 นาฬิกา ตามด้วย signal ที่เลือก */
 const relationNodes = computed(() => {
   const items: { id: SignalId; value: number }[] = [
     { id: 'people', value: base.value.metrics.people },
@@ -979,24 +1023,27 @@ const valueTone = computed<Record<string, string>>(() => {
   return tone
 })
 
-/* ─────────── หน้า 04: ลำดับการวิเคราะห์ ─────────── */
+/* ─────────── หน้า 02: ลำดับการวิเคราะห์ ─────────── */
 
 const AWAKEN_STEPS = [
-  { en: 'Connecting your data ...', th: 'เชื่อมโยงข้อมูลของคุณ' },
-  { en: 'Finding relationships ...', th: 'ค้นหาความสัมพันธ์' },
-  { en: 'Detecting patterns ...', th: 'ตรวจจับรูปแบบ' },
-  { en: 'Simulating possibilities ...', th: 'จำลองความเป็นไปได้' },
+  { en: 'Connecting your data ...', th: 'กำลังเชื่อมข้อมูลของคุณเข้าด้วยกัน' },
+  { en: 'Finding relationships ...', th: 'ดูว่าเรื่องไหนเกี่ยวกับเรื่องไหน' },
+  { en: 'Detecting patterns ...', th: 'มองหารูปแบบที่เกิดซ้ำ ๆ' },
+  { en: 'Simulating possibilities ...', th: 'ลองจำลองสถานการณ์ที่อาจเกิดขึ้น' },
   { en: 'Your MOMAY is ready ...', th: 'MOMAY ของคุณพร้อมแล้ว' },
 ]
 
 /** หัวเรื่อง + ข้อความกลางวง เปลี่ยนตามขั้นที่กำลังทำ และเปลี่ยนอีกครั้งเมื่อเสร็จ */
 const AWAKEN_STAGES = [
-  { en: 'Connecting your data...',      th: 'กำลังเชื่อมโยงข้อมูลของคุณ',  core: ['READING', 'SIGNALS'] },
-  { en: 'Finding relationships...',     th: 'กำลังค้นหาความสัมพันธ์',      core: ['FINDING', 'RELATIONSHIPS'] },
-  { en: 'Detecting patterns...',        th: 'กำลังตรวจจับรูปแบบ',          core: ['DETECTING', 'PATTERNS'] },
-  { en: 'Simulating possibilities...',  th: 'กำลังจำลองความเป็นไปได้',     core: ['SIMULATING', 'SCENARIOS'] },
-  { en: 'Your MOMAY is ready.',         th: 'MOMAY ของคุณพร้อมแล้ว กดต่อไปเพื่อดูผลลัพธ์', core: ['MOMAY', 'READY'] },
+  { en: 'Connecting your data...',      th: 'กำลังเชื่อมข้อมูลของคุณเข้าด้วยกัน',  core: ['READING', 'SIGNALS'] },
+  { en: 'Finding relationships...',     th: 'กำลังดูว่าเรื่องไหนเกี่ยวกับเรื่องไหน',      core: ['FINDING', 'RELATIONSHIPS'] },
+  { en: 'Detecting patterns...',        th: 'กำลังมองหารูปแบบที่เกิดซ้ำ ๆ',          core: ['DETECTING', 'PATTERNS'] },
+  { en: 'Simulating possibilities...',  th: 'กำลังลองจำลองสถานการณ์',     core: ['SIMULATING', 'SCENARIOS'] },
+  { en: 'Your MOMAY is ready.',         th: 'MOMAY ของคุณพร้อมแล้ว กำลังพาไปดูผลลัพธ์', core: ['MOMAY', 'READY'] },
 ]
+
+/** เวลารวมของหน้าวิเคราะห์ 20 วินาที — หาร 5 ขั้นเท่า ๆ กัน */
+const AWAKEN_TOTAL_MS = 20000
 
 const awakenAt = ref(0)
 const awakenDone = computed(() => awakenAt.value >= AWAKEN_STEPS.length)
@@ -1012,12 +1059,20 @@ function startAwaken() {
   stopAwaken()
   awakenAt.value = 0
   awakenTimer = setInterval(() => {
-    if (awakenAt.value >= AWAKEN_STEPS.length) stopAwaken()
-    else awakenAt.value += 1
-  }, 850)
+    if (awakenAt.value >= AWAKEN_STEPS.length) {
+      stopAwaken()
+      return
+    }
+    awakenAt.value += 1
+    // ครบทุกขั้น (= ครบ 20 วินาที) แล้วพาไปหน้าผลลัพธ์เอง ไม่ต้องกดต่อไป
+    if (awakenAt.value >= AWAKEN_STEPS.length) {
+      stopAwaken()
+      if (step.value === 2) next()
+    }
+  }, AWAKEN_TOTAL_MS / AWAKEN_STEPS.length)
 }
 
-watch(step, s => (s === 4 ? startAwaken() : stopAwaken()))
+watch(step, s => (s === 2 ? startAwaken() : stopAwaken()))
 onBeforeUnmount(stopAwaken)
 
 /* ─────────── การเดินหน้า ─────────── */
@@ -1026,20 +1081,17 @@ const progressPct = computed(() => (step.value / TOTAL) * 100)
 const sliderPct = computed(() => ((form.delta + 20) / 60) * 100)
 
 const canAdvance = computed(() => {
-  if (step.value === 2) return form.people > 0 && form.capacity > 0 && form.energy > 0
-  if (step.value === 3) return loadSignals.value.length > 0
-  if (step.value === 4) return awakenAt.value >= AWAKEN_STEPS.length
+  // หน้าแรกรวมทุกอย่างที่ต้องกรอกไว้ในดร๊อปดาวน์แล้ว จึงตรวจครบทั้งชุดที่นี่
+  if (step.value === 1) {
+    return form.people > 0 && form.capacity > 0 && form.energy > 0 && loadSignals.value.length > 0
+  }
+  if (step.value === 2) return awakenAt.value >= AWAKEN_STEPS.length
   return true
 })
 
 const STEP_TAGS = [
   'Let your data<br>explain MOMAY.',
-  'Just a few numbers.<br>A lot more insights.',
-  'Choose what matters.<br>MOMAY connects the rest.',
   'Turning your data<br>into new perspectives.',
-  'From data to insight.<br>In seconds.',
-  'See the bigger picture.',
-  'What if?<br>See tomorrow, today.',
   'From insight<br>to action.',
 ]
 const stepTag = computed(() => STEP_TAGS[step.value - 1] ?? '')
@@ -1052,12 +1104,9 @@ function next() {
   step.value = Math.min(TOTAL, step.value + 1)
   scrollTop()
 }
-function prev() {
-  step.value = Math.max(1, step.value - 1)
-  scrollTop()
-}
 function restart() {
   step.value = 1
+  openOrg.value = form.org
   scrollTop()
 }
 
@@ -1083,7 +1132,7 @@ const shareUrl = computed(() => {
     k: form.peak,
     sc: form.scenario,
     d: String(form.delta),
-    step: '8',
+    step: '3',
   })
   return `${window.location.origin}${window.location.pathname}?${q.toString()}`
 })
@@ -1142,10 +1191,12 @@ onMounted(() => {
     if (Number.isFinite(d)) form.delta = Math.min(40, Math.max(-20, Math.round(d / 5) * 5))
   }
 
+  openOrg.value = form.org
+
   const st = Number(q.get('step'))
   if (Number.isFinite(st) && st >= 1 && st <= TOTAL) {
     step.value = st
-    if (st === 4) startAwaken()
+    if (st === 2) startAwaken()
     else awakenAt.value = AWAKEN_STEPS.length
   }
 })
@@ -1358,6 +1409,53 @@ onMounted(() => {
 .org-th { font-size: 10.5px; color: var(--dim); }
 .org-go { color: var(--brand); }
 .org-row.active .org-ic { color: #eaf6ff; }
+
+/* ── ดร๊อปดาวน์กรอกข้อมูลใต้หมวดที่เลือก (หน้า 01) ── */
+/* ใช้ grid-template-rows 1fr→0fr ย่อ/ขยายได้โดยไม่ต้องล็อกความสูงไว้ล่วงหน้า */
+.dd { display: grid; grid-template-rows: 1fr; }
+.dd-enter-active, .dd-leave-active { transition: grid-template-rows 0.34s ease, opacity 0.26s ease; }
+.dd-enter-from, .dd-leave-to { grid-template-rows: 0fr; opacity: 0; }
+/* min-height: 0 จำเป็นกับลูก grid ไม่งั้นเนื้อหาดันความสูงไว้จนย่อไม่ลง */
+/* กรอบการ์ดของดร๊อปดาวน์ ให้เห็นชัดว่าเป็นชุดเดียวกับหมวดที่เลือกอยู่ */
+.dd-inner {
+  overflow: hidden; min-height: 0;
+  padding: 14px; border-radius: 14px;
+  /* พื้นหลังยกโทนให้สว่างกว่าพื้นหน้าชัดเจน การ์ดข้างในจะได้ดูลอยอยู่บนแผง */
+  background: linear-gradient(180deg, rgba(21, 52, 89, 0.72), rgba(13, 34, 60, 0.72));
+  border: 1px solid rgba(62, 160, 255, 0.34);
+  box-shadow: inset 0 1px 0 rgba(130, 195, 255, 0.1), 0 12px 30px rgba(2, 10, 22, 0.5);
+}
+.dd-inner > .dd-title:first-child { margin-top: 0; }
+.dd-title { margin-top: 13px; font-size: 12px; font-weight: 700; line-height: 1.35; color: #dcecfb; }
+.dd-title.dd-gap { margin-top: 16px; }
+.dd-title .accent { color: var(--brand); }
+.dd-sub { margin-top: 3px; font-size: 10px; color: var(--dim); }
+.dd .field-list { margin-top: 8px; gap: 8px; }
+.dd .sig-grid { margin-top: 8px; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.dd .peak-row { margin-top: 8px; gap: 7px; }
+
+/* ในดร๊อปดาวน์บีบทุกอย่างให้เตี้ยลง — ป้ายกำกับกับช่องกรอกอยู่บรรทัดเดียวกัน */
+.dd .field { padding: 9px 11px; gap: 9px; align-items: center; }
+.dd .field-ic { margin-top: 0; }
+.dd .field-ic :deep(.ic) { width: 17px; height: 17px; }
+.dd .field-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; }
+.dd .field-label { font-size: 11px; line-height: 1.35; }
+.dd .field-note { font-size: 9px; }
+.dd .field-input { margin: 0; gap: 7px; }
+.dd .field-input input { flex: none; width: 104px; padding: 6px 10px; border-radius: 8px; font-size: 14px; text-align: right; }
+.dd .field-unit { font-size: 9.5px; }
+.dd .field-hint { grid-column: 1 / -1; margin-top: 4px; font-size: 9px; }
+
+.dd .sig { padding: 10px 5px 9px; gap: 3px; border-radius: 11px; }
+.dd .sig-ic :deep(.ic) { width: 19px; height: 19px; }
+.dd .sig-en { font-size: 10.5px; }
+.dd .sig-th { font-size: 8.5px; }
+.dd .sig-mark { top: 6px; right: 6px; }
+.dd .sig-check { width: 14px; height: 14px; }
+.dd .sig-ring { width: 13px; height: 13px; }
+.dd .peak { padding: 7px 12px; font-size: 11px; border-radius: 9px; }
+.dd-next { display: flex; justify-content: flex-end; margin-top: 14px; }
+.dd-next .btn-next { padding: 9px 20px; font-size: 12.5px; }
 
 .quote-mini { margin: 20px 2px 4px; font-size: 12.5px; line-height: 1.7; color: #b9cfe6; }
 .qm { color: var(--brand); font-size: 19px; font-weight: 700; margin-right: 3px; }
@@ -1624,21 +1722,52 @@ onMounted(() => {
 .rel-node.lead .rel-label { font-size: 13px; }
 .rel-node.lead .rel-val { font-size: 15px; }
 
-.awakening .node-dot { animation: nodeGlow 2.4s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 0.2s); }
-@keyframes nodeGlow {
-  0%, 100% { opacity: 0.6; box-shadow: 0 0 8px color-mix(in srgb, var(--sig) 25%, transparent); }
-  50% { opacity: 1; box-shadow: 0 0 20px color-mix(in srgb, var(--sig) 65%, transparent); }
+/* ไล่ไฮไลต์ทีละไอคอนวนไปเรื่อย ๆ — 6 โหนด × 2.2s = ครบรอบ 13.2s
+   ช่วงที่เป็นของตัวเอง = 1/6 แรกของไทม์ไลน์ (≈16.7%) แล้วส่งต่อให้ตัวถัดไป */
+.awakening .node-dot {
+  animation: nodeTurn 13.2s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 2.2s);
+}
+@keyframes nodeTurn {
+  0% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 8px color-mix(in srgb, var(--sig) 25%, transparent); }
+  4% { transform: scale(1.22); opacity: 1; box-shadow: 0 0 28px color-mix(in srgb, var(--sig) 75%, transparent); }
+  13% { transform: scale(1.22); opacity: 1; box-shadow: 0 0 28px color-mix(in srgb, var(--sig) 75%, transparent); }
+  17%, 100% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 8px color-mix(in srgb, var(--sig) 25%, transparent); }
+}
+
+/* แสงวิ่งรอบขอบวงของไอคอนที่กำลังถูกไฮไลต์
+   conic-gradient หมุนรอบตัว + mask เจาะกลางให้เหลือเฉพาะวงแหวนบาง ๆ */
+.awakening .node-dot::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  pointer-events: none; opacity: 0;
+  background: conic-gradient(from 0deg,
+    transparent 0deg 232deg,
+    color-mix(in srgb, var(--sig) 55%, transparent) 300deg,
+    color-mix(in srgb, var(--sig) 90%, #ffffff) 352deg,
+    transparent 360deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px));
+  mask: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px));
+  animation: sweepSpin 1.1s linear infinite, sweepOn 13.2s linear infinite;
+  animation-delay: 0s, calc(var(--i, 0) * 2.2s);
+}
+@keyframes sweepSpin { to { transform: rotate(1turn); } }
+@keyframes sweepOn {
+  0% { opacity: 0; }
+  4% { opacity: 1; }
+  14% { opacity: 1; }
+  17%, 100% { opacity: 0; }
 }
 /* วิเคราะห์เสร็จ — ทุกโหนดสว่างค้าง วงโคจรหมุนเร็วขึ้นสั้น ๆ */
 .ring-wrap.ready .node-dot {
-  animation: none; opacity: 1;
+  animation: none; opacity: 1; transform: none;
   box-shadow: 0 0 24px color-mix(in srgb, var(--sig) 70%, transparent);
 }
+.ring-wrap.ready .node-dot::after { animation: none; opacity: 0; }
 .ring-wrap.ready .core-halo { border-color: rgba(52, 211, 153, 0.45); box-shadow: inset 0 0 40px rgba(52, 211, 153, 0.18); }
 
 /* หัวเรื่องเปลี่ยนข้อความแบบเฟด */
-.stage-slot { min-height: 84px; }
-.stage-head { min-height: 84px; }
+.stage-slot { position: relative; height: 104px; }
+.stage-head { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; }
 .h-en.glow { text-shadow: 0 0 26px rgba(79, 216, 255, 0.35); }
 .stage-enter-active, .stage-leave-active { transition: opacity 0.16s ease, transform 0.16s ease; }
 .stage-enter-from { opacity: 0; transform: translateY(8px); }
@@ -1750,7 +1879,15 @@ onMounted(() => {
 .sim-table thead th { font-size: 11px; font-weight: 600; color: var(--dim); background: rgba(6, 18, 34, 0.7); }
 .sim-table tbody tr + tr { border-top: 1px solid rgba(66, 133, 199, 0.14); }
 .sim-table tbody td { font-variant-numeric: tabular-nums; color: #d6e7f8; }
-.sim-table td.over { color: var(--danger); font-weight: 700; }
+/* เน้นคอลัมน์ผลจำลอง (คอลัมน์ที่ 3) ให้เด่นกว่าค่าปัจจุบัน */
+.sim-table th:nth-child(3), .sim-table td:nth-child(3) {
+  background: rgba(62, 160, 255, 0.12);
+  box-shadow: inset 1px 0 0 rgba(62, 160, 255, 0.28), inset -1px 0 0 rgba(62, 160, 255, 0.28);
+}
+.sim-table tbody td:nth-child(3) { color: #eaf6ff; font-weight: 700; }
+.sim-table thead th:nth-child(3) { color: #9fd2ff; font-weight: 700; }
+/* ค่าที่ล้น 100% ยังต้องเป็นสีแดง แม้อยู่ในคอลัมน์ที่ถูกเน้น (ต้องชนะกฎ :nth-child ด้านบน) */
+.sim-table tbody td.over, .sim-table tbody td.over:nth-child(3) { color: var(--danger); font-weight: 700; }
 .sim-table td.up { color: var(--good); }
 .sim-table td.down { color: #7fb6ff; }
 .cell-ic { display: inline-grid; place-items: center; vertical-align: -4px; margin-right: 7px; color: var(--sig); }
@@ -1773,6 +1910,11 @@ onMounted(() => {
 .pill.watch { background: rgba(62, 160, 255, 0.16); color: #8ecbff; border: 1px solid var(--line-on); }
 .reco-en { font-size: 15.5px; font-weight: 800; line-height: 1.35; }
 .reco-th { margin-top: 7px; font-size: 12px; line-height: 1.6; color: var(--muted); }
+
+.more-recs { margin-top: 18px; }
+.more-rec { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; }
+.more-en { font-size: 12.5px; font-weight: 700; line-height: 1.4; }
+.more-th { margin-top: 4px; font-size: 11px; line-height: 1.55; color: var(--muted); }
 
 .why { display: flex; gap: 12px; margin-top: 20px; align-items: flex-start; }
 .why-k { flex: none; font-size: 12px; font-weight: 800; color: var(--brand); }
@@ -1801,13 +1943,94 @@ onMounted(() => {
   font-size: 11.5px; color: var(--brand); text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
 }
 
+/* ── หน้า 03 · ผลลัพธ์ 4 แผงในหน้าเดียว ── */
+.screen-result { padding-bottom: 24px; }
+.panels { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 4px; }
+.panel {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: 15px 14px 17px; border-radius: 18px;
+  background: linear-gradient(180deg, rgba(21, 52, 89, 0.5), rgba(10, 28, 50, 0.62));
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 30px rgba(2, 10, 22, 0.4);
+}
+/* ภาพประกอบเดิมเคยเป็นพื้นหลังเต็มจอ — ขังไว้ในแผงของตัวเองแทน */
+.panel > .screen-photo { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.4; z-index: 0; }
+.panel > *:not(.screen-photo) { position: relative; z-index: 1; }
+
+/* เนื้อหาเดิมออกแบบไว้เต็มจอ — ย่อให้พอดีความกว้างแผง */
+.panel .h-en, .panel .h-en.upper { font-size: 17px; }
+.panel .h-th { margin-top: 5px; font-size: 11px; }
+.panel .cols { display: block; margin-top: 0; }
+.panel .list-title { margin: 16px 0 10px; font-size: 12.5px; }
+.panel .quote-mini { margin: 14px 0 0; font-size: 11.5px; }
+
+.panel .flag { margin-top: 12px; }
+.panel .flag-en { font-size: 12px; }
+.panel .flag-th { font-size: 10.5px; margin-top: 4px; }
+.panel .peak-badge { margin-top: 12px; }
+.panel-see .peak-badge { margin-top: auto; }
+.panel-sim .flag { margin-top: auto; }
+.panel .peak-time { font-size: 14px; }
+.panel .peak-cap { font-size: 9px; }
+.panel .tiles { margin-top: 12px; gap: 7px; }
+.panel .tile { padding: 11px 8px 12px; }
+.panel .tile-head { font-size: 9.5px; gap: 5px; }
+.panel .tile-chip { width: 21px; height: 21px; }
+.panel .tile-val { margin-top: 6px; font-size: 19px; }
+.panel .tile-cap { font-size: 8px; }
+
+.panel .ring-wrap, .panel .ring-wrap.relations { max-width: 250px; margin: 8px auto 0; }
+.panel .rel-node :deep(.ic) { width: 18px; height: 18px; }
+.panel .rel-node.lead :deep(.ic) { width: 21px; height: 21px; }
+.panel .rel-label, .panel .rel-node.lead .rel-label { font-size: 10px; }
+.panel .rel-val, .panel .rel-node.lead .rel-val { font-size: 11px; }
+.panel .insight-list { gap: 9px; }
+.panel .ins-en { font-size: 11px; }
+.panel .ins-th { font-size: 9.5px; }
+.panel .num { flex: none; }
+
+.panel .scn-tabs { margin-top: 14px; gap: 6px; }
+.panel .scn-tab { font-size: 10.5px; padding: 8px 4px; }
+.panel .slider-box { margin-top: 12px; padding: 13px; }
+.panel .slider-head { font-size: 11.5px; }
+.panel .slider-bubble { font-size: 10.5px; padding: 3px 10px; }
+.panel .table-wrap { margin-top: 12px; }
+.panel .sim-table { font-size: 11px; }
+.panel .sim-table th, .panel .sim-table td { padding: 8px 7px; }
+.panel .sim-table thead th { font-size: 9.5px; }
+.panel .cell-ic { margin-right: 5px; }
+.panel .cell-ic :deep(.ic) { width: 12px; height: 12px; }
+
+.panel .reco { margin-top: 12px; gap: 9px; }
+.panel .reco-en { font-size: 13.5px; }
+.panel .reco-th { font-size: 11px; margin-top: 5px; }
+.panel .pill { font-size: 8.5px; padding: 3px 8px; }
+.panel .why { margin-top: 14px; gap: 9px; }
+.panel .more-recs { margin-top: 14px; }
+.panel .more-rec { gap: 8px; margin-top: 8px; }
+.panel .more-en { font-size: 11px; }
+.panel .more-th { font-size: 9.5px; margin-top: 3px; }
+.panel .why-k { font-size: 11.5px; }
+.panel .why-en { font-size: 11px; }
+.panel .why-th { font-size: 10px; }
+.panel .impacts { gap: 6px; }
+.panel .impact { font-size: 9px; padding: 11px 5px; }
+.panel .closing { margin-top: 14px; padding: 12px; gap: 9px; }
+.panel .closing p { font-size: 11.5px; }
+
 /* ── ปุ่ม / แถบล่าง ── */
+/* ชุดปุ่มจบงานของหน้าสุดท้าย วางชิดขวาในแถบล่างคู่กับปุ่มกลับ */
+.nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+.nav-actions .share-link { width: auto; margin: 0; padding: 6px 2px; }
+.nav-actions .btn-outline, .nav-actions .btn-next { flex: none; }
+
 .nav {
   /* ไม่ใช้ sticky — แถบที่ยึดขอบล่าง viewport จะขยับตามแถบที่อยู่ของเบราว์เซอร์มือถือ
      ที่ยุบ/กางตลอดเวลา ทำให้ปุ่มเลื่อนขึ้นลงเอง ปล่อยให้อยู่ท้ายเนื้อหาแทน
      (.app สูงอย่างน้อย 100svh + .body ยืดเต็ม ปุ่มจึงอยู่ก้นจอเองเมื่อเนื้อหาสั้น) */
   position: relative; z-index: 5;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 16px 18px 22px;
   /* ห้ามใช้ backdrop-filter ที่นี่ — บน element ที่เป็น sticky เบราว์เซอร์ต้อง
      คำนวณเบลอใหม่ทุกเฟรมที่เลื่อน ทำให้แถบสั่นขึ้นลง ใช้เฉดทึบแทน */
@@ -1841,16 +2064,32 @@ onMounted(() => {
 
 /* ── แนวนอน / จอกว้าง ── */
 @media (min-width: 900px) {
-  .brand-bar, .progbar, .nav { max-width: 1040px; margin-inline: auto; width: 100%; }
+  .brand-bar, .progbar, .nav-inner { max-width: 1040px; margin-inline: auto; width: 100%; }
   .body { max-width: 1040px; margin-inline: auto; width: 100%; }
   .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; margin-top: 22px; }
   .cols-cover { align-items: stretch; }
   .cols-awaken { align-items: center; }
   .cover { margin: 0; height: 100%; }
   .cover-img { height: 100%; min-height: 330px; }
+  /* หน้า 01 — ดร๊อปดาวน์ทำให้คอลัมน์ขวายาวมาก ภาพจึงตรึงไว้ด้านบนแทนการยืดตามทั้งคอลัมน์ */
+  .cols-cover > .cover { position: sticky; top: 14px; align-self: start; height: min(76svh, 620px); }
+  /* คอลัมน์ขวาสูงเท่าภาพปกแล้วสกรอลล์ในตัวเอง หน้าจึงไม่ยืดยาวตามดร๊อปดาวน์ที่กางออก */
+  .cols-cover > .org-col {
+    height: min(76svh, 620px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 10px; margin-right: -10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(110, 170, 235, 0.45) transparent;
+  }
+  .cols-cover > .org-col::-webkit-scrollbar { width: 8px; }
+  .cols-cover > .org-col::-webkit-scrollbar-track { background: rgba(6, 18, 34, 0.5); border-radius: 4px; }
+  .cols-cover > .org-col::-webkit-scrollbar-thumb { background: rgba(110, 170, 235, 0.45); border-radius: 4px; }
+  .cols-cover > .org-col::-webkit-scrollbar-thumb:hover { background: rgba(140, 195, 250, 0.6); }
   .h-en { font-size: 34px; }
   .h-en.upper { font-size: 28px; }
   .sig-grid { grid-template-columns: repeat(6, 1fr); }
+  .stage-slot { height: 116px; }
   /* หน้ากรอกข้อมูล — ช่องเรียงลงมาเสมอ อยู่กลางจอ ไม่ยืดเต็มความกว้าง */
   .screen-narrow { max-width: 560px; margin-inline: auto; }
   .ring-wrap { margin-top: 6px; max-width: 380px; }
@@ -1876,7 +2115,7 @@ onMounted(() => {
   .rel-node :deep(.ic) { width: 22px; height: 22px; }
   .rel-label { font-size: 10px; }
   .rel-val { font-size: 11px; }
-  .stage-slot, .stage-head { min-height: 0; }
+  .stage-slot { height: 74px; }
   .field-list { gap: 10px; margin-top: 14px; max-width: 520px; }
   .screen-narrow { max-width: 520px; margin-inline: auto; }
   .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin-top: 14px; }
@@ -1890,7 +2129,7 @@ onMounted(() => {
 
 /* ── แท็บเล็ต / จอใหญ่ — ขยายตัวหนังสือและองค์ประกอบให้ได้สัดส่วนกับจอ ── */
 @media (min-width: 1000px) {
-  .brand-bar, .progbar, .nav, .body { max-width: 1120px; }
+  .brand-bar, .progbar, .nav-inner, .body { max-width: 1120px; }
 
   .h-en { font-size: 40px; }
   .h-en.upper { font-size: 34px; }
@@ -1903,6 +2142,8 @@ onMounted(() => {
   .org-en { font-size: 15px; }
   .org-th { font-size: 12px; }
   .quote-mini { font-size: 14px; }
+  .dd-title { font-size: 13px; }
+  .dd-sub { font-size: 11px; }
 
   /* 02 */
   .screen-narrow { max-width: 640px; }
@@ -1919,6 +2160,8 @@ onMounted(() => {
   .sig-th { font-size: 11px; }
   .sub-q { font-size: 16px; }
   .peak { font-size: 13.5px; padding: 11px 18px; }
+
+  .stage-slot { height: 132px; }
 
   /* 04 · 06 */
   .ring-wrap { max-width: 100%; margin: 0 auto; }
@@ -1989,6 +2232,17 @@ onMounted(() => {
   .screen-narrow > .field-list { margin-top: auto; margin-bottom: auto; }
   .screen > .sig-grid { margin-top: auto; }
   .screen > .peak-row { margin-bottom: auto; }
+}
+
+/* ── หน้าผลลัพธ์: 2 แผงต่อแถวบนจอกลาง และ 4 แผงเรียงข้างกันบนจอกว้าง ── */
+@media (min-width: 700px) {
+  .panels { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1180px) {
+  .panels { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .app-wide .brand-bar, .app-wide .progbar, .app-wide .nav-inner, .app-wide .body { max-width: 1460px; }
+  .panel { padding: 16px 13px 18px; }
+  .panel .ring-wrap, .panel .ring-wrap.relations { max-width: 100%; }
 }
 
 /* เคารพการตั้งค่าลดการเคลื่อนไหวของเครื่อง */
