@@ -44,8 +44,6 @@
             </b>
           </span>
         </div>
-
-        <button type="button" class="mm-btn mm-btn--ghost nav__cta" v-magnetic @click="customersOpen = true">MOMAY MAP</button>
       </div>
     </header>
 
@@ -94,12 +92,6 @@
         </div>
 
         <div class="mm-hero__vignette" />
-
-        <!-- วงสัญญาณ MOMAY — ตัวเดียวกับหน้าเดโม ลอยอยู่ครึ่งขวาของฮีโร่
-             วางไว้หลัง vignette เพื่อไม่ให้ชั้นมืดกดความสว่างของวง -->
-        <div class="mm-hero__ring" :style="{ transform: `translate3d(0, ${heroY * -0.06}px, 0)` }">
-          <MomayRing :core="['BEHAVIORAL', 'INTELLIGENCE']" />
-        </div>
       </div>
 
       <div class="wrap mm-hero__inner">
@@ -123,12 +115,12 @@
             เพื่อนำไปสู่การตัดสินใจที่ดีกว่า
           </p>
 
-          <ul class="mm-hero__chips" v-reveal="720">
-            <!-- จอแนวตั้งไม่มีปุ่มนี้บนแถบบน — มาอยู่ในแถวนี้แทน -->
-            <li class="chip chip--cta">
-              <button type="button" class="mm-btn mm-btn--ghost" v-magnetic @click="customersOpen = true">MOMAY MAP</button>
-            </li>
-          </ul>
+          <!-- วงสัญญาณ MOMAY — ตัวเดียวกับหน้าเดโม
+               จอกว้าง/แนวนอน: ลอยอยู่ครึ่งขวาของฮีโร่ (position: absolute)
+               จอแนวตั้ง: ไหลลงมาอยู่ในพื้นที่ว่างใต้ข้อความ -->
+          <div class="mm-hero__ring" :style="{ transform: `translate3d(0, ${heroY * -0.06}px, 0)` }">
+            <MomayRing :core="['BEHAVIORAL', 'INTELLIGENCE']" />
+          </div>
         </div>
 
         <!-- ทางลัดใต้ฮีโร่ — สองทาง: เดโม MOMAY SURPRISE กับแผนที่ลูกค้า -->
@@ -138,7 +130,8 @@
                   v-reveal="820 + i * 90" @click="d.go()">
             <span class="demolink__icon" v-html="d.icon" />
             <span class="demolink__label">
-              <b>{{ d.label }}</b>
+              <b v-if="d.labelHtml" class="demolink__brand" v-html="d.labelHtml" />
+              <b v-else>{{ d.label }}</b>
               <small>{{ d.cta }}</small>
             </span>
           </button>
@@ -2332,8 +2325,10 @@ const heroLinks = [
   {
     key: 'surprise',
     label: 'MOMAY SURPRISE',
+    // โลโก้ชุดเดียวกับหน้า MOMAY Surprise — ตัวหนา + ลายมือ Great Vibes ไล่เฉด
+    labelHtml: '<span class="logo-main">MOMAY</span><span class="logo-script">Surprise</span>',
     cta: 'VIEW DEMO',
-    color: '#ECB731',
+    color: '#4fd8ff',
     go: () => open('/MomaySurpriseOrganize'),
     icon: `<svg viewBox="0 0 24 24"><path d="M4 10.4h16v9.1a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/><path d="M2.8 6.9h18.4v3.5H2.8z"/><path d="M12 6.9v14.1"/><path d="M12 6.9S10.9 3 8.6 3a1.95 1.95 0 0 0 0 3.9z"/><path d="M12 6.9S13.1 3 15.4 3a1.95 1.95 0 0 1 0 3.9z"/></svg>`,
   },
@@ -2606,6 +2601,8 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/* ลายมือของโลโก้ MOMAY Surprise — ปุ่มทางลัดใช้ฟอนต์เดียวกับหน้านั้น */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 /* ══════════════ ฐาน ══════════════ */
 .momay-landing {
   --ink: #06060a;
@@ -2729,49 +2726,6 @@ section {
 .mm-btn--ghost { border-color: rgba(237, 27, 46, 0.65); color: #ffd9dc; }
 .mm-btn--ghost:hover { background: rgba(237, 27, 46, 0.14); transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) - 2px), 0); }
 
-/* ปุ่ม MOMAY MAP บนแถบนำทาง — แสงวิ่งรอบขอบเหมือนปุ่มปิดท้ายของแต่ละผลิตภัณฑ์ */
-.mm-btn.nav__cta,
-.chip--cta .mm-btn {
-  position: relative;
-  isolation: isolate;
-  border: 0;
-  background: transparent;
-  color: #ffe6e8;
-}
-.mm-btn.nav__cta::before,
-.chip--cta .mm-btn::before {
-  content: '';
-  position: absolute;
-  inset: -1.2px;
-  z-index: -2;
-  border-radius: inherit;
-  background: conic-gradient(
-    from var(--btn-a),
-    rgba(255, 255, 255, 0.05) 0deg,
-    rgba(255, 255, 255, 0.05) 216deg,
-    var(--red) 272deg,
-    #ffffff 302deg,
-    var(--red) 332deg,
-    rgba(255, 255, 255, 0.05) 360deg
-  );
-  animation: btnSweep 4.2s linear infinite;
-}
-.mm-btn.nav__cta::after,
-.chip--cta .mm-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: rgba(10, 10, 16, 0.92);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-.mm-btn.nav__cta:hover,
-.chip--cta .mm-btn:hover { background: transparent; }
-.mm-btn.nav__cta:hover::before,
-.chip--cta .mm-btn:hover::before { animation-duration: 1.8s; }
-.mm-btn.nav__cta:hover::after,
-.chip--cta .mm-btn:hover::after { background: rgba(30, 8, 12, 0.9); }
 .mm-btn__arrow { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.45s var(--ease); }
 .mm-btn:hover .mm-btn__arrow { transform: translateX(4px); }
 .mm-btn__arrow--tel { width: 16px; height: 16px; stroke-linejoin: round; }
@@ -2864,7 +2818,6 @@ section {
 .brand__text strong { font-family: 'Poppins', 'Inter', sans-serif; font-size: 2.12rem; letter-spacing: 0.09em; }
 .brand__text small { font-size: 1rem; letter-spacing: 0.1em; white-space: nowrap; color: var(--muted); }
 .nav__live { display: flex; align-items: center; margin-left: auto; }
-.mm-btn.nav__cta { font-size: 1.1rem; letter-spacing: 0.07em; padding: 14px 28px; white-space: nowrap; }
 .nav__live-tag { font-size: 1.16rem; padding-right: 20px; }
 .navkpi {
   display: flex;
@@ -2932,13 +2885,16 @@ section {
   left: auto;
   /* ป้ายชื่อของโหนดฝั่งขวา (Energy / Waste) ยื่นออกนอกวง กลุ่มภาพเลยดูเทไปทางขวา
      จึงถอยจากขอบขวามากขึ้น ให้วงไปอยู่กลางพื้นที่ว่างระหว่างหัวเรื่องกับขอบจอ */
-  right: clamp(8px, 7vw, 165px);
+  /* กรอบอ้างอิงคือ .mm-hero__inner (= .wrap) ซึ่งแคบกว่าจอ — หักระยะขอบของ .wrap ออก
+     ระยะจากขอบจอจริงจะได้เท่าเดิมกับตอนที่วงยังอยู่ในฉากหลังเต็มจอ */
+  right: calc(clamp(8px, 7vw, 165px) - (100vw - min(1240px, 92vw)) / 2);
   top: 50%;
   /* ขนาดวงคุมด้วยสามตัว เอาตัวที่เล็กที่สุด:
      780px  = เพดานบนจอกว้างมาก
      80vh   = กันไม่ให้สูงเกินฮีโร่จนโดน overflow: hidden ตัดหัวท้าย
      100vw - 620px = พื้นที่ที่เหลือจริงหลังกันที่ให้คอลัมน์ข้อความ
                      (ผูกกับ vw ล้วนไม่ได้ พอจอแคบลงวงจะโตเกินจนทับหัวเรื่อง) */
+  position: absolute;
   --ring-size: min(780px, 80vh, calc(100vw - 620px));
   --ring-lift: clamp(20px, 4.5vh, 52px);
   width: var(--ring-size);
@@ -2956,32 +2912,57 @@ section {
   .mm-hero__ring {
     --ring-size: min(48vw, 62vh);
     --ring-lift: clamp(8px, 2.4vh, 26px);
-    right: clamp(4px, 2.4vw, 34px);
+    right: calc(clamp(4px, 2.4vw, 34px) - (100vw - min(1240px, 92vw)) / 2);
   }
 }
 /* แท็บเล็ต/มือถือแนวตั้ง: ไม่มีที่ว่างข้างข้อความแล้ว — ยกวงขึ้นไปเป็นภาพเปิดเหนือหัวเรื่อง
    แล้วเว้นที่ด้านบนของคอลัมน์ข้อความเท่าความสูงวง จะได้ไม่ทับกัน */
 @media (orientation: portrait) and (max-width: 1100px) {
-  .mm-hero {
-    --ring-band: min(74vw, 32vh);
-    /* เท่ากับ padding-top ของฮีโร่ — วงจึงเริ่มใต้แถบบนพอดี */
-    --ring-top: clamp(104px, 13vh, 158px);
-  }
-  .mm-hero__inner { padding-top: calc(var(--ring-band) + clamp(12px, 2.4vh, 26px)); }
   .mm-hero__ring {
-    --ring-size: var(--ring-band);
-    top: var(--ring-top);
-    left: 50%;
-    right: auto;
-    margin: 0 0 0 calc(var(--ring-size) / -2);
+    position: static;
+    --ring-size: min(78vw, 34vh);
+    width: var(--ring-size);
+    margin: clamp(14px, 3vh, 34px) auto 0;
   }
-  /* ปุ่ม MOMAY MAP เต็มแถวซ้ำกับปุ่มในแถวล่างแล้ว — เหลือใบเดียวพอ
-     (เจาะจงกว่ากฎ .chip--cta ของบล็อกจอแนวตั้งด้านล่าง จึงชนะโดยไม่ต้องพึ่งลำดับ) */
-  .mm-hero__chips .chip--cta { display: none; }
 }
-/* แถบบนสองแถวดันฮีโร่ลงมา — วงต้องขยับลงตามด้วย */
-@media (orientation: portrait) and (max-width: 975px) {
-  .mm-hero { --ring-top: clamp(140px, 16vh, 168px); }
+
+/* ── โลโก้ MOMAY Surprise บนปุ่มทางลัด — ชุดเดียวกับแถบแบรนด์ของหน้านั้น ──
+   เนื้อหามาจาก v-html จึงไม่ติด attribute ของ scoped style ต้องห่อด้วย :deep() */
+.demolink__brand { display: inline-flex; align-items: baseline; gap: 7px; }
+.demolink__brand :deep(.logo-main) { font-weight: 800; letter-spacing: 0.08em; color: #eaf6ff; }
+.demolink__brand :deep(.logo-script) {
+  font-family: 'Great Vibes', cursive;
+  /* ลายมือตัวเล็กกว่าตัวพิมพ์ใหญ่โดยธรรมชาติ — ขยายให้ความสูงตาดูเท่ากัน */
+  font-size: 1.85em;
+  font-weight: 400;
+  letter-spacing: 0;
+  /* Great Vibes มีหางตัวอักษรยาว ถ้า line-height ชิดเกินหาง p จะโดนตัด */
+  line-height: 1.15;
+  padding: 0 2px 2px;
+  /* ไล่เฉดหลัก + แถบแสงขาวคาดกลาง แล้วเลื่อนตำแหน่งพื้นหลังให้แสงกวาดผ่านตัวอักษร */
+  background-image: linear-gradient(
+    100deg,
+    #ff8ad4 0%,
+    #c78bfa 16%,
+    #4fd8ff 32%,
+    #ffffff 44%,
+    #eaf9ff 50%,
+    #4fd8ff 62%,
+    #a78bfa 80%,
+    #ff8ad4 100%
+  );
+  background-size: 300% 100%;
+  background-position: 140% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 9px rgba(130, 190, 255, 0.35));
+  animation: logoShine 5s ease-in-out infinite;
+}
+@keyframes logoShine {
+  0% { background-position: 140% 0; }
+  45% { background-position: -40% 0; }
+  100% { background-position: -40% 0; }
 }
 
 .mm-hero__particles { inset: 0; }
@@ -3055,17 +3036,6 @@ section {
   margin: clamp(18px, 3.4vh, 48px) 0 0;
   word-spacing: 0.06em;
 }
-.mm-hero__chips {
-  display: none;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.chip { display: flex; align-items: center; gap: 11px; }
-/* เหลือแค่ปุ่ม SEE CUSTOMERS ของจอแนวตั้ง — จอกว้างใช้ปุ่มบนแถบบนอยู่แล้ว */
-.chip--cta { display: none; }
-
-
 /* ══════════════ เส้นคั่นแบบขอบฟ้าอวกาศ ══════════════ */
 .defs-only { position: absolute; width: 0; height: 0; overflow: hidden; }
 /* กล่องสูง 0 + ลอยทับรอยต่อ เพื่อไม่ให้เกิดแถบสีดำคนละเฉดกับ section ข้างเคียง */
@@ -6044,7 +6014,7 @@ section {
   .navkpi:nth-last-child(-n+3) { display: none; }
 }
 @media (max-width: 975px) {
-  .nav__live, .nav__cta { display: none; }
+  .nav__live { display: none; }
   .showcase-body--split { grid-template-columns: minmax(0, 1fr); }
   .showcase-body--split .phone { margin-top: 4px; }
   .mm-hero { min-height: auto; }
@@ -6056,7 +6026,6 @@ section {
 /* แนวนอนบนแท็บเล็ต/มือถือ: ใช้เลย์เอาต์เดียวกับคอม แค่ย่อขนาดตามความสูงจอ */
 @media (orientation: landscape) and (min-width: 660px) and (max-width: 1100px) {
   .nav__live { display: flex; }
-  .nav__cta { display: inline-flex; }
   .showcase-body--split { grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: clamp(14px, 2.4vw, 30px); }
   .showcase-body--split .phone { margin-top: 0; }
   .mm-hero { min-height: 100svh; }
@@ -6142,12 +6111,6 @@ section {
     line-height: 1.8;
     margin-top: clamp(16px, 3.2vh, 30px);
   }
-  .mm-hero__chips {
-    display: block;
-    margin-top: clamp(20px, 4vh, 38px);
-  }
-  .chip--cta { display: flex; }
-  .chip--cta .mm-btn { width: 100%; justify-content: center; padding: 11px 12px; font-size: 0.66rem; }
   /* สี่ปุ่มในแถวเดียวแคบเกินไป — ตัดเป็นสองแถว ทรงปุ่มยังเป็นเม็ดยาเหมือนเดิม */
   .hero-demos {
     grid-template-columns: repeat(var(--cols-sm, 2), minmax(0, 1fr));
