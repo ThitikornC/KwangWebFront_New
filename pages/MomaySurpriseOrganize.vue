@@ -92,7 +92,32 @@
                           </div>
                         </div>
 
-                        <!-- สิ่งที่เปลี่ยนแปลงระหว่างวัน -->
+                        <!-- โซลาร์: แบ่งสัดส่วนการใช้ไฟกลางวัน-กลางคืน
+                             กลางวัน = ช่วงที่แผงผลิตไฟได้ ยิ่งใช้ตอนกลางวันมาก โซลาร์ยิ่งช่วยได้มาก -->
+                        <template v-if="o.dayNight">
+                          <p class="dd-title dd-gap font-thai">สัดส่วนการใช้ไฟกลางวันกับกลางคืน</p>
+                          <p class="dd-sub font-thai">ตามพฤติกรรมส่วนใหญ่ของคุณ</p>
+
+                          <div class="dn">
+                            <span class="dn-ic dn-sun"><Ico name="sun" /></span>
+                            <div class="dn-rail" :style="{ '--f': dnFraction }">
+                              <span class="dn-num dn-num-day">{{ form.dayShare }} %</span>
+                              <span class="dn-num dn-num-night">{{ 100 - form.dayShare }} %</span>
+                              <input
+                                v-model.number="form.dayShare"
+                                type="range" :min="DN_MIN" :max="DN_MAX" step="5"
+                                class="dn-input"
+                                aria-label="สัดส่วนการใช้ไฟกลางวัน"
+                              />
+                            </div>
+                            <span class="dn-ic dn-moon"><Ico name="moon" /></span>
+                          </div>
+                          <div class="dn-ends font-thai"><span>กลางวัน</span><span>กลางคืน</span></div>
+                        </template>
+
+                        <!-- สิ่งที่เปลี่ยนแปลงระหว่างวัน — บางหมวด (เช่นโซลาร์) ไม่ต้องถาม
+                             ส่วนช่วงพีคด้านล่างยังถามทุกหมวด -->
+                        <template v-if="o.dailyChanges !== false">
                         <p class="dd-title dd-gap">What usually changes<br />throughout the day?</p>
                         <p class="dd-sub font-thai">อะไรบ้างที่เปลี่ยนไปในแต่ละช่วงของวัน</p>
 
@@ -115,6 +140,7 @@
                             <span class="sig-th font-thai">{{ sg.th }}</span>
                           </button>
                         </div>
+                        </template>
 
                         <!-- ช่วงเวลาหนาแน่น -->
                         <p class="dd-title dd-gap font-thai">ช่วงไหนของวันที่คนเยอะที่สุด?</p>
@@ -339,9 +365,68 @@
               <!-- ภาพเมืองช่วงพีคเป็นพื้นหลังของแผงนี้ -->
               <div class="screen-photo photo-slot photo-05" />
 
+              <!-- หัวข้อใช้ร่วมกันทุกหมวด เปลี่ยนเฉพาะเนื้อในของแผง -->
               <h2 class="h-en upper">What matters now?</h2>
               <p class="h-th font-thai">ตอนนี้มีอะไรที่ต้องรู้บ้าง</p>
 
+              <template v-if="isSolar">
+                <!-- ไล่ที่มาของตัวเลขให้เห็นทีละขั้น จากค่าไฟที่กรอกมา -->
+                <div class="sol-chain">
+                  <div class="sol-row">
+                    <span class="sol-k font-thai">ค่าไฟ / เดือน</span>
+                    <span class="sol-v"><NumTicker :value="form.energy" comma /> <i class="font-thai">บาท</i></span>
+                  </div>
+                  <div class="sol-row">
+                    <span class="sol-k font-thai">คิดเป็นไฟที่ใช้ / เดือน</span>
+                    <span class="sol-v"><NumTicker :value="Math.round(plan.kwhPerMonth)" comma /> <i>kWh</i></span>
+                  </div>
+                  <div class="sol-row sol-strong">
+                    <span class="sol-k font-thai">เฉลี่ยต่อวัน</span>
+                    <span class="sol-v"><NumTicker :value="Math.round(plan.kwhPerDay)" comma /> <i>kWh</i></span>
+                  </div>
+                  <div class="sol-row sol-day">
+                    <span class="sol-k font-thai"><Ico name="sun" /> กลางวัน {{ form.dayShare }}%</span>
+                    <span class="sol-v">{{ kw(plan.dayKwh) }} <i>kWh</i></span>
+                  </div>
+                  <div class="sol-row sol-night">
+                    <span class="sol-k font-thai"><Ico name="moon" /> กลางคืน {{ 100 - form.dayShare }}%</span>
+                    <span class="sol-v">{{ kw(plan.nightKwh) }} <i>kWh</i></span>
+                  </div>
+                </div>
+
+                <div class="peak-badge">
+                  <div>
+                    <div class="peak-time">{{ plan.peakWindow }}</div>
+                    <div class="peak-cap font-thai">
+                      {{ plan.peakOnSun ? 'ช่วงคนเยอะอยู่ในเวลาแดด แผงจ่ายตรงได้' : 'ช่วงคนเยอะอยู่นอกเวลาแดด ต้องดึงจากแบต' }}
+                    </div>
+                  </div>
+                  <span class="peak-chip"><Ico :name="plan.peakOnSun ? 'sun' : 'moon'" /></span>
+                </div>
+
+                <div class="tiles tiles-2">
+                  <div class="tile" style="--sig: #fbbf24; --i: 0">
+                    <div class="tile-head">
+                      <span class="tile-chip"><Ico name="solar" /></span><span>Solar</span>
+                    </div>
+                    <div class="tile-val">{{ kw(plan.kwp) }}<span class="tile-u">kWp</span></div>
+                    <div class="tile-cap font-thai">แผงที่ต้องติด จากแดด {{ SOLAR.sunHours }} ชม./วัน</div>
+                  </div>
+                  <div class="tile" style="--sig: #60a5fa; --i: 1">
+                    <div class="tile-head">
+                      <span class="tile-chip"><Ico name="battery" /></span><span>Battery</span>
+                    </div>
+                    <div class="tile-val">{{ kw(plan.batteryKwh) }}<span class="tile-u">kWh</span></div>
+                    <div class="tile-cap font-thai">แบตสำหรับไฟกลางคืน</div>
+                  </div>
+                </div>
+
+                <p class="quote-mini font-thai">
+                  <span class="qm">“</span>คิดที่ {{ SOLAR.tariff }} บาท/หน่วย<br />และแดดเต็มที่ {{ SOLAR.sunHours }} ชม./วัน”
+                </p>
+              </template>
+
+              <template v-else>
               <div v-if="alert" class="flag">
                 <span class="flag-ic"><Ico name="alert" /></span>
                 <div>
@@ -383,6 +468,7 @@
               <p class="quote-mini">
                 <span class="qm">“</span>When more people come,<br />things are connected.”
               </p>
+              </template>
             </section>
 
             <!-- ── แผง 02 · Understand ── -->
@@ -470,9 +556,74 @@
 
             <!-- ── แผง 03 · Anticipate & Simulate ── -->
             <section class="panel panel-sim">
+              <!-- หัวข้อใช้ร่วมกันทุกหมวด เปลี่ยนเฉพาะเนื้อในของแผง -->
               <h2 class="h-en upper">What happens next?</h2>
               <p class="h-th font-thai">ถ้าคนใช้พื้นที่มากขึ้น จะเป็นอย่างไร</p>
 
+              <template v-if="isSolar">
+                <div class="slider-box">
+                  <div class="slider-head font-thai">
+                    <span>เลื่อนเพื่อเพิ่ม-ลดค่าไฟ</span>
+                    <span class="slider-bubble">{{ signed(form.delta) }}%</span>
+                  </div>
+                  <div class="slider-rail" :style="{ '--p': sliderPct + '%' }">
+                    <input v-model.number="form.delta" type="range" min="-20" max="40" step="5" class="slider" />
+                  </div>
+                  <div class="slider-ends"><span>-20%</span><span>+40%</span></div>
+                </div>
+
+                <div class="table-wrap">
+                  <table class="sim-table">
+                    <thead>
+                      <tr>
+                        <th class="font-thai">Metric</th>
+                        <th>Current</th>
+                        <th>{{ signed(form.delta) }}% Scenario</th>
+                        <th>Change</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="cell-ic" style="--sig: #fbbf24"><Ico name="bolt" /></span><span class="font-thai">ค่าไฟ/เดือน</span></td>
+                        <td>{{ nf(form.energy) }}</td>
+                        <td>{{ nf(Math.round(form.energy * (1 + form.delta / 100))) }}</td>
+                        <td :class="deltaTone(form.delta)">{{ signed(form.delta) }}% {{ arrow(form.delta) }}</td>
+                      </tr>
+                      <tr>
+                        <td><span class="cell-ic" style="--sig: #38bdf8"><Ico name="clock" /></span><span class="font-thai">ไฟ/วัน</span></td>
+                        <td>{{ nf(Math.round(plan.kwhPerDay)) }}</td>
+                        <td>{{ nf(Math.round(planNext.kwhPerDay)) }}</td>
+                        <td :class="deltaTone(form.delta)">{{ signed(form.delta) }}% {{ arrow(form.delta) }}</td>
+                      </tr>
+                      <tr>
+                        <td><span class="cell-ic" style="--sig: #fbbf24"><Ico name="solar" /></span>Solar</td>
+                        <td>{{ kw(plan.kwp) }}</td>
+                        <td>{{ kw(planNext.kwp) }}</td>
+                        <td :class="deltaTone(form.delta)">{{ signed(form.delta) }}% {{ arrow(form.delta) }}</td>
+                      </tr>
+                      <tr>
+                        <td><span class="cell-ic" style="--sig: #60a5fa"><Ico name="battery" /></span>Battery</td>
+                        <td>{{ kw(plan.batteryKwh) }}</td>
+                        <td>{{ kw(planNext.batteryKwh) }}</td>
+                        <td :class="deltaTone(form.delta)">{{ signed(form.delta) }}% {{ arrow(form.delta) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="flag">
+                  <span class="flag-ic"><Ico name="alert" /></span>
+                  <div>
+                    <p class="flag-en">Every baht on the bill scales the whole system.</p>
+                    <p class="flag-th font-thai">
+                      ค่าไฟ {{ signed(form.delta) }}% → แผงเป็น {{ kw(planNext.kwp) }} kWp
+                      และแบตเป็น {{ kw(planNext.batteryKwh) }} kWh
+                    </p>
+                  </div>
+                </div>
+              </template>
+
+              <template v-else>
               <div class="scn-tabs">
                 <button
                   v-for="sc in SCENARIOS"
@@ -538,6 +689,7 @@
                   <p class="flag-th font-thai">{{ warning.th }}</p>
                 </div>
               </div>
+              </template>
             </section>
 
             <!-- ── แผง 04 · Decide ── -->
@@ -545,7 +697,61 @@
               <h2 class="h-en upper">Momay recommends</h2>
               <p class="h-th font-thai">ข้อเสนอแนะจาก MOMAY</p>
 
-              <div class="cols">
+              <!-- หมวดโซลาร์แนะนำจากสัดส่วนกลางวัน-กลางคืน และช่วงพีคที่เลือกไว้ -->
+              <div v-if="isSolar" class="cols">
+                <div>
+                  <div class="reco">
+                    <span class="pill" :class="solarRec.badge.toLowerCase()">{{ solarRec.badge }}</span>
+                    <div>
+                      <p class="reco-en">{{ solarRec.titleEn }}</p>
+                      <p class="reco-th font-thai">{{ solarRec.titleTh }}</p>
+                    </div>
+                  </div>
+
+                  <div class="why">
+                    <span class="why-k">Why?</span>
+                    <div>
+                      <p class="why-en">{{ solarRec.whyEn }}</p>
+                      <p class="why-th font-thai">{{ solarRec.whyTh }}</p>
+                    </div>
+                  </div>
+
+                  <div class="more-recs">
+                    <h3 class="list-title font-thai">เงินลงทุนโดยประมาณ</h3>
+                    <div class="sol-chain">
+                      <div class="sol-row">
+                        <span class="sol-k font-thai"><Ico name="solar" /> แผง {{ kw(plan.kwp) }} kWp</span>
+                        <span class="sol-v">{{ nf(Math.round(plan.costPanels)) }} <i class="font-thai">บาท</i></span>
+                      </div>
+                      <div class="sol-row">
+                        <span class="sol-k font-thai"><Ico name="battery" /> แบต {{ kw(plan.batteryKwh) }} kWh</span>
+                        <span class="sol-v">{{ nf(Math.round(plan.costBattery)) }} <i class="font-thai">บาท</i></span>
+                      </div>
+                      <div class="sol-row sol-strong">
+                        <span class="sol-k font-thai">รวมทั้งระบบ</span>
+                        <span class="sol-v">{{ nf(Math.round(plan.costPanels + plan.costBattery)) }} <i class="font-thai">บาท</i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="list-title">Expected Impact</h3>
+                  <div class="impacts">
+                    <div v-for="im in solarRec.impacts" :key="im.th" class="impact" :class="im.tone">
+                      <Ico :name="im.dir === 'up' ? 'arrow-up' : 'arrow-down'" />
+                      <span class="font-thai">{{ im.th }}</span>
+                    </div>
+                  </div>
+
+                  <div class="closing">
+                    <span class="closing-ic"><Ico name="leaf" /></span>
+                    <p>“Small changes today<br />create a better tomorrow.”</p>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="cols">
                 <div>
                   <div class="reco">
                     <span class="pill" :class="rec.badge.toLowerCase()">{{ rec.badge }}</span>
@@ -697,13 +903,14 @@ import { h, ref, reactive, computed, watch, onMounted, onBeforeUnmount, defineCo
 import {
   ORG_TYPES, ORG_MAP, SIGNALS, SIGNAL_MAP, PEAKS, PEAK_MAP, SCENARIOS,
   computeBaseline, simulate, rankMetrics, ringMetrics,
+  SOLAR, solarPlan, solarAdvice,
   headlineAlert, keyUnderstandings, recommend, recommendAll, constraintWarning,
   type OrgId, type SignalId, type PeakId, type ScenarioId, type InputKey,
-} from '~/utils/momayDemoV2/model'
+} from '~/utils/momaySurpriseOrganize/model'
 
-definePageMeta({ name: 'momay-demo-v2', layout: false })
+definePageMeta({ name: 'momay-surprise-organize', layout: false })
 useHead({
-  title: 'MOMAY Surprise — Demo V2',
+  title: 'MOMAY Surprise — Organize',
   // พื้นหลังเข้มถึงขอบจอ (เอาออกเองเมื่อออกจากหน้านี้)
   style: [{ children: 'html,body{background:#030b18 !important;}' }],
 })
@@ -719,6 +926,11 @@ const ICONS: Record<string, string[]> = {
   building: ['M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16', 'M3 21h18', 'M15 21V10h3a2 2 0 0 1 2 2v9', 'M8 7.5h3M8 11.5h3M8 15.5h3'],
   book: ['M4 19.5A2.5 2.5 0 0 1 6.5 17H20', 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z'],
   hexagon: ['M12 2.5 20.5 7v10L12 21.5 3.5 17V7L12 2.5Z'],
+  hospital: ['M4.5 21V6.2A2 2 0 0 1 6.5 4.2h11a2 2 0 0 1 2 2V21', 'M2.5 21h19', 'M12 8.4v6.4M8.8 11.6h6.4'],
+  sun: ['M12 7.4a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2Z', 'M12 2.2v2.2M12 19.6v2.2M2.2 12h2.2M19.6 12h2.2', 'M5.2 5.2 6.8 6.8M17.2 17.2l1.6 1.6M18.8 5.2 17.2 6.8M6.8 17.2 5.2 18.8'],
+  battery: ['M3 8.6h13.5a1.6 1.6 0 0 1 1.6 1.6v3.6a1.6 1.6 0 0 1-1.6 1.6H3a1.6 1.6 0 0 1-1.6-1.6v-3.6A1.6 1.6 0 0 1 3 8.6Z', 'M20.4 10.8v2.4', 'M5 11v2M8.6 11v2M12.2 11v2'],
+  moon: ['M20.6 14.4A8.7 8.7 0 0 1 9.6 3.4 8.7 8.7 0 1 0 20.6 14.4Z'],
+  solar: ['M3.2 15.6 5.7 7.3A1.7 1.7 0 0 1 7.3 6.1h9.4a1.7 1.7 0 0 1 1.6 1.2l2.5 8.3H3.2Z', 'M4.7 11.5h14.6', 'M11.4 6.1v9.5M15 6.1l1.5 9.5M9 6.1 7.5 15.6', 'M12 18.2v2.4', 'M8.6 20.6h6.8'],
   user: ['M20 21v-1.8a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V21', 'M12 3.2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z'],
   car: ['M3 13.5 4.6 8.4A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.4L21 13.5V18H3v-4.5Z', 'M3 13.5h18', 'M6.5 18v1.5M17.5 18v1.5', 'M6.8 15.7h.01M17.2 15.7h.01'],
   parking: ['M5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13A2.5 2.5 0 0 1 5.5 3Z', 'M9.3 17.5v-11h3.6a3.2 3.2 0 0 1 0 6.4H9.3'],
@@ -794,12 +1006,38 @@ const form = reactive({
   // ค่าเริ่มต้นให้ตรงกับภาพตัวอย่าง: ติ๊กทุกอย่างยกเว้น Events
   signals: ['people', 'traffic', 'parking', 'energy', 'waste'] as SignalId[],
   peak: 'midday' as PeakId,
+  /** สัดส่วนการใช้ไฟตอนกลางวัน (%) — ใช้เฉพาะหมวดที่เปิด dayNight */
+  dayShare: 60,
   scenario: 'normal' as ScenarioId,
   delta: 20,
 })
 
 const org = computed(() => ORG_MAP[form.org] ?? ORG_MAP.municipality)
-const fieldList = computed(() => [org.value.fields.people, org.value.fields.capacity, org.value.fields.energy])
+/** ช่วงของสไลเดอร์กลางวัน-กลางคืน */
+const DN_MIN = 20
+const DN_MAX = 80
+/** ปุ่มของ input[type=range] วิ่งบนช่วง DN_MIN..DN_MAX ไม่ใช่ 0..100
+    ถ้าเอาเปอร์เซ็นต์ดิบไปวาดแถบสี รอยต่อสีจะไม่ตรงกับปุ่ม (ที่ 60 เยื้องไป 23px)
+    จึงส่งเป็นสัดส่วนการเดินทางของปุ่ม 0..1 แล้วให้ CSS คิดตำแหน่งจริงจากค่านี้ */
+const dnFraction = computed(() => (form.dayShare - DN_MIN) / (DN_MAX - DN_MIN))
+
+/** หมวดโซลาร์เล่าเรื่องคนละแบบกับหมวดอื่น แผงแรกของหน้าผลลัพธ์จึงใช้ชุดตัวเลขของตัวเอง */
+const isSolar = computed(() => org.value.id === 'solar')
+const plan = computed(() => solarPlan(form.energy, form.dayShare, form.peak))
+/** ระบบที่ต้องติด ถ้าค่าไฟขึ้น-ลงตามสไลเดอร์หน้า 03 */
+const planNext = computed(() =>
+  solarPlan(form.energy * (1 + form.delta / 100), form.dayShare, form.peak),
+)
+const solarRec = computed(() => solarAdvice(plan.value, form.dayShare))
+
+/** ทศนิยมตามขนาดตัวเลข — เลขเล็กต้องเห็นทศนิยม เลขใหญ่ไม่ต้อง */
+const kw = (v: number) => (v >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1))
+
+const ALL_INPUTS: InputKey[] = ['people', 'capacity', 'energy']
+/** บางหมวดให้กรอกไม่ครบสามช่อง (เช่นโซลาร์กรอกแค่ค่าไฟ) */
+const fieldList = computed(() =>
+  (org.value.inputs ?? ALL_INPUTS).map(k => org.value.fields[k]),
+)
 
 /** หมวดที่กางดร๊อปดาวน์กรอกข้อมูลอยู่ — เริ่มต้นกางของหมวดที่เลือกไว้ให้เลย */
 const openOrg = ref<OrgId | null>(form.org)
@@ -1145,7 +1383,8 @@ const sliderPct = computed(() => ((form.delta + 20) / 60) * 100)
 const canAdvance = computed(() => {
   // หน้าแรกรวมทุกอย่างที่ต้องกรอกไว้ในดร๊อปดาวน์แล้ว จึงตรวจครบทั้งชุดที่นี่
   if (step.value === 1) {
-    return form.people > 0 && form.capacity > 0 && form.energy > 0 && loadSignals.value.length > 0
+    const needSignals = org.value.dailyChanges !== false
+    return fieldList.value.every(f => form[f.key] > 0) && (!needSignals || loadSignals.value.length > 0)
   }
   if (step.value === 2) return awakenAt.value >= AWAKEN_STEPS.length
   return true
@@ -1194,6 +1433,7 @@ const shareUrl = computed(() => {
     k: form.peak,
     sc: form.scenario,
     d: String(form.delta),
+    dn: String(form.dayShare),
     step: '3',
   })
   return `${window.location.origin}${window.location.pathname}?${q.toString()}`
@@ -1247,6 +1487,11 @@ onMounted(() => {
 
   const sc = q.get('sc') as ScenarioId | null
   if (sc && SCENARIOS.some(x => x.id === sc)) form.scenario = sc
+
+  if (q.has('dn')) {
+    const dn = Number(q.get('dn'))
+    if (Number.isFinite(dn)) form.dayShare = Math.min(80, Math.max(20, Math.round(dn / 5) * 5))
+  }
 
   if (q.has('d')) {
     const d = Number(q.get('d'))
@@ -1989,6 +2234,70 @@ onMounted(() => {
 }
 .scn-tab.on { border-color: var(--brand); color: #dcefff; background: rgba(23, 66, 116, 0.55); }
 
+/* ── สไลเดอร์แบ่งสัดส่วนไฟกลางวัน-กลางคืน (หน้า 01 หมวดโซลาร์) ── */
+.dn { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.dn-ic { flex: none; display: grid; place-items: center; }
+.dn-ic :deep(.ic) { width: 30px; height: 30px; stroke-width: 1.6; }
+/* กลางวัน = เหลืองส้มแบบแดด · กลางคืน = ฟ้าครามแบบกลางคืน */
+.dn-sun { color: #fbbf24; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.55)); }
+.dn-moon { color: #93c5fd; filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.45)); }
+
+.dn-rail {
+  position: relative; flex: 1; min-width: 0; height: 26px;
+  display: flex; align-items: center;
+  border-radius: 999px;
+  /* ปุ่มวิ่งได้แค่ในช่วง (ความกว้าง - ขนาดปุ่ม) และจุดกึ่งกลางปุ่มเริ่มที่รัศมีปุ่ม
+     --pos จึงเป็นตำแหน่งกึ่งกลางปุ่มจริง ใช้ร่วมกันทั้งรอยต่อสีและตัวเลข */
+  --tw: 34px;
+  --pos: calc(var(--tw) / 2 + (100% - var(--tw)) * var(--f));
+  /* ไล่สีแบ่งครึ่งตรงตำแหน่งปุ่มพอดี ซ้าย = กลางวัน ขวา = กลางคืน */
+  background: linear-gradient(
+    90deg,
+    #f59e0b 0%, #fbbf24 calc(var(--pos) - 1px),
+    rgba(255, 255, 255, 0.85) var(--pos),
+    #3b82f6 calc(var(--pos) + 1px), #1e40af 100%
+  );
+  border: 1px solid rgba(120, 170, 220, 0.35);
+  box-shadow: inset 0 1px 4px rgba(2, 10, 22, 0.45);
+}
+/* ตัวเลขวางกลางแต่ละฝั่ง ขยับตามตำแหน่งปุ่ม */
+.dn-num {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  font-size: 12px; font-weight: 800; white-space: nowrap; pointer-events: none;
+  text-shadow: 0 1px 2px rgba(2, 10, 22, 0.35);
+}
+/* ปกติวางกลางฝั่งของตัวเอง แต่ต้องกันไม่ให้ไปซ้อนปุ่มลากตอนสัดส่วนสุดขอบ
+   (เช่น 85/15 ฝั่งกลางคืนแคบมากจนเลขไปทับปุ่ม) จึงบีบตำแหน่งด้วย clamp */
+.dn-num-day {
+  left: clamp(22px, calc(var(--pos) / 2), calc(var(--pos) - 36px));
+  color: #3b2500;
+}
+.dn-num-night {
+  left: clamp(calc(var(--pos) + 36px), calc(var(--pos) + (100% - var(--pos)) / 2), calc(100% - 22px));
+  color: #eaf3ff;
+}
+
+/* input จริงวางทับโปร่งใส ปุ่มลากคือ thumb ของมัน */
+.dn-input {
+  -webkit-appearance: none; appearance: none;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; background: transparent; cursor: pointer;
+}
+.dn-input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 34px; height: 34px; border-radius: 50%;
+  background: #f8fafc; border: 3px solid #ffffff;
+  box-shadow: 0 3px 10px rgba(2, 10, 22, 0.55);
+}
+.dn-input::-moz-range-thumb {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #f8fafc; border: 3px solid #ffffff;
+  box-shadow: 0 3px 10px rgba(2, 10, 22, 0.55);
+}
+.dn-ends {
+  display: flex; justify-content: space-between;
+  margin: 12px 42px 0; font-size: 10.5px; color: var(--dim);
+}
+
 .slider-box { margin-top: 20px; padding: 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
 .slider-head {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -2013,6 +2322,30 @@ onMounted(() => {
   background: #eaf7ff; border: 2px solid var(--brand); box-shadow: 0 0 12px rgba(79, 216, 255, 0.65);
 }
 .slider-ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); }
+
+/* ── แผง 01 ของหมวดโซลาร์: ไล่ที่มาของตัวเลข + ขนาดระบบ ── */
+.sol-chain {
+  margin-top: 14px; padding: 4px 2px;
+  border-radius: 13px; background: var(--card); border: 1px solid var(--line);
+}
+.sol-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 13px; font-size: 12px;
+}
+.sol-row + .sol-row { border-top: 1px solid rgba(66, 133, 199, 0.14); }
+.sol-k { display: flex; align-items: center; gap: 7px; color: var(--muted); min-width: 0; }
+.sol-k :deep(.ic) { width: 15px; height: 15px; flex: none; }
+.sol-v { font-weight: 800; color: #dceaf9; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sol-v i { font-style: normal; font-weight: 600; font-size: 10.5px; color: var(--dim); margin-left: 3px; }
+/* บรรทัดสรุปต่อวัน = จุดตั้งต้นของการแบ่งกลางวัน-กลางคืน */
+.sol-strong .sol-k { color: #cfe3f7; }
+.sol-strong .sol-v { color: #eaf6ff; }
+.sol-day .sol-k { color: #fbbf24; }
+.sol-night .sol-k { color: #93c5fd; }
+
+/* สองการ์ดผลลัพธ์ ไม่ใช่สามเหมือนหมวดอื่น */
+.tiles-2 { grid-template-columns: 1fr 1fr; }
+.tile-u { margin-left: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
 
 .table-wrap { margin-top: 16px; border-radius: 14px; overflow-x: auto; background: var(--card); border: 1px solid var(--line); }
 .sim-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
