@@ -269,7 +269,11 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
 
 /* ── วงความสัมพันธ์ (04 / 06) ── */
 /* วงเต็มความกว้างเนื้อหา เผื่อที่ให้ป้ายชื่อของโหนดฝั่งขวาไม่ล้นขอบจอ */
-.ring-wrap { position: relative; width: 100%; max-width: 404px; margin: 22px auto; aspect-ratio: 1; }
+.ring-wrap {
+  position: relative; width: 100%; max-width: 404px; margin: 22px auto; aspect-ratio: 1;
+  /* 100cqw = ความกว้างของวง — ของข้างในจึงย่อ/ขยายไปพร้อมวงแทนที่จะคงที่เป็น px */
+  container-type: inline-size;
+}
 .ring-wrap.relations { max-width: 404px; }
 /* วงหน้า 04 — ภาพเมืองอยู่ในวงกลม ขอบไล่จางกลืนพื้นหลัง */
 .ring-bg {
@@ -284,21 +288,21 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
 .holo-dome { position: absolute; inset: 0; pointer-events: none; }
 .holo-dome > * { position: absolute; }
 .dome-core {
-  left: 50%; top: 50%; width: 130px; height: 130px;
+  left: 50%; top: 50%; width: 32.18cqw; height: 32.18cqw;
   transform: translate(-50%, -50%); border-radius: 50%;
   background: radial-gradient(closest-side,
     rgba(150, 240, 255, 0.34), rgba(70, 175, 240, 0.16) 48%, transparent 100%);
   animation: domePulse 4.2s ease-in-out infinite;
 }
 .dome-arc {
-  left: 50%; top: 50%; width: 168px; height: 168px;
+  left: 50%; top: 50%; width: 41.58cqw; height: 41.58cqw;
   transform: translate(-50%, -50%); border-radius: 50%;
   border: 1px solid rgba(130, 225, 255, 0.22);
   border-bottom-color: transparent; border-right-color: transparent;
   animation: spin 18s linear infinite;
 }
 .dome-arc.a2 {
-  width: 210px; height: 210px;
+  width: 51.98cqw; height: 51.98cqw;
   border-color: rgba(130, 225, 255, 0.14);
   border-top-color: transparent; border-left-color: transparent;
   animation-duration: 26s; animation-direction: reverse;
@@ -396,8 +400,8 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
 
 .ring-core {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  font-size: 20px; font-weight: 300; letter-spacing: 0.16em;
+  display: flex; flex-direction: column; align-items: center; gap: 0.74cqw;
+  font-size: 4.95cqw; font-weight: 300; letter-spacing: 0.16em;
   color: #eaf9ff; text-align: center; white-space: nowrap;
   text-shadow:
     0 0 10px rgba(170, 240, 255, 0.9),
@@ -406,7 +410,7 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
 }
 .core-en { position: relative; z-index: 1; }
 .core-halo {
-  position: absolute; z-index: 0; left: 50%; top: 50%; width: 178px; height: 178px;
+  position: absolute; z-index: 0; left: 50%; top: 50%; width: 44.06cqw; height: 44.06cqw;
   transform: translate(-50%, -50%); border-radius: 50%;
   border: 1px solid rgba(79, 216, 255, 0.26);
   /* ฉากมืดบาง ๆ ให้ตัวหนังสือกลางวงอ่านออกแม้มีเมืองอยู่ข้างหลัง */
@@ -422,7 +426,7 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
 /* กล่องของโหนด = วงไอคอนพอดี (ป้ายชื่อลอยออกไปข้าง ๆ แบบ absolute)
    เพื่อให้จุดกึ่งกลางโหนดตรงกับปลายเส้นเชื่อมพอดี */
 .ring-node {
-  --dot: 52px;
+  --dot: 12.87cqw;
   position: absolute; transform: translate(-50%, -50%);
   display: block; line-height: 0;
   /* ป้ายชื่อต้องไม่ตัดบรรทัดแม้โหนดอยู่ชิดขอบวง */
@@ -435,7 +439,7 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
   position: absolute; left: 50%; top: 50%; z-index: 1;
   transform: translateY(-50%);
   display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px;
-  padding: 8px 13px 8px calc(var(--dot) / 2 + 12px);
+  padding: 1.98cqw 3.22cqw 1.98cqw calc(var(--dot) / 2 + 2.97cqw);
   border-radius: 999px;
   background: rgba(5, 16, 31, 0.86);
   border: 1px solid color-mix(in srgb, var(--sig) 52%, transparent);
@@ -448,7 +452,7 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
 .ring-node.flip .node-pill {
   left: auto; right: 50%;
   align-items: flex-end;
-  padding: 8px calc(var(--dot) / 2 + 12px) 8px 13px;
+  padding: 1.98cqw calc(var(--dot) / 2 + 2.97cqw) 1.98cqw 3.22cqw;
 }
 @keyframes nodeIn {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0.55); }
@@ -462,8 +466,8 @@ const HOLO_PARTICLES = Array.from({ length: 24 }, (_, i) => {
   border: 1.5px solid var(--sig); box-shadow: 0 0 16px color-mix(in srgb, var(--sig) 45%, transparent);
 }
 .node-dot :deep(.ic) { width: calc(var(--dot) * 0.5); height: calc(var(--dot) * 0.5); }
-.node-label { font-size: 11.5px; font-weight: 600; color: #eaf5ff; white-space: nowrap; }
-.node-val { font-size: 12px; font-weight: 700; color: var(--sig); }
+.node-label { font-size: 2.85cqw; font-weight: 600; color: #eaf5ff; white-space: nowrap; }
+.node-val { font-size: 2.97cqw; font-weight: 700; color: var(--sig); }
 
 .awakening .node-dot {
   animation: nodeTurn 13.2s ease-in-out infinite;
