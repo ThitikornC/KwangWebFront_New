@@ -443,7 +443,7 @@
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay Student Pixel<span class="card-note">(100926) ตัวเลขยังเป็น Pixel</span></span>
+                  <span class="font-thai">Momay Student Pixel V.1<span class="card-note">(100926) ตัวเลขยังเป็น Pixel</span></span>
                 </div>
               </div>
               <div
@@ -452,7 +452,7 @@
               >
                 <div class="card-content">
                   <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel-V2" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">Momay Student Pixel<span class="card-note">(130926) ปรับตัวหนังสือชัด ตามพี่ตูน</span></span>
+                  <span class="font-thai">Momay Student Pixel V.2<span class="card-note">(130926) ปรับตัวหนังสือชัด ตามพี่ตูน</span></span>
                 </div>
               </div>
               </div>
