@@ -476,7 +476,79 @@
               <h2 class="h-en upper">Why does it matter?</h2>
               <p class="h-th font-thai">ทำไมเรื่องนี้ถึงสำคัญ</p>
 
-              <div class="cols cols-relate">
+              <!-- หมวดโซลาร์: วงเดียวกัน แต่โหนดเป็นเส้นทางพลังงาน ลูกศรไหลทางเดียว -->
+              <div v-if="isSolar" class="cols cols-relate">
+                <div class="ring-wrap relations sol-ring">
+                  <svg class="ring-lines web" viewBox="0 0 100 100">
+                    <defs>
+                      <marker
+                        id="mdSol" viewBox="0 0 10 10" refX="10" refY="5"
+                        markerUnits="userSpaceOnUse" markerWidth="4.4" markerHeight="4.4" orient="auto"
+                      >
+                        <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#6fe0ff" />
+                      </marker>
+                      <marker
+                        id="mdSolWarm" viewBox="0 0 10 10" refX="10" refY="5"
+                        markerUnits="userSpaceOnUse" markerWidth="4.4" markerHeight="4.4" orient="auto"
+                      >
+                        <path d="M0 1.4 L10 5 L0 8.6 Z" fill="#41e0a3" />
+                      </marker>
+                    </defs>
+
+                    <!-- เส้นจางด้านหลังก่อน แล้วค่อยวาดเส้นทางเดินพลังงานทับ -->
+                    <line
+                      v-for="(l, i) in solarWeb"
+                      :key="'sw' + i"
+                      class="rel-arrow web"
+                      :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
+                    />
+
+                    <line
+                      v-for="(l, i) in solarArrows"
+                      :key="'sa' + i"
+                      class="rel-arrow"
+                      :class="l.tone"
+                      :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
+                      :marker-end="`url(#${l.tone === 'near' ? 'mdSolWarm' : 'mdSol'})`"
+                    />
+                    <line
+                      v-for="(l, i) in solarArrows"
+                      :key="'sf' + i"
+                      class="rel-flow"
+                      :class="l.tone"
+                      :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2"
+                      path-length="100"
+                      :style="{ animationDelay: (i * 0.34).toFixed(2) + 's' }"
+                    />
+                  </svg>
+
+                  <div
+                    v-for="(n, i) in solarNodes"
+                    :key="n.id"
+                    class="rel-node"
+                    :style="{ left: n.x + '%', top: n.y + '%', '--sig': n.color, '--i': i }"
+                  >
+                    <Ico :name="n.icon" />
+                    <span class="rel-label font-thai">{{ n.th }}</span>
+                    <span class="rel-val">{{ n.val }}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="list-title">Key Understandings</h3>
+                  <ol class="insight-list">
+                    <li v-for="(k, i) in solarInsights" :key="k.en">
+                      <span class="num">{{ i + 1 }}</span>
+                      <span>
+                        <span class="ins-en">{{ k.en }}</span>
+                        <span class="ins-th font-thai">{{ k.th }}</span>
+                      </span>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+
+              <div v-else class="cols cols-relate">
                 <div class="ring-wrap relations">
                   <svg class="ring-lines web" viewBox="0 0 100 100">
                     <defs>
@@ -717,19 +789,23 @@
                   </div>
 
                   <div class="more-recs">
-                    <h3 class="list-title font-thai">เงินลงทุนโดยประมาณ</h3>
+                    <h3 class="list-title font-thai">ค่าไฟที่ประหยัดได้</h3>
                     <div class="sol-chain">
-                      <div class="sol-row">
-                        <span class="sol-k font-thai"><Ico name="solar" /> แผง {{ kw(plan.kwp) }} kWp</span>
-                        <span class="sol-v">{{ nf(Math.round(plan.costPanels)) }} <i class="font-thai">บาท</i></span>
+                      <div class="sol-row sol-day">
+                        <span class="sol-k font-thai"><Ico name="sun" /> กลางวัน แผงจ่ายตรง</span>
+                        <span class="sol-v">{{ nf(Math.round(plan.daySaving)) }} <i class="font-thai">บาท/เดือน</i></span>
                       </div>
-                      <div class="sol-row">
-                        <span class="sol-k font-thai"><Ico name="battery" /> แบต {{ kw(plan.batteryKwh) }} kWh</span>
-                        <span class="sol-v">{{ nf(Math.round(plan.costBattery)) }} <i class="font-thai">บาท</i></span>
+                      <div class="sol-row sol-night">
+                        <span class="sol-k font-thai"><Ico name="moon" /> กลางคืน ผ่านแบต</span>
+                        <span class="sol-v">{{ nf(Math.round(plan.nightSaving)) }} <i class="font-thai">บาท/เดือน</i></span>
                       </div>
                       <div class="sol-row sol-strong">
-                        <span class="sol-k font-thai">รวมทั้งระบบ</span>
-                        <span class="sol-v">{{ nf(Math.round(plan.costPanels + plan.costBattery)) }} <i class="font-thai">บาท</i></span>
+                        <span class="sol-k font-thai">รวมต่อเดือน</span>
+                        <span class="sol-v">{{ nf(Math.round(plan.daySaving + plan.nightSaving)) }} <i class="font-thai">บาท</i></span>
+                      </div>
+                      <div class="sol-row sol-strong">
+                        <span class="sol-k font-thai">รวมต่อปี</span>
+                        <span class="sol-v">{{ nf(Math.round((plan.daySaving + plan.nightSaving) * 12)) }} <i class="font-thai">บาท</i></span>
                       </div>
                     </div>
                   </div>
@@ -823,6 +899,24 @@
       <!-- ── แถบปุ่มล่าง — มีเฉพาะหน้าผลลัพธ์
            หน้า 01 ใช้ปุ่มในดร๊อปดาวน์ · หน้า 02 ไม่มีปุ่ม เพราะเด้งเองเมื่อวิเคราะห์ครบเวลา ── -->
       <nav v-if="step === TOTAL" class="nav">
+        <!-- ทางไปเดโมตัวอื่น — ปุ่มกลางเด่นกว่าอีกสองปุ่ม -->
+        <div class="demo-row">
+          <a
+            v-for="(d, i) in DEMO_LINKS"
+            :key="d.key"
+            class="demolink"
+            :class="{ 'demolink--lead': d.lead }"
+            :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
+            :href="d.link"
+          >
+            <span class="demolink__icon" v-html="d.icon" />
+            <span class="demolink__label">
+              <b>{{ d.label }}</b>
+              <small class="font-thai">{{ d.cta }}</small>
+            </span>
+          </a>
+        </div>
+
         <div class="nav-inner">
           <button type="button" class="btn-back font-thai" @click="restart">
             <Ico name="arrow-left" /> เริ่มใหม่
@@ -1029,6 +1123,93 @@ const planNext = computed(() =>
   solarPlan(form.energy * (1 + form.delta / 100), form.dayShare, form.peak),
 )
 const solarRec = computed(() => solarAdvice(plan.value, form.dayShare))
+
+/* ── วงความสัมพันธ์ของหมวดโซลาร์ — เส้นทางพลังงานจากแดดไปถึงโหลด ──
+   เรียงตามเข็มนาฬิกาจาก 12 นาฬิกา ลูกศรหัวเดียวเพราะพลังงานไหลทางเดียว */
+const solarNodes = computed(() => {
+  const p = plan.value
+  // เล่าเป็นภาษาคนซื้อ — ตัดศัพท์เชิงหน่วยออก ใช้ % แทนหน่วยไฟที่ปลายทาง
+  // ป้ายต้องสั้นพอจะอยู่ในวงกลมตอนแผงแคบ (จอ 1024 ป้ายยาวจะล้นออกนอกวง)
+  const items = [
+    { id: 'sun',   icon: 'sun',      th: 'แดด',           color: '#fbbf24', val: `${SOLAR.sunHours} ชม./วัน` },
+    { id: 'panel', icon: 'solar',    th: 'แผงโซลาร์',     color: '#f59e0b', val: `${kw(p.kwp)} kWp` },
+    { id: 'inv',   icon: 'bolt',     th: 'อินเวอร์เตอร์', color: '#38bdf8', val: `${kw(p.kwp)} kW` },
+    { id: 'day',   icon: 'building', th: 'ใช้กลางวัน',    color: '#34d399', val: `${form.dayShare}%` },
+    { id: 'night', icon: 'battery',  th: 'ใช้กลางคืน',    color: '#60a5fa', val: `${100 - form.dayShare}%` },
+  ]
+  const R = 33
+  return items.map((it, i) => {
+    const a = (-90 + (360 / items.length) * i) * (Math.PI / 180)
+    return { ...it, x: 50 + R * Math.cos(a), y: 50 + R * Math.sin(a) }
+  })
+})
+
+/** โซ่การไหล: แดด→แผง→อินเวอร์เตอร์→โหลดกลางวัน และแยกไป แบต→โหลดกลางคืน */
+const SOLAR_FLOW: [number, number, string][] = [
+  [0, 1, 'link'],
+  [1, 2, 'link'],
+  [2, 3, 'near'],
+  [2, 4, 'far'],
+]
+/** รัศมีโหนดของวงโซลาร์ — ต้องตรงกับความกว้าง % ของ .sol-ring .rel-node ใน CSS */
+const SOL_R_NODE = 14.2
+
+/** ตัดเส้นให้เริ่ม-จบที่ขอบวงกลมของโหนด ไม่ใช่จุดศูนย์กลาง */
+function segment(a: { x: number; y: number }, b: { x: number; y: number }) {
+  const dx = b.x - a.x, dy = b.y - a.y
+  const len = Math.hypot(dx, dy) || 1
+  const ux = dx / len, uy = dy / len
+  return {
+    x1: a.x + ux * SOL_R_NODE, y1: a.y + uy * SOL_R_NODE,
+    x2: b.x - ux * SOL_R_NODE, y2: b.y - uy * SOL_R_NODE,
+  }
+}
+
+const solarArrows = computed(() =>
+  SOLAR_FLOW.map(([ia, ib, tone]) => ({ ...segment(solarNodes.value[ia], solarNodes.value[ib]), tone })),
+)
+
+/** เส้นจางด้านหลัง — คู่ที่เหลือทั้งหมดที่ไม่ได้อยู่บนทางเดินพลังงาน
+    ไม่ใส่หัวลูกศร เพราะไม่ใช่การไหลจริง มีไว้ให้วงดูเชื่อมกันทั้งวง */
+const solarWeb = computed(() => {
+  const ns = solarNodes.value
+  const used = new Set(SOLAR_FLOW.map(([a, b]) => `${Math.min(a, b)}-${Math.max(a, b)}`))
+  const out: { x1: number; y1: number; x2: number; y2: number }[] = []
+  for (let i = 0; i < ns.length; i++) {
+    for (let j = i + 1; j < ns.length; j++) {
+      if (used.has(`${i}-${j}`)) continue
+      out.push(segment(ns[i], ns[j]))
+    }
+  }
+  return out
+})
+
+/** Key Understandings ของหมวดโซลาร์ */
+const solarInsights = computed(() => {
+  const p = plan.value
+  return [
+    {
+      en: 'The sun only works a few hours a day.',
+      th: `แดดแรงพอจะใช้งานได้จริงแค่ราว ${SOLAR.sunHours} ชั่วโมงต่อวัน แผงจึงต้องใหญ่พอจะเก็บไฟให้ทันในช่วงนั้น`,
+    },
+    {
+      en: 'Power used during the day is the cheapest power.',
+      th: `ไฟที่ใช้ตอนกลางวัน ${form.dayShare}% รับจากแผงได้ทันที ไม่ต้องเก็บ จึงถูกที่สุด`,
+    },
+    {
+      en: 'Power used at night has to be stored first.',
+      th: `ไฟที่ใช้ตอนกลางคืน ${100 - form.dayShare}% ต้องเก็บไว้ก่อน ยิ่งใช้กลางคืนมาก ยิ่งต้องลงทุนกับแบตมาก`,
+    },
+    {
+      en: p.peakOnSun
+        ? 'Your busiest hours fall while the sun is up.'
+        : 'Your busiest hours fall after the sun goes down.',
+      th: p.peakOnSun
+        ? `ช่วงที่คนเยอะที่สุด ${p.peakWindow} ตรงกับเวลาที่แดดยังอยู่ แผงรับได้เอง`
+        : `ช่วงที่คนเยอะที่สุด ${p.peakWindow} เลยเวลาแดดไปแล้ว ต้องใช้ไฟที่เก็บไว้`,
+    },
+  ]
+})
 
 /** ทศนิยมตามขนาดตัวเลข — เลขเล็กต้องเห็นทศนิยม เลขใหญ่ไม่ต้อง */
 const kw = (v: number) => (v >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1))
@@ -1389,6 +1570,36 @@ const canAdvance = computed(() => {
   if (step.value === 2) return awakenAt.value >= AWAKEN_STEPS.length
   return true
 })
+
+/* ทางไปเดโมตัวอื่น — ลิงก์ชุดเดียวกับหน้าขาย
+   ปุ่มกลาง (Citizen / Student) เป็นตัวเด่น อีกสองปุ่มเป็นช่องทางคุยรายละเอียด */
+const DEMO_LINKS = [
+  {
+    key: 'enlightened',
+    label: 'ENLIGHTENED',
+    cta: 'พูดคุยรายละเอียด',
+    color: '#ECB731',
+    link: '/momay/MomayDemo-ByJob',
+    icon: `<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>`,
+  },
+  {
+    key: 'citizen',
+    label: 'CITIZEN / STUDENT',
+    cta: 'คลิ๊กเพื่อดู',
+    color: '#4ADE80',
+    link: '/momay/MomayDemo-StudentPixel',
+    lead: true,
+    icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0"/></svg>`,
+  },
+  {
+    key: 'executive',
+    label: 'EXECUTIVE BRIEF',
+    cta: 'พูดคุยรายละเอียด',
+    color: '#ED1B2E',
+    link: '/momay/MomayDemo-Executive',
+    icon: `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M13.5 3.7V8.2H18"/><path d="M9 12.5h6M9 16h4"/></svg>`,
+  },
+]
 
 const STEP_TAGS = [
   'Let your data<br>explain MOMAY.',
@@ -2344,6 +2555,11 @@ onMounted(() => {
 .sol-night .sol-k { color: #93c5fd; }
 
 /* สองการ์ดผลลัพธ์ ไม่ใช่สามเหมือนหมวดอื่น */
+/* ค่า 26% ต้องตรงกับ SOL_R_NODE ในสคริปต์ (ครึ่งหนึ่ง + เผื่อหัวลูกศร) */
+.sol-ring .rel-node { width: 26%; height: 26%; }
+.sol-ring .rel-node :deep(.ic) { width: 17px; height: 17px; }
+.panel .sol-ring .rel-node :deep(.ic) { width: 15px; height: 15px; }
+
 .tiles-2 { grid-template-columns: 1fr 1fr; }
 .tile-u { margin-left: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
 
@@ -2532,6 +2748,182 @@ onMounted(() => {
 }
 .btn-outline:hover { border-color: var(--brand); color: #eaf7ff; }
 .btn-outline :deep(.ic) { width: 15px; height: 15px; }
+
+/* ── แถบล่างหน้าผลลัพธ์: ตัวหนังสือและปุ่มใหญ่ขึ้น ──
+   เพดานอยู่ที่ราว 19px (จากเดิม 13px) — เคยลองสองเท่าเต็มแล้วใหญ่เกินเนื้อหา
+   และผูกกับความกว้างจอด้วย clamp เพราะจอ 1024 แผงกว้างแค่ ~238px
+
+   เจาะจงที่ .nav เท่านั้น เพราะ .btn-next ถูกใช้เป็นปุ่ม "ต่อไป" ในหน้า 01 ด้วย */
+.nav .btn-back {
+  gap: clamp(7px, 0.7vw, 11px);
+  font-size: clamp(13px, 1.15vw, 18px);
+}
+.nav .btn-back :deep(.ic) {
+  width: clamp(15px, 1.35vw, 21px);
+  height: clamp(15px, 1.35vw, 21px);
+}
+
+.nav-actions { gap: clamp(12px, 1.2vw, 18px); }
+.nav-actions .share-link {
+  padding: clamp(6px, 0.6vw, 9px) 4px;
+  font-size: clamp(13px, 1.2vw, 19px);
+  text-underline-offset: clamp(3px, 0.3vw, 5px);
+}
+.nav-actions .btn-next {
+  gap: clamp(8px, 0.8vw, 12px);
+  padding: clamp(11px, 1vw, 15px) clamp(22px, 2vw, 32px);
+  font-size: clamp(13px, 1.2vw, 19px);
+}
+.nav-actions .btn-next :deep(.ic) {
+  width: clamp(15px, 1.4vw, 22px);
+  height: clamp(15px, 1.4vw, 22px);
+}
+
+/* ── แถวปุ่มไปเดโมตัวอื่น (ท้ายหน้าผลลัพธ์) ── */
+/* --btn-a ต้องประกาศเป็น @property ถึงจะ animate มุมของ conic-gradient ได้ */
+@property --btn-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes btnSweep { to { --btn-a: 360deg; } }
+
+.demo-row {
+  display: grid;
+  /* ช่องกลางกว้างกว่าอีกสองช่อง ปุ่มเด่นตั้งแต่ระดับเลย์เอาต์ ไม่ใช่แค่ scale */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  max-width: 1040px;
+  margin: 0 auto 18px;
+  width: 100%;
+}
+.demolink {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative; isolation: isolate;
+  display: flex; align-items: center; justify-content: center; gap: 13px;
+  padding: 14px 18px;
+  border: 0; border-radius: 999px;
+  background: transparent;
+  box-shadow: 0 14px 30px rgba(2, 10, 22, 0.45);
+  text-decoration: none; text-align: left; cursor: pointer;
+  transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+}
+/* ปุ่มข้าง: ขอบนิ่ง ๆ ไม่มีแสงวิ่ง — แสงวิ่งสงวนไว้ให้ปุ่มกลางตัวเดียว */
+.demolink::before {
+  content: ''; position: absolute; inset: -1.2px; z-index: -2; border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent) 45%, transparent),
+    rgba(255, 255, 255, 0.05) 55%,
+    color-mix(in srgb, var(--accent) 30%, transparent)
+  );
+}
+.demolink::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  background:
+    radial-gradient(72% 140% at 12% 50%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    #08182c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: background 0.45s var(--ease);
+}
+/* ปุ่มข้างไม่ขยับตอน hover — เปลี่ยนแค่ความสว่างของพื้นให้รู้ว่ากดได้ */
+.demolink:hover::after {
+  background:
+    radial-gradient(72% 140% at 12% 50%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 72%),
+    #0d1b2e;
+}
+.demolink__icon {
+  display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--accent) 26%, transparent), rgba(255, 255, 255, 0.03));
+  color: var(--accent);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), border-color 0.5s var(--ease);
+}
+.demolink:hover .demolink__icon {
+  border-color: var(--accent);
+  box-shadow: 0 0 18px -2px color-mix(in srgb, var(--accent) 75%, transparent);
+  transform: scale(1.06);
+}
+.demolink__icon :deep(svg) {
+  width: 24px; height: 24px; fill: none; stroke: currentColor;
+  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+}
+.demolink__label { display: flex; flex-direction: column; gap: 3px; line-height: 1.3; min-width: 0; }
+.demolink__label b {
+  font-size: 14px; font-weight: 800; letter-spacing: 0.09em;
+  color: var(--accent); white-space: nowrap;
+}
+.demolink__label small { font-size: 11.5px; letter-spacing: 0.06em; color: var(--muted); transition: color 0.35s var(--ease); }
+.demolink:hover .demolink__label small { color: #eaf6ff; }
+
+/* ── ปุ่มกลาง — ตัวหลักของแถว ──
+   เน้นหลายชั้นพร้อมกัน: ช่องกว้างกว่า (ที่ .demo-row) · สเกลใหญ่กว่า ·
+   พื้นเรืองสีเข้มกว่า · ขอบหนากว่าและแสงวิ่งเร็วกว่า · มีจังหวะหายใจเบา ๆ */
+.demolink--lead {
+  padding: 14px 18px;
+  transform: scale(1.02);
+  animation: leadPulse 2.8s ease-in-out infinite;
+}
+@keyframes leadPulse {
+  0%, 100% {
+    box-shadow: 0 18px 40px rgba(2, 10, 22, 0.55),
+                0 0 26px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+  50% {
+    box-shadow: 0 20px 46px rgba(2, 10, 22, 0.6),
+                0 0 44px -6px color-mix(in srgb, var(--accent) 90%, transparent);
+  }
+}
+/* แสงวิ่งรอบขอบ — มีเฉพาะปุ่มกลาง */
+.demolink--lead::before {
+  inset: -2.4px;
+  background: conic-gradient(
+    from var(--btn-a),
+    rgba(255, 255, 255, 0.06) 0deg,
+    rgba(255, 255, 255, 0.06) 214deg,
+    var(--accent) 268deg,
+    #ffffff 300deg,
+    var(--accent) 332deg,
+    rgba(255, 255, 255, 0.06) 360deg
+  );
+  animation: btnSweep 2.2s linear infinite;
+}
+.demolink--lead::after {
+  background:
+    radial-gradient(78% 150% at 14% 50%, color-mix(in srgb, var(--accent) 34%, transparent), transparent 74%),
+    #0b2033;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.demolink--lead:hover { transform: scale(1.02) translateY(-2px); }
+.demolink--lead .demolink__icon {
+  width: 46px; height: 46px;
+  border-width: 2px;
+  box-shadow: 0 0 20px -4px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+.demolink--lead .demolink__icon :deep(svg) { width: 25px; height: 25px; stroke-width: 1.8; }
+.demolink--lead .demolink__label b {
+  font-size: 14.5px; letter-spacing: 0.095em;
+  color: #ffffff;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 85%, transparent);
+}
+.demolink--lead .demolink__label small { font-size: 11.5px; font-weight: 600; color: #dff3e6; }
+
+/* เครื่องเคลื่อนไหวปิดอยู่ → ยังต้องเด่นด้วยเงาคงที่ */
+@media (prefers-reduced-motion: reduce) {
+  .demolink--lead {
+    animation: none;
+    box-shadow: 0 20px 46px rgba(2, 10, 22, 0.6),
+                0 0 38px -6px color-mix(in srgb, var(--accent) 85%, transparent);
+  }
+}
+
+/* จอแคบ: สามปุ่มเรียงกันไม่ไหว ให้ซ้อนลงมาเป็นแถวเดียว */
+@media (max-width: 820px) {
+  .demo-row { grid-template-columns: 1fr; gap: 11px; }
+  .demolink--lead, .demolink--lead:hover { transform: none; }
+}
 
 .btn-back { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--muted); cursor: pointer; }
 .btn-back:hover { color: #cfe3f7; }

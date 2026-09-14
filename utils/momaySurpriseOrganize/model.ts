@@ -372,10 +372,8 @@ export const SOLAR = {
   /** สัดส่วนความจุแบตที่ใช้งานได้จริง — 1 = ตามสูตรตรง ๆ
       ถ้าอยากเผื่อ DoD ของ LiFePO4 ให้ตั้ง 0.9 ความจุแบตจะโตขึ้น ~11% */
   batteryUsable: 1,
-  /** ราคาติดตั้งต่อ kWp (บาท) — ใช้ประเมินระยะคืนทุน */
-  costPerKwp: 28000,
-  /** ราคาแบตต่อ kWh (บาท) */
-  costPerKwhBattery: 12000,
+  /** คาร์บอนต่อหน่วยไฟจากระบบสายส่ง (kgCO2e/kWh) — ค่าอ้างอิงกริดไทย */
+  gridCo2PerKwh: 0.5,
 }
 
 /** ช่วงพีคที่ยังอยู่ในเวลาแดด — แผงจ่ายตรงได้ ไม่ต้องดึงจากแบต */
@@ -402,12 +400,9 @@ export interface SolarPlan {
   /** ช่วงพีคอยู่ในเวลาแดดไหม */
   peakOnSun: boolean
   peakWindow: string
-  /** เงินลงทุน (บาท) */
-  costPanels: number
-  costBattery: number
-  /** ระยะคืนทุน (ปี) — ติดแผงอย่างเดียว กับ ติดแผง+แบต */
-  paybackPanels: number
-  paybackFull: number
+  /** คาร์บอนที่ลดได้ (ตัน CO2e ต่อปี) — ติดแผงอย่างเดียว กับ ติดแผง+แบต */
+  co2PanelsTons: number
+  co2FullTons: number
 }
 
 export function solarPlan(monthlyBill: number, dayShare: number, peak: PeakId): SolarPlan {
@@ -421,8 +416,9 @@ export function solarPlan(monthlyBill: number, dayShare: number, peak: PeakId): 
   const kwp = dayKwh / (SOLAR.sunHours * SOLAR.performanceRatio)
   const batteryKwh = nightKwh / SOLAR.batteryUsable
   const daySaving = monthlyBill * dayRatio
-  const costPanels = kwp * SOLAR.costPerKwp
-  const costBattery = batteryKwh * SOLAR.costPerKwhBattery
+
+  // ทุกหน่วยที่ผลิตเองคือหน่วยที่ไม่ต้องดึงจากสายส่ง → คาร์บอนที่ไม่ถูกปล่อย
+  const tons = (kwhDay: number) => (kwhDay * 365 * SOLAR.gridCo2PerKwh) / 1000
 
   return {
     kwhPerMonth,
@@ -435,11 +431,9 @@ export function solarPlan(monthlyBill: number, dayShare: number, peak: PeakId): 
     nightSaving: monthlyBill * (1 - dayRatio),
     peakOnSun: PEAK_ON_SUN[peak] ?? false,
     peakWindow: PEAK_MAP[peak]?.window ?? '',
-    costPanels,
-    costBattery,
-    // ติดแผงอย่างเดียวประหยัดได้เฉพาะส่วนกลางวัน · เติมแบตแล้วประหยัดได้ทั้งบิล
-    paybackPanels: daySaving > 0 ? costPanels / (daySaving * 12) : 0,
-    paybackFull: monthlyBill > 0 ? (costPanels + costBattery) / (monthlyBill * 12) : 0,
+    // ติดแผงอย่างเดียวลดได้เฉพาะส่วนกลางวัน · เติมแบตแล้วลดได้ทั้งวัน
+    co2PanelsTons: tons(dayKwh),
+    co2FullTons: tons(kwhPerDay),
   }
 }
 
@@ -455,8 +449,8 @@ export interface SolarAdvice {
 }
 
 export function solarAdvice(plan: SolarPlan, dayShare: number): SolarAdvice {
-  const yr = (v: number) => v.toFixed(1)
   const baht = (v: number) => Math.round(v).toLocaleString('en-US')
+  const co2 = (v: number) => (v >= 10 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1))
 
   // ใช้ไฟกลางวันเป็นหลัก + พีคอยู่ในเวลาแดด → แผงอย่างเดียวคุ้มที่สุด ยังไม่ต้องลงแบต
   if (dayShare >= 60 && plan.peakOnSun) {
@@ -468,7 +462,7 @@ export function solarAdvice(plan: SolarPlan, dayShare: number): SolarAdvice {
       whyTh: 'ทั้งการใช้ไฟส่วนใหญ่และช่วงที่คนเยอะที่สุด อยู่ในเวลาแดดพอดี แผงจึงจ่ายตรงได้เลย',
       impacts: [
         { dir: 'down', tone: 'good', th: `ค่าไฟลดราว ${baht(plan.daySaving)} บาท/เดือน` },
-        { dir: 'down', tone: 'good', th: `คืนทุนราว ${yr(plan.paybackPanels)} ปี` },
+        { dir: 'down', tone: 'good', th: `ลดคาร์บอนราว ${co2(plan.co2PanelsTons)} ตัน/ปี` },
         { dir: 'down', tone: 'good', th: 'ยังไม่ต้องลงทุนแบต' },
       ],
     }
@@ -485,7 +479,7 @@ export function solarAdvice(plan: SolarPlan, dayShare: number): SolarAdvice {
       impacts: [
         { dir: 'up', tone: 'warn', th: `ต้องมีแบตราว ${baht(plan.batteryKwh)} kWh` },
         { dir: 'down', tone: 'good', th: `ค่าไฟลดได้ถึง ${baht(plan.daySaving + plan.nightSaving)} บาท/เดือน` },
-        { dir: 'down', tone: 'good', th: `คืนทุนราว ${yr(plan.paybackFull)} ปี` },
+        { dir: 'down', tone: 'good', th: `ลดคาร์บอนราว ${co2(plan.co2FullTons)} ตัน/ปี` },
       ],
     }
   }
@@ -499,7 +493,7 @@ export function solarAdvice(plan: SolarPlan, dayShare: number): SolarAdvice {
     whyTh: 'ไฟกลางวันกับกลางคืนใกล้เคียงกัน แผงจึงช่วยได้ราวครึ่งบิล ส่วนที่เหลืออยู่ที่แบต',
     impacts: [
       { dir: 'down', tone: 'good', th: `เฟสแรกลดค่าไฟ ${baht(plan.daySaving)} บาท/เดือน` },
-      { dir: 'down', tone: 'good', th: `คืนทุนเฟสแรกราว ${yr(plan.paybackPanels)} ปี` },
+      { dir: 'down', tone: 'good', th: `เฟสแรกลดคาร์บอน ${co2(plan.co2PanelsTons)} ตัน/ปี` },
       { dir: 'up', tone: 'warn', th: `เฟสสองต้องมีแบต ${baht(plan.batteryKwh)} kWh` },
     ],
   }
