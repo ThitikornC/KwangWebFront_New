@@ -53,10 +53,6 @@
     <section id="top" class="mm-hero">
       <!-- ฉากหลังหลายชั้น เลื่อนแบบพารัลแลกซ์ (วาดด้วย SVG ล้วน) -->
       <div class="mm-hero__bg" aria-hidden="true">
-        <!-- ภาพเมืองยามค่ำเป็นชั้นล่างสุด ชั้นอื่นทับไล่โทนแดงของแบรนด์ลงไปบนภาพ -->
-        <img class="mm-hero__photo" src="/momay/demo-bg-04.webp" alt="" aria-hidden="true"
-             :style="{ transform: `translate3d(0, ${heroY * 0.1}px, 0) scale(1.06)` }" />
-
         <div class="mm-hero__glow" :style="{ transform: `translate3d(0, ${heroY * 0.25}px, 0)` }" />
 
         <svg class="mm-hero__grid" preserveAspectRatio="none" viewBox="0 0 1200 700"
@@ -2916,20 +2912,8 @@ section {
   filter: blur(6px);
 }
 .mm-hero__grid { inset: 0; width: 100%; height: 100%; opacity: 0.75; }
-/* ฉากหลังฮีโร่ของรุ่น 2 — ภาพเมืองยามค่ำเต็มพื้นที่
-   scale เผื่อไว้เล็กน้อยกันขอบโผล่ตอนเลื่อนแบบพารัลแลกซ์
-   จางลงทางซ้ายเพื่อให้หัวเรื่องกับปุ่มอ่านออกบนภาพ */
-.mm-hero__photo {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 38%;
-  opacity: 0.62;
-  filter: saturate(0.9) contrast(1.05);
-  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.72) 34%, #000 62%, #000 100%);
-  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.72) 34%, #000 62%, #000 100%);
-}
+/* ฉากหลังฮีโร่ของรุ่น 2 — ภาพเมืองอยู่ในวงสัญญาณเท่านั้น ไม่มีภาพเต็มจอ
+   (ดู .mm-hero__ring ด้านล่าง) */
 .mm-hero__streams { inset: 0; width: 100%; height: 100%; }
 .mm-hero__city { left: 0; right: 0; bottom: 0; width: 100%; }
 .mm-hero__city--far { height: 46%; opacity: 0.9; }
@@ -2947,12 +2931,13 @@ section {
   right: clamp(8px, 4vw, 84px);
   top: 50%;
   width: min(46vw, 560px);
-  /* ครึ่งหนึ่งของความกว้าง = จัดวงให้กึ่งกลางแนวตั้งพอดี (วงเป็นสี่เหลี่ยมจัตุรัส) */
-  margin-top: calc(min(46vw, 560px) / -2);
+  /* ครึ่งหนึ่งของความกว้าง = กึ่งกลางแนวตั้งพอดี (วงเป็นสี่เหลี่ยมจัตุรัส)
+     แล้วยกขึ้นอีกช่วงหนึ่ง ให้พ้นแถวปุ่มเดโมที่อยู่ชิดขอบล่างของฮีโร่ */
+  margin-top: calc(min(46vw, 560px) / -2 - clamp(40px, 9vh, 96px));
   pointer-events: none;
 }
-/* ภาพเมืองในวงซ้ำกับฉากหลังฮีโร่ จึงหรี่ลงให้เหลือแค่ประกายในวง */
-.mm-hero__ring :deep(.ring-bg) { opacity: 0.34; }
+/* ภาพเมืองอยู่ในวงกลมนี้ที่เดียว จึงเปิดเต็มที่เหมือนหน้าเดโม */
+.mm-hero__ring :deep(.ring-bg) { opacity: 0.72; }
 /* วงมาพร้อม max-width 404px ของหน้าเดโม — ในฮีโร่ให้เต็มกรอบที่จองไว้แทน */
 .mm-hero__ring :deep(.ring-wrap) { max-width: 100%; margin: 0; }
 /* จอแคบ: วงจะบังข้อความ จึงซ่อนไว้ แล้วให้ภาพเมืองทำหน้าที่ฉากหลังแทน */

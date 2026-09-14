@@ -2166,7 +2166,11 @@ onMounted(() => {
   .sub-q { font-size: 16px; }
   .peak { font-size: 13.5px; padding: 11px 18px; }
 
-  .stage-slot { height: 100px; }
+  /* บีบช่องหัวข้อกับแถบบนให้แคบลง = ทั้งวงและรายการขยับขึ้นไปทางหัวจอ
+     โดยไม่ต้องย่อขนาดวง (ขนาดวงคุมด้วย .cols-awaken ด้านล่าง) */
+  .stage-slot { height: 78px; }
+  .brand-bar { padding-top: 10px; padding-bottom: 6px; }
+  .progbar { padding-bottom: 12px; }
 
   /* 04 · 06 */
   .ring-wrap { max-width: 100%; margin: 0 auto; }
@@ -2243,6 +2247,8 @@ onMounted(() => {
      ไม่ปล่อยให้กองอยู่ครึ่งบนแล้วเหลือช่องว่างท้ายหน้า */
   .screen:not(.screen-fill) { display: flex; flex-direction: column; }
   .screen:not(.screen-fill) > .cols { margin-top: auto; margin-bottom: auto; }
+  /* หน้าวิเคราะห์ไม่ลอยกึ่งกลาง — ให้วงขึ้นไปชิดหัวเรื่อง ช่องว่างที่เหลือไปกองด้านล่างแทน */
+  .screen > .cols-awaken { margin-top: 0; margin-bottom: auto; }
   .screen-narrow > .field-list { margin-top: auto; margin-bottom: auto; }
   .screen > .sig-grid { margin-top: auto; }
   .screen > .peak-row { margin-bottom: auto; }
@@ -2252,11 +2258,48 @@ onMounted(() => {
 @media (min-width: 700px) {
   .panels { grid-template-columns: 1fr 1fr; }
 }
-@media (min-width: 1180px) {
+/* iPad Mini แนวนอน (1024) ต้องได้ 4 แผงเรียงข้างกันแล้ว ไม่ใช่ 2×2 */
+@media (min-width: 1000px) {
   .panels { grid-template-columns: repeat(4, 1fr); gap: 12px; }
   .app-wide .brand-bar, .app-wide .progbar, .app-wide .nav-inner, .app-wide .body { max-width: 1460px; }
   .panel { padding: 16px 13px 18px; }
   .panel .ring-wrap, .panel .ring-wrap.relations { max-width: 100%; }
+
+  /* พอเรียง 4 คอลัมน์ แผงจะแคบกว่าตอน 2 คอลัมน์มาก
+     ไทล์ที่ถูกขยายไว้ในบล็อก 1000px ด้านบนจึงล้นจนชื่อโดน overflow ของ .tile ตัดหัวท้าย
+     วางชื่อไว้ใต้ไอคอนแทนการวางข้าง ๆ ชื่อจะได้ความกว้างเต็มการ์ด */
+  /* การ์ดกว้างแค่ ~64px — ถ้าไม่บีบระยะแนวตั้ง การ์ดจะสูงเกือบสองเท่าของความกว้าง ดูเป็นแท่ง
+     มุมโค้งก็ต้องเล็กลงตามขนาดการ์ด ไม่งั้นดูบวมเกินกรอบ */
+  .panel .tiles { gap: 6px; }
+  .panel .tile { padding: 9px 8px 10px; border-radius: 10px; }
+  .panel .tile-head { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 10px; }
+  .panel .tile-chip { width: 19px; height: 19px; border-radius: 6px; }
+  .panel .tile-chip :deep(.ic) { width: 11px; height: 11px; }
+  .panel .tile-val { margin-top: 4px; font-size: 17px; }
+  .panel .tile-cap { margin-top: 2px; font-size: 8px; line-height: 1.35; }
+
+  /* โหนดในวงความสัมพันธ์: ไอคอน + ชื่อ + ตัวเลข ซ้อนกันสูงเกือบเท่าเส้นผ่านศูนย์กลาง
+     แถวตัวเลขจึงไปอยู่ช่วงล่างที่คอร์ดของวงกลมแคบ แล้วล้นออกนอกขอบวง
+     ย่อไอคอนกับตัวอักษรให้กองข้อความสั้นลง ทุกแถวจะขยับเข้าใกล้กลางวงที่กว้างกว่า */
+  .panel .rel-node :deep(.ic) { width: 14px; height: 14px; }
+  .panel .rel-node.lead :deep(.ic) { width: 16px; height: 16px; }
+  .panel .rel-label, .panel .rel-node.lead .rel-label { font-size: 9px; }
+  .panel .rel-val, .panel .rel-node.lead .rel-val { font-size: 9.5px; }
+
+  /* ตารางมี 4 คอลัมน์ (Metric · Current · Scenario · Change) แต่แผงกว้างแค่ ~238px
+     ค่าเดิมทำให้ตารางกว้างเกินจนคอลัมน์ Change หลุดออกนอกกรอบ เห็นไม่ครบ
+     บีบระยะ + ให้หัวคอลัมน์ตัดบรรทัดได้ ตารางจะพอดีกรอบโดยไม่ต้องเลื่อนแนวนอน */
+  .panel .sim-table { font-size: 10.5px; }
+  .panel .sim-table th, .panel .sim-table td { padding: 7px 4px; }
+  .panel .sim-table thead th { font-size: 8.5px; white-space: normal; line-height: 1.3; }
+  .panel .cell-ic { margin-right: 4px; }
+  .panel .cell-ic :deep(.ic) { width: 11px; height: 11px; }
+
+  /* แผงทั้งแถวสูงเท่ากันเสมอ พอแผงคำแนะนำยาวขึ้น (เช่นเลื่อนไป +40% แล้วมีเรื่องต้องจัดการเพิ่ม)
+     แผงอื่นจะถูกยืดตาม แล้ว margin-top: auto ที่ดันเนื้อหาไปชิดก้นแผงจะเปิดช่องโหว่กลางการ์ด
+     ให้เนื้อหาเรียงชิดบนแทน ช่องว่างที่เหลือไปกองท้ายการ์ดเป็นก้อนเดียว */
+  .panel-see .peak-badge { margin-top: 12px; }
+  .panel-sim .flag { margin-top: 12px; }
 }
 
 /* เคารพการตั้งค่าลดการเคลื่อนไหวของเครื่อง */
