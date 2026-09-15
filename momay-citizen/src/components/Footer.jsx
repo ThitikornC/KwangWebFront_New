@@ -1,10 +1,11 @@
 import { footer } from '../data/mock.js'
+import { asset } from '../asset.js'
 
 export default function Footer() {
   return (
     <footer className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-4 border-t border-edge px-5 py-5 sm:px-6">
       <div className="flex items-center gap-2.5">
-        <img src="/MOMAY_mark.png" alt="" className="h-7 w-auto" />
+        <img src={asset("MOMAY_mark.png")} alt="" className="h-7 w-auto" />
         <span className="text-sm font-semibold tracking-[0.22em] text-white">MOMAY</span>
       </div>
 

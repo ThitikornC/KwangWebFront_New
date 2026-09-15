@@ -117,7 +117,11 @@ export default function MapPanel() {
           minZoom={mapConfig.minZoom}
           maxZoom={mapConfig.maxZoom}
           zoomControl={false}
-          scrollWheelZoom={false}
+          // ซูมด้วยล้อเมาส์และนิ้ว (pinch) ได้ — Leaflet จะใส่คลาส leaflet-touch-zoom
+          // /leaflet-touch-drag ให้เอง ทำให้ touch-action ของ container ถูกต้องตามนั้น
+          scrollWheelZoom
+          touchZoom
+          doubleClickZoom
           className="h-full w-full"
         >
           <TileLayer

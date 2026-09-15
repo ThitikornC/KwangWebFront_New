@@ -1,5 +1,6 @@
 import Icon from './Icon.jsx'
 import { header } from '../data/mock.js'
+import { asset } from '../asset.js'
 
 export default function TopBar({ query, onQueryChange }) {
   return (
@@ -7,7 +8,7 @@ export default function TopBar({ query, onQueryChange }) {
       <div className="flex items-center gap-3 sm:gap-5">
         {/* Compact brand for small screens, where the sidebar is hidden */}
         <div className="flex items-center gap-2 lg:hidden">
-          <img src="/MOMAY_mark.png" alt="MOMAY" className="h-7 w-auto" />
+          <img src={asset("MOMAY_mark.png")} alt="MOMAY" className="h-7 w-auto" />
           <span className="text-sm font-semibold tracking-[0.2em] text-white">MOMAY</span>
         </div>
 

@@ -1,3 +1,5 @@
+import { asset } from '../asset.js'
+
 // Mock data for the MOMAY CITIZEN dashboard.
 // Swap these constants for API responses when the backend is ready —
 // every component reads its content from here and nothing else.
@@ -25,7 +27,7 @@ export const header = {
 }
 
 export const hero = {
-  image: '/momay/demo-bg-01.webp',
+  image: asset('momay/demo-bg-01.webp'),
   eyebrow: 'วันนี้...',
   title: 'คุณอยากทำอะไร?',
   lines: [
@@ -174,7 +176,7 @@ export const activityPoints = [
 export const recommendations = [
   {
     id: 'riverwalk',
-    image: '/momay/demo-bg-03.webp',
+    image: asset('momay/demo-bg-03.webp'),
     badge: { label: 'แนะนำเลย', icon: 'run', tone: 'emerald' },
     icon: 'run',
     tone: 'emerald',
@@ -185,7 +187,7 @@ export const recommendations = [
   },
   {
     id: 'talad-tai',
-    image: '/momay/cta-bg.webp',
+    image: asset('momay/cta-bg.webp'),
     badge: { label: 'กำลังนิยม', icon: 'fire', tone: 'rose' },
     icon: 'food',
     tone: 'rose',
@@ -196,7 +198,7 @@ export const recommendations = [
   },
   {
     id: 'river-cafe',
-    image: '/momay/demo-bg-05.webp',
+    image: asset('momay/demo-bg-05.webp'),
     badge: null,
     icon: 'cafe',
     tone: 'amber',
@@ -207,7 +209,7 @@ export const recommendations = [
   },
   {
     id: 'wat-yai',
-    image: '/momay/demo-bg-04.webp',
+    image: asset('momay/demo-bg-04.webp'),
     badge: null,
     icon: 'temple',
     tone: 'sky',
@@ -219,7 +221,7 @@ export const recommendations = [
 ]
 
 export const nearbyEvent = {
-  image: '/momay/hero-people.webp',
+  image: asset('momay/hero-people.webp'),
   title: 'งานถนนคนเดิน ตลาดใต้',
   time: '17:00 – 22:00 น.',
   place: 'ตลาดใต้',

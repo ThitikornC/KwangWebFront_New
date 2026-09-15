@@ -1,5 +1,6 @@
 import Icon from './Icon.jsx'
 import { navItems } from '../data/mock.js'
+import { asset } from '../asset.js'
 
 export default function Sidebar({ active, onSelect }) {
   return (
@@ -8,7 +9,7 @@ export default function Sidebar({ active, onSelect }) {
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] opacity-[0.14]"
         style={{
-          backgroundImage: 'url(/momay/demo-bg-04.webp)',
+          backgroundImage: `url(${asset('momay/demo-bg-04.webp')})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           maskImage: 'linear-gradient(to top, black, transparent)',
@@ -17,7 +18,7 @@ export default function Sidebar({ active, onSelect }) {
       />
 
       <div className="relative px-4 pb-6 pt-7 text-center">
-        <img src="/MOMAY_mark.png" alt="" className="mx-auto h-11 w-auto" />
+        <img src={asset("MOMAY_mark.png")} alt="" className="mx-auto h-11 w-auto" />
         <p className="mt-2 text-[15px] font-semibold tracking-[0.28em] text-white">MOMAY</p>
         <p className="text-[11px] font-medium tracking-[0.34em] text-sky-300/80">CITIZEN</p>
         <p className="mt-3 text-[10px] font-semibold tracking-[0.2em] text-slate-300">SEE &amp; ACT</p>
