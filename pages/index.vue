@@ -97,24 +97,24 @@ onBeforeUnmount(() => {
       </div>
       
       <!-- Menu -->
-      <div class="flex-[1] flex flex-col items-center gap-[clamp(1rem,2.5vw,2rem)] w-full">
-        <a href="/valueProposition" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
+      <div class="flex-[1] flex flex-col items-center gap-[clamp(0.6rem,1.5vw,1.1rem)] w-full">
+        <a href="/valueProposition" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(0.85rem,1.8vw,1.3rem)] font-sans font-light px-[clamp(1rem,3vw,1.75rem)] py-[clamp(0.6rem,1.5vw,0.85rem)] rounded-xl w-full max-w-[min(320px,85vw)] whitespace-nowrap flex items-center justify-center">
           ABOUT US
         </a>
 
-        <a href="/home" class="neon-btn bg-[#7d1007] text-white text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
+        <a href="/home" class="neon-btn bg-[#7d1007] text-white text-[clamp(0.85rem,1.8vw,1.3rem)] font-sans font-light px-[clamp(1rem,3vw,1.75rem)] py-[clamp(0.6rem,1.5vw,0.85rem)] rounded-xl w-full max-w-[min(320px,85vw)] whitespace-nowrap flex items-center justify-center">
           PROJECTS
         </a>
 
-        <a href="/renewable" class="neon-btn bg-[#7d1007] text-white text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
+        <a href="/renewable" class="neon-btn bg-[#7d1007] text-white text-[clamp(0.85rem,1.8vw,1.3rem)] font-sans font-light px-[clamp(1rem,3vw,1.75rem)] py-[clamp(0.6rem,1.5vw,0.85rem)] rounded-xl w-full max-w-[min(320px,85vw)] whitespace-nowrap flex items-center justify-center">
           FORWARD THINKING
         </a>
 
-        <a href="/renewablesort/MomayforSaleV2" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
+        <a href="/renewablesort/MomayforSaleV2" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(0.85rem,1.8vw,1.3rem)] font-sans font-light px-[clamp(1rem,3vw,1.75rem)] py-[clamp(0.6rem,1.5vw,0.85rem)] rounded-xl w-full max-w-[min(320px,85vw)] whitespace-nowrap flex items-center justify-center">
           MOMAY ENLIGHTENED
         </a>
 
-        <button type="button" @click="showContact = true" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
+        <button type="button" @click="showContact = true" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(0.85rem,1.8vw,1.3rem)] font-sans font-light px-[clamp(1rem,3vw,1.75rem)] py-[clamp(0.6rem,1.5vw,0.85rem)] rounded-xl w-full max-w-[min(320px,85vw)] whitespace-nowrap flex items-center justify-center">
           CONTACT
         </button>
       </div>
