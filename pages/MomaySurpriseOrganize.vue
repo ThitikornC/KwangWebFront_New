@@ -29,9 +29,9 @@
               <!-- ภาพเปลี่ยนตามหมวดองค์กรที่เลือก (ORG_TYPES[x].photo) -->
               <Transition name="cover" mode="out-in">
                 <div
-                  :key="org.photo"
+                  :key="coverPhoto"
                   class="cover-img photo-slot"
-                  :style="{ '--bg-photo': `url('${org.photo}')` }"
+                  :style="{ '--bg-photo': `url('${coverPhoto}')` }"
                 />
               </Transition>
               <div class="cover-text">
@@ -901,20 +901,24 @@
       <nav v-if="step === TOTAL" class="nav">
         <!-- ทางไปเดโมตัวอื่น — ปุ่มกลางเด่นกว่าอีกสองปุ่ม -->
         <div class="demo-row">
-          <a
+          <!-- ปุ่มกลางพาไปดูเดโมจริง สองปุ่มข้างเปิดฟอร์มขอให้ติดต่อกลับแทน -->
+          <component
+            :is="d.contact ? 'button' : 'a'"
             v-for="(d, i) in DEMO_LINKS"
             :key="d.key"
             class="demolink"
             :class="{ 'demolink--lead': d.lead }"
             :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
-            :href="d.link"
+            :href="d.contact ? undefined : d.link"
+            :type="d.contact ? 'button' : undefined"
+            @click="d.contact && openContact(d)"
           >
             <span class="demolink__icon" v-html="d.icon" />
             <span class="demolink__label">
               <b>{{ d.label }}</b>
               <small class="font-thai">{{ d.cta }}</small>
             </span>
-          </a>
+          </component>
         </div>
 
         <div class="nav-inner">
@@ -934,6 +938,58 @@
       </nav>
     </div>
 
+    <!-- ══════════════════ ฟอร์มขอให้ติดต่อกลับ ══════════════════ -->
+    <Transition name="ct">
+      <div v-if="contactOpen" class="ct-mask" @click.self="closeContact">
+        <div class="ct-card" role="dialog" aria-modal="true" aria-labelledby="ct-title">
+          <button type="button" class="ct-x" aria-label="ปิด" @click="closeContact">
+            <Ico name="close" />
+          </button>
+
+          <template v-if="contactState === 'done'">
+            <p class="ct-done-ic"><Ico name="check" /></p>
+            <h3 id="ct-title" class="ct-title font-thai">ได้รับข้อมูลแล้ว</h3>
+            <p class="ct-sub font-thai">ทีมงานจะติดต่อกลับโดยเร็วที่สุด ขอบคุณครับ</p>
+            <button type="button" class="ct-submit font-thai" @click="closeContact">ปิด</button>
+          </template>
+
+          <template v-else>
+            <h3 id="ct-title" class="ct-title font-thai">ให้เราติดต่อกลับ</h3>
+            <p class="ct-sub font-thai">
+              สนใจ <b>{{ contactFor?.label }}</b> — ฝากข้อมูลไว้ แล้วเราจะติดต่อกลับไป
+            </p>
+
+            <form class="ct-form" @submit.prevent="submitContact">
+              <label class="ct-field">
+                <span class="ct-label font-thai">ชื่อ</span>
+                <input v-model="contactForm.name" class="font-thai" type="text" autocomplete="name" placeholder="ชื่อ - นามสกุล" />
+              </label>
+
+              <label class="ct-field">
+                <span class="ct-label font-thai">หน่วยงาน</span>
+                <input v-model="contactForm.org" class="font-thai" type="text" autocomplete="organization" placeholder="ชื่อหน่วยงาน / บริษัท" />
+              </label>
+
+              <label class="ct-field">
+                <span class="ct-label font-thai">เบอร์โทร</span>
+                <input v-model="contactForm.phone" class="font-thai" type="tel" inputmode="tel" autocomplete="tel" placeholder="08X-XXX-XXXX" />
+              </label>
+
+              <p v-if="contactError" class="ct-err font-thai">{{ contactError }}</p>
+
+              <button
+                type="submit"
+                class="ct-submit font-thai"
+                :disabled="!contactValid || contactState === 'sending'"
+              >
+                {{ contactState === 'sending' ? 'กำลังส่ง...' : 'ส่งข้อมูล' }}
+              </button>
+            </form>
+          </template>
+        </div>
+      </div>
+    </Transition>
+
     <!-- ══════════════════ รายงานสำหรับบันทึกเป็น PDF ══════════════════ -->
     <div class="report">
       <h1 class="rp-title">MOMAY Surprise — รายงานผลวิเคราะห์</h1>
@@ -947,7 +1003,7 @@
             <td>{{ nf(form[f.key]) }} {{ f.unit }}</td>
           </tr>
           <tr><th>สิ่งที่เปลี่ยนไปในแต่ละช่วงของวัน</th><td>{{ signalNames }}</td></tr>
-          <tr><th>ช่วงที่คนเยอะที่สุด</th><td>{{ PEAK_MAP[form.peak].th }} ({{ base.peakWindow }})</td></tr>
+          <tr><th>ช่วงที่คนเยอะที่สุด</th><td>{{ PEAK_MAP[peakId].th }} ({{ base.peakWindow }})</td></tr>
         </tbody>
       </table>
 
@@ -1035,6 +1091,7 @@ const ICONS: Record<string, string[]> = {
   alert: ['M12 21.5a9.5 9.5 0 1 1 0-19 9.5 9.5 0 0 1 0 19Z', 'M12 7.2v6', 'M12 16.6h.01'],
   clock: ['M12 21.5a9.5 9.5 0 1 1 0-19 9.5 9.5 0 0 1 0 19Z', 'M12 6.8V12l3.4 2'],
   leaf: ['M11 20.5A7.5 7.5 0 0 1 9.6 6C15.6 4.8 17.2 4.2 19.3 1.6c1 2.1 2.1 4.4 2.1 8.4 0 5.8-5 10.5-10.4 10.5Z', 'M2.5 21.5c0-3.2 1.9-5.7 5.3-6.4'],
+  close: ['M6.5 6.5 17.5 17.5', 'M17.5 6.5 6.5 17.5'],
   'arrow-right': ['M4.5 12h14', 'M13 6.2 18.8 12 13 17.8'],
   'arrow-left': ['M19.5 12h-14', 'M11 6.2 5.2 12 11 17.8'],
   'arrow-up': ['M12 19.5v-14', 'M5.8 11.5 12 5.2l6.2 6.3'],
@@ -1093,20 +1150,30 @@ const Ico = (props: { name: string }) =>
 const step = ref(1)
 
 const form = reactive({
-  org: 'municipality' as OrgId,
+  // เปิดหน้ามาต้องยังไม่มีอะไรถูกเลือกไว้ให้ ทั้งประเภทองค์กร สัญญาณ และช่วงพีค
+  // ผู้ใช้เป็นคนเลือกเองทั้งหมด (ตัวเลขในช่องกรอกจะเติมให้ตอนเลือกหมวดแล้ว)
+  org: null as OrgId | null,
   people: 2500,
   capacity: 180,
   energy: 120000,
-  // ค่าเริ่มต้นให้ตรงกับภาพตัวอย่าง: ติ๊กทุกอย่างยกเว้น Events
-  signals: ['people', 'traffic', 'parking', 'energy', 'waste'] as SignalId[],
-  peak: 'midday' as PeakId,
+  signals: [] as SignalId[],
+  peak: null as PeakId | null,
   /** สัดส่วนการใช้ไฟตอนกลางวัน (%) — ใช้เฉพาะหมวดที่เปิด dayNight */
   dayShare: 60,
   scenario: 'normal' as ScenarioId,
   delta: 20,
 })
 
-const org = computed(() => ORG_MAP[form.org] ?? ORG_MAP.municipality)
+/* เอนจินและช่องกรอกต้องมีหมวด/ช่วงพีคเสมอ ระหว่างที่ผู้ใช้ยังไม่ได้เลือกจึงใช้ค่า
+   ตั้งต้นแทน — หน้าผลลัพธ์เข้าไม่ได้จนกว่าจะเลือกครบ (ดู canAdvance) ค่าสำรองนี้
+   จึงไม่เคยถูกแสดงเป็นคำตอบของผู้ใช้ */
+const orgId = computed<OrgId>(() => form.org ?? 'municipality')
+const peakId = computed<PeakId>(() => form.peak ?? 'midday')
+
+const org = computed(() => ORG_MAP[orgId.value] ?? ORG_MAP.municipality)
+
+/* ก่อนผู้ใช้เลือกหมวด ภาพปกใช้ภาพเมืองกลาง ๆ จะได้ไม่สื่อว่าเลือกหมวดไหนไว้ให้แล้ว */
+const coverPhoto = computed(() => (form.org ? org.value.photo : '/momay/org-other.webp'))
 /** ช่วงของสไลเดอร์กลางวัน-กลางคืน */
 const DN_MIN = 20
 const DN_MAX = 80
@@ -1117,10 +1184,10 @@ const dnFraction = computed(() => (form.dayShare - DN_MIN) / (DN_MAX - DN_MIN))
 
 /** หมวดโซลาร์เล่าเรื่องคนละแบบกับหมวดอื่น แผงแรกของหน้าผลลัพธ์จึงใช้ชุดตัวเลขของตัวเอง */
 const isSolar = computed(() => org.value.id === 'solar')
-const plan = computed(() => solarPlan(form.energy, form.dayShare, form.peak))
+const plan = computed(() => solarPlan(form.energy, form.dayShare, peakId.value))
 /** ระบบที่ต้องติด ถ้าค่าไฟขึ้น-ลงตามสไลเดอร์หน้า 03 */
 const planNext = computed(() =>
-  solarPlan(form.energy * (1 + form.delta / 100), form.dayShare, form.peak),
+  solarPlan(form.energy * (1 + form.delta / 100), form.dayShare, peakId.value),
 )
 const solarRec = computed(() => solarAdvice(plan.value, form.dayShare))
 
@@ -1271,12 +1338,12 @@ function onNumInput(k: InputKey, e: Event) {
 /* ─────────── ผลคำนวณ ─────────── */
 
 const inputs = computed(() => ({
-  org: form.org,
+  org: orgId.value,
   people: form.people,
   capacity: form.capacity,
   energy: form.energy,
   signals: form.signals,
-  peak: form.peak,
+  peak: peakId.value,
 }))
 
 const base = computed(() => computeBaseline(inputs.value))
@@ -1564,6 +1631,8 @@ const sliderPct = computed(() => ((form.delta + 20) / 60) * 100)
 const canAdvance = computed(() => {
   // หน้าแรกรวมทุกอย่างที่ต้องกรอกไว้ในดร๊อปดาวน์แล้ว จึงตรวจครบทั้งชุดที่นี่
   if (step.value === 1) {
+    // ต้องเลือกหมวดองค์กรและช่วงพีคเองก่อน ไม่มีค่าไหนถูกติ๊กไว้ให้ตั้งแต่เปิดหน้า
+    if (!form.org || !form.peak) return false
     const needSignals = org.value.dailyChanges !== false
     return fieldList.value.every(f => form[f.key] > 0) && (!needSignals || loadSignals.value.length > 0)
   }
@@ -1573,13 +1642,28 @@ const canAdvance = computed(() => {
 
 /* ทางไปเดโมตัวอื่น — ลิงก์ชุดเดียวกับหน้าขาย
    ปุ่มกลาง (Citizen / Student) เป็นตัวเด่น อีกสองปุ่มเป็นช่องทางคุยรายละเอียด */
-const DEMO_LINKS = [
+type DemoLink = {
+  key: string
+  label: string
+  cta: string
+  color: string
+  icon: string
+  /** ปุ่มที่พาไปหน้าอื่น */
+  link?: string
+  /** ปุ่มที่เปิดฟอร์มขอให้ติดต่อกลับแทนการลิงก์ */
+  contact?: boolean
+  /** ปุ่มเด่นกลางแถว */
+  lead?: boolean
+}
+
+const DEMO_LINKS: DemoLink[] = [
   {
     key: 'enlightened',
     label: 'MOMAY ENLIGHTENED',
     cta: 'พูดคุยรายละเอียด',
     color: '#ECB731',
-    link: '/momay/MomayDemo-ByJob',
+    // สองปุ่มข้างไม่พาไปไหน แต่เปิดฟอร์มขอข้อมูลติดต่อเพื่อให้ทีมติดต่อกลับ
+    contact: true,
     icon: `<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>`,
   },
   {
@@ -1587,7 +1671,8 @@ const DEMO_LINKS = [
     label: 'MOMAY CITIZEN / STUDENT',
     cta: 'คลิ๊กเพื่อดู',
     color: '#4ADE80',
-    link: '/momay/MomayDemo-StudentPixel',
+    // แดชบอร์ดประชาชน (React) ที่ build ไว้ใน public/momay-citizen
+    link: '/momay-citizen/',
     lead: true,
     icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0"/></svg>`,
   },
@@ -1596,10 +1681,61 @@ const DEMO_LINKS = [
     label: 'MOMAY EXECUTIVE BRIEF',
     cta: 'พูดคุยรายละเอียด',
     color: '#ED1B2E',
-    link: '/momay/MomayDemo-Executive',
+    contact: true,
     icon: `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M13.5 3.7V8.2H18"/><path d="M9 12.5h6M9 16h4"/></svg>`,
   },
 ]
+
+/* ─────────── ฟอร์มขอให้ติดต่อกลับ ─────────── */
+
+const contactOpen = ref(false)
+const contactFor = ref<{ key: string; label: string } | null>(null)
+const contactForm = reactive({ name: '', org: '', phone: '' })
+const contactState = ref<'idle' | 'sending' | 'done'>('idle')
+const contactError = ref('')
+
+const contactValid = computed(() =>
+  contactForm.name.trim() !== '' &&
+  contactForm.org.trim() !== '' &&
+  contactForm.phone.replace(/[\s-]/g, '').length >= 9,
+)
+
+function openContact(d: { key: string; label: string }) {
+  contactFor.value = { key: d.key, label: d.label }
+  contactState.value = 'idle'
+  contactError.value = ''
+  contactOpen.value = true
+}
+
+function closeContact() {
+  contactOpen.value = false
+}
+
+async function submitContact() {
+  if (!contactValid.value || contactState.value === 'sending') return
+  contactState.value = 'sending'
+  contactError.value = ''
+  try {
+    await $fetch('/api/momay-contact', {
+      method: 'POST',
+      body: {
+        name: contactForm.name.trim(),
+        org: contactForm.org.trim(),
+        phone: contactForm.phone.trim(),
+        source: contactFor.value?.key ?? '',
+        sourceLabel: contactFor.value?.label ?? '',
+        orgType: form.org ?? '',
+      },
+    })
+    contactState.value = 'done'
+    contactForm.name = ''
+    contactForm.org = ''
+    contactForm.phone = ''
+  } catch (e: any) {
+    contactState.value = 'idle'
+    contactError.value = e?.data?.statusMessage || e?.statusMessage || 'ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่'
+  }
+}
 
 const STEP_TAGS = [
   'Let your data<br>explain MOMAY.',
@@ -1636,12 +1772,12 @@ let shareTimer: ReturnType<typeof setTimeout> | null = null
 const shareUrl = computed(() => {
   if (!process.client) return ''
   const q = new URLSearchParams({
-    o: form.org,
+    o: orgId.value,
     p: String(form.people),
     c: String(form.capacity),
     e: String(form.energy),
     s: form.signals.join(','),
-    k: form.peak,
+    k: peakId.value,
     sc: form.scenario,
     d: String(form.delta),
     dn: String(form.dayShare),
@@ -2800,6 +2936,8 @@ onMounted(() => {
 }
 .demolink {
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* ปุ่มสองข้างเป็น <button> จึงต้องบังคับให้สืบทอดฟอนต์และสีเหมือน <a> */
+  font: inherit; color: inherit;
   position: relative; isolation: isolate;
   display: flex; align-items: center; justify-content: center; gap: 13px;
   padding: 14px 18px;
@@ -3183,6 +3321,81 @@ onMounted(() => {
     transition-duration: 0.001s !important;
   }
 }
+
+/* ══════════════ ฟอร์มขอให้ติดต่อกลับ ══════════════ */
+.ct-mask {
+  position: fixed; inset: 0; z-index: 90;
+  display: grid; place-items: center;
+  padding: 20px;
+  background: rgba(2, 8, 18, 0.74);
+  backdrop-filter: blur(6px);
+}
+.ct-card {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 28px 24px 24px;
+  border: 1px solid rgba(120, 180, 255, 0.22);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(10, 22, 44, 0.98), rgba(5, 12, 26, 0.98));
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+.ct-x {
+  position: absolute; top: 12px; right: 12px;
+  display: grid; place-items: center;
+  width: 32px; height: 32px;
+  border: 0; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #93a4be; cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.ct-x:hover { color: #fff; background: rgba(255, 255, 255, 0.12); }
+.ct-x svg { width: 16px; height: 16px; }
+.ct-title { margin: 0; font-size: 20px; font-weight: 600; color: #fff; }
+.ct-sub { margin: 8px 0 0; font-size: 13px; line-height: 1.7; color: #93a4be; }
+.ct-sub b { color: #cfe0ff; font-weight: 600; }
+.ct-form { margin-top: 20px; display: grid; gap: 13px; text-align: left; }
+.ct-field { display: grid; gap: 6px; }
+.ct-label { font-size: 12px; color: #93a4be; }
+.ct-field input {
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(120, 180, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(4, 11, 24, 0.9);
+  color: #eaf1ff; font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ct-field input::placeholder { color: #5b6b85; }
+.ct-field input:focus {
+  border-color: rgba(79, 216, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(79, 216, 255, 0.14);
+}
+.ct-err { margin: 0; font-size: 12px; color: #ff8d9b; }
+.ct-submit {
+  margin-top: 4px; height: 46px;
+  border: 0; border-radius: 999px;
+  background: linear-gradient(90deg, #2f7dff, #4fd8ff);
+  color: #04121f; font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s, opacity 0.2s;
+}
+.ct-submit:hover:not(:disabled) { filter: brightness(1.08); }
+.ct-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+.ct-done-ic {
+  display: grid; place-items: center;
+  width: 54px; height: 54px; margin: 0 auto 14px;
+  border-radius: 999px;
+  background: rgba(74, 222, 128, 0.14);
+  color: #4ade80;
+}
+.ct-done-ic svg { width: 26px; height: 26px; }
+
+.ct-enter-active, .ct-leave-active { transition: opacity 0.25s ease; }
+.ct-enter-active .ct-card, .ct-leave-active .ct-card { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+.ct-enter-from, .ct-leave-to { opacity: 0; }
+.ct-enter-from .ct-card, .ct-leave-to .ct-card { transform: translateY(14px) scale(0.97); }
 
 /* ── รายงาน PDF ── */
 .report { display: none; }

@@ -2328,6 +2328,11 @@ const products = [
 // ตัวที่ติดธง hidden จะไม่โผล่ทั้งการ์ดและปุ่ม demo
 const visibleProducts = products.filter((p) => !p.hidden)
 
+// จำนวนคอลัมน์ของกริดสินค้า ผูกกับจำนวนการ์ดที่เหลือจริง ไม่งั้นกริดจะกลับไปใช้
+// ค่า fallback 4 คอลัมน์ แล้วเหลือช่องว่างท้ายแถวเมื่อมีการ์ดไม่ครบ 4 ใบ
+const productCols = visibleProducts.length
+const productColsMd = productCols >= 4 ? 2 : productCols
+
 // ปุ่มใต้ฮีโร่ — เหลือสองทางหลัก: ลองเดโม MOMAY SURPRISE กับเปิดแผนที่ลูกค้า
 const heroLinks = [
   {
