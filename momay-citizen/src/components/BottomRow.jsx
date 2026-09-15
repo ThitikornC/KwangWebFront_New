@@ -1,5 +1,6 @@
 import Icon from './Icon.jsx'
-import { bestTimes, nearbyEvent, parking } from '../data/mock.js'
+import { nearbyEvent } from '../data/mock.js'
+import { useDashboard } from '../useDashboard.jsx'
 
 function NearbyEvent() {
   return (
@@ -36,6 +37,8 @@ function NearbyEvent() {
 }
 
 function Parking() {
+  const { parking } = useDashboard()
+
   return (
     <section className="panel p-4">
       <h2 className="panel-title">
@@ -68,6 +71,8 @@ function Parking() {
 }
 
 function BestTimes() {
+  const { bestTimes } = useDashboard()
+
   return (
     <section className="panel p-4">
       <h2 className="panel-title">
@@ -78,7 +83,13 @@ function BestTimes() {
       <ul className="mt-3.5 space-y-2.5">
         {bestTimes.map((slot) => (
           <li key={slot.id} className="flex items-center gap-3 text-[13px]">
-            <span className="flex-1 truncate text-slate-300">{slot.label}</span>
+            {slot.color && (
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: slot.color }} />
+            )}
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-slate-300">{slot.label}</span>
+              {slot.sub && <span className="block truncate text-[11px] text-slate-500">{slot.sub}</span>}
+            </span>
             <span className="shrink-0 font-medium tabular-nums text-slate-400">{slot.time}</span>
           </li>
         ))}

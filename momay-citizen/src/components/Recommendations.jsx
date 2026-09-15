@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import Icon from './Icon.jsx'
-import { recommendations } from '../data/mock.js'
+import { useDashboard } from '../useDashboard.jsx'
 import { tone } from '../tones.js'
 
 function Card({ item, saved, onToggleSave }) {
@@ -60,6 +60,15 @@ function Card({ item, saved, onToggleSave }) {
         </p>
 
         <div className="mt-3 flex flex-wrap gap-1.5">
+          {item.crowd && (
+            <span
+              className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium"
+              style={{ color: item.crowd.color, backgroundColor: `${item.crowd.color}1f` }}
+            >
+              <Icon name="people" className="h-3.5 w-3.5" strokeWidth={2} />
+              {item.crowd.label}
+            </span>
+          )}
           {item.tags.map((tag) => (
             <span key={tag} className="chip">
               {tag}
@@ -80,6 +89,7 @@ function Card({ item, saved, onToggleSave }) {
 }
 
 export default function Recommendations() {
+  const { recommendations } = useDashboard()
   const trackRef = useRef(null)
   const [saved, setSaved] = useState(() => new Set())
 

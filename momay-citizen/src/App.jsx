@@ -8,6 +8,7 @@ import MapPanel from './components/MapPanel.jsx'
 import Recommendations from './components/Recommendations.jsx'
 import BottomRow from './components/BottomRow.jsx'
 import Footer from './components/Footer.jsx'
+import SurveyBanner from './components/SurveyBanner.jsx'
 import Icon from './components/Icon.jsx'
 import { navItems } from './data/mock.js'
 
@@ -22,6 +23,8 @@ export default function App() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar query={query} onQueryChange={setQuery} />
+
+        <SurveyBanner />
 
         <main className="flex-1 pb-24 lg:pb-0">
           <Hero />

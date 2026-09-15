@@ -7,13 +7,12 @@ import {
   airLegend,
   airStations,
   corridor,
-  crowdZones,
   mapConfig,
   mapLegend,
   mapPlaces,
   mapTabs,
-  parking,
 } from '../data/mock.js'
+import { useDashboard } from '../useDashboard.jsx'
 
 const legendColor = (legend, level) => legend.find((item) => item.id === level)?.color ?? '#94a3b8'
 
@@ -41,6 +40,7 @@ function FitBounds({ points }) {
 }
 
 export default function MapPanel() {
+  const { zones: crowdZones, parking } = useDashboard()
   const [activeTab, setActiveTab] = useState('map')
   const [map, setMap] = useState(null)
   const shellRef = useRef(null)
@@ -61,7 +61,7 @@ export default function MapPanel() {
       activity: activityPoints,
     }
     return [...corridor, ...(byTab[activeTab] ?? []).map((item) => item.position)]
-  }, [activeTab])
+  }, [activeTab, crowdZones, parking])
 
   const recenter = useCallback(() => {
     map?.flyToBounds(layerPoints, { ...FIT_OPTIONS, duration: 0.6 })

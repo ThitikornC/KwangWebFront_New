@@ -9,5 +9,10 @@ export default defineConfig({
     outDir: '../public/momay-citizen',
     emptyOutDir: true,
   },
-  server: { port: 5183, open: true },
+  server: {
+    port: 5183,
+    open: true,
+    // โมเดลคำนวณอยู่ที่ utils/ ของ Nuxt app แม่ ต้องอนุญาตให้อ่านนอก root
+    fs: { allow: ['..'] },
+  },
 })

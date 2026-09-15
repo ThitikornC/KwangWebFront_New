@@ -151,12 +151,15 @@ export const mapPlaces = [
   { id: 'ekathotsarot', name: 'สะพานเอกาทศรถ', detail: 'จุดชมวิวริมน้ำ', icon: 'pin', tone: 'sky', position: [16.8217, 100.2609] },
 ]
 
+// `weight` = ความหนาแน่นของย่านนี้เทียบกับความหนาแน่นรวมของพื้นที่
+// ใช้ตอนมีข้อมูลส่งมาจากแบบสอบถาม (ดู buildZones ใน useDashboard.jsx)
+// ส่วน level/value เป็นค่าตัวอย่างตอนเปิดหน้าเปล่า ๆ
 export const crowdZones = [
-  { id: 'wat-yai', label: 'วัดใหญ่', level: 'high', value: 'ค่อนข้างหนาแน่น (68%)', radius: 220, position: [16.8243, 100.2636] },
-  { id: 'talad-tai', label: 'ตลาดใต้', level: 'very-high', value: 'หนาแน่นมาก (85%)', radius: 200, position: [16.8139, 100.2622] },
-  { id: 'talad-nuea', label: 'ตลาดเหนือ', level: 'normal', value: 'ปกติ (44%)', radius: 190, position: [16.8266, 100.2617] },
-  { id: 'riverwalk', label: 'ทางเดินริมน้ำ', level: 'normal', value: 'ปกติ (40%)', radius: 240, position: [16.8194, 100.2631] },
-  { id: 'river-cafe', label: 'ย่านคาเฟ่ริมน้ำ', level: 'low', value: 'ไม่หนาแน่น (22%)', radius: 180, position: [16.8174, 100.2598] },
+  { id: 'wat-yai', label: 'วัดใหญ่', level: 'high', value: 'ค่อนข้างหนาแน่น (68%)', weight: 0.74, radius: 220, position: [16.8243, 100.2636] },
+  { id: 'talad-tai', label: 'ตลาดใต้', level: 'very-high', value: 'หนาแน่นมาก (85%)', weight: 0.92, radius: 200, position: [16.8139, 100.2622] },
+  { id: 'talad-nuea', label: 'ตลาดเหนือ', level: 'normal', value: 'ปกติ (44%)', weight: 0.48, radius: 190, position: [16.8266, 100.2617] },
+  { id: 'riverwalk', label: 'ทางเดินริมน้ำ', level: 'normal', value: 'ปกติ (40%)', weight: 0.43, radius: 240, position: [16.8194, 100.2631] },
+  { id: 'river-cafe', label: 'ย่านคาเฟ่ริมน้ำ', level: 'low', value: 'ไม่หนาแน่น (22%)', weight: 0.24, radius: 180, position: [16.8174, 100.2598] },
 ]
 
 export const airStations = [
@@ -176,17 +179,19 @@ export const activityPoints = [
 export const recommendations = [
   {
     id: 'riverwalk',
+    zone: 'riverwalk',
     image: asset('momay/demo-bg-03.webp'),
     badge: { label: 'แนะนำเลย', icon: 'run', tone: 'emerald' },
     icon: 'run',
     tone: 'emerald',
     title: 'ทางเดินริมน้ำน่าน',
-    subtitle: 'บรรยากาศดี คนไม่หนาแน่น',
+    subtitle: 'บรรยากาศดี ริมน้ำน่าน',
     distance: '4 นาที (300 ม.)',
     tags: ['เดินเล่น', 'ออกกำลังกาย'],
   },
   {
     id: 'talad-tai',
+    zone: 'talad-tai',
     image: asset('momay/cta-bg.webp'),
     badge: { label: 'กำลังนิยม', icon: 'fire', tone: 'rose' },
     icon: 'food',
@@ -198,6 +203,7 @@ export const recommendations = [
   },
   {
     id: 'river-cafe',
+    zone: 'river-cafe',
     image: asset('momay/demo-bg-05.webp'),
     badge: null,
     icon: 'cafe',
@@ -209,6 +215,7 @@ export const recommendations = [
   },
   {
     id: 'wat-yai',
+    zone: 'wat-yai',
     image: asset('momay/demo-bg-04.webp'),
     badge: null,
     icon: 'temple',

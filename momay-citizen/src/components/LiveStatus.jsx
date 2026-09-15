@@ -1,8 +1,13 @@
 import Icon from './Icon.jsx'
 import { liveStatus } from '../data/mock.js'
+import { useDashboard } from '../useDashboard.jsx'
 import { tone } from '../tones.js'
 
 export default function LiveStatus() {
+  const { metrics, derived } = useDashboard()
+  // มีข้อมูลจากแบบสอบถาม = แสดงชื่อองค์กรแทนย่านตัวอย่าง
+  const place = derived ? derived.org.th : liveStatus.place
+
   return (
     <section className="panel flex flex-col p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
@@ -10,7 +15,7 @@ export default function LiveStatus() {
           <h2 className="panel-title">สถานการณ์ในขณะนี้</h2>
           <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-sky-300">
             <Icon name="pin" className="h-4 w-4" />
-            {liveStatus.place}
+            {place}
           </p>
         </div>
         <span className="flex shrink-0 items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-300">
@@ -20,7 +25,7 @@ export default function LiveStatus() {
       </div>
 
       <div className="mt-4 grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
-        {liveStatus.metrics.map((metric) => {
+        {metrics.map((metric) => {
           const t = tone(metric.tone)
           return (
             <div

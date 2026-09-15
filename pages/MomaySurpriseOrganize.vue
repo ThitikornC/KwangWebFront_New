@@ -909,7 +909,7 @@
             class="demolink"
             :class="{ 'demolink--lead': d.lead }"
             :style="{ '--accent': d.color, '--sweep-delay': `${i * -1.7}s` }"
-            :href="d.contact ? undefined : d.link"
+            :href="hrefFor(d)"
             :type="d.contact ? 'button' : undefined"
             @click="d.contact && openContact(d)"
           >
@@ -1672,6 +1672,7 @@ const DEMO_LINKS: DemoLink[] = [
     cta: 'คลิ๊กเพื่อดู',
     color: '#4ADE80',
     // แดชบอร์ดประชาชน (React) ที่ build ไว้ใน public/momay-citizen
+    // พาธจริงมาจาก citizenHref ด้านล่าง เพราะต้องพ่วงข้อมูลที่ผู้ใช้กรอกไปด้วย
     link: '/momay-citizen/',
     lead: true,
     icon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0"/></svg>`,
@@ -1685,6 +1686,32 @@ const DEMO_LINKS: DemoLink[] = [
     icon: `<svg viewBox="0 0 24 24"><path d="M6 3.5h8L18.5 8v12.5h-12.5z"/><path d="M13.5 3.7V8.2H18"/><path d="M9 12.5h6M9 16h4"/></svg>`,
   },
 ]
+
+/* หมวดที่ไม่ส่งข้อมูลต่อไปหน้า CITIZEN — ห้องสมุดกับโซลาร์เป็นพื้นที่เฉพาะทาง
+   ตัวชี้วัดของแดชบอร์ดประชาชน (ความหนาแน่นย่าน จราจร ที่จอดรถเมือง) แปลผลจาก
+   สองหมวดนี้ไม่ได้ จึงให้เปิดเป็นข้อมูลตัวอย่างตามปกติแทน */
+const CITIZEN_EXCLUDED: OrgId[] = ['library', 'solar']
+
+/** ลิงก์ไปแดชบอร์ดประชาชน พร้อมพ่วงคำตอบจากแบบสอบถามไปแปลผลต่อ
+    ใช้ชื่อพารามิเตอร์ชุดเดียวกับ shareUrl จะได้อ่านที่เดียวจบ */
+const citizenHref = computed(() => {
+  if (!form.org || CITIZEN_EXCLUDED.includes(form.org)) return '/momay-citizen/'
+
+  const q = new URLSearchParams({
+    o: form.org,
+    p: String(form.people),
+    c: String(form.capacity),
+    e: String(form.energy),
+    s: form.signals.join(','),
+    k: peakId.value,
+  })
+  return `/momay-citizen/?${q.toString()}`
+})
+
+function hrefFor(d: DemoLink) {
+  if (d.contact) return undefined
+  return d.key === 'citizen' ? citizenHref.value : d.link
+}
 
 /* ─────────── ฟอร์มขอให้ติดต่อกลับ ─────────── */
 
