@@ -91,7 +91,7 @@ onBeforeUnmount(() => {
       
       <!-- Video Box -->
       <div class="flex-[2] w-full flex justify-center items-center video-box">
-        <video class="w-full max-w-[min(48rem,85vw)] rounded-xl shadow-xl object-cover" autoplay muted loop playsinline>
+        <video class="w-full max-w-[min(52rem,86vw)] rounded-xl shadow-xl object-cover" autoplay muted loop playsinline>
           <source src="/video/kwang_Temporary.mp4" type="video/mp4" />
         </video>
       </div>
@@ -377,6 +377,9 @@ body {
 @media (min-width: 1200px) {
   .flex-1.max-w-6xl {
     flex-direction: row !important;
+    /* จอกว้างมีที่เหลือ — ขยายแถวออกอีกนิด วิดีโอจะได้ใหญ่ขึ้นตามสัดส่วน 2:1
+       เมนูยังคุมด้วย max-width ของปุ่มเอง จึงไม่บานตาม */
+    max-width: min(80rem, 94vw);
   }
 }
 
