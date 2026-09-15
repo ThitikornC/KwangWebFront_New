@@ -4,16 +4,6 @@ import { asset } from '../asset.js'
 // Swap these constants for API responses when the backend is ready —
 // every component reads its content from here and nothing else.
 
-export const navItems = [
-  { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'explore', label: 'Explore', icon: 'search' },
-  { id: 'map', label: 'Map', icon: 'map' },
-  { id: 'events', label: 'Events', icon: 'calendar' },
-  { id: 'transport', label: 'Transport', icon: 'car' },
-  { id: 'favorites', label: 'Favorites', icon: 'star' },
-  { id: 'plan', label: 'My Plan', icon: 'clipboard' },
-]
-
 export const header = {
   searchPlaceholder: 'ค้นหาสถานที่ ร้านค้า กิจกรรม...',
   weather: {
@@ -247,9 +237,3 @@ export const bestTimes = [
   { id: 'view', label: 'บรรยากาศสวย', time: '18:00 – 21:00' },
 ]
 
-export const footer = {
-  org: 'เทศบาลนครพิษณุโลก',
-  orgEn: 'Phitsanulok Municipality',
-  words: ['People', 'Spaces', 'Better Tomorrows'],
-  quote: '"เมืองที่น่าอยู่ คือเมืองที่คนมีความสุข"',
-}
