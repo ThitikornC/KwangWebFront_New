@@ -2342,8 +2342,10 @@ const heroLinks = [
     labelHtml: '<span class="logo-main">MOMAY</span><span class="logo-script">Surprise</span>',
     cta: 'VIEW DEMO',
     color: '#4fd8ff',
-    // V2 — ตัวที่ต่อไปหน้า STUDENT เมื่อผู้ใช้เลือกหมวดห้องสมุด
-    go: () => open('/MomaySurpriseOrganizeV2'),
+    /* ยังชี้หน้าเดิมอยู่ ตามที่สั่งไว้ว่ายังไม่ต้องพาคนมา V2
+       V2 (/MomaySurpriseOrganizeV2) ขึ้นเซิร์ฟเวอร์แล้วและเปิดตรงจาก URL ได้
+       แต่ยังไม่มีทางเข้าจากหน้าไหน — จะเปิดใช้จริงค่อยเปลี่ยนบรรทัดนี้เป็น V2 */
+    go: () => open('/MomaySurpriseOrganize'),
   },
   {
     key: 'map',
