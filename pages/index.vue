@@ -110,6 +110,10 @@ onBeforeUnmount(() => {
           FORWARD THINKING
         </a>
 
+        <a href="/renewablesort/MomayforSaleV2" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
+          MOMAY ENLIGHTENED
+        </a>
+
         <button type="button" @click="showContact = true" class="neon-btn bg-[#f8f6f0] text-black text-[clamp(1rem,2.5vw,1.75rem)] font-sans font-light px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(0.875rem,2.5vw,1.25rem)] rounded-xl w-full max-w-[min(350px,85vw)] whitespace-nowrap flex items-center justify-center">
           CONTACT
         </button>

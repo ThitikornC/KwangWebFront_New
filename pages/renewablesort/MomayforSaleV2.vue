@@ -51,6 +51,10 @@
     <section id="top" class="mm-hero">
       <!-- ฉากหลังหลายชั้น เลื่อนแบบพารัลแลกซ์ (วาดด้วย SVG ล้วน) -->
       <div class="mm-hero__bg" aria-hidden="true">
+        <!-- ภาพเมืองยามค่ำเป็นชั้นล่างสุด ชั้นอื่นทับไล่โทนแดงของแบรนด์ลงไปบนภาพ -->
+        <img class="mm-hero__photo" src="/momay/demo-bg-04.webp" alt="" aria-hidden="true"
+             :style="{ transform: `translate3d(0, ${heroY * 0.1}px, 0) scale(1.06)` }" />
+
         <div class="mm-hero__glow" :style="{ transform: `translate3d(0, ${heroY * 0.25}px, 0)` }" />
 
         <svg class="mm-hero__grid" preserveAspectRatio="none" viewBox="0 0 1200 700"
@@ -2869,8 +2873,20 @@ section {
   filter: blur(6px);
 }
 .mm-hero__grid { inset: 0; width: 100%; height: 100%; opacity: 0.75; }
-/* ฉากหลังฮีโร่ของรุ่น 2 — ภาพเมืองอยู่ในวงสัญญาณเท่านั้น ไม่มีภาพเต็มจอ
-   (ดู .mm-hero__ring ด้านล่าง) */
+/* ฉากหลังฮีโร่ของรุ่น 2 — ภาพเมืองยามค่ำเต็มพื้นที่
+   scale เผื่อไว้เล็กน้อยกันขอบโผล่ตอนเลื่อนแบบพารัลแลกซ์
+   จางลงทางซ้ายเพื่อให้หัวเรื่องกับปุ่มอ่านออกบนภาพ */
+.mm-hero__photo {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+  opacity: 0.62;
+  filter: saturate(0.9) contrast(1.05);
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.72) 34%, #000 62%, #000 100%);
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.72) 34%, #000 62%, #000 100%);
+}
 .mm-hero__streams { inset: 0; width: 100%; height: 100%; }
 .mm-hero__city { left: 0; right: 0; bottom: 0; width: 100%; }
 .mm-hero__city--far { height: 46%; opacity: 0.9; }
@@ -2905,7 +2921,8 @@ section {
   margin-top: calc(var(--ring-size) / -2 - var(--ring-lift));
   pointer-events: none;
 }
-/* ภาพเมืองอยู่ในวงกลมนี้ที่เดียว จึงเปิดเต็มที่เหมือนหน้าเดโม */
+/* ในวงเปิดภาพเต็มที่เหมือนหน้าเดโม — ฉากหลังเต็มจอถูกมาสก์ให้จางกว่า
+   วงจึงยังเด่นแยกออกจากภาพเมืองที่อยู่ข้างหลัง */
 .mm-hero__ring :deep(.ring-bg) { opacity: 0.72; }
 /* วงมาพร้อม max-width 404px ของหน้าเดโม — ในฮีโร่ให้เต็มกรอบที่จองไว้แทน */
 .mm-hero__ring :deep(.ring-wrap) { max-width: 100%; margin: 0; }
@@ -5050,9 +5067,11 @@ section {
   /* ลายมือของปุ่ม SURPRISE ทำให้กล่องบรรทัดสูงกว่าอีกใบ — บังคับทุกแถวสูงเท่ากัน
      ปุ่มที่ตกไปคนละแถวบนจอแนวตั้งจะได้ไม่สูงไม่เท่ากัน */
   grid-auto-rows: 1fr;
-  gap: clamp(12px, 1.6vw, 22px);
-  width: max-content;
-  max-width: 100%;
+  /* แยกสองใบให้ห่างกันมากขึ้น แถวล่างของฮีโร่จะได้ไม่ดูกระจุกอยู่กลางจอ */
+  gap: clamp(16px, 3.4vw, 60px);
+  /* ยืดแถวปุ่มให้กินความกว้างของฮีโร่ แทนที่จะกว้างเท่าข้อความ (max-content)
+     ยังคุมเพดานไว้ ปุ่มจะได้ไม่ยาวเป็นแถบจนเสียทรงเม็ดยา */
+  width: min(100%, 980px);
   margin: clamp(24px, 4.2vh, 60px) auto 0;
 }
 .demolink {
@@ -6108,6 +6127,8 @@ section {
   .hero-demos {
     grid-template-columns: repeat(var(--cols-sm, 2), minmax(0, 1fr));
     gap: 7px;
+    /* จอแนวตั้ง: ปุ่มกว้างเกือบเต็มจอ ไม่ใช่เม็ดเล็ก ๆ ลอยกลางพื้นที่ว่าง */
+    width: 100%;
     margin: clamp(18px, 3.7vh, 34px) auto 0;
   }
   .demolink { gap: 6px; padding: 8px 18px; }
@@ -6143,7 +6164,8 @@ section {
 @media (orientation: portrait) and (max-width: 560px) {
   .hero-demos {
     grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
+    gap: 10px;
+    width: 100%;
   }
   .demolink { padding: 9px 20px; }
   .demolink__label b { font-size: clamp(0.8rem, 3vw, 1rem); letter-spacing: 0.06em; }
