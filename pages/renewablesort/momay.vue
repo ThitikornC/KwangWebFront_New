@@ -455,6 +455,15 @@
                   <span class="font-thai">Momay Student Pixel V.2<span class="card-note">(130926) ปรับตัวหนังสือชัด ตามพี่ตูน</span></span>
                 </div>
               </div>
+              <div
+                @click="openSplineDesign('Momay-Student-Pixel-VSettings')"
+                class="neon-btn spline-link-card card-detail hover:from-rose-100 hover:to-rose-300"
+              >
+                <div class="card-content">
+                  <img src="/MOMAY_logo.png" alt="Momay-Student-Pixel-VSettings" class="w-12 h-12 object-contain" />
+                  <span class="font-thai">Momay Student Pixel V.Settings<span class="card-note">(150926) เพิ่มการตั้งค่า</span></span>
+                </div>
+              </div>
               </div>
             </div>
           </div>
@@ -517,6 +526,7 @@ const splineLinks: Record<string, string> = {
   MomayBUUStudent: '/momay/MomayBUUStudent',
   'Momay-Student-Pixel': '/momay/Momay-Student-Pixel',
   'Momay-Student-Pixel-V2': '/momay/Momay-Student-Pixel-V2',
+  'Momay-Student-Pixel-VSettings': '/momay/Momay-Student-Pixel-VSettings',
   MomayTemplate: '/momay/MomayTemplate'
 }
 

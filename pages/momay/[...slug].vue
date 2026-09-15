@@ -54,6 +54,7 @@ const targets: Record<string, string> = {
   'MomayDemo-ByJob': 'https://momaymodelbuu-production-dafb.up.railway.app/demo/momaymodel-by-job',
   'Momay-Student-Pixel': 'https://momaymodelbuu-production.up.railway.app/buustudent8bit',
   'Momay-Student-Pixel-V2': 'https://momaymodelbuu-production.up.railway.app/buustudent8bitv2',
+  'Momay-Student-Pixel-VSettings': 'https://momaymodelbuu-production.up.railway.app/buustudent8bitVsettings',
   // หลังบ้านสำหรับควบคุมแอร์ (ไม่มีปุ่มบนหน้า momay)
   MomayControl: 'https://momaymodelbuu-production.up.railway.app/settings'
 }
