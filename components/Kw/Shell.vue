@@ -60,21 +60,13 @@
         <ellipse rx="40" ry="54" />
       </g>
 
-      <g class="kwp__sun" transform="translate(1330 215)">
+      <!-- ขยายและเอาหน้ายิ้มออก ชุดเดียวกับ /home2 -->
+      <g class="kwp__sun" transform="translate(1330 215) scale(2)">
         <circle class="kwp__sunglow" r="150" fill="url(#kwpSunGlow)" />
         <g class="kwp__rays">
           <path v-for="r in SUN_RAYS" :key="r.a" :d="r.d" :transform="`rotate(${r.a})`" />
         </g>
         <circle class="kwp__disc" r="44" />
-        <!-- หน้าชุดเดียวกับ /home2 ย่อตามรัศมีจาน (52 → 44 = ×0.846) -->
-        <g class="kwp__face">
-          <path d="M-28 -25 q9 -8 19 -1" />
-          <path d="M9 -26 q9 -7 19 1" />
-          <circle cx="-18" cy="-19" r="3.6" class="is-fill" />
-          <circle cx="18" cy="-19" r="3.6" class="is-fill" />
-          <path d="M1 -12 q-5 12 -1 15 q4 3 7 -1" />
-          <path d="M-22 7 q22 14 44 -3" />
-        </g>
       </g>
     </svg>
 
@@ -316,8 +308,6 @@ useHead({
 .kwp__globe path { fill: none; stroke: var(--gold); stroke-width: 1.1; opacity: 0.3; }
 .kwp__rays path { fill: var(--gold); opacity: 0.45; }
 .kwp__disc { fill: var(--paper-2); stroke: var(--gold); stroke-width: 1.3; }
-.kwp__face path { fill: none; stroke: #9a7f45; stroke-width: 1.8; stroke-linecap: round; opacity: 0.8; }
-.kwp__face .is-fill { fill: #9a7f45; opacity: 0.8; }
 
 .kwp__rays { animation: kwpSpin 220s linear infinite; transform-origin: 0 0; }
 .kwp__ring { animation: kwpDrift 26s ease-in-out infinite alternate; transform-origin: 1330px 215px; }

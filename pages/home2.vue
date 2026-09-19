@@ -82,8 +82,11 @@
         <ellipse rx="46" ry="62" />
       </g>
 
-      <!-- ดวงอาทิตย์หน้าคน — ใจกลางของทั้งระบบ -->
-      <g class="sun" transform="translate(1150 470)">
+      <!-- ดวงอาทิตย์ — ใจกลางของทั้งระบบ
+           scale ขยายทั้งดวง (แสงเรือง รัศมี จาน และความหนาเส้น) พร้อมกันด้วยตัวเลขเดียว
+           ที่ 2 เท่า ปลายแฉกยาวอยู่ที่รัศมี 224 เฉียดวงโคจรวงในสุด (ry 245) แล้ว
+           เกินกว่านี้แฉกจะเริ่มแทงทะลุวงโคจรออกไป -->
+      <g class="sun" transform="translate(1150 470) scale(2)">
         <circle class="sun__glow" r="180" fill="url(#kwSunGlow)" />
 
         <!-- รัศมี: แฉกยาวสลับแฉกสั้นรอบวง -->
@@ -96,19 +99,8 @@
           />
         </g>
 
+        <!-- จานเปล่า ไม่มีหน้า — เอาหน้ายิ้มออกตามที่สั่ง -->
         <circle class="sun__disc" r="52" />
-        <!-- หน้า: คิ้ว-ตา-จมูก-ปาก แบบลายเส้นน้อยเส้น
-             พิกัดวัดจากภาพต้นแบบ เทียบเป็นสัดส่วนของรัศมีจาน (r = 52)
-             คิ้ว ≈ 0.65r เหนือศูนย์ · ตา ≈ 0.42r เหนือศูนย์ · ปาก ≈ 0.40r ใต้ศูนย์ กว้างครึ่งหนึ่งของจาน
-             ของเดิมวางตาไว้กลางจานพอดี หน้าเลยห้อยลงต่ำจนปากเกือบชนขอบล่าง -->
-        <g class="sun__face">
-          <path d="M-33 -30 q11 -9 22 -1" />
-          <path d="M11 -31 q11 -8 22 1" />
-          <circle cx="-21" cy="-22" r="4.3" class="is-fill" />
-          <circle cx="21" cy="-22" r="4.3" class="is-fill" />
-          <path d="M1 -14 q-6 14 -1 18 q5 3 8 -1" />
-          <path d="M-26 8 q26 17 52 -3" />
-        </g>
       </g>
     </svg>
 
@@ -419,11 +411,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   stroke: var(--gold);
   stroke-width: 1.4;
 }
-.sun__face path {
-  fill: none; stroke: #9a7f45; stroke-width: 2; stroke-linecap: round;
-}
-.sun__face .is-fill { fill: #9a7f45; }
-
 /* หมุนช้ามาก — เห็นว่าไม่ใช่ภาพนิ่ง แต่ไม่ดึงสายตาออกจากตัวหนังสือ */
 .sun__rays { animation: kwSpin 220s linear infinite; transform-origin: 0 0; }
 .orbits__ring { animation: kwDrift 26s ease-in-out infinite alternate; transform-origin: 1150px 470px; }
