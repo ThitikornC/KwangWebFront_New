@@ -40,6 +40,15 @@ export default defineNuxtConfig({
   experimental: {
     cookieStore: true
   },
+
+  /* เปิดเว็บมาให้เจอหน้าแรกชุดใหม่ (/home2)
+     ใช้ 302 ไม่ใช่ 301 เพราะ 301 เบราว์เซอร์จะจำถาวร วันหลังอยากสลับหน้าแรกกลับ
+     เครื่องที่เคยเข้าแล้วจะยังเด้งไป /home2 อยู่จนกว่าจะล้างแคชเอง
+
+     หน้าแรกเดิม (pages/index.vue) ไม่ได้ถูกลบ ยังเปิดได้ที่ /home-classic (ดู definePageMeta ในไฟล์นั้น) */
+  routeRules: {
+    '/': { redirect: { to: '/home2', statusCode: 302 } },
+  },
   runtimeConfig: {
     mongodbUri: process.env.MONGODB_URI,
     railwayApiKey: process.env.RAILWAY_API_KEY,

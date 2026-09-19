@@ -2,6 +2,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useHead, useSeoMeta } from '#imports';
 
+/* หน้าแรกเดิม — ตอนนี้ / ถูกเด้งไป /home2 แล้ว (ดู routeRules ใน nuxt.config.ts)
+   ตั้งชื่อทางเข้าสำรองไว้ที่ /home-classic ไม่งั้นไฟล์นี้จะเปิดไม่ได้อีกเลย */
+definePageMeta({ alias: ['/home-classic'] });
+
 useHead({
   title: 'Kwang Unlimit',
   script: [{ innerHTML: `console.log('Welcome To New ERA! Kwang Unlimit LTD.')`}],

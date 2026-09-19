@@ -2,17 +2,19 @@
   KWANG UNLIMITED — หน้าแรกชุดใหม่ (/home2)
 
   หน้าเดิม (/ และ /home) ไม่ถูกแตะ หน้านี้เป็นอีกทางเลือกที่วางคู่กันไว้
-  ปลายทางของเมนูยกมาจาก pages/index.vue ชุดเดียวกัน แก้ที่นั่นแล้วต้องตามมาแก้ที่นี่
+
+  เมนูของหน้านี้ชี้ไปหน้าชุด V2 ทั้งแถว: /aboutV2 · /projectsV2 · /forwardthinkingV2
+  · /renewablesort/MomayforSaleV2 · /contactV2
+  หน้าพวกนั้นใช้โครงร่วมที่ components/Kw/Shell.vue ซึ่งถือรายการเมนูชุดเดียวกัน — แก้ที่หนึ่งต้องตามไปแก้อีกที่
 
   ── ไฟล์ภาพที่หน้านี้รอ ──
 
       public/home2/momay-enlightenment.png  — ตราคำว่า MOMAY ENLIGHTENMENT (ต้องพื้นใส)
-      public/home2/plate-left.webp          — ภาพสลักฝั่งซ้าย  (ตัวแปร --plate-left)
-      public/home2/plate-right.webp         — ภาพสลักฝั่งขวา   (ตัวแปร --plate-right)
+      public/home2/bg-momay.webp            — ภาพสลักเต็มหน้า  (ตัวแปร --plate)
 
   ตราคำว่า MOMAY เป็น <img> ถ้าไฟล์ยังไม่ถูกวางจะตกไปใช้ตราแบบตัวอักษรแทนอัตโนมัติ
   (ดู logoFailed) หัวเรื่องจึงไม่มีทางกลายเป็นช่องว่าง
-  ส่วนภาพสลักสองใบเป็น background ไม่มีไฟล์ก็แค่ว่างไว้ ไม่ขึ้นไอคอนรูปแตก
+  ส่วนภาพสลักเป็น background ไม่มีไฟล์ก็แค่ว่างไว้ ไม่ขึ้นไอคอนรูปแตก
 
   ลายเส้นเชิงเรขาคณิต (วงโคจร ดวงอาทิตย์ ดาว ลูกโลก) วาดเป็น inline SVG ในไฟล์นี้ ไม่ต้องหาไฟล์เพิ่ม
 -->
@@ -22,9 +24,8 @@
     <div class="kw__paper" aria-hidden="true" />
     <div class="kw__grain" aria-hidden="true" />
 
-    <!-- ── ภาพสลัก (ไฟล์ที่จะวางทีหลัง) ── -->
-    <div class="plate plate--left" aria-hidden="true" />
-    <div class="plate plate--right" aria-hidden="true" />
+    <!-- ── ภาพสลักเต็มหน้า ── -->
+    <div class="kw__plate" aria-hidden="true" />
 
     <!-- ── ระบบวงโคจร: เต็มหน้า วางศูนย์กลางไว้ฝั่งขวาตามแบบ ── -->
     <svg class="orbits" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -96,21 +97,24 @@
         </g>
 
         <circle class="sun__disc" r="52" />
-        <!-- หน้า: คิ้ว-ตา-จมูก-ปาก แบบลายเส้นน้อยเส้น -->
+        <!-- หน้า: คิ้ว-ตา-จมูก-ปาก แบบลายเส้นน้อยเส้น
+             พิกัดวัดจากภาพต้นแบบ เทียบเป็นสัดส่วนของรัศมีจาน (r = 52)
+             คิ้ว ≈ 0.65r เหนือศูนย์ · ตา ≈ 0.42r เหนือศูนย์ · ปาก ≈ 0.40r ใต้ศูนย์ กว้างครึ่งหนึ่งของจาน
+             ของเดิมวางตาไว้กลางจานพอดี หน้าเลยห้อยลงต่ำจนปากเกือบชนขอบล่าง -->
         <g class="sun__face">
-          <path d="M-30 -14 q10 -9 20 -1" />
-          <path d="M10 -15 q10 -8 20 1" />
-          <circle cx="-20" cy="-2" r="4.2" class="is-fill" />
-          <circle cx="20" cy="-2" r="4.2" class="is-fill" />
-          <path d="M0 -6 q-5 14 -1 20 q4 3 8 -1" />
-          <path d="M-17 26 q17 14 34 -2" />
+          <path d="M-33 -30 q11 -9 22 -1" />
+          <path d="M11 -31 q11 -8 22 1" />
+          <circle cx="-21" cy="-22" r="4.3" class="is-fill" />
+          <circle cx="21" cy="-22" r="4.3" class="is-fill" />
+          <path d="M1 -14 q-6 14 -1 18 q5 3 8 -1" />
+          <path d="M-26 8 q26 17 52 -3" />
         </g>
       </g>
     </svg>
 
     <!-- ══════════════ แถบบน ══════════════ -->
     <header class="topbar">
-      <a class="brand" href="/" aria-label="KWANG UNLIMITED — หน้าแรก">
+      <a class="brand" href="/home2" aria-label="KWANG UNLIMITED — หน้าแรก">
         <span class="brand__mark" aria-hidden="true">
           <img src="/kwang_logo.png" alt="" />
         </span>
@@ -134,21 +138,14 @@
       </button>
 
       <nav id="kw-nav" class="nav" :class="{ open: navOpen }">
-        <template v-for="n in NAV" :key="n.label">
-          <button
-            v-if="n.contact"
-            type="button"
-            class="nav__link"
-            @click="openContact"
-          >{{ n.label }}</button>
-          <a
-            v-else
-            class="nav__link"
-            :class="{ 'is-on': n.active }"
-            :href="n.href"
-            @click="navOpen = false"
-          >{{ n.label }}</a>
-        </template>
+        <a
+          v-for="n in NAV"
+          :key="n.label"
+          class="nav__link"
+          :class="{ 'is-on': n.active }"
+          :href="n.href"
+          @click="navOpen = false"
+        >{{ n.label }}</a>
       </nav>
     </header>
 
@@ -197,7 +194,7 @@
 
         <div class="cta">
           <a class="btn btn--solid" href="/renewablesort/MomayforSaleV2">EXPLORE MOMAY</a>
-          <a class="btn btn--ghost" href="/home">VIEW OUR WORK</a>
+          <a class="btn btn--ghost" href="/projectsV2">VIEW OUR WORK</a>
         </div>
       </div>
     </main>
@@ -220,21 +217,6 @@
       </span>
     </footer>
 
-    <!-- ══════════════ เบอร์ติดต่อ ══════════════ -->
-    <Teleport to="body">
-      <Transition name="ct">
-        <div v-if="showContact" class="ct-mask" @click.self="showContact = false">
-          <div class="ct-card" role="dialog" aria-modal="true" aria-labelledby="kw-ct-title">
-            <button type="button" class="ct-x" aria-label="ปิด" @click="showContact = false">×</button>
-            <h2 id="kw-ct-title" class="ct-title">CONTACT</h2>
-            <a v-for="c in CONTACTS" :key="c.tel" class="ct-item" :href="`tel:${c.tel}`">
-              <span class="ct-tel">{{ c.tel }}</span>
-              <span class="ct-name font-th">({{ c.name }})</span>
-            </a>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
   </div>
 </template>
 
@@ -268,29 +250,33 @@ useSeoMeta({
   ogImage: '/kwang_logo.png',
 })
 
-/* ── เมนู — ปลายทางชุดเดียวกับหน้าแรกเดิม (pages/index.vue) ── */
+/* ── เมนู — ชุด V2 ทั้งแถว ปลายทางเดียวกับ NAV ใน components/Kw/Shell.vue
+      แก้ที่นี่แล้วต้องตามไปแก้ที่นั่นด้วย ไม่งั้นเมนูสองหน้าจะพาไปคนละที่
+      (หน้าเดิม /valueProposition, /home, /renewable, /contact ยังอยู่ครบ แค่ไม่ได้อยู่ในเมนูชุดนี้แล้ว) ── */
 const NAV = [
-  { label: 'ABOUT',            href: '/valueProposition' },
-  { label: 'PROJECTS',         href: '/home' },
-  { label: 'FORWARD THINKING', href: '/renewable' },
+  { label: 'ABOUT',            href: '/aboutV2' },
+  { label: 'PROJECTS',         href: '/projectsV2' },
+  { label: 'FORWARD THINKING', href: '/forwardthinkingV2' },
   { label: 'MOMAY',            href: '/renewablesort/MomayforSaleV2', active: true },
-  { label: 'CONTACT',          contact: true },
-] as { label: string; href?: string; active?: boolean; contact?: boolean }[]
+  { label: 'CONTACT',          href: '/contactV2' },
+] as { label: string; href: string; active?: boolean }[]
 
 const STEPS = ['SEE', 'UNDERSTAND', 'ANTICIPATE', 'SIMULATE']
 
-const CONTACTS = [
-  { name: 'จ๊อบ', tel: '0839549743' },
-  { name: 'ไอซ์', tel: '0888150287' },
-]
-
 /* ── รัศมีดวงอาทิตย์ — แฉกยาวสลับแฉกสั้น เรียงรอบวงทีละ 15 องศา
-      วาดจากสูตรเพื่อให้เว้นระยะเท่ากันเป๊ะ เขียนมือ 24 แฉกแล้วมักเบี้ยว ── */
+      วาดจากสูตรเพื่อให้เว้นระยะเท่ากันเป๊ะ เขียนมือ 24 แฉกแล้วมักเบี้ยว
+
+      ตามภาพต้นแบบ: แฉกยาวเป็นเข็มเรียว ส่วนแฉกสั้นฐานกว้างเกือบเท่าตัว
+      (ของเดิมกลับด้านกัน แฉกยาวฐานกว้าง แฉกสั้นเรียว ดวงเลยดูโปร่งกว่าต้นแบบ)
+
+      ฐานอยู่ที่ 58 ซึ่งพ้นขอบจาน (52) ออกมา จึงเหลือวงกระดาษบาง ๆ คั่นระหว่างจานกับโคนแฉก
+      ระยะห่างระหว่างแฉกที่ฐาน = 2π×58/24 ≈ 15.2 จึงกำหนดฐานแฉกสั้นไว้ที่ 15.2 (half 7.6)
+      คือกว้างที่สุดเท่าที่ยังไม่ซ้อนกันจนกลายเป็นวงทึบ ── */
 const SUN_RAYS = Array.from({ length: 24 }, (_, i) => {
   const long = i % 2 === 0
   const base = 58
-  const tip = long ? 112 : 84
-  const half = long ? 7.5 : 4.5
+  const tip = long ? 112 : 82
+  const half = long ? 4.2 : 7.6
   return {
     a: i * 15,
     d: `M ${-half} ${-base} L 0 ${-tip} L ${half} ${-base} Z`,
@@ -305,19 +291,10 @@ const LOGO_SRC = '/home2/momay-enlightenment.png'
     หน้าจะได้ไม่มีช่องว่างตรงหัวเรื่องระหว่างที่ยังไม่มีไฟล์ */
 const logoFailed = ref(false)
 
-/* ── เบอร์ติดต่อ ── */
-const showContact = ref(false)
 const navOpen = ref(false)
 
-function openContact() {
-  navOpen.value = false
-  showContact.value = true
-}
-
 function onKeydown(e: KeyboardEvent) {
-  if (e.key !== 'Escape') return
-  showContact.value = false
-  navOpen.value = false
+  if (e.key === 'Escape') navOpen.value = false
 }
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
@@ -338,9 +315,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
   /* ระยะขอบซ้าย-ขวาของทั้งหน้า — เส้นคั่นอ้างค่านี้ ปลายเส้นจะได้ตรงกับขอบเนื้อหาพอดี */
   --gut: clamp(18px, 3.4vw, 54px);
+  --wrap: 1540px;
 
-  --plate-left: url('/home2/plate-left.webp');
-  --plate-right: url('/home2/plate-right.webp');
+  --plate: url('/home2/bg-momay.webp');
 
   /* หน้านี้ต้องจบใน 1 จอ ไม่มีสกรอลล์ — ความสูงจึงตายตัวที่ความสูงจอ
      แล้วให้ทุกอย่างข้างในย่อตาม svh ด้วย (ไม่ใช่ย่อตาม vw อย่างเดียว)
@@ -348,8 +325,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   position: relative;
   height: 100vh;
   height: 100svh;
-  display: flex;
-  flex-direction: column;
+
+  /* grid ไม่ใช่ flex column เพราะภาพสลักต้องวางทับช่องกลางช่องเดียวกับฮีโร่เป๊ะ ๆ
+     (แถวบน = แถบเมนู · แถวกลาง = ฮีโร่ = กรอบของภาพสลัก · แถวล่าง = แถบสี่จังหวะ)
+     ถ้าใช้ flex ต้องไปคำนวณความสูงแถบบน-ล่างเองซึ่งเป็น clamp ตาม svh คำนวณไม่ได้ */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
   overflow: hidden;
   background: var(--paper);
   color: var(--ink);
@@ -379,28 +360,31 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ── ภาพสลักสองฝั่ง ── */
-.plate {
-  position: absolute; top: 0; bottom: 0; z-index: 2; pointer-events: none;
+/* ── ภาพสลักเต็มหน้า ──
+   ไฟล์เป็นผืนเดียว 1585×992 ที่มีภาพสลักอยู่ริมซ้ายกับริมขวา ตรงกลางเป็นกระดาษเปล่า
+   จึงใช้ cover ให้เต็มจอ ภาพสลักจะไปเกาะริมสองข้างพอดีเหมือนที่ออกแบบมา
+
+   multiply ทำให้หมึกซึมเข้ากับสีกระดาษที่ไล่เฉดอยู่ข้างล่าง แทนที่จะเป็นแผ่นทึบวางทับ
+   ทั้งผืนมีแต่หมึกสีน้ำตาลบนพื้นครีม จึงไม่มีจุดไหนที่ multiply แล้วมืดจนตัวหนังสืออ่านไม่ออก */
+/* ภาพสลักคุมเฉพาะแนวตั้ง — ซ้าย-ขวากินเต็มจอ
+   บน-ล่าง: นั่งในแถวกลางของ grid จึงพอดีเส้นใต้แถบเมนูกับเส้นเหนือแถบสี่จังหวะเอง
+            (ไม่ใส่ max-width/padding เพราะภาพสลักต้องชนขอบจอซ้าย-ขวา)
+
+   ไม่เอาไปไว้ข้างใน .hero เพราะ .hero มี z-index เป็น stacking context
+   multiply ข้างในนั้นจะไม่ผสมกับสีกระดาษข้างล่าง ภาพจะกลายเป็นแผ่นครีมทึบแปะทับแทน */
+.kw__plate {
+  grid-row: 2; grid-column: 1;
+  z-index: 2; pointer-events: none;
+  min-width: 0; min-height: 0;
+  background-image: var(--plate);
   background-repeat: no-repeat;
-  background-size: contain;
-  /* จางลงและเป็นโทนเดียวกับหมึกบนกระดาษ ไม่ให้แย่งตัวหนังสือ */
-  opacity: 0.5;
+  background-position: center;
+  /* ขยายตามสัดส่วนจริงให้เต็มกรอบ ไม่บีบ
+     เคยใช้ 100% 100% ซึ่งเต็มกรอบเป๊ะแต่ภาพถูกยืด/หดตามสัดส่วนจอ ภาพสลักเลยผิดรูป
+     cover รักษาสัดส่วนไว้ แลกกับการที่ด้านที่ยาวเกินกรอบถูกครอบตัดออกไป */
+  background-size: cover;
+  opacity: 0.62;
   mix-blend-mode: multiply;
-}
-.plate--left {
-  left: 0; width: min(30vw, 420px);
-  background-image: var(--plate-left);
-  background-position: left center;
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 52%, transparent 100%);
-  mask-image: linear-gradient(90deg, #000 0%, #000 52%, transparent 100%);
-}
-.plate--right {
-  right: 0; width: min(38vw, 620px);
-  background-image: var(--plate-right);
-  background-position: right center;
-  -webkit-mask-image: linear-gradient(270deg, #000 0%, #000 60%, transparent 100%);
-  mask-image: linear-gradient(270deg, #000 0%, #000 60%, transparent 100%);
 }
 
 /* ── ระบบวงโคจร ── */
@@ -449,9 +433,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 /* ── แถบบน ───────────────────────────────────────────── */
 .topbar {
   position: relative; z-index: 10;
+  grid-row: 1; grid-column: 1;
   display: flex; align-items: center; gap: 22px;
-  flex: none;
-  width: 100%; max-width: 1540px; margin: 0 auto;
+  width: 100%; max-width: var(--wrap); margin: 0 auto;
   padding: clamp(12px, 2.2svh, 22px) var(--gut) clamp(10px, 1.8svh, 18px);
 }
 
@@ -557,10 +541,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 /* ── ฮีโร่ ───────────────────────────────────────────── */
 .hero {
   position: relative; z-index: 10;
-  /* 1 1 auto + min-height:0 = ยอมให้ย่อได้เมื่อจอเตี้ย แทนที่จะดันแถบล่างตกขอบ */
-  flex: 1 1 auto; min-height: 0;
+  /* แถว 1fr + min-height:0 = ยอมให้ย่อได้เมื่อจอเตี้ย แทนที่จะดันแถบล่างตกขอบ */
+  grid-row: 2; grid-column: 1;
+  min-width: 0; min-height: 0;
   display: flex; align-items: center;
-  width: 100%; max-width: 1540px; margin: 0 auto;
+  width: 100%; max-width: var(--wrap); margin: 0 auto;
   padding: clamp(12px, 3svh, 44px) var(--gut);
 }
 /* คอลัมน์ข้อความกินราวครึ่งซ้าย ที่เหลือปล่อยให้ภาพและวงโคจรหายใจ
@@ -678,8 +663,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 /* ── แถบล่าง ───────────────────────────────────────────── */
 .rail {
-  position: relative; z-index: 10; flex: none;
-  width: 100%; max-width: 1540px; margin: 0 auto;
+  position: relative; z-index: 10;
+  grid-row: 3; grid-column: 1;
+  width: 100%; max-width: var(--wrap); margin: 0 auto;
   padding: 0 var(--gut) clamp(12px, 2.4svh, 30px);
 }
 .rail__steps {
@@ -710,38 +696,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(5px); }
 }
-
-/* ── เบอร์ติดต่อ ───────────────────────────────────────── */
-.ct-mask {
-  position: fixed; inset: 0; z-index: 90;
-  display: grid; place-items: center; padding: 20px;
-  background: rgba(24, 20, 16, 0.55); backdrop-filter: blur(3px);
-}
-.ct-card {
-  position: relative; width: min(400px, 100%);
-  padding: 34px 28px 26px; text-align: center;
-  background: var(--paper-2); border: 1px solid rgba(29, 27, 25, 0.16);
-  box-shadow: 0 24px 60px rgba(24, 20, 16, 0.3);
-  font-family: 'Montserrat', sans-serif;
-}
-.ct-x {
-  position: absolute; top: 10px; right: 14px;
-  font-size: 26px; line-height: 1; color: var(--ink-dim);
-  background: none; border: 0; cursor: pointer;
-}
-.ct-title { font-size: 15px; font-weight: 600; letter-spacing: 0.28em; color: var(--red); }
-.ct-item {
-  display: flex; align-items: baseline; justify-content: center; gap: 10px;
-  margin-top: 16px; padding: 12px 10px; text-decoration: none;
-  border: 1px solid rgba(29, 27, 25, 0.16); color: var(--ink);
-  transition: border-color 0.2s, background 0.2s;
-}
-.ct-item:hover { border-color: var(--red); background: rgba(160, 28, 36, 0.05); }
-.ct-tel { font-size: 19px; font-weight: 600; letter-spacing: 0.05em; }
-.ct-name { font-size: 13px; color: var(--ink-dim); }
-
-.ct-enter-active, .ct-leave-active { transition: opacity 0.2s ease; }
-.ct-enter-from, .ct-leave-to { opacity: 0; }
 
 /* ── เข้าหน้าแบบค่อย ๆ ขึ้น ── */
 .wordmark, .hr, .kicker, .kicker-th, .claim, .claim-th, .cta {
@@ -777,10 +731,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   }
   .nav__link::after { display: none; }
 
-  /* ภาพสลักถอยไปเป็นฉากหลังจาง ๆ ไม่งั้นทับตัวหนังสือบนจอแคบ */
-  .plate { opacity: 0.22; }
-  .plate--left { width: 52vw; }
-  .plate--right { width: 62vw; }
+  /* จอแคบภาพสลักจะขยับเข้ามาทับคอลัมน์ข้อความ (cover ซูมเข้าหากลางภาพ) จึงต้องจางลงมาก
+     ผลข้างเคียงคือบนมือถือแทบไม่เห็นภาพสลัก เพราะกลางผืนเป็นกระดาษเปล่า
+     อยากให้เห็นจริง ๆ ต้องมีไฟล์เวอร์ชันแนวตั้งแยกอีกใบ */
+  .kw__plate { opacity: 0.2; }
 
   .hero { align-items: flex-start; padding-top: clamp(16px, 4svh, 40px); }
   .hero__copy { width: 100%; }
