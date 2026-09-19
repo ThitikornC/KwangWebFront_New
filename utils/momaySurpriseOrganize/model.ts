@@ -16,7 +16,8 @@ export type OrgId =
 export type SignalId = 'people' | 'traffic' | 'parking' | 'energy' | 'waste' | 'events'
 export type PeakId = 'morning' | 'midday' | 'evening' | 'event'
 export type ScenarioId = 'normal' | 'weekend' | 'event'
-export type InputKey = 'people' | 'capacity' | 'energy'
+/** floors ใช้เฉพาะหมวดห้องสมุด — หมวดอื่นไม่ถาม (ดู ORG_TYPES[x].inputs) */
+export type InputKey = 'people' | 'capacity' | 'energy' | 'floors'
 
 /* ─────────────────────────── signals ─────────────────────────── */
 
@@ -175,6 +176,11 @@ const baseFields = (): Record<InputKey, FieldDef> => ({
     label: 'ค่าไฟเฉลี่ยต่อเดือน', note: '(ประมาณการ)',
     unit: 'บาท / เดือน', hint: 'ค่าไฟทั้งหมด', default: 120000,
   },
+  floors: {
+    key: 'floors', icon: 'layers',
+    label: 'จำนวนชั้น / พื้นที่ให้บริการ', note: '',
+    unit: 'ชั้น', hint: 'นับเฉพาะชั้นที่เปิดให้ผู้ใช้เข้าไปนั่งได้', default: 4,
+  },
 })
 
 /** ผสมสมการ: เริ่มจาก DEFAULT_MODEL แล้ว override เฉพาะตัวที่ต่าง */
@@ -263,9 +269,14 @@ export const ORG_TYPES: OrgDef[] = [
   {
     id: 'library', en: 'Library', th: 'ห้องสมุด',
     icon: 'book', photo: '/momay/org-library.webp', subject: 'library',
+    // ถามแค่สามค่าที่ห้องสมุดตอบได้ทันทีโดยไม่ต้องไปเปิดบิล — ค่าไฟใช้ค่าตั้งต้นของหมวด
+    inputs: ['people', 'capacity', 'floors'],
+    // มีตารางสิ่งที่อยากให้ช่วยดูเป็นของตัวเอง (LIB_FOCUS) จึงไม่ใช้ตาราง signal กลาง
+    dailyChanges: false,
     fields: withFields({
-      people: { label: 'จำนวนผู้เข้าใช้บริการต่อวัน', hint: 'ผู้อ่าน ผู้ใช้ห้องกลุ่ม เจ้าหน้าที่', default: 1200 },
-      capacity: { icon: 'book', label: 'จำนวนที่นั่งอ่าน', note: '(ทั้งหมด)', unit: 'ที่นั่ง', hint: 'ที่นั่งอ่านและห้องศึกษากลุ่มรวมกัน', default: 300 },
+      people: { icon: 'users', label: 'จำนวนผู้ใช้เฉลี่ยต่อวัน', note: '', hint: 'ผู้อ่าน ผู้ใช้ห้องกลุ่ม เจ้าหน้าที่', default: 1200 },
+      capacity: { icon: 'chair', label: 'จำนวนที่นั่งทั้งหมด', note: '', unit: 'ที่นั่ง', hint: 'ที่นั่งอ่านและห้องศึกษากลุ่มรวมกัน', default: 450 },
+      floors: { hint: 'รวมชั้นลอยและโซนบริการที่แยกออกไป', default: 6 },
       energy: { hint: 'ค่าไฟรวมของอาคารห้องสมุด', default: 78000 },
     }),
     model: model({

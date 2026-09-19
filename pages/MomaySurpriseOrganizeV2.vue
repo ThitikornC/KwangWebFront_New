@@ -55,7 +55,7 @@
 
             <div class="org-col">
               <div class="org-list">
-                <template v-for="o in ORG_TYPES" :key="o.id">
+                <template v-for="o in orgList" :key="o.id">
                   <button
                     type="button"
                     class="org-row"
@@ -76,15 +76,25 @@
                   <Transition name="dd">
                     <div v-if="openOrg === o.id" class="dd">
                       <div class="dd-inner">
-                        <!-- ตัวเลขพื้นฐานของพื้นที่ -->
-                        <p class="dd-title">
-                          Tell us a little about <span class="accent">your {{ o.subject }}</span>
-                        </p>
-                        <p class="dd-sub font-thai">บอกเราเล็กน้อยเกี่ยวกับพื้นที่ของคุณ</p>
+                        <!-- ห้องสมุด: ข้อความนำ บอกตั้งแต่ต้นว่ากรอกแค่สามช่องก็พอ
+                             ไม่ใส่ภาพซ้ำตรงนี้ เพราะภาพปกฝั่งซ้ายเป็นรูปห้องสมุดใบเดียวกันอยู่แล้ว
+                             หมวดอื่นยังขึ้นหัวข้อเป็นตัวหนังสือเหมือนเดิม -->
+                        <div v-if="o.id === 'library'" class="q-intro font-thai">
+                          <b>เพียง 3 ข้อมูลง่าย ๆ</b>
+                          <span>MOMAY จะค้นหาความสัมพันธ์และมุมมองใหม่ให้คุณ</span>
+                        </div>
+
+                        <template v-else>
+                          <!-- ตัวเลขพื้นฐานของพื้นที่ -->
+                          <p class="dd-title">
+                            Tell us a little about <span class="accent">your {{ o.subject }}</span>
+                          </p>
+                          <p class="dd-sub font-thai">บอกเราเล็กน้อยเกี่ยวกับพื้นที่ของคุณ</p>
+                        </template>
 
                         <div class="field-list">
                           <div v-for="f in fieldList" :key="f.key" class="field">
-                            <span class="field-ic"><Ico :name="f.icon" /></span>
+                            <span class="field-ic" :style="{ '--sig': FIELD_COLORS[f.key] }"><Ico :name="f.icon" /></span>
                             <div class="field-main">
                               <div class="field-label font-thai">
                                 {{ f.label }}<br /><span class="field-note">{{ f.note }}</span>
@@ -104,141 +114,6 @@
                             </div>
                           </div>
                         </div>
-
-                        <!-- ── ห้องสมุด: ผังชั้นและโซน ส่งต่อไปสร้างหน้า STUDENT ──
-                             แบ่งเป็นสองจังหวะ: บอกจำนวนชั้นก่อน แล้วค่อยกางทีละชั้น
-                             ถ้ากางทุกชั้นพร้อมกันตั้งแต่แรก จะเจอ 20 ช่องกรอกรวดเดียวจนไม่รู้จะเริ่มตรงไหน -->
-                        <template v-if="o.id === 'library'">
-                          <p class="dd-title dd-gap font-thai">โซนบริการ</p>
-
-                          <!-- จังหวะที่ 1 — จำนวนชั้น -->
-                          <template v-if="!lib.confirmed">
-                            <p class="dd-sub font-thai">ห้องสมุดของคุณมีกี่ชั้น?</p>
-                            <div class="lib-pick">
-                              <div class="lib-stepper lib-stepper--lg">
-                                <button type="button" :disabled="libCount <= 1" @click="libCount--">−</button>
-                                <span class="lib-stepper__n">{{ libCount }}</span>
-                                <button type="button" :disabled="libCount >= 12" @click="libCount++">+</button>
-                              </div>
-                              <span class="lib-pick__unit font-thai">ชั้น</span>
-                              <button type="button" class="lib-go font-thai" @click="confirmFloors">
-                                ใส่รายละเอียดห้อง <Ico name="arrow-right" />
-                              </button>
-                            </div>
-                          </template>
-
-                          <!-- จังหวะที่ 2 — รายละเอียดรายชั้น กางทีละชั้น -->
-                          <template v-else>
-                            <div class="lib-sum">
-                              <span class="font-thai">
-                                {{ lib.floors.length }} ชั้น · {{ libZoneCount }} โซน · {{ nf(libSeatTotal) }} ที่นั่ง
-                              </span>
-                              <button type="button" class="lib-back font-thai" @click="lib.confirmed = false">
-                                แก้จำนวนชั้น
-                              </button>
-                            </div>
-
-                            <div
-                              v-for="(fl, fi) in lib.floors"
-                              :key="fl.id"
-                              class="lib-floor"
-                              :class="{ open: lib.openFloor === fi }"
-                            >
-                              <button type="button" class="lib-floor__head" @click="toggleFloor(fi)">
-                                <span class="lib-floor__no font-thai">ชั้น {{ fi + 1 }}</span>
-                                <span class="lib-floor__sum font-thai">
-                                  {{ fl.zones.length }} โซน · {{ nf(floorSeats(fl)) }} ที่นั่ง
-                                </span>
-                                <Ico :name="lib.openFloor === fi ? 'arrow-down' : 'arrow-right'" />
-                              </button>
-
-                              <div v-if="lib.openFloor === fi" class="lib-floor__body">
-                                <p v-if="!fl.zones.length" class="lib-empty font-thai">ยังไม่มีโซนในชั้นนี้</p>
-
-                                <div v-for="z in fl.zones" :key="z.id" class="lib-zone">
-                                  <!-- รูปโซน: อัปโหลดจากเครื่อง เก็บเป็น data URL ส่งต่อไปหน้า STUDENT -->
-                                  <label class="lib-photo" :class="{ 'has-img': z.image }">
-                                    <img v-if="z.image" :src="z.image" alt="" />
-                                    <span v-else class="font-thai">+ รูป</span>
-                                    <input type="file" accept="image/*" @change="onZoneImage(z, $event)" />
-                                  </label>
-
-                                  <div class="lib-zone__main">
-                                    <input v-model="z.name" class="lib-in font-thai" type="text" placeholder="ชื่อโซน / ห้อง" />
-                                    <div class="lib-zone__row">
-                                      <select v-model="z.kind" class="lib-in lib-in--sm font-thai">
-                                        <option v-for="k in LIB_KINDS" :key="k.id" :value="k.id">{{ k.th }}</option>
-                                      </select>
-                                      <!-- ที่นั่งเป็นตัวหารของหน้า STUDENT (คนที่ตรวจจับได้/ที่นั่งทั้งหมด)
-                                           ว่างไว้ไม่ได้ เลยทำกรอบแดงบอกตั้งแต่ยังไม่กดไปต่อ -->
-                                      <label class="lib-seat font-thai">
-                                        <input
-                                          v-model.number="z.seats"
-                                          class="lib-in lib-in--num"
-                                          :class="{ 'lib-in--need': !(Number(z.seats) > 0) }"
-                                          type="number"
-                                          min="1"
-                                          placeholder="—"
-                                        />
-                                        ที่นั่ง
-                                      </label>
-                                    </div>
-                                    <div class="lib-zone__row">
-                                      <template v-if="!z.open24">
-                                        <input v-model="z.openFrom" class="lib-in lib-in--sm" type="time" />
-                                        <span class="lib-dash">–</span>
-                                        <input v-model="z.openTo" class="lib-in lib-in--sm" type="time" />
-                                      </template>
-                                      <label class="lib-24 font-thai">
-                                        <input v-model="z.open24" type="checkbox" /> เปิด 24 ชม.
-                                      </label>
-                                    </div>
-                                  </div>
-
-                                  <button type="button" class="lib-del" aria-label="ลบโซน" @click="removeZone(fl, z)">
-                                    <Ico name="close" />
-                                  </button>
-                                </div>
-
-                                <button type="button" class="lib-add font-thai" @click="addZone(fl)">+ เพิ่มโซน</button>
-                              </div>
-                            </div>
-
-                            <p v-if="libSeatMissing" class="lib-warn font-thai">
-                              ยังไม่ได้ใส่จำนวนที่นั่งอีก {{ libSeatMissing }} โซน —
-                              หน้า STUDENT ใช้ตัวเลขนี้เป็นตัวหาร ถ้าไม่มีจะขึ้นเป็น % แทน
-                              “คนที่ตรวจจับได้ / ที่นั่งทั้งหมด”
-                            </p>
-
-                            <!-- ที่จอดรถ: ของห้องสมุดถามแยก เพราะช่อง capacity ของหมวดนี้คือที่นั่งอ่าน -->
-                            <p class="dd-title dd-gap font-thai">ที่จอดรถ</p>
-                            <div class="lib-park">
-                              <span class="lib-park__ic"><Ico name="car" /></span>
-                              <div class="lib-park__main">
-                                <span class="font-thai">จำนวนช่องจอด</span>
-                                <small class="font-thai">เว้นว่างได้ถ้ายังไม่มีข้อมูล</small>
-                              </div>
-                              <input v-model.number="libParking" class="lib-in lib-in--num" type="number" min="0" placeholder="0" />
-                              <span class="lib-park__unit font-thai">ช่อง</span>
-                            </div>
-
-                            <!-- ควบคุมเครื่องใช้ไฟฟ้าอัตโนมัติ: โซนไม่มีคนก็ตัดไฟทั้งจุด
-                                 ไม่ใช่แค่หรี่ไฟ — แอร์/ไฟ/อุปกรณ์ในโซนนั้นดับไปด้วยกัน -->
-                            <p class="dd-title dd-gap font-thai">ควบคุมอัตโนมัติ</p>
-                            <button
-                              type="button"
-                              class="lib-auto"
-                              :class="{ on: lib.autoPower }"
-                              @click="lib.autoPower = !lib.autoPower"
-                            >
-                              <span class="lib-auto__sw"><span /></span>
-                              <span class="lib-auto__txt font-thai">
-                                <b>เปิด-ปิดเครื่องใช้ไฟฟ้าตามจำนวนคน</b>
-                                <small>โซนไหนไม่มีคนก็ตัดไฟทั้งจุด คนน้อยเปิดเท่าที่จำเป็น</small>
-                              </span>
-                            </button>
-                          </template>
-                        </template>
 
                         <!-- โซลาร์: แบ่งสัดส่วนการใช้ไฟกลางวัน-กลางคืน
                              กลางวัน = ช่วงที่แผงผลิตไฟได้ ยิ่งใช้ตอนกลางวันมาก โซลาร์ยิ่งช่วยได้มาก -->
@@ -261,6 +136,50 @@
                             <span class="dn-ic dn-moon"><Ico name="moon" /></span>
                           </div>
                           <div class="dn-ends font-thai"><span>กลางวัน</span><span>กลางคืน</span></div>
+                        </template>
+
+                        <!-- ── ห้องสมุด: เลือกสิ่งที่อยากให้ช่วยดู ──
+                             ตารางของตัวเอง ไม่ใช่ signal กลาง เพราะห้องสมุดไม่ได้ดูจราจร/ที่จอด
+                             แต่ดูที่นั่ง โซน การจองห้อง และอากาศในอาคาร -->
+                        <template v-if="o.id === 'library'">
+                          <p class="dd-title dd-gap font-thai">เลือกสิ่งที่ต้องการเข้าใจ</p>
+                          <p class="dd-sub font-thai">คุณอยากให้ MOMAY ช่วยวิเคราะห์เรื่องใดบ้าง? (เลือกได้มากกว่า 1 ข้อ)</p>
+
+                          <div class="foc-grid">
+                            <button
+                              v-for="fc in LIB_FOCUS"
+                              :key="fc.id"
+                              type="button"
+                              class="foc"
+                              :class="{ on: form.libFocus.includes(fc.id) }"
+                              :style="{ '--sig': fc.color }"
+                              @click="toggleFocus(fc.id)"
+                            >
+                              <span class="foc-ic"><Ico :name="fc.icon" /></span>
+                              <span class="foc-txt">
+                                <span class="foc-th font-thai">{{ fc.th }}</span>
+                                <span class="foc-en">({{ fc.en }})</span>
+                              </span>
+                              <span v-if="form.libFocus.includes(fc.id)" class="foc-check"><Ico name="check" /></span>
+                            </button>
+                          </div>
+
+                          <p class="dd-title dd-gap font-thai">ช่วงเวลาที่มีผู้ใช้มากที่สุด</p>
+                          <div class="lpk-row">
+                            <button
+                              v-for="pk in LIB_PEAKS"
+                              :key="pk.id"
+                              type="button"
+                              class="lpk"
+                              :class="{ on: form.libPeak === pk.id }"
+                              @click="form.libPeak = pk.id"
+                            >
+                              <span class="lpk-ic"><Ico :name="pk.icon" /></span>
+                              <span class="lpk-th font-thai">{{ pk.th }}</span>
+                              <span class="lpk-win">({{ pk.window }})</span>
+                              <span v-if="form.libPeak === pk.id" class="lpk-check"><Ico name="check" /></span>
+                            </button>
+                          </div>
                         </template>
 
                         <!-- สิ่งที่เปลี่ยนแปลงระหว่างวัน — บางหมวด (เช่นโซลาร์) ไม่ต้องถาม
@@ -290,27 +209,35 @@
                         </div>
                         </template>
 
-                        <!-- ช่วงเวลาหนาแน่น -->
-                        <p class="dd-title dd-gap font-thai">ช่วงไหนของวันที่คนเยอะที่สุด?</p>
-                        <div class="peak-row">
+                        <!-- ช่วงเวลาหนาแน่น — ห้องสมุดถามไปแล้วด้านบนด้วยตัวเลือกของตัวเอง -->
+                        <p v-if="o.id !== 'library'" class="dd-title dd-gap font-thai">ช่วงไหนของวันที่คนเยอะที่สุด?</p>
+                        <!-- ใช้หน้าตาชุดเดียวกับของห้องสมุด: ไอคอน + ชื่อช่วง + กรอบเวลา
+                             เวลาที่แสดงมาจาก PEAKS ของแต่ละหมวด จึงไม่ใช่ชุดเดียวกับห้องสมุด -->
+                        <div v-if="o.id !== 'library'" class="lpk-row">
                           <button
                             v-for="pk in PEAKS"
                             :key="pk.id"
                             type="button"
-                            class="peak font-thai"
+                            class="lpk"
                             :class="{ on: form.peak === pk.id }"
                             @click="form.peak = pk.id"
-                          >{{ pk.th }}</button>
+                          >
+                            <span class="lpk-ic"><Ico :name="PEAK_ICONS[pk.id]" /></span>
+                            <span class="lpk-th font-thai">{{ pk.th }}</span>
+                            <span class="lpk-win">({{ pk.window }})</span>
+                            <span v-if="form.peak === pk.id" class="lpk-check"><Ico name="check" /></span>
+                          </button>
                         </div>
 
                         <!-- ปุ่มไปต่อท้ายดร๊อปดาวน์ กรอกเสร็จกดได้เลยไม่ต้องเลื่อนลงไปท้ายหน้า -->
-                        <div class="dd-next">
+                        <div class="dd-next" :class="{ 'dd-next--wide': o.id === 'library' }">
                           <button
                             type="button"
                             class="btn-next font-thai"
+                            :class="{ 'btn-next--grad': o.id === 'library' }"
                             :disabled="!canAdvance"
                             @click="next"
-                          >ต่อไป <Ico name="arrow-right" /></button>
+                          >{{ o.id === 'library' ? 'วิเคราะห์ให้เลย' : 'ต่อไป' }} <Ico name="arrow-right" /></button>
                         </div>
                       </div>
                     </div>
@@ -328,7 +255,14 @@
         <section v-else-if="step === 2" key="s2" class="screen">
           <!-- ครอบด้วยกล่องที่ไม่ถูกถอดออก เพื่อจองความสูงไว้ตอนสลับข้อความ
                ไม่งั้นช่วงที่โหนดเก่าออกแล้วโหนดใหม่ยังไม่เข้า หน้าจะหดแล้วเด้งกลับ -->
-          <div class="stage-slot">
+          <!-- ห้องสมุดใช้หัวข้อนิ่ง ความคืบหน้าไปอยู่ที่เช็กลิสต์กับแถบด้านล่างแทน
+               หมวดอื่นยังสลับหัวข้อไปตามขั้นที่กำลังทำ -->
+          <div v-if="isLibrary" class="lw-head">
+            <h2 class="h-th-lead center font-thai">กำลังวิเคราะห์ข้อมูลของคุณ</h2>
+            <p class="h-en-sub center">Awakening</p>
+          </div>
+
+          <div v-else class="stage-slot">
             <Transition name="stage" mode="out-in">
               <div :key="stage.en" class="stage-head">
                 <h2 class="h-en center glow">{{ stage.en }}</h2>
@@ -337,7 +271,147 @@
             </Transition>
           </div>
 
-          <div class="cols cols-awaken">
+          <!-- ══ ห้องสมุด: อาคารไอโซเมตริก + สายข้อมูล + ฟองไอคอนของสิ่งที่กำลังวิเคราะห์ ══
+               หมวดอื่นยังใช้วงเมืองเดิม เพราะตัวชี้วัดคนละชุดกัน (จราจร ที่จอด ขยะ) -->
+          <div v-if="isLibrary" class="lw">
+            <ul class="lw-steps">
+              <li
+                v-for="(t, i) in awakenSteps"
+                :key="t.th"
+                :class="{ done: i < awakenAt, now: i === awakenAt }"
+              >
+                <span class="lw-mark">
+                  <Ico v-if="i < awakenAt" name="check" />
+                  <span v-else-if="i === awakenAt" class="spin" />
+                  <span v-else class="hollow" />
+                </span>
+                <span class="lw-text font-thai">{{ t.th }}</span>
+              </li>
+            </ul>
+
+            <div class="lw-art">
+              <svg class="lw-svg" viewBox="0 0 400 360" aria-hidden="true">
+                <defs>
+                  <linearGradient id="lwSlab" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#5eead4" stop-opacity="0.22" />
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.06" />
+                  </linearGradient>
+                  <linearGradient id="lwWall" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.16" />
+                    <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0.04" />
+                  </linearGradient>
+                  <!-- สายข้อมูลไล่สีคนละเส้น ให้ดูเหมือนคนละกระแสที่ไหลเข้าหาอาคาร -->
+                  <linearGradient id="lwFlow1" x1="0" y1="1" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#22c55e" stop-opacity="0" />
+                    <stop offset="45%" stop-color="#22c55e" stop-opacity="0.85" />
+                    <stop offset="100%" stop-color="#a855f7" stop-opacity="0.1" />
+                  </linearGradient>
+                  <linearGradient id="lwFlow2" x1="0" y1="1" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#a855f7" stop-opacity="0" />
+                    <stop offset="50%" stop-color="#d946ef" stop-opacity="0.85" />
+                    <stop offset="100%" stop-color="#f472b6" stop-opacity="0.1" />
+                  </linearGradient>
+                  <linearGradient id="lwFlow3" x1="0" y1="1" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0" />
+                    <stop offset="55%" stop-color="#22d3ee" stop-opacity="0.75" />
+                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.12" />
+                  </linearGradient>
+                  <radialGradient id="lwGlow" cx="0.5" cy="0.5" r="0.5">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3" />
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+                  </radialGradient>
+                </defs>
+
+                <ellipse class="lw-shadow" cx="180" cy="300" rx="150" ry="52" fill="url(#lwGlow)" />
+
+                <!-- วงคลื่นที่ฐาน แผ่ออกเป็นจังหวะ ให้รู้สึกว่าอาคารกำลัง "ทำงาน" อยู่ -->
+                <ellipse class="lw-pulse" cx="180" cy="300" rx="120" ry="42" />
+                <ellipse class="lw-pulse lw-pulse--2" cx="180" cy="300" rx="120" ry="42" />
+
+                <!-- สายข้อมูลอยู่หลังอาคาร โค้งอ้อมจากฐานซ้ายขึ้นไปทางขวาบน
+                     ถ้าวาดทับอาคารจะกลายเป็นเส้นพาดหน้าตึกแทนที่จะเป็นกระแสที่ไหลผ่าน -->
+                <g class="lw-flows">
+                  <path d="M -10 330 C 90 320 60 200 170 140 S 330 96 410 62" stroke="url(#lwFlow1)" />
+                  <path d="M -10 286 C 110 286 90 170 200 112 S 340 60 410 26" stroke="url(#lwFlow2)" />
+                  <path d="M 0 356 C 120 352 130 246 240 196 S 350 150 410 122" stroke="url(#lwFlow3)" />
+                </g>
+
+                <!-- ชั้นของอาคารซ้อนกันขึ้นไป วาดจากชั้นล่างสุดก่อนเพื่อให้ชั้นบนทับถูกลำดับ -->
+                <g class="lw-bld">
+                  <template v-for="f in LW_FLOORS" :key="f.y">
+                    <!-- ผนังระหว่างชั้น -->
+                    <path
+                      :d="`M 60 ${f.y} L 60 ${f.y - 44} L 180 ${f.y - 44 + 58} L 180 ${f.y + 58} Z`"
+                      fill="url(#lwWall)"
+                    />
+                    <path
+                      :d="`M 300 ${f.y} L 300 ${f.y - 44} L 180 ${f.y - 44 + 58} L 180 ${f.y + 58} Z`"
+                      fill="url(#lwWall)"
+                      opacity="0.6"
+                    />
+                    <!-- แผ่นพื้นชั้น -->
+                    <path
+                      :d="`M 180 ${f.y - 58} L 300 ${f.y} L 180 ${f.y + 58} L 60 ${f.y} Z`"
+                      fill="url(#lwSlab)"
+                      class="lw-slab"
+                    />
+                    <!-- แถวหน้าต่าง -->
+                    <g class="lw-win">
+                      <line
+                        v-for="w in 4"
+                        :key="'a' + f.y + w"
+                        :x1="78 + w * 22" :y1="f.y - 9 + w * 11"
+                        :x2="78 + w * 22" :y2="f.y - 9 + w * 11 + 16"
+                      />
+                      <line
+                        v-for="w in 4"
+                        :key="'b' + f.y + w"
+                        :x1="282 - w * 22" :y1="f.y - 9 + w * 11"
+                        :x2="282 - w * 22" :y2="f.y - 9 + w * 11 + 16"
+                      />
+                    </g>
+                  </template>
+                </g>
+
+                <!-- ลำแสงกวาดขึ้นตามตัวอาคาร บอกว่ากำลังไล่อ่านข้อมูลทีละชั้น -->
+                <rect class="lw-scan" x="46" y="0" width="268" height="26" rx="13" />
+              </svg>
+
+              <!-- ประกายลอยขึ้นรอบอาคาร -->
+              <span
+                v-for="(s, i) in LW_SPARKS"
+                :key="'sp' + i"
+                class="lw-spark"
+                :style="{
+                  left: s.x + '%', bottom: s.b + '%',
+                  '--sz': s.size + 'px',
+                  animationDelay: s.delay + 's',
+                  animationDuration: s.dur + 's',
+                }"
+              />
+
+              <!-- ฟองไอคอน: สิ่งที่ MOMAY กำลังอ่านอยู่ ไล่ขึ้นมาทีละดวงตามความคืบหน้า
+                   ดวงแรกขึ้นตั้งแต่วินาทีแรก ไม่งั้นช่วงเริ่มต้นภาพจะโล่งไปทั้งฝั่ง -->
+              <span
+                v-for="(b, i) in LW_BUBBLES"
+                :key="b.icon"
+                class="lw-bubble"
+                :class="{ on: awakenAt * 1.4 + 1 > i }"
+                :style="{ left: b.x + '%', top: b.y + '%', '--sig': b.color, '--i': i }"
+              >
+                <span class="lw-bubble__ring" />
+                <Ico :name="b.icon" />
+              </span>
+            </div>
+
+            <div class="lw-foot">
+              <div class="lw-bar"><span :style="{ width: awakenPct + '%' }" /></div>
+              <p class="lw-ready">Your Library MOMAY is ready.</p>
+              <p class="lw-sub">From Data to New Possibilities.</p>
+            </div>
+          </div>
+
+          <div v-else class="cols cols-awaken">
             <div class="ring-wrap awakening" :class="{ ready: awakenDone, launch: launching }">
               <div class="ring-bg photo-slot" />
 
@@ -509,13 +583,25 @@
         <section v-else key="s3" class="screen screen-result">
           <div class="panels">
             <!-- ── แผง 01 · See ── -->
-            <section class="panel panel-see">
+            <section class="panel panel-see" :class="{ 'panel-quiet': isLibrary }">
               <!-- ภาพเมืองช่วงพีคเป็นพื้นหลังของแผงนี้ -->
               <div class="screen-photo photo-slot photo-05" />
 
-              <!-- หัวข้อใช้ร่วมกันทุกหมวด เปลี่ยนเฉพาะเนื้อในของแผง -->
-              <h2 class="h-en upper">What matters now?</h2>
-              <p class="h-th font-thai">ตอนนี้มีอะไรที่ต้องรู้บ้าง</p>
+              <!-- ห้องสมุดขึ้นหัวข้อไทยนำ พร้อมป้ายบอกว่ากำลังดูแผงไหนอยู่
+                   หมวดอื่นใช้หัวข้ออังกฤษนำเหมือนเดิม -->
+              <div v-if="isLibrary" class="p-head">
+                <span class="p-no">05</span>
+                <div>
+                  <h2 class="h-th-lead font-thai">เห็นภาพรวมที่สำคัญ</h2>
+                  <p class="h-en-sub">SEE — What matters now?</p>
+                </div>
+                <span class="p-chip">Library Overview</span>
+              </div>
+              <template v-else>
+                <!-- หัวข้อใช้ร่วมกันทุกหมวด เปลี่ยนเฉพาะเนื้อในของแผง -->
+                <h2 class="h-en upper">What matters now?</h2>
+                <p class="h-th font-thai">ตอนนี้มีอะไรที่ต้องรู้บ้าง</p>
+              </template>
 
               <template v-if="isSolar">
                 <!-- ไล่ที่มาของตัวเลขให้เห็นทีละขั้น จากค่าไฟที่กรอกมา -->
@@ -574,6 +660,69 @@
                 </p>
               </template>
 
+              <!-- ── ห้องสมุด: สามตัวเลขที่ตอบได้ทันทีว่าวันนี้เป็นอย่างไร ── -->
+              <template v-else-if="isLibrary">
+                <div class="lk-row">
+                  <div class="lk">
+                    <span class="lk-k font-thai">ผู้ใช้วันนี้</span>
+                    <span class="lk-v"><NumTicker :value="libReport.todayPeople" comma /></span>
+                    <span class="lk-u font-thai">คน</span>
+                    <span class="lk-d font-thai">
+                      <Ico name="arrow-up" /> {{ libReport.peopleChange }}%
+                      <small>จากสัปดาห์ก่อน</small>
+                    </span>
+                  </div>
+                  <div class="lk">
+                    <span class="lk-k font-thai">อัตราการใช้ที่นั่ง</span>
+                    <span class="lk-v"><NumTicker :value="libReport.seatUsePct" suffix="%" /></span>
+                    <span class="lk-u font-thai">
+                      ({{ nf(libReport.seatsUsed) }} / {{ nf(libReport.seats) }})
+                    </span>
+                  </div>
+                  <div class="lk">
+                    <span class="lk-k font-thai">ห้อง/พื้นที่ใช้สูงสุด</span>
+                    <span class="lk-v font-thai">ชั้น {{ libReport.busyFloor }}</span>
+                    <span class="lk-u font-thai">
+                      <Ico name="layers" /> {{ libReport.busyFloorPct }}%
+                    </span>
+                  </div>
+                </div>
+
+                <!-- ความหนาแน่นรายครึ่งชั่วโมง — สีของแท่งบอกระดับ ไม่ต้องอ่านแกนก็เห็นช่วงพีค -->
+                <div class="lb-chart">
+                  <p class="lb-title font-thai">ความหนาแน่นผู้ใช้ตามเวลา (วันนี้)</p>
+                  <div class="lb-plot">
+                    <div class="lb-yaxis">
+                      <span v-for="t in [100, 75, 50, 25, 0]" :key="t">{{ t }}%</span>
+                    </div>
+                    <div class="lb-bars">
+                      <span
+                        v-for="b in libReport.bars"
+                        :key="b.at"
+                        class="lb-bar"
+                        :style="{
+                          height: (b.value * 100).toFixed(1) + '%',
+                          background: b.color,
+                          boxShadow: `0 0 10px ${b.color}55`,
+                        }"
+                        :class="{ now: Math.abs(b.at - libReport.nowHour) < 0.01 }"
+                      />
+                    </div>
+                  </div>
+                  <div class="lb-xaxis">
+                    <span v-for="b in libReport.bars" :key="'x' + b.at">{{ b.label }}</span>
+                  </div>
+                </div>
+
+                <div class="lb-now">
+                  <span class="lb-now__ic"><Ico name="bulb" /></span>
+                  <p class="font-thai">
+                    <b>ตอนนี้ ({{ libReport.nowLabel }})</b><br />{{ libReport.nowTh }}
+                  </p>
+                  <Ico name="arrow-right" />
+                </div>
+              </template>
+
               <template v-else>
               <div v-if="alert" class="flag">
                 <span class="flag-ic"><Ico name="alert" /></span>
@@ -621,11 +770,39 @@
 
             <!-- ── แผง 02 · Understand ── -->
             <section class="panel panel-relate">
-              <h2 class="h-en upper">Why does it matter?</h2>
-              <p class="h-th font-thai">ทำไมเรื่องนี้ถึงสำคัญ</p>
+              <div v-if="isLibrary" class="p-head">
+                <span class="p-no">06</span>
+                <div>
+                  <h2 class="h-th-lead font-thai">เข้าใจเหตุผล</h2>
+                  <p class="h-en-sub">UNDERSTAND — Why does it matter?</p>
+                </div>
+                <span class="p-chip">Key Insights</span>
+              </div>
+              <template v-else>
+                <h2 class="h-en upper">Why does it matter?</h2>
+                <p class="h-th font-thai">ทำไมเรื่องนี้ถึงสำคัญ</p>
+              </template>
+
+              <!-- ── ห้องสมุด: สิ่งที่อ่านได้จากข้อมูล แล้วปิดท้ายด้วยความสัมพันธ์ที่พบ ── -->
+              <div v-if="isLibrary" class="li-wrap">
+                <ul class="li-list">
+                  <li v-for="k in libReport.insights" :key="k.th" :style="{ '--sig': k.color }">
+                    <span class="li-ic"><Ico :name="k.icon" /></span>
+                    <span class="li-th font-thai">{{ k.th }}</span>
+                  </li>
+                </ul>
+
+                <div class="li-rel">
+                  <span class="li-rel__ic"><Ico name="chart" /></span>
+                  <div>
+                    <p class="li-rel__k font-thai">ความสัมพันธ์ที่พบ</p>
+                    <p class="li-rel__v font-thai">{{ libReport.relationTh }}</p>
+                  </div>
+                </div>
+              </div>
 
               <!-- หมวดโซลาร์: วงเดียวกัน แต่โหนดเป็นเส้นทางพลังงาน ลูกศรไหลทางเดียว -->
-              <div v-if="isSolar" class="cols cols-relate">
+              <div v-else-if="isSolar" class="cols cols-relate">
                 <div class="ring-wrap relations sol-ring">
                   <svg class="ring-lines web" viewBox="0 0 100 100">
                     <defs>
@@ -776,11 +953,85 @@
 
             <!-- ── แผง 03 · Anticipate & Simulate ── -->
             <section class="panel panel-sim">
-              <!-- หัวข้อใช้ร่วมกันทุกหมวด เปลี่ยนเฉพาะเนื้อในของแผง -->
-              <h2 class="h-en upper">What happens next?</h2>
-              <p class="h-th font-thai">ถ้าคนใช้พื้นที่มากขึ้น จะเป็นอย่างไร</p>
+              <div v-if="isLibrary" class="p-head">
+                <span class="p-no">07</span>
+                <div>
+                  <h2 class="h-th-lead font-thai">มองเห็นอนาคตและจำลองสถานการณ์</h2>
+                  <p class="h-en-sub">ANTICIPATE &amp; SIMULATE — What happens next?</p>
+                </div>
+                <span class="p-chip">Scenario</span>
+              </div>
+              <template v-else>
+                <!-- หัวข้อใช้ร่วมกันทุกหมวด เปลี่ยนเฉพาะเนื้อในของแผง -->
+                <h2 class="h-en upper">What happens next?</h2>
+                <p class="h-th font-thai">ถ้าคนใช้พื้นที่มากขึ้น จะเป็นอย่างไร</p>
+              </template>
 
-              <template v-if="isSolar">
+              <!-- ── ห้องสมุด: เส้นคาดการณ์ 7 วัน แล้วให้ลองปรับจำนวนคนดู ── -->
+              <template v-if="isLibrary">
+                <p class="lb-title font-thai">คาดการณ์จำนวนผู้ใช้ (7 วันข้างหน้า)</p>
+
+                <div class="lf-legend">
+                  <span><i style="background: #60a5fa" /> ค่าปัจจุบัน</span>
+                  <span><i style="background: #e879f9" /> คาดการณ์</span>
+                </div>
+
+                <div class="lf-chart">
+                  <svg :viewBox="`0 0 ${libChart.vw} ${libChart.vh}`" preserveAspectRatio="none" class="lf-svg">
+                    <!-- เส้นกริดแนวนอนตามค่าบนแกน Y -->
+                    <line
+                      v-for="t in libChart.ticks"
+                      :key="'g' + t.v"
+                      class="lf-grid"
+                      :x1="libChart.x0" :y1="t.y" :x2="libChart.x1" :y2="t.y"
+                    />
+                    <polyline class="lf-line cur" :points="libChart.curLine" />
+                    <polyline class="lf-line pre" :points="libChart.preLine" />
+                    <circle v-for="p in libChart.cur" :key="'c' + p.th" class="lf-dot cur" :cx="p.x" :cy="p.y" r="3.2" />
+                    <circle v-for="p in libChart.pre" :key="'p' + p.th" class="lf-dot pre" :cx="p.x" :cy="p.y" r="3.2" />
+                  </svg>
+
+                  <div class="lf-yaxis">
+                    <span v-for="t in [...libChart.ticks].reverse()" :key="'y' + t.v">{{ nf(t.v) }}</span>
+                  </div>
+
+                  <!-- ป้ายเตือนลอยอยู่เหนือวันที่หนักที่สุด -->
+                  <div
+                    v-if="libReport.atRisk"
+                    class="lf-flag font-thai"
+                    :style="{ left: libChart.peakLeft + '%' }"
+                  >
+                    เสี่ยงหนาแน่นสูง<br /><small>(คาด {{ nf(libReport.peakPredicted) }})</small>
+                  </div>
+                </div>
+
+                <div class="lf-xaxis">
+                  <span v-for="d in libReport.days" :key="'d' + d.th" class="font-thai">{{ d.th }}</span>
+                </div>
+
+                <p class="lb-title lb-title--gap font-thai">จำลองสถานการณ์</p>
+                <div class="ls-row">
+                  <button
+                    v-for="sc in libReport.scenarios"
+                    :key="sc.id"
+                    type="button"
+                    class="ls"
+                    :class="{ on: libScenario === sc.id }"
+                    @click="libScenario = sc.id"
+                  >
+                    <span class="ls-th font-thai">{{ sc.th }}</span>
+                    <span class="ls-sub">{{ sc.sub }}</span>
+                    <span class="ls-v font-thai">{{ nf(sc.people) }} คน/วัน</span>
+                  </button>
+                </div>
+
+                <div class="lf-note">
+                  <span class="lf-note__ic"><Ico :name="libScenario === 'down' ? 'arrow-down' : 'alert'" /></span>
+                  <p class="font-thai">{{ libScenarioNote }}</p>
+                </div>
+              </template>
+
+              <template v-else-if="isSolar">
                 <div class="slider-box">
                   <div class="slider-head font-thai">
                     <span>เลื่อนเพื่อเพิ่ม-ลดค่าไฟ</span>
@@ -914,11 +1165,63 @@
 
             <!-- ── แผง 04 · Decide ── -->
             <section class="panel panel-decide">
-              <h2 class="h-en upper">Momay recommends</h2>
-              <p class="h-th font-thai">ข้อเสนอแนะจาก MOMAY</p>
+              <div v-if="isLibrary" class="p-head">
+                <span class="p-no">08</span>
+                <div>
+                  <h2 class="h-th-lead font-thai">ข้อเสนอแนะและทางเลือก</h2>
+                  <p class="h-en-sub">DECIDE — What should we do?</p>
+                </div>
+                <span class="p-chip">Recommendations</span>
+              </div>
+              <template v-else>
+                <h2 class="h-en upper">Momay recommends</h2>
+                <p class="h-th font-thai">ข้อเสนอแนะจาก MOMAY</p>
+              </template>
+
+              <!-- ── ห้องสมุด: สิ่งที่ทำได้จริง กดดูรายละเอียดได้ทีละข้อ ── -->
+              <div v-if="isLibrary" class="lr-wrap">
+                <div
+                  v-for="r in libReport.recommendations"
+                  :key="r.key"
+                  class="lr"
+                  :class="{ open: libOpenRec === r.key }"
+                  :style="{ '--sig': r.color }"
+                >
+                  <div class="lr-head">
+                    <span class="lr-ic"><Ico :name="r.icon" /></span>
+                    <div class="lr-txt">
+                      <p class="lr-title font-thai">{{ r.titleTh }}</p>
+                      <p class="lr-sub font-thai">{{ r.subTh }}</p>
+                    </div>
+                    <button
+                      type="button"
+                      class="lr-more font-thai"
+                      @click="libOpenRec = libOpenRec === r.key ? null : r.key"
+                    >
+                      ดูรายละเอียด <Ico :name="libOpenRec === r.key ? 'arrow-down' : 'arrow-right'" />
+                    </button>
+                  </div>
+
+                  <ul v-if="libOpenRec === r.key" class="lr-detail font-thai">
+                    <li v-for="d in r.detailTh" :key="d">{{ d }}</li>
+                  </ul>
+                </div>
+
+                <!-- ปลายทางของห้องสมุด: แอปฝั่งผู้ใช้ที่บอกว่าตอนนี้ควรไปนั่งตรงไหน -->
+                <a class="lr-student" :href="citizenHref" @click="onStudentClick">
+                  <span class="lr-student__ic"><Ico name="star" /></span>
+                  <span class="lr-student__txt">
+                    <b class="font-thai">MOMAY Student — สำหรับผู้ใช้ห้องสมุด</b>
+                    <small class="font-thai">
+                      ดูได้เลยว่าตอนนี้ควรไปที่ไหน? ว่างหรือไม่? เหมาะกับการอ่าน ทำงานกลุ่ม หรือพักผ่อน
+                    </small>
+                  </span>
+                  <Ico name="arrow-right" />
+                </a>
+              </div>
 
               <!-- หมวดโซลาร์แนะนำจากสัดส่วนกลางวัน-กลางคืน และช่วงพีคที่เลือกไว้ -->
-              <div v-if="isSolar" class="cols">
+              <div v-else-if="isSolar" class="cols">
                 <div>
                   <div class="reco">
                     <span class="pill" :class="solarRec.badge.toLowerCase()">{{ solarRec.badge }}</span>
@@ -1143,6 +1446,71 @@
       <h1 class="rp-title">MOMAY Surprise — รายงานผลวิเคราะห์</h1>
       <p class="rp-sub">{{ org.en }} · {{ org.th }} — สร้างเมื่อ {{ reportDate }}</p>
 
+      <!-- ห้องสมุดวัดคนละชุดกับหมวดอื่น รายงานจึงแยกตาราง (ดู utils/.../library.ts) -->
+      <template v-if="isLibrary">
+        <h2>ข้อมูลที่ใช้</h2>
+        <table class="rp-table">
+          <tbody>
+            <tr v-for="f in fieldList" :key="f.key">
+              <th>{{ f.label }} {{ f.note }}</th>
+              <td>{{ nf(form[f.key]) }} {{ f.unit }}</td>
+            </tr>
+            <tr><th>สิ่งที่ต้องการเข้าใจ</th><td>{{ libFocusNames }}</td></tr>
+            <tr>
+              <th>ช่วงที่มีผู้ใช้มากที่สุด</th>
+              <td>{{ libPeakDef.th }} ({{ libPeakDef.window }})</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>ภาพรวมวันนี้</h2>
+        <table class="rp-table">
+          <tbody>
+            <tr><th>ผู้ใช้วันนี้</th><td>{{ nf(libReport.todayPeople) }} คน (+{{ libReport.peopleChange }}% จากสัปดาห์ก่อน)</td></tr>
+            <tr>
+              <th>อัตราการใช้ที่นั่ง</th>
+              <td>{{ libReport.seatUsePct }}% ({{ nf(libReport.seatsUsed) }} / {{ nf(libReport.seats) }} ที่นั่ง)</td>
+            </tr>
+            <tr><th>ชั้นที่ใช้งานสูงสุด</th><td>ชั้น {{ libReport.busyFloor }} — {{ libReport.busyFloorPct }}%</td></tr>
+            <tr v-if="libReport.quietFloors.length">
+              <th>ชั้นที่ยังรองรับได้อีก</th>
+              <td>{{ libReport.quietFloors.map(f => `ชั้น ${f}`).join(' · ') }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>คาดการณ์ 7 วันข้างหน้า</h2>
+        <table class="rp-table">
+          <thead><tr><th>วัน</th><th>ค่าปัจจุบัน</th><th>คาดการณ์</th></tr></thead>
+          <tbody>
+            <tr v-for="d in libReport.days" :key="'rp' + d.th">
+              <th>{{ d.th }}</th>
+              <td>{{ nf(d.current) }} คน</td>
+              <td>{{ nf(d.predicted) }} คน</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="rp-why">
+          <strong>สถานการณ์ที่เลือก:</strong> {{ libScenarioDef.th }} {{ libScenarioDef.sub }}
+          ({{ nf(libScenarioDef.people) }} คน/วัน) — {{ libScenarioNote }}
+        </p>
+
+        <h2>สิ่งที่ควรรู้</h2>
+        <ol class="rp-list">
+          <li v-for="k in libReport.insights" :key="'rpi' + k.th">{{ k.th }}</li>
+        </ol>
+        <p class="rp-why"><strong>ความสัมพันธ์ที่พบ:</strong> {{ libReport.relationTh }}</p>
+
+        <h2>ข้อเสนอแนะและทางเลือก</h2>
+        <ol class="rp-list">
+          <li v-for="r in libReport.recommendations" :key="'rpr' + r.key">
+            <strong>{{ r.titleTh }}</strong> — {{ r.subTh }}
+            <em>({{ r.detailTh.join(' · ') }})</em>
+          </li>
+        </ol>
+      </template>
+
+      <template v-else>
       <h2>ข้อมูลที่ใช้</h2>
       <table class="rp-table">
         <tbody>
@@ -1190,6 +1558,7 @@
           <li v-for="m in moreRecs" :key="m.key">[{{ m.badge }}] {{ m.titleTh }} <em>({{ m.whyTh }})</em></li>
         </ol>
       </template>
+      </template>
 
       <p class="rp-foot">MOMAY Surprise · ตัวเลขทั้งหมดคำนวณจากข้อมูลที่กรอกไว้ ใช้เป็นแนวทางประกอบการตัดสินใจเบื้องต้น</p>
     </div>
@@ -1205,6 +1574,10 @@ import {
   headlineAlert, keyUnderstandings, recommend, recommendAll, constraintWarning,
   type OrgId, type SignalId, type PeakId, type ScenarioId, type InputKey,
 } from '~/utils/momaySurpriseOrganize/model'
+import {
+  LIB_FOCUS, LIB_FOCUS_MAP, LIB_PEAKS, LIB_PEAK_MAP, LIB_PEAK_TO_ENGINE, libraryReport,
+  type LibFocusId, type LibPeakId,
+} from '~/utils/momaySurpriseOrganize/library'
 
 // ชื่อ route ต้องไม่ซ้ำกับหน้าเดิม ไม่งั้นตัวที่ลงทะเบียนทีหลังจะทับกัน แล้วหน้าเดิมกลายเป็น 404
 definePageMeta({ name: 'momay-surprise-organize-v2', layout: false })
@@ -1241,6 +1614,16 @@ const ICONS: Record<string, string[]> = {
   clock: ['M12 21.5a9.5 9.5 0 1 1 0-19 9.5 9.5 0 0 1 0 19Z', 'M12 6.8V12l3.4 2'],
   leaf: ['M11 20.5A7.5 7.5 0 0 1 9.6 6C15.6 4.8 17.2 4.2 19.3 1.6c1 2.1 2.1 4.4 2.1 8.4 0 5.8-5 10.5-10.4 10.5Z', 'M2.5 21.5c0-3.2 1.9-5.7 5.3-6.4'],
   close: ['M6.5 6.5 17.5 17.5', 'M17.5 6.5 6.5 17.5'],
+  // ── ไอคอนชุดห้องสมุด ──
+  users: ['M16.5 20.5v-1.6a3.6 3.6 0 0 0-3.6-3.6H6.6A3.6 3.6 0 0 0 3 18.9v1.6', 'M9.8 4a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 0 1 0-7.2Z', 'M21 20.5v-1.6a3.6 3.6 0 0 0-2.7-3.5', 'M15.5 4.2a3.6 3.6 0 0 1 0 7'],
+  grid: ['M4 4h6.2v6.2H4V4Z', 'M13.8 4H20v6.2h-6.2V4Z', 'M4 13.8h6.2V20H4v-6.2Z', 'M13.8 13.8H20V20h-6.2v-6.2Z'],
+  chair: ['M6.5 4.5h11v7.5a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2V4.5Z', 'M4.5 14h15', 'M7 17v3M17 17v3', 'M7 14v3h10v-3'],
+  layers: ['M12 3.2 21 8l-9 4.8L3 8l9-4.8Z', 'M3 12.4 12 17.2l9-4.8', 'M3 16.6 12 21.4l9-4.8'],
+  bulb: ['M9.2 18.2h5.6', 'M10 21h4', 'M12 3a6 6 0 0 1 3.6 10.8c-.6.5-.9 1-.9 1.7v.7H9.3v-.7c0-.7-.3-1.2-.9-1.7A6 6 0 0 1 12 3Z'],
+  chart: ['M4 20V4', 'M4 20h16', 'M8 16.5V12M12.5 16.5V7.5M17 16.5v-6'],
+  star: ['M12 3.2l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9L6.7 19.7l1.1-6L3.4 9.5l6-.8L12 3.2Z'],
+  question: ['M12 21.5a9.5 9.5 0 1 1 0-19 9.5 9.5 0 0 1 0 19Z', 'M9.4 9.2a2.7 2.7 0 1 1 3.6 2.5c-.7.3-1 .9-1 1.6v.5', 'M12 17.4h.01'],
+  'sun-up': ['M12 8.6a3.8 3.8 0 0 1 3.8 3.8', 'M5.5 16.5h13', 'M3 20h18', 'M12 3v2.4M5.6 6.1 7.2 7.7M18.4 6.1l-1.6 1.6', 'M8.2 12.4a3.8 3.8 0 0 1 1.1-2.7'],
   'arrow-right': ['M4.5 12h14', 'M13 6.2 18.8 12 13 17.8'],
   'arrow-left': ['M19.5 12h-14', 'M11 6.2 5.2 12 11 17.8'],
   'arrow-up': ['M12 19.5v-14', 'M5.8 11.5 12 5.2l6.2 6.3'],
@@ -1305,8 +1688,13 @@ const form = reactive({
   people: 2500,
   capacity: 180,
   energy: 120000,
+  /** จำนวนชั้น — ถามเฉพาะห้องสมุด */
+  floors: 6,
   signals: [] as SignalId[],
   peak: null as PeakId | null,
+  /** ห้องสมุดมีชุดคำถามของตัวเอง: สิ่งที่อยากให้ช่วยดู และช่วงเวลาที่คนเยอะที่สุด */
+  libFocus: [] as LibFocusId[],
+  libPeak: null as LibPeakId | null,
   /** สัดส่วนการใช้ไฟตอนกลางวัน (%) — ใช้เฉพาะหมวดที่เปิด dayNight */
   dayShare: 60,
   scenario: 'normal' as ScenarioId,
@@ -1317,9 +1705,21 @@ const form = reactive({
    ตั้งต้นแทน — หน้าผลลัพธ์เข้าไม่ได้จนกว่าจะเลือกครบ (ดู canAdvance) ค่าสำรองนี้
    จึงไม่เคยถูกแสดงเป็นคำตอบของผู้ใช้ */
 const orgId = computed<OrgId>(() => form.org ?? 'municipality')
-const peakId = computed<PeakId>(() => form.peak ?? 'midday')
 
 const org = computed(() => ORG_MAP[orgId.value] ?? ORG_MAP.municipality)
+const isLibrary = computed(() => org.value.id === 'library')
+
+/* ห้องสมุดเลือกช่วงเวลาจากชุดของตัวเอง (มี "ไม่แน่ใจ" ด้วย) แล้วแปลงเป็นช่วงพีค
+   ของเอนจินกลางอีกที — ตัวเลขในรายงาน PDF และลิงก์ที่แชร์จะได้เป็นชุดเดียวกัน */
+const peakId = computed<PeakId>(() =>
+  isLibrary.value
+    ? LIB_PEAK_TO_ENGINE[form.libPeak ?? 'midday']
+    : form.peak ?? 'midday',
+)
+
+/** หมวดที่เปิดให้เลือกในหน้านี้ — หมวดที่เหลือยังอยู่ในโมเดล รอเปิดทีหลัง */
+const VISIBLE_ORGS: OrgId[] = ['municipality', 'library']
+const orgList = computed(() => ORG_TYPES.filter(o => VISIBLE_ORGS.includes(o.id)))
 
 /* ก่อนผู้ใช้เลือกหมวด ภาพปกใช้ภาพเมืองกลาง ๆ จะได้ไม่สื่อว่าเลือกหมวดไหนไว้ให้แล้ว */
 const coverPhoto = computed(() => (form.org ? org.value.photo : '/momay/org-other.webp'))
@@ -1430,15 +1830,25 @@ const solarInsights = computed(() => {
 /** ทศนิยมตามขนาดตัวเลข — เลขเล็กต้องเห็นทศนิยม เลขใหญ่ไม่ต้อง */
 const kw = (v: number) => (v >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1))
 
+/** ไอคอนประจำช่วงเวลาของหมวดทั่วไป — PEAKS ในโมเดลเก็บแค่ชื่อกับกรอบเวลา ไม่มีไอคอน */
+const PEAK_ICONS: Record<PeakId, string> = {
+  morning: 'sun-up',
+  midday: 'sun',
+  evening: 'moon',
+  event: 'calendar',
+}
+
+/** สีประจำช่องกรอก — ให้ไอคอนแต่ละช่องแยกกันด้วยสายตา ไม่ใช่เทาเหมือนกันหมด */
+const FIELD_COLORS: Record<InputKey, string> = {
+  people: '#38bdf8',
+  capacity: '#f59e0b',
+  floors: '#a855f7',
+  energy: '#fbbf24',
+}
+
 const ALL_INPUTS: InputKey[] = ['people', 'capacity', 'energy']
 /** บางหมวดให้กรอกไม่ครบสามช่อง (เช่นโซลาร์กรอกแค่ค่าไฟ) */
-const fieldList = computed(() => {
-  const keys = org.value.inputs ?? ALL_INPUTS
-  // ห้องสมุดกรอกที่นั่งรายโซนแล้ว ช่อง "จำนวนที่นั่งอ่าน (ทั้งหมด)" จึงซ้ำซ้อน
-  // ค่าที่ส่งเข้าเอนจินมาจากผลรวมของโซนแทน (ดู watch ด้านล่าง)
-  const use = org.value.id === 'library' ? keys.filter(k => k !== 'capacity') : keys
-  return use.map(k => org.value.fields[k])
-})
+const fieldList = computed(() => (org.value.inputs ?? ALL_INPUTS).map(k => org.value.fields[k]))
 
 /** หมวดที่กางดร๊อปดาวน์กรอกข้อมูลอยู่ — เริ่มต้นกางของหมวดที่เลือกไว้ให้เลย */
 const openOrg = ref<OrgId | null>(form.org)
@@ -1458,6 +1868,7 @@ function pickOrg(id: OrgId) {
     form.people = f.people.default
     form.capacity = f.capacity.default
     form.energy = f.energy.default
+    form.floors = f.floors.default
   }
 }
 
@@ -1465,6 +1876,12 @@ function toggleSignal(id: SignalId) {
   const i = form.signals.indexOf(id)
   if (i >= 0) form.signals.splice(i, 1)
   else form.signals.push(id)
+}
+
+function toggleFocus(id: LibFocusId) {
+  const i = form.libFocus.indexOf(id)
+  if (i >= 0) form.libFocus.splice(i, 1)
+  else form.libFocus.push(id)
 }
 
 /* ─────────── การกรอกตัวเลข ─────────── */
@@ -1511,6 +1928,99 @@ const rec = computed(() => recs.value[0])
 /** ปัจจัยอื่นที่ล้นขีดความสามารถพร้อมกัน — แสดงต่อจากข้อเสนอแนะหลัก */
 const moreRecs = computed(() => recs.value.slice(1))
 const warning = computed(() => constraintWarning(sim.value.metrics, loadSignals.value))
+
+/* ─────────── ห้องสมุด: ผลวิเคราะห์ของหน้า 05–08 ───────────
+   คนละเอนจินกับหมวดอื่น (ดู utils/momaySurpriseOrganize/library.ts) */
+
+/** เวลาจริงของเครื่อง — เก็บเป็น ref เพราะฝั่งเซิร์ฟเวอร์กับฝั่งเบราว์เซอร์คนละนาฬิกา
+    ปล่อยให้เรนเดอร์ครั้งแรกใช้ช่วงพีคไปก่อน แล้วค่อยเปลี่ยนเป็นเวลาจริงตอน mount */
+const nowHour = ref<number | null>(null)
+
+const libPeakDef = computed(() => LIB_PEAK_MAP[form.libPeak ?? 'midday'])
+
+const libReport = computed(() =>
+  libraryReport({
+    people: form.people,
+    seats: form.capacity,
+    floors: form.floors,
+    focus: form.libFocus,
+    peak: form.libPeak ?? 'midday',
+    nowHour: nowHour.value ?? undefined,
+  }),
+)
+
+const libFocusNames = computed(() =>
+  form.libFocus.map(f => LIB_FOCUS_MAP[f].th).join(' · ') || '—',
+)
+
+/** สถานการณ์ที่กำลังดูอยู่ในแผง 07 — ตั้งต้นที่ "ผู้ใช้เพิ่มขึ้น" เพราะเป็นกรณีที่ต้องเตรียมตัว */
+const libScenario = ref<'normal' | 'up' | 'down'>('up')
+const libScenarioDef = computed(
+  () => libReport.value.scenarios.find(s => s.id === libScenario.value) ?? libReport.value.scenarios[0],
+)
+
+/** ข้อความสรุปใต้การ์ดสถานการณ์ — อ้างชั้นจริงที่คำนวณได้ ไม่ใช่ข้อความสำเร็จรูป */
+const libScenarioNote = computed(() => {
+  const r = libReport.value
+  const busy = [r.busyFloor, ...(r.busyFloor2 ? [r.busyFloor2] : [])].join('-')
+  const quiet = r.quietFloors.map(f => `ชั้น ${f}`).join(' และ')
+  const window = libPeakDef.value.window
+
+  if (libScenario.value === 'up') {
+    return (
+      `หากผู้ใช้เพิ่มขึ้น 20% ชั้น ${busy} จะเต็ม 100% ในช่วง ${window}` +
+      (quiet ? ` แนะนำเปิดพื้นที่ใน${quiet} และกระจายกิจกรรมบางส่วนไปยังโซนอื่น` : ' ควรเริ่มจำกัดเวลานั่งต่อรอบ')
+    )
+  }
+  if (libScenario.value === 'down') {
+    return (
+      `หากผู้ใช้ลดลง 20% ชั้น ${busy} จะเหลือราว ${Math.round(r.busyFloorPct * 0.8)}% ` +
+      (quiet ? `สามารถรวมผู้ใช้ไว้ชั้นเดียวแล้วปิดระบบของ${quiet}เพื่อลดค่าไฟ` : 'สามารถลดรอบเปิดบางโซนลงได้')
+    )
+  }
+  return (
+    `ในวันปกติ ชั้น ${busy} จะหนาแน่นราว ${r.busyFloorPct}% ในช่วง ${window} ` +
+    (quiet ? `ขณะที่${quiet}ยังรับผู้ใช้ได้อีกมาก` : 'ส่วนที่เหลือยังรับได้')
+  )
+})
+
+/** ข้อเสนอแนะที่กางรายละเอียดอยู่ */
+const libOpenRec = ref<LibFocusId | null>(null)
+
+/* เส้นคาดการณ์ 7 วัน — คำนวณพิกัดใน viewBox ที่นี่ ไม่ปล่อยให้เทมเพลตคิดเลข */
+const libChart = computed(() => {
+  const r = libReport.value
+  const vw = 340
+  const vh = 148
+  const x0 = 8
+  const x1 = 332
+  const y0 = 10
+  const y1 = 130
+
+  const n = r.days.length
+  const px = (i: number) => (n <= 1 ? (x0 + x1) / 2 : x0 + ((x1 - x0) * i) / (n - 1))
+  const py = (v: number) => y1 - (y1 - y0) * (v / r.chartMax)
+  const pts = (key: 'current' | 'predicted') =>
+    r.days.map((d, i) => ({ th: d.th, x: px(i), y: py(d[key]) }))
+
+  const cur = pts('current')
+  const pre = pts('predicted')
+  const line = (ps: { x: number; y: number }[]) =>
+    ps.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+
+  const peakIdx = r.days.reduce((best, d, i) => (d.predicted > r.days[best].predicted ? i : best), 0)
+
+  return {
+    vw, vh, x0, x1,
+    cur, pre,
+    curLine: line(cur),
+    preLine: line(pre),
+    ticks: r.chartTicks.map(v => ({ v, y: py(v) })),
+    // ป้ายเตือนเป็น HTML ที่ลอยทับ svg จึงต้องคิดตำแหน่งเป็น % ของความกว้างแผง
+    // บีบไว้ไม่ให้ชิดขอบ ไม่งั้นครึ่งหนึ่งของป้ายจะล้นออกนอกแผงตอนเรียง 4 คอลัมน์
+    peakLeft: Math.min(82, Math.max(14, (px(peakIdx) / vw) * 100)),
+  }
+})
 
 const peopleChange = computed(() => (sim.value.growth - 1) * 100)
 
@@ -1686,6 +2196,38 @@ const valueTone = computed<Record<string, string>>(() => {
 
 /* ─────────── หน้า 02: ลำดับการวิเคราะห์ ─────────── */
 
+/* ── ห้องสมุด: ชุดของตัวเอง สี่ขั้น เล่าด้วยคำที่ตรงกับสิ่งที่ห้องสมุดสนใจ ── */
+const LIB_AWAKEN_STEPS = [
+  { en: 'Connecting your data ...',     th: 'กำลังเชื่อมโยงข้อมูลของคุณ...' },
+  { en: 'Reading occupancy ...',        th: 'กำลังวิเคราะห์ความหนาแน่นผู้ใช้ และการใช้พื้นที่...' },
+  { en: 'Detecting usage patterns ...', th: 'กำลังตรวจหารูปแบบการใช้งาน ในแต่ละช่วงเวลา...' },
+  { en: 'Simulating options ...',       th: 'กำลังจำลองสถานการณ์ และหาทางเลือกที่ดีกว่า...' },
+]
+
+/** ชั้นของอาคารไอโซเมตริก — ค่า y คือระดับพื้นของแต่ละชั้นใน viewBox 400×360 */
+const LW_FLOORS = [{ y: 262 }, { y: 218 }, { y: 174 }, { y: 130 }]
+
+/** ประกายที่ลอยขึ้นรอบอาคาร — กระจายด้วยมุมทองให้ไม่จับกลุ่มเป็นแถว */
+const LW_SPARKS = Array.from({ length: 18 }, (_, i) => {
+  const a = (i * 137.5) % 360
+  return {
+    x: 18 + (a / 360) * 64,
+    b: 6 + ((i * 29) % 46),
+    size: 2 + (i % 3),
+    delay: ((i % 9) * 0.55).toFixed(2),
+    dur: (4.6 + (i % 5) * 0.7).toFixed(1),
+  }
+})
+
+/** ฟองไอคอนรอบอาคาร — ตำแหน่งเป็น % ของกล่องภาพ เรียงเป็นส่วนโค้งทางขวา */
+const LW_BUBBLES = [
+  { icon: 'users',    color: '#38bdf8', x: 72, y: 14 },
+  { icon: 'book',     color: '#a855f7', x: 86, y: 31 },
+  { icon: 'leaf',     color: '#22c55e', x: 90, y: 51 },
+  { icon: 'calendar', color: '#f43f5e', x: 80, y: 70 },
+  { icon: 'bolt',     color: '#f59e0b', x: 66, y: 85 },
+]
+
 const AWAKEN_STEPS = [
   { en: 'Connecting your data ...', th: 'กำลังเชื่อมข้อมูลของคุณเข้าด้วยกัน' },
   { en: 'Finding relationships ...', th: 'ดูว่าเรื่องไหนเกี่ยวกับเรื่องไหน' },
@@ -1722,7 +2264,14 @@ function stopLaunch() {
 }
 
 const awakenAt = ref(0)
-const awakenDone = computed(() => awakenAt.value >= AWAKEN_STEPS.length)
+
+/** ขั้นตอนที่ใช้จริงของหมวดนี้ — ห้องสมุดมีสี่ขั้น หมวดอื่นห้าขั้น */
+const awakenSteps = computed(() => (isLibrary.value ? LIB_AWAKEN_STEPS : AWAKEN_STEPS))
+const awakenPct = computed(() =>
+  Math.min(100, (awakenAt.value / awakenSteps.value.length) * 100),
+)
+
+const awakenDone = computed(() => awakenAt.value >= awakenSteps.value.length)
 const stage = computed(() => AWAKEN_STAGES[Math.min(awakenAt.value, AWAKEN_STAGES.length - 1)])
 let awakenTimer: ReturnType<typeof setInterval> | null = null
 
@@ -1756,18 +2305,20 @@ function launchToResult() {
 function startAwaken() {
   stopAwaken()
   awakenAt.value = 0
+  // จำนวนขั้นต่างกันตามหมวด แต่เวลารวมเท่ากัน จังหวะต่อขั้นจึงคิดจากชุดที่ใช้จริง
+  const total = awakenSteps.value.length
   awakenTimer = setInterval(() => {
-    if (awakenAt.value >= AWAKEN_STEPS.length) {
+    if (awakenAt.value >= total) {
       stopAwaken()
       return
     }
     awakenAt.value += 1
     // ครบทุกขั้น (= ครบ 20 วินาที) แล้วพาไปหน้าผลลัพธ์เอง ไม่ต้องกดต่อไป
-    if (awakenAt.value >= AWAKEN_STEPS.length) {
+    if (awakenAt.value >= total) {
       stopAwaken()
       launchToResult()
     }
-  }, AWAKEN_TOTAL_MS / AWAKEN_STEPS.length)
+  }, AWAKEN_TOTAL_MS / total)
 }
 
 watch(step, s => {
@@ -1785,12 +2336,14 @@ const canAdvance = computed(() => {
   // หน้าแรกรวมทุกอย่างที่ต้องกรอกไว้ในดร๊อปดาวน์แล้ว จึงตรวจครบทั้งชุดที่นี่
   if (step.value === 1) {
     // ต้องเลือกหมวดองค์กรและช่วงพีคเองก่อน ไม่มีค่าไหนถูกติ๊กไว้ให้ตั้งแต่เปิดหน้า
-    if (!form.org || !form.peak) return false
-    const needSignals = org.value.dailyChanges !== false
-    if (form.org === 'library' && !libReady.value) return false
-    return fieldList.value.every(f => form[f.key] > 0) && (!needSignals || loadSignals.value.length > 0)
+    if (!form.org) return false
+    if (!fieldList.value.every(f => form[f.key] > 0)) return false
+    // ห้องสมุดตอบชุดของตัวเอง: ต้องเลือกสิ่งที่อยากให้ช่วยดูอย่างน้อยหนึ่งข้อ และช่วงเวลา
+    if (isLibrary.value) return form.libFocus.length > 0 && !!form.libPeak
+    if (!form.peak) return false
+    return org.value.dailyChanges === false || loadSignals.value.length > 0
   }
-  if (step.value === 2) return awakenAt.value >= AWAKEN_STEPS.length
+  if (step.value === 2) return awakenAt.value >= awakenSteps.value.length
   return true
 })
 
@@ -1841,165 +2394,26 @@ const DEMO_LINKS: DemoLink[] = [
   },
 ]
 
-/* ─────────── ห้องสมุด: ผังชั้น/โซน + ควบคุมไฟอัตโนมัติ ───────────
-   ชุดนี้ส่งต่อไปสร้างหน้า /momay-student/ ผ่าน localStorage (มีรูปด้วย ส่งทาง URL ไม่ไหว) */
-
-const LIB_KINDS = [
-  { id: 'h24', th: 'เปิด 24 ชม.' },
-  { id: 'research', th: 'อ่านหนังสือ / ค้นคว้า' },
-  { id: 'focus', th: 'ทำงานเงียบ ๆ' },
-  { id: 'collaboration', th: 'ทำงานกลุ่ม' },
-  { id: 'digital', th: 'เทคโนโลยี / นำเสนอ' },
-  { id: 'social', th: 'พัก / พบปะ' },
-]
-
-let libSeq = 0
-
-/** โซนเปล่า — ไม่เติมชื่อหรือจำนวนที่นั่งมาให้ ผู้ใช้กรอกเองทั้งหมด
-    เวลาเปิด-ปิดยังตั้งค่าไว้ เพราะ "ว่าง" ในข้อมูลแปลว่าเปิดตลอด ไม่ใช่ยังไม่กรอก */
-const zone = (over: Record<string, unknown> = {}) => ({
-  id: `z${++libSeq}`,
-  name: '',
-  kind: 'research',
-  seats: null as number | null,
-  openFrom: '08:00',
-  openTo: '20:00',
-  open24: false,
-  image: '',
-  ...over,
-})
-
-/** ชั้นเปล่า — มีแถวโซนว่างหนึ่งแถวไว้ให้เริ่มกรอก */
-const makeFloor = () => ({ id: `f${++libFloorSeq}`, zones: [zone()] })
-
-const lib = reactive({
-  floors: [] as ReturnType<typeof makeFloor>[],
-  autoPower: true,
-  /** ยืนยันจำนวนชั้นแล้วหรือยัง — ยังไม่ยืนยัน = ยังไม่ต้องโชว์ช่องกรอกห้อง */
-  confirmed: false,
-  /** ชั้นที่กางอยู่ (index) กางได้ทีละชั้นเพื่อไม่ให้เจอช่องกรอกพรวดเดียว */
-  openFloor: 0,
-})
-
-let libFloorSeq = 100
-
-/** จำนวนชั้นที่กำลังเลือกในจังหวะแรก ยังไม่ผูกกับ lib.floors จนกว่าจะกดยืนยัน */
-const libCount = ref(1)
-
-/** ที่จอดรถของห้องสมุด — แยกจาก form.capacity เพราะในโมเดล capacity ของหมวดนี้
-    คือ "ที่นั่งอ่าน" ไม่ใช่ช่องจอด เอามาปนกันแล้วหน้า STUDENT จะรายงานที่จอดผิด */
-const libParking = ref<number | null>(null)
-
-const floorSeats = (fl: { zones: { seats: number | null }[] }) =>
-  fl.zones.reduce((n, z) => n + (Number(z.seats) || 0), 0)
-
-/** ยืนยันจำนวนชั้น → ตัด/เติมชั้นให้ครบ แล้วกางชั้นแรกให้เริ่มกรอกได้เลย */
-function confirmFloors() {
-  const want = libCount.value
-  // ตัด/เติมให้ครบ โดยเก็บชั้นที่กรอกไว้แล้วไว้ก่อน เผื่อกดย้อนไปแก้จำนวนชั้น
-  while (lib.floors.length > want) lib.floors.pop()
-  while (lib.floors.length < want) lib.floors.push(makeFloor())
-
-  lib.confirmed = true
-  lib.openFloor = 0
-}
-
-function toggleFloor(i: number) {
-  lib.openFloor = lib.openFloor === i ? -1 : i
-}
-
-
-const libZoneCount = computed(() => lib.floors.reduce((n, f) => n + f.zones.length, 0))
-const libSeatTotal = computed(() =>
-  lib.floors.reduce((n, f) => n + f.zones.reduce((m, z) => m + (Number(z.seats) || 0), 0), 0),
-)
-// ที่นั่งรวมของทุกโซนคือความจุจริงของห้องสมุด ส่งเข้าเอนจินแทนช่องที่ตัดออกไป
-watch(libSeatTotal, (total) => {
-  if (form.org === 'library') form.capacity = total
-})
-
-/** โซนที่ยังไม่ได้ใส่จำนวนที่นั่ง — ต้องกรอกให้ครบก่อนไปต่อ
-    ไม่ใช่เรื่องความเรียบร้อยของฟอร์ม แต่หน้า STUDENT อ่านที่นั่งเป็น "ตัวหาร":
-    มีที่นั่ง → แถวโซนขึ้นเป็น "คนที่ตรวจจับได้ / ที่นั่งทั้งหมด"
-    ไม่มีที่นั่ง → หารไม่ได้ ตกไปโชว์เป็น % เฉย ๆ ซึ่งอ่านแล้วไม่รู้ว่าเต็มแค่ไหน */
-const libSeatMissing = computed(() =>
-  lib.floors.reduce((n, f) => n + f.zones.filter(z => !(Number(z.seats) > 0)).length, 0),
-)
-
-/** ผังห้องสมุดพร้อมส่งต่อหรือยัง */
-const libReady = computed(() =>
-  lib.confirmed && lib.floors.length > 0 && libZoneCount.value > 0 && libSeatMissing.value === 0,
-)
-
-function addZone(fl: { zones: unknown[] }) {
-  fl.zones.push(zone())
-}
-function removeZone(fl: { zones: { id: string }[] }, z: { id: string }) {
-  const i = fl.zones.findIndex(x => x.id === z.id)
-  if (i >= 0) fl.zones.splice(i, 1)
-}
-
-/** อ่านรูปเป็น data URL — ต้องฝังไปกับข้อมูล ไม่งั้นหน้า STUDENT อ้างไฟล์ในเครื่องไม่ได้
-    ย่อก่อนเก็บ เพราะ localStorage มีเพดานราว 5MB รูปกล้องมือถือใบเดียวก็เกินแล้ว */
-function onZoneImage(z: { image: string }, e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
-
-  const reader = new FileReader()
-  reader.onload = () => {
-    const img = new Image()
-    img.onload = () => {
-      const max = 480
-      const scale = Math.min(1, max / Math.max(img.width, img.height))
-      const cv = document.createElement('canvas')
-      cv.width = Math.round(img.width * scale)
-      cv.height = Math.round(img.height * scale)
-      cv.getContext('2d')?.drawImage(img, 0, 0, cv.width, cv.height)
-      z.image = cv.toDataURL('image/jpeg', 0.72)
-    }
-    img.src = String(reader.result)
-  }
-  reader.readAsDataURL(file)
-}
-
-/** กุญแจที่หน้า /momay-student/ อ่าน — ต้องตรงกับใน momay-student/src/mockGateway.js */
-const LIB_STORAGE_KEY = 'momay:library-setup'
-
-/** เขียนผังลง localStorage ก่อนพาไปหน้า STUDENT (เรียกตอนคลิก ทำงานแบบ sync) */
-function saveLibrarySetup() {
-  if (form.org !== 'library' || !process.client) return
-  try {
-    localStorage.setItem(LIB_STORAGE_KEY, JSON.stringify({
-      version: 1,
-      savedAt: new Date().toISOString(),
-      people: form.people,
-      seats: libSeatTotal.value,
-      parking: Number(libParking.value) || 0,
-      energy: form.energy,
-      peak: peakId.value,
-      autoPower: lib.autoPower,
-      floors: lib.floors.map((f, i) => ({
-        floor: i + 1,
-        zones: f.zones.map(z => ({
-          name: z.name?.trim() || 'พื้นที่ไม่มีชื่อ',
-          kind: z.kind,
-          seats: Number(z.seats) || 0,
-          openFrom: z.open24 ? '' : z.openFrom,
-          openTo: z.open24 ? '' : z.openTo,
-          image: z.image || '',
-        })),
-      })),
-    }))
-  } catch (err) {
-    // เต็มโควตา (รูปใหญ่เกิน) — ปล่อยให้ไปต่อ หน้า STUDENT จะใช้ผังตั้งต้นแทน
-    console.warn('เก็บผังห้องสมุดไม่สำเร็จ:', err)
-  }
-}
-
 /* หมวดที่แดชบอร์ดประชาชนแปลผลไม่ได้ — โซลาร์เป็นพื้นที่เฉพาะทาง ตัวชี้วัดของหน้า
    CITIZEN (ความหนาแน่นย่าน จราจร ที่จอดรถเมือง) อ่านจากหมวดนี้ไม่ได้
    ส่วนห้องสมุดมีหน้าของตัวเองแล้ว (STUDENT) จึงไม่ต้องอยู่ในนี้ */
 const CITIZEN_EXCLUDED: OrgId[] = ['solar']
+
+/** สิ่งที่ห้องสมุดเลือกดู → signal ของเอนจินกลาง
+    หน้า CITIZEN/STUDENT อ่านพารามิเตอร์ชุดเดิม จึงต้องแปลงก่อนส่งไป */
+const FOCUS_TO_SIGNAL: Record<LibFocusId, SignalId> = {
+  occupancy: 'people',
+  space: 'people',
+  booking: 'events',
+  energy: 'energy',
+  environment: 'waste',
+}
+
+const engineSignals = computed<SignalId[]>(() =>
+  isLibrary.value
+    ? [...new Set(form.libFocus.map(f => FOCUS_TO_SIGNAL[f]))]
+    : form.signals,
+)
 
 /** คำตอบจากแบบสอบถามในรูปแบบ query string — ใช้ชื่อพารามิเตอร์ชุดเดียวกับ shareUrl */
 const surveyQuery = computed(() =>
@@ -2008,8 +2422,11 @@ const surveyQuery = computed(() =>
     p: String(form.people),
     c: String(form.capacity),
     e: String(form.energy),
-    s: form.signals.join(','),
+    f: String(form.floors),
+    s: engineSignals.value.join(','),
+    fo: form.libFocus.join(','),
     k: peakId.value,
+    lk: form.libPeak ?? '',
   }).toString(),
 )
 
@@ -2027,10 +2444,29 @@ function hrefFor(d: DemoLink) {
   return d.key === 'citizen' ? citizenHref.value : d.link
 }
 
-/** ปุ่มข้างเปิดฟอร์มติดต่อ · ปุ่มกลางของห้องสมุดต้องเก็บผังลง localStorage ก่อนเปลี่ยนหน้า */
+/** กุญแจผังห้องสมุดของหน้า STUDENT — เดิมหน้านี้เคยเขียนผังรายโซนลงไป
+    ตอนนี้ไม่มีตัวกรอกผังแล้ว ผังเก่าที่ค้างอยู่ในเครื่องจะบังคำตอบชุดใหม่ที่ส่งไปทาง URL
+    จึงล้างทิ้งก่อนเปลี่ยนหน้า ให้ STUDENT ใช้ผังตั้งต้น + คำตอบล่าสุดแทน */
+const LIB_STORAGE_KEY = 'momay:library-setup'
+
+function clearLibrarySetup() {
+  if (!process.client) return
+  try {
+    localStorage.removeItem(LIB_STORAGE_KEY)
+  } catch {
+    // เบราว์เซอร์ปิด storage ไว้ — ไม่มีผังค้างอยู่แล้ว ไปต่อได้เลย
+  }
+}
+
+/** ปุ่มข้างเปิดฟอร์มติดต่อ · ปุ่มกลางพาไปหน้า CITIZEN/STUDENT */
 function onDemoClick(d: DemoLink) {
   if (d.contact) return openContact(d)
-  if (d.key === 'citizen') saveLibrarySetup()
+  if (d.key === 'citizen' && isLibrary.value) clearLibrarySetup()
+}
+
+/** การ์ด MOMAY Student ในแผง 08 — ปลายทางเดียวกับปุ่มกลาง */
+function onStudentClick() {
+  clearLibrarySetup()
 }
 
 /* ─────────── ฟอร์มขอให้ติดต่อกลับ ─────────── */
@@ -2123,8 +2559,11 @@ const shareUrl = computed(() => {
     p: String(form.people),
     c: String(form.capacity),
     e: String(form.energy),
+    f: String(form.floors),
     s: form.signals.join(','),
+    fo: form.libFocus.join(','),
     k: peakId.value,
+    lk: form.libPeak ?? '',
     sc: form.scenario,
     d: String(form.delta),
     dn: String(form.dayShare),
@@ -2152,8 +2591,10 @@ async function shareResult() {
 /* ─────────── อ่านค่าจากลิงก์ที่แชร์มา ─────────── */
 
 onMounted(() => {
-  // อุ่นแคชภาพของทุกหมวด กดสลับแล้วภาพขึ้นทันทีไม่วูบ
-  ORG_TYPES.forEach(o => { new Image().src = o.photo })
+  // อุ่นแคชภาพของหมวดที่เปิดใช้ กดสลับแล้วภาพขึ้นทันทีไม่วูบ
+  orgList.value.forEach(o => { new Image().src = o.photo })
+  // ผลของห้องสมุดอ้างเวลาจริง ("ตอนนี้ 13:00") — ตั้งหลัง mount เพื่อไม่ให้ชนกับฝั่งเซิร์ฟเวอร์
+  nowHour.value = new Date().getHours()
 
   const q = new URLSearchParams(window.location.search)
   if (![...q.keys()].length) return
@@ -2168,7 +2609,7 @@ onMounted(() => {
       touched.value = true
     }
   }
-  num('p', 'people'); num('c', 'capacity'); num('e', 'energy')
+  num('p', 'people'); num('c', 'capacity'); num('e', 'energy'); num('f', 'floors')
 
   const s = q.get('s')
   if (s) {
@@ -2176,8 +2617,17 @@ onMounted(() => {
     if (ids.length) form.signals = ids
   }
 
+  const fo = q.get('fo')
+  if (fo) {
+    const ids = fo.split(',').filter(x => x in LIB_FOCUS_MAP) as LibFocusId[]
+    if (ids.length) form.libFocus = ids
+  }
+
   const k = q.get('k') as PeakId | null
   if (k && PEAK_MAP[k]) form.peak = k
+
+  const lk = q.get('lk') as LibPeakId | null
+  if (lk && LIB_PEAK_MAP[lk]) form.libPeak = lk
 
   const sc = q.get('sc') as ScenarioId | null
   if (sc && SCENARIOS.some(x => x.id === sc)) form.scenario = sc
@@ -2198,7 +2648,7 @@ onMounted(() => {
   if (Number.isFinite(st) && st >= 1 && st <= TOTAL) {
     step.value = st
     if (st === 2) startAwaken()
-    else awakenAt.value = AWAKEN_STEPS.length
+    else awakenAt.value = awakenSteps.value.length
   }
 })
 </script>
@@ -2433,7 +2883,7 @@ onMounted(() => {
 .dd-sub { margin-top: 3px; font-size: 10px; color: var(--dim); }
 .dd .field-list { margin-top: 8px; gap: 8px; }
 .dd .sig-grid { margin-top: 8px; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.dd .peak-row { margin-top: 8px; gap: 7px; }
+.dd .lpk-row { margin-top: 8px; gap: 7px; }
 
 /* ในดร๊อปดาวน์บีบทุกอย่างให้เตี้ยลง — ป้ายกำกับกับช่องกรอกอยู่บรรทัดเดียวกัน */
 .dd .field { padding: 9px 11px; gap: 9px; align-items: center; }
@@ -2496,14 +2946,6 @@ onMounted(() => {
 .sig-check { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; background: var(--brand); color: #04101f; }
 .sig-check :deep(.ic) { width: 11px; height: 11px; stroke-width: 3.4; }
 .sig-ring { display: block; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid rgba(120, 160, 200, 0.45); }
-
-.peak-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.peak {
-  padding: 9px 15px; border-radius: 10px; font-size: 12px; cursor: pointer;
-  background: rgba(10, 25, 44, 0.55); border: 1px solid var(--line); color: var(--muted);
-}
-.peak.on { border-color: var(--brand); color: #dcefff; background: rgba(23, 66, 116, 0.5); }
-
 /* ── วงความสัมพันธ์ (04 / 06) ── */
 /* วงเต็มความกว้างเนื้อหา เผื่อที่ให้ป้ายชื่อของโหนดฝั่งขวาไม่ล้นขอบจอ */
 .ring-wrap { position: relative; width: 100%; max-width: 404px; margin: 22px auto; aspect-ratio: 1; }
@@ -3609,7 +4051,6 @@ onMounted(() => {
   .screen > .cols-awaken { margin-top: 0; margin-bottom: auto; }
   .screen-narrow > .field-list { margin-top: auto; margin-bottom: auto; }
   .screen > .sig-grid { margin-top: auto; }
-  .screen > .peak-row { margin-bottom: auto; }
 }
 
 /* ── หน้าผลลัพธ์: 2 แผงต่อแถวบนจอกลาง และ 4 แผงเรียงข้างกันบนจอกว้าง ── */
@@ -3669,164 +4110,468 @@ onMounted(() => {
   }
 }
 
-/* ══════════════ ห้องสมุด: ผังชั้น/โซน ══════════════ */
-.lib-floors-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
-.lib-label { font-size: 12.5px; color: #cfe0ff; }
-.lib-hint { font-size: 11.5px; color: #7f8fab; }
-.lib-stepper {
-  display: inline-flex; align-items: center; gap: 2px;
-  border: 1px solid rgba(120, 180, 255, 0.22); border-radius: 10px;
-  background: rgba(4, 11, 24, 0.85); overflow: hidden;
-}
-.lib-stepper button {
-  width: 30px; height: 30px; border: 0; background: transparent;
-  color: #cfe0ff; font-size: 16px; line-height: 1; cursor: pointer;
-}
-.lib-stepper button:disabled { opacity: 0.3; cursor: not-allowed; }
-.lib-stepper button:not(:disabled):hover { background: rgba(255, 255, 255, 0.08); }
-.lib-stepper__n { min-width: 26px; text-align: center; font-size: 13px; font-weight: 600; color: #fff; }
+/* ══════════════ ห้องสมุด · หน้า 01–03 ══════════════ */
 
-/* จังหวะที่ 1 — เลือกจำนวนชั้น */
-.lib-pick { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
-.lib-pick__unit { font-size: 13px; color: #cfe0ff; }
-.lib-stepper--lg button { width: 38px; height: 38px; font-size: 19px; }
-.lib-stepper--lg .lib-stepper__n { min-width: 40px; font-size: 17px; }
-.lib-go {
-  display: inline-flex; align-items: center; gap: 7px;
-  margin-left: auto; height: 38px; padding: 0 16px;
-  border: 0; border-radius: 999px;
-  background: linear-gradient(90deg, #2f7dff, #4fd8ff);
-  color: #04121f; font-size: 13px; font-weight: 600; cursor: pointer;
+/* หมวดที่เลือกไว้ไล่สีม่วง→น้ำเงินตามแบบ และมีลูกศรชี้ต่อไปทางขวา */
+.org-row.active {
+  background: linear-gradient(95deg, rgba(109, 40, 217, 0.55), rgba(30, 64, 175, 0.5));
+  border-color: rgba(167, 139, 250, 0.7);
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.3), 0 10px 28px rgba(76, 29, 149, 0.3);
 }
-.lib-go:hover { filter: brightness(1.08); }
-.lib-go svg { width: 15px; height: 15px; }
+.org-row.active .org-ic { color: #ede9fe; }
 
-.lib-park {
-  display: flex; align-items: center; gap: 11px;
-  margin-top: 9px; padding: 10px 12px;
-  border: 1px solid rgba(120, 180, 255, 0.18); border-radius: 12px;
-  background: rgba(6, 14, 30, 0.6);
+/* ปุ่มไปต่อของห้องสมุดเต็มความกว้างและไล่สีเหมือนแบบ ไม่ใช่ปุ่มเล็กชิดขวา */
+.dd-next--wide { display: block; }
+.btn-next--grad {
+  width: 100%; justify-content: center;
+  padding: 14px 22px; font-size: 13.5px;
+  background: linear-gradient(95deg, #7c3aed, #3b82f6 55%, #2563eb);
+  box-shadow: 0 10px 30px rgba(99, 54, 221, 0.38);
 }
-.lib-park__ic {
-  display: grid; place-items: center; width: 32px; height: 32px;
-  border-radius: 9px; background: rgba(59, 130, 246, 0.16); color: #7fb2ff;
-}
-.lib-park__ic svg { width: 17px; height: 17px; }
-.lib-park__main { flex: 1; min-width: 0; display: grid; gap: 1px; }
-.lib-park__main span { font-size: 12.5px; color: #e6eeff; }
-.lib-park__main small { font-size: 11px; color: #7f8fab; }
-.lib-park__unit { font-size: 11.5px; color: #93a4be; }
 
-/* จังหวะที่ 2 — สรุป + ชั้นแบบกางทีละชั้น */
-.lib-sum {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  margin-top: 10px; padding: 9px 12px;
-  border: 1px solid rgba(120, 180, 255, 0.18); border-radius: 10px;
-  background: rgba(79, 216, 255, 0.07);
-  font-size: 12.5px; color: #cfe0ff;
+/* ข้อความนำของช่องกรอก — มีขีดสีคั่นซ้ายแทนการใช้ภาพ */
+.q-intro {
+  display: grid; gap: 5px;
+  padding: 2px 0 2px 13px;
+  border-left: 2px solid var(--brand);
 }
-.lib-back {
-  border: 0; background: transparent; color: #7fe3ff;
-  font-size: 11.5px; text-decoration: underline; cursor: pointer;
-}
-.lib-back:hover { color: #bfefff; }
+.q-intro b { font-size: 15px; font-weight: 700; color: #eaf6ff; }
+.q-intro span { font-size: 11.5px; line-height: 1.6; color: var(--dim); }
 
-.lib-floor {
-  margin-top: 8px;
-  border: 1px solid rgba(120, 180, 255, 0.16); border-radius: 12px;
-  background: rgba(6, 14, 30, 0.6);
-  overflow: hidden;
+/* ไอคอนช่องกรอกเป็นกล่องสีประจำช่อง ไม่ใช่เส้นเทาลอย ๆ */
+.field-ic {
+  display: grid; place-items: center; flex: none; align-self: flex-start;
+  width: 38px; height: 38px; border-radius: 11px;
+  background: color-mix(in srgb, var(--sig, #9ec6ee) 18%, transparent);
+  color: var(--sig, #9ec6ee);
+  margin-top: 0;
 }
-.lib-floor.open { border-color: rgba(79, 216, 255, 0.4); }
-.lib-floor__head {
-  display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 11px 12px;
-  border: 0; background: transparent; cursor: pointer; text-align: left;
+.field-ic :deep(.ic) { width: 21px; height: 21px; }
+
+/* ══════════════ ห้องสมุด · หน้า 04 กำลังวิเคราะห์ ══════════════ */
+
+.lw-head { margin-bottom: clamp(14px, 2.4vw, 26px); }
+.lw-head .center { text-align: center; }
+
+/* เช็กลิสต์ซ้าย · ภาพขวา · แถบความคืบหน้าพาดเต็มความกว้างด้านล่าง */
+.lw {
+  display: grid; gap: clamp(16px, 3vw, 36px);
+  grid-template-columns: 1fr;
+  align-items: center;
 }
-.lib-floor__head:hover { background: rgba(255, 255, 255, 0.04); }
-.lib-floor__head svg { width: 15px; height: 15px; margin-left: auto; color: #7f8fab; }
-.lib-floor__no { font-size: 12.5px; font-weight: 600; color: #9fd2ff; }
-.lib-floor__sum { font-size: 11.5px; color: #7f8fab; }
-.lib-floor__body { padding: 0 12px 12px; }
+.lw-foot { grid-column: 1 / -1; }
 
-.lib-add {
-  margin-top: 9px;
-  border: 0; border-radius: 999px; padding: 6px 13px;
-  background: rgba(79, 216, 255, 0.14); color: #7fe3ff;
-  font-size: 11.5px; cursor: pointer;
+.lw-steps { display: flex; flex-direction: column; gap: clamp(12px, 1.8vw, 20px); list-style: none; margin: 0; }
+.lw-steps li {
+  display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: center;
+  opacity: 0.4; transition: opacity 0.35s;
 }
-.lib-add:hover { background: rgba(79, 216, 255, 0.24); }
-.lib-empty { margin: 8px 0 2px; font-size: 11.5px; color: #66748f; }
+.lw-steps li.done, .lw-steps li.now { opacity: 1; }
+.lw-mark {
+  display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(34, 197, 94, 0.16); color: var(--good);
+}
+.lw-steps li:not(.done) .lw-mark { background: rgba(120, 160, 200, 0.12); }
+.lw-mark :deep(.ic) { width: 14px; height: 14px; stroke-width: 3; }
+/* ขั้นที่กำลังทำ = วงหมุน · ขั้นที่ยังไม่ถึง = วงกลมกลวง */
+.lw-mark .spin {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid rgba(110, 231, 183, 0.3); border-top-color: var(--good);
+  animation: lwSpin 0.9s linear infinite;
+}
+@keyframes lwSpin { to { transform: rotate(360deg); } }
+.lw-mark .hollow { width: 12px; height: 12px; border-radius: 50%; border: 1.6px solid rgba(120, 160, 200, 0.4); }
+.lw-text { font-size: clamp(11.5px, 1.25vw, 14px); line-height: 1.6; color: #d8e6f7; }
 
-.lib-zone { display: flex; align-items: flex-start; gap: 9px; margin-top: 9px; }
-.lib-zone__main { flex: 1; min-width: 0; display: grid; gap: 6px; }
-.lib-zone__row { display: flex; align-items: center; gap: 6px; }
+/* ── ภาพอาคาร ── */
+.lw-art { position: relative; width: 100%; max-width: 440px; margin: 0 auto; aspect-ratio: 400 / 360; }
+.lw-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* ขอบชั้นเรืองแสง — drop-shadow ทำให้ตัวอาคารดูเป็นโฮโลแกรมจริง ไม่ใช่เส้นแบน */
+.lw-slab {
+  stroke: rgba(125, 250, 224, 0.75); stroke-width: 1.3;
+  filter: drop-shadow(0 0 5px rgba(94, 234, 212, 0.65));
+}
+.lw-bld path { stroke-linejoin: round; }
+.lw-win line {
+  stroke: rgba(186, 230, 253, 0.62); stroke-width: 2.4; stroke-linecap: round;
+  filter: drop-shadow(0 0 3px rgba(125, 211, 252, 0.6));
+}
 
-.lib-photo {
-  position: relative; flex: 0 0 auto;
-  width: 58px; height: 58px;
+/* คลื่นที่ฐาน */
+.lw-pulse {
+  fill: none; stroke: rgba(94, 234, 212, 0.5); stroke-width: 1.4;
+  transform-origin: 180px 300px;
+  animation: lwPulse 3.6s ease-out infinite;
+}
+.lw-pulse--2 { animation-delay: -1.8s; }
+@keyframes lwPulse {
+  0% { transform: scale(0.45); opacity: 0; }
+  25% { opacity: 0.75; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* ลำแสงกวาดขึ้นตามอาคาร */
+.lw-scan {
+  fill: rgba(125, 211, 252, 0.13);
+  filter: blur(3px);
+  animation: lwScan 5.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+@keyframes lwScan {
+  0% { transform: translateY(300px); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translateY(70px); opacity: 0; }
+}
+
+/* ประกายลอยขึ้น */
+.lw-spark {
+  position: absolute; width: var(--sz); height: var(--sz); border-radius: 50%;
+  background: #a5f3fc; box-shadow: 0 0 8px rgba(103, 232, 249, 0.9);
+  opacity: 0; pointer-events: none;
+  animation: lwRise linear infinite;
+}
+@keyframes lwRise {
+  0% { transform: translateY(0); opacity: 0; }
+  18% { opacity: 0.95; }
+  75% { opacity: 0.55; }
+  100% { transform: translateY(-190px); opacity: 0; }
+}
+/* สายข้อมูลเป็นริบบิ้นยาว ค่อย ๆ ไหลเข้าหาอาคาร ไม่ใช่เส้นประสั้น ๆ */
+.lw-flows path {
+  fill: none; stroke-width: 5; stroke-linecap: round;
+  stroke-dasharray: 560 360;
+  filter: drop-shadow(0 0 7px rgba(139, 92, 246, 0.5));
+  animation: lwFlow 6.5s linear infinite;
+}
+.lw-flows path:nth-child(2) { animation-delay: -2.2s; }
+.lw-flows path:nth-child(3) { animation-delay: -4.4s; }
+@keyframes lwFlow { from { stroke-dashoffset: 920; } to { stroke-dashoffset: 0; } }
+
+.lw-bubble {
+  position: absolute; transform: translate(-50%, -50%) scale(0.6);
   display: grid; place-items: center;
-  border: 1px dashed rgba(120, 180, 255, 0.35); border-radius: 10px;
-  background: rgba(4, 11, 24, 0.7);
-  color: #7f8fab; font-size: 11px; cursor: pointer; overflow: hidden;
+  width: clamp(42px, 11%, 62px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--sig) 88%, #fff), var(--sig));
+  color: #06131f;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--sig) 55%, transparent);
+  opacity: 0; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  transition-delay: calc(var(--i) * 0.08s);
 }
-.lib-photo.has-img { border-style: solid; }
-.lib-photo img { width: 100%; height: 100%; object-fit: cover; }
-.lib-photo input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.lw-bubble.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.lw-bubble :deep(.ic) { position: relative; z-index: 1; width: 52%; height: 52%; stroke-width: 2; }
 
-.lib-in {
-  min-width: 0; height: 30px; padding: 0 8px;
-  border: 1px solid rgba(120, 180, 255, 0.2); border-radius: 8px;
-  background: rgba(4, 11, 24, 0.9); color: #eaf1ff; font-size: 12px;
-  outline: none;
+/* วงคลื่นรอบฟอง แผ่ออกทีละจังหวะ — มีเฉพาะดวงที่ขึ้นมาแล้ว */
+.lw-bubble__ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1.5px solid var(--sig); opacity: 0;
 }
-.lib-in:focus { border-color: rgba(79, 216, 255, 0.55); }
-.lib-in--sm { flex: 0 0 auto; }
-.lib-in--num { width: 58px; text-align: right; }
-.lib-seat { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: #93a4be; }
-
-/* ช่องที่นั่งที่ยังว่าง — เน้นตั้งแต่ยังไม่กดไปต่อ เพราะเป็นช่องเดียวที่ขาดไม่ได้จริง ๆ */
-.lib-in--need { border-color: rgba(255, 106, 138, 0.62); background: rgba(255, 106, 138, 0.08); }
-.lib-warn {
-  margin: 10px 0 0; padding: 9px 11px; font-size: 11.5px; line-height: 1.65;
-  color: #ffb3c4; background: rgba(255, 106, 138, 0.09);
-  border: 1px solid rgba(255, 106, 138, 0.3); border-radius: 9px;
+.lw-bubble.on .lw-bubble__ring {
+  animation: lwRing 2.8s ease-out infinite;
+  animation-delay: calc(var(--i) * 0.45s);
 }
-.lib-dash { color: #66748f; }
-.lib-24 { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #93a4be; }
-
-.lib-del {
-  flex: 0 0 auto; width: 26px; height: 26px;
-  display: grid; place-items: center;
-  border: 0; border-radius: 8px; background: transparent;
-  color: #6c7b95; cursor: pointer;
+@keyframes lwRing {
+  0% { transform: scale(1); opacity: 0.7; }
+  70% { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
 }
-.lib-del:hover { color: #ff8d9b; background: rgba(255, 141, 155, 0.1); }
-.lib-del svg { width: 14px; height: 14px; }
 
-.lib-auto {
-  display: flex; align-items: center; gap: 11px; width: 100%;
-  margin-top: 9px; padding: 11px 13px;
-  border: 1px solid rgba(120, 180, 255, 0.2); border-radius: 12px;
-  background: rgba(6, 14, 30, 0.6);
-  text-align: left; cursor: pointer;
+/* ลอยขึ้นลงเบา ๆ คนละจังหวะ ไม่ให้ดูเป็นไอคอนแปะนิ่ง */
+.lw-bubble.on { animation: lwFloat 5.2s ease-in-out infinite; animation-delay: calc(var(--i) * 0.6s); }
+@keyframes lwFloat {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, calc(-50% - 7px)) scale(1); }
+}
+
+/* ── แถบความคืบหน้า ── */
+.lw-bar {
+  height: 6px; border-radius: 999px; overflow: hidden;
+  background: rgba(120, 160, 200, 0.16);
+}
+.lw-bar > span {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #6366f1, #d946ef);
+  transition: width 0.6s cubic-bezier(0.3, 0.9, 0.3, 1);
+}
+.lw-ready {
+  margin-top: clamp(12px, 1.8vw, 18px); text-align: center;
+  font-size: clamp(16px, 2vw, 24px); font-weight: 700; color: #eaf6ff;
+}
+.lw-sub { margin-top: 4px; text-align: center; font-size: clamp(10px, 1.1vw, 13px); color: var(--dim); }
+
+@media (min-width: 820px) {
+  .lw { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
+  .lw-art { margin: 0; }
+}
+
+/* ══════════════ ห้องสมุด ══════════════ */
+
+/* แผงของห้องสมุดเป็นกราฟแท่งเต็มความกว้าง ภาพเมืองด้านหลังทำให้สีของแท่งขุ่น
+   อ่านระดับความหนาแน่นไม่ออก — แผงนี้จึงเป็นพื้นทึบล้วนตามแบบ ไม่มีภาพประกอบ */
+.panel-quiet > .screen-photo { display: none; }
+
+/* ── 01 · เลือกสิ่งที่ต้องการเข้าใจ ── */
+.foc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; margin-top: 12px; }
+.foc {
+  position: relative; display: flex; align-items: center; gap: 10px; text-align: left;
+  padding: 13px 30px 13px 12px; border-radius: 13px; cursor: pointer;
+  background: rgba(10, 25, 44, 0.55); border: 1px solid var(--line);
   transition: border-color 0.2s, background 0.2s;
 }
-.lib-auto.on { border-color: rgba(79, 216, 255, 0.5); background: rgba(79, 216, 255, 0.08); }
-.lib-auto__sw {
-  flex: 0 0 auto; width: 38px; height: 22px; padding: 3px;
-  border-radius: 999px; background: rgba(255, 255, 255, 0.12);
-  transition: background 0.2s;
+.foc.on {
+  border-color: color-mix(in srgb, var(--sig) 62%, transparent);
+  background: color-mix(in srgb, var(--sig) 13%, rgba(10, 25, 44, 0.6));
 }
-.lib-auto.on .lib-auto__sw { background: #4fd8ff; }
-.lib-auto__sw > span {
-  display: block; width: 16px; height: 16px; border-radius: 999px;
-  background: #fff; transition: transform 0.2s;
+.foc-ic {
+  display: grid; place-items: center; flex: none; width: 30px; height: 30px;
+  border-radius: 9px; color: var(--sig);
+  background: color-mix(in srgb, var(--sig) 18%, transparent);
 }
-.lib-auto.on .lib-auto__sw > span { transform: translateX(16px); }
-.lib-auto__txt { display: grid; gap: 2px; }
-.lib-auto__txt b { font-size: 12.5px; font-weight: 600; color: #fff; }
-.lib-auto__txt small { font-size: 11px; color: #93a4be; }
+.foc-ic :deep(.ic) { width: 17px; height: 17px; }
+.foc-txt { display: grid; gap: 2px; min-width: 0; }
+.foc-th { font-size: 11.5px; font-weight: 600; color: #e3eefb; }
+.foc-en { font-size: 9.5px; color: var(--dim); }
+.foc-check {
+  position: absolute; top: 9px; right: 9px;
+  display: grid; place-items: center; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--sig); color: #04101f;
+}
+.foc-check :deep(.ic) { width: 10px; height: 10px; stroke-width: 3.6; }
+
+/* ── 01 · ช่วงเวลาที่มีผู้ใช้มากที่สุด ── */
+.lpk-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+.lpk {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 12px 8px; border-radius: 12px; cursor: pointer;
+  background: rgba(10, 25, 44, 0.55); border: 1px solid var(--line); color: var(--muted);
+}
+.lpk.on { border-color: var(--brand); color: #dcefff; background: rgba(23, 66, 116, 0.5); }
+.lpk-ic :deep(.ic) { width: 19px; height: 19px; }
+.lpk-th { font-size: 11.5px; font-weight: 600; }
+.lpk-win { font-size: 9px; color: var(--dim); }
+.lpk.on .lpk-win { color: var(--muted); }
+.lpk-check {
+  position: absolute; top: 7px; right: 7px;
+  display: grid; place-items: center; width: 15px; height: 15px;
+  border-radius: 50%; background: var(--brand); color: #04101f;
+}
+.lpk-check :deep(.ic) { width: 9px; height: 9px; stroke-width: 3.6; }
+
+/* ── หัวแผง: เลขลำดับ + ไทยนำ + ป้ายชื่อแผง ── */
+.p-head { display: flex; align-items: flex-start; gap: 10px; }
+/* เลขลำดับบอกว่ากำลังอ่านแผงที่เท่าไรของสี่จังหวะ SEE → UNDERSTAND → ANTICIPATE → DECIDE */
+.p-no {
+  display: grid; place-items: center; flex: none;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(62, 160, 255, 0.14); border: 1px solid var(--line-on);
+  font-size: 11px; font-weight: 700; color: #9ecbff;
+}
+.p-head > div { flex: 1; min-width: 0; }
+.h-th-lead { font-size: 16px; font-weight: 700; line-height: 1.3; color: #eaf6ff; }
+.h-en-sub { margin-top: 3px; font-size: 9.5px; letter-spacing: 0.05em; line-height: 1.4; color: var(--dim); }
+.p-chip {
+  flex: none; padding: 5px 10px; border-radius: 999px; font-size: 9px; white-space: nowrap;
+  background: rgba(62, 160, 255, 0.14); border: 1px solid var(--line-on); color: #9ecbff;
+}
+
+/* ── 05 · ตัวเลขหลักสามช่อง ── */
+.lk-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+.lk {
+  display: grid; align-content: start; gap: 2px;
+  padding: 11px 10px 12px; border-radius: 12px;
+  background: rgba(8, 20, 37, 0.8); border: 1px solid var(--line-on);
+}
+.lk-k { font-size: 9px; line-height: 1.35; color: var(--muted); }
+/* ตัวเลขเป็นพระเอกของการ์ด จึงบีบ line-height ให้ชิด ไม่ให้มีช่องว่างคั่นกับหน่วย */
+.lk-v { margin-top: 2px; font-size: 24px; font-weight: 800; line-height: 1.05; color: #eaf6ff; }
+.lk-u { display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: var(--dim); }
+.lk-u :deep(.ic) { width: 11px; height: 11px; }
+/* ตัวเลขเทียบสัปดาห์ก่อนอยู่บรรทัดเดียวกัน ไม่ตัดคำลงไปดันการ์ดให้สูงกว่าเพื่อน */
+.lk-d {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 4px; margin-top: 4px;
+  font-size: 10px; color: var(--good);
+}
+.lk-d :deep(.ic) { width: 10px; height: 10px; align-self: center; }
+.lk-d small { font-size: 8.5px; color: var(--dim); }
+
+/* ── 05 · กราฟความหนาแน่นรายวัน ── */
+.lb-title { margin-top: 20px; font-size: 11.5px; font-weight: 600; color: #cfe0ff; }
+.lb-title--gap { margin-top: 24px; }
+.lb-chart { margin-top: 10px; margin-bottom: 16px; }
+.lb-plot { display: flex; gap: 8px; height: 132px; }
+.lb-yaxis {
+  display: flex; flex-direction: column; justify-content: space-between;
+  flex: none; font-size: 8.5px; color: var(--dim);
+}
+/* แท่งวางบนเส้นฐานเดียวกัน ความสูงเป็น % ของกรอบ จึงต้องชิดล่าง */
+.lb-bars {
+  flex: 1; display: flex; align-items: flex-end; gap: 2px;
+  padding-bottom: 1px; border-bottom: 1px solid var(--line);
+}
+.lb-bar {
+  flex: 1; min-height: 3px; border-radius: 3px 3px 0 0;
+  animation: lbBar 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards;
+}
+/* แท่งของชั่วโมงปัจจุบันเรืองขึ้นเฉย ๆ — เดิมใช้กรอบขาวแล้วอ่านเป็นกล่องแปลกปลอมกลางกราฟ */
+.lb-bar.now { filter: brightness(1.35); }
+@keyframes lbBar { from { height: 0 !important; } }
+.lb-xaxis {
+  display: flex; gap: 2px; margin-top: 5px; padding-left: 30px;
+  font-size: 8.5px; color: var(--dim);
+}
+.lb-xaxis span { flex: 1; text-align: center; white-space: nowrap; }
+
+/* การ์ดนี้เป็นการ์ดมืดปกติ ไม่ใช่กล่องเตือนสีเหลือง — เน้นด้วยไอคอนหลอดไฟพอ
+   ไม่งั้นจะแย่งความสำคัญไปจากกราฟด้านบนที่เป็นพระเอกของแผง */
+/* ดันลงไปชิดก้นแผง — แผงทั้งสี่สูงเท่ากัน ถ้าปล่อยไว้แผงนี้จะเหลือที่ว่างค้างข้างล่าง */
+.lb-now {
+  display: flex; align-items: center; gap: 11px; margin-top: auto;
+  padding: 13px; border-radius: 13px;
+  background: rgba(8, 20, 37, 0.8); border: 1px solid var(--line);
+}
+.lb-now__ic {
+  display: grid; place-items: center; flex: none; width: 30px; height: 30px;
+  border-radius: 9px; background: rgba(251, 191, 36, 0.16); color: #fbbf24;
+}
+.lb-now__ic :deep(.ic) { width: 17px; height: 17px; }
+.lb-now p { flex: 1; min-width: 0; font-size: 10.5px; line-height: 1.6; color: var(--dim); }
+.lb-now b { font-size: 11px; color: #ffe9b0; }
+.lb-now > :deep(.ic) { flex: none; width: 15px; height: 15px; color: var(--muted); }
+
+/* ── 06 · ข้อสังเกต + ความสัมพันธ์ที่พบ ── */
+/* กล่อง "ความสัมพันธ์ที่พบ" ลงไปชิดก้นแผงด้วยเหตุผลเดียวกับ .lb-now */
+.li-wrap { display: flex; flex-direction: column; flex: 1; margin-top: 18px; }
+.li-list { display: flex; flex-direction: column; gap: 11px; margin-bottom: 14px; }
+.li-list li {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 12px; border-radius: 13px;
+  background: rgba(8, 20, 37, 0.7); border: 1px solid var(--line);
+}
+.li-ic {
+  display: grid; place-items: center; flex: none; width: 28px; height: 28px;
+  border-radius: 9px; color: var(--sig);
+  background: color-mix(in srgb, var(--sig) 18%, transparent);
+}
+.li-ic :deep(.ic) { width: 16px; height: 16px; }
+.li-th { font-size: 11px; line-height: 1.65; color: #d8e6f7; }
+
+.li-rel {
+  display: flex; align-items: flex-start; gap: 11px; margin-top: auto;
+  padding: 13px; border-radius: 13px;
+  background: rgba(62, 160, 255, 0.1); border: 1px solid var(--line-on);
+}
+.li-rel__ic { flex: none; color: var(--brand); }
+.li-rel__k { font-size: 11px; font-weight: 700; color: #9ecbff; }
+.li-rel__v { margin-top: 5px; font-size: 10.5px; line-height: 1.7; color: #cfe0ff; }
+
+/* ── 07 · เส้นคาดการณ์ 7 วัน ── */
+.lf-legend { display: flex; gap: 14px; margin-top: 8px; font-size: 9.5px; color: var(--muted); }
+.lf-legend span { display: flex; align-items: center; gap: 5px; }
+.lf-legend i { width: 8px; height: 8px; border-radius: 50%; }
+
+.lf-chart { position: relative; margin-top: 8px; }
+/* svg ยืดตามความกว้างแผง ส่วนความสูงคงที่ เส้นจึงไม่แบนลงบนจอแคบ */
+.lf-svg { display: block; width: 100%; height: 150px; overflow: visible; }
+.lf-grid { stroke: rgba(120, 160, 200, 0.16); stroke-width: 1; }
+.lf-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.lf-line.cur { stroke: #60a5fa; }
+.lf-line.pre { stroke: #e879f9; }
+.lf-dot.cur { fill: #60a5fa; }
+.lf-dot.pre { fill: #e879f9; }
+/* ตัวเลขแกน Y ลอยทับมุมซ้ายของกราฟ ไม่กินความกว้างของเส้น
+   เส้นกริดบนสุดอยู่ที่ y=10 และล่างสุดที่ y=130 ของ viewBox สูง 148 ที่ถูกยืดเป็น 150px
+   จึงเลื่อนลงมาชดเชยครึ่งบรรทัด ตัวเลขจะได้อยู่กึ่งกลางเส้นพอดี */
+.lf-yaxis {
+  position: absolute; left: 0; top: 5px; height: 122px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  font-size: 8.5px; color: var(--dim); pointer-events: none;
+}
+/* ป้ายเตือนขึ้นบรรทัดเองด้วย <br> แล้ว ถ้าปล่อยให้ตัดคำตามความกว้างแผง
+   ตอนเรียง 4 คอลัมน์มันจะถูกบีบจนเป็นแท่งสูงพาดทับเส้นกราฟ */
+.lf-flag {
+  position: absolute; top: -2px; transform: translateX(-50%); white-space: nowrap;
+  padding: 6px 10px; border-radius: 10px; text-align: center; line-height: 1.35;
+  font-size: 9.5px; font-weight: 700; color: #ffd9d9;
+  background: rgba(190, 40, 50, 0.9); border: 1px solid rgba(240, 82, 82, 0.6);
+}
+.lf-flag small { font-size: 8.5px; font-weight: 500; opacity: 0.85; }
+.lf-xaxis { display: flex; margin-top: 4px; font-size: 9px; color: var(--dim); }
+.lf-xaxis span { flex: 1; text-align: center; }
+
+/* ── 07 · การ์ดสถานการณ์ ── */
+.ls-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.ls {
+  display: grid; gap: 3px; padding: 12px 9px; border-radius: 12px; cursor: pointer;
+  background: rgba(10, 25, 44, 0.55); border: 1px solid var(--line); color: var(--muted);
+}
+.ls.on { border-color: var(--brand); background: rgba(23, 66, 116, 0.55); color: #dcefff; }
+.ls-th { font-size: 11.5px; font-weight: 600; }
+.ls-sub { font-size: 13px; font-weight: 800; color: #eaf6ff; }
+.ls-v { font-size: 9px; color: var(--dim); }
+.ls.on .ls-v { color: var(--muted); }
+
+.lf-note {
+  display: flex; align-items: flex-start; gap: 11px; margin-top: 14px;
+  padding: 13px; border-radius: 13px;
+  background: rgba(8, 20, 37, 0.7); border: 1px solid var(--line);
+}
+.lf-note__ic { flex: none; color: var(--brand); }
+.lf-note p { font-size: 10.5px; line-height: 1.7; color: #cfe0ff; }
+
+/* ── 08 · ข้อเสนอแนะ ── */
+.lr-wrap { display: flex; flex-direction: column; gap: 9px; margin-top: 18px; }
+.lr {
+  border-radius: 13px; overflow: hidden;
+  background: rgba(8, 20, 37, 0.7); border: 1px solid var(--line);
+  transition: border-color 0.2s;
+}
+.lr.open { border-color: color-mix(in srgb, var(--sig) 55%, transparent); }
+.lr-head { display: flex; align-items: center; gap: 10px; padding: 11px; }
+.lr-ic {
+  display: grid; place-items: center; flex: none; width: 28px; height: 28px;
+  border-radius: 8px; color: var(--sig);
+  background: color-mix(in srgb, var(--sig) 18%, transparent);
+}
+.lr-ic :deep(.ic) { width: 16px; height: 16px; }
+.lr-txt { flex: 1; min-width: 0; }
+.lr-title { font-size: 11px; font-weight: 700; line-height: 1.35; color: #e3eefb; }
+.lr-sub { margin-top: 2px; font-size: 9.5px; line-height: 1.5; color: var(--dim); }
+/* ปุ่มเล็กและไม่ตัดคำ ไม่งั้นมันกินความกว้างจนชื่อข้อเสนอแนะถูกบีบขึ้นบรรทัดใหม่ */
+.lr-more {
+  flex: none; display: flex; align-items: center; gap: 4px; white-space: nowrap;
+  padding: 6px 9px; border-radius: 8px; font-size: 9px; cursor: pointer;
+  background: rgba(62, 160, 255, 0.12); border: 1px solid var(--line-on); color: #9ecbff;
+}
+.lr-more :deep(.ic) { width: 10px; height: 10px; }
+.lr-detail {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 0 11px 12px 49px; font-size: 9.5px; line-height: 1.6; color: #cfe0ff;
+}
+.lr-detail li { list-style: disc; }
+
+/* การ์ดปลายทาง — เด่นกว่ารายการข้างบน เพราะเป็นสิ่งที่ให้กดต่อจริง */
+.lr-student {
+  display: flex; align-items: center; gap: 12px; margin-top: 5px;
+  padding: 14px 13px; border-radius: 14px; text-decoration: none;
+  background: linear-gradient(105deg, rgba(124, 58, 237, 0.4), rgba(59, 130, 246, 0.34));
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  box-shadow: 0 0 22px rgba(124, 58, 237, 0.2);
+}
+.lr-student__ic {
+  display: grid; place-items: center; flex: none; width: 32px; height: 32px;
+  border-radius: 10px; background: rgba(255, 255, 255, 0.16); color: #ffe9b0;
+}
+.lr-student__txt { flex: 1; display: grid; gap: 3px; min-width: 0; }
+.lr-student__txt b { font-size: 11.5px; color: #fff; }
+.lr-student__txt small { font-size: 9.5px; line-height: 1.55; color: #ddd6fe; }
+.lr-student > :deep(.ic) { flex: none; width: 16px; height: 16px; color: #ddd6fe; }
+
+@media (min-width: 640px) {
+  /* คงไว้ 2 คอลัมน์ตามแบบ — 3 คอลัมน์แล้วชื่อไทยยาว ๆ อย่าง "ความหนาแน่นผู้ใช้" จะตัดคำ */
+  /* ช่วงเวลาเรียงเต็มแถวเสมอ ห้องสมุดมีสามช่วง หมวดอื่นมีสี่ช่วง จึงไม่ล็อกจำนวนคอลัมน์ */
+  .lpk-row { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
+  .h-th-lead { font-size: 19px; }
+  .lk-v { font-size: 28px; }
+}
 
 /* ══════════════ ฟอร์มขอให้ติดต่อกลับ ══════════════ */
 .ct-mask {
