@@ -56,8 +56,8 @@
         <circle cx="1080" cy="222" r="9" class="is-red" />
         <circle cx="1430" cy="258" r="8" class="is-red" />
         <circle cx="1196" cy="742" r="9" class="is-red" />
-        <circle cx="165" cy="178" r="8" class="is-red" />
-        <circle cx="128" cy="576" r="7" class="is-gold" />
+        <!-- ไม่มีจุดฝั่งซ้ายแล้ว — ครึ่งซ้ายของหน้าเป็นคอลัมน์ข้อความ จุดไปทับตัวหนังสือพอดี
+             จุดเน้นทั้งหมดจึงอยู่ฝั่งขวาที่เป็นพื้นที่ของวงโคจร -->
         <circle cx="982" cy="300" r="5" class="is-gold" />
         <circle cx="1288" cy="306" r="5" class="is-gold" />
         <circle cx="1160" cy="330" r="4" class="is-gold" />
@@ -110,8 +110,14 @@
 
     <!-- ══════════════ แถบบน ══════════════ -->
     <header class="topbar">
-      <a class="brand" href="/">
-        <img class="brand__logo" src="/kwang_logo2.png" alt="KWANG UNLIMIT" />
+      <a class="brand" href="/" aria-label="KWANG UNLIMITED — หน้าแรก">
+        <span class="brand__mark" aria-hidden="true">
+          <img src="/kwang_logo.png" alt="" />
+        </span>
+        <span class="brand__name">
+          <span class="brand__line1">KWANG</span>
+          <span class="brand__line2">UNLIMITED</span>
+        </span>
       </a>
 
       <span class="topbar__rule" aria-hidden="true" />
@@ -330,6 +336,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   --gold: #c2a468;
   --gold-soft: #d8c49a;
 
+  /* ระยะขอบซ้าย-ขวาของทั้งหน้า — เส้นคั่นอ้างค่านี้ ปลายเส้นจะได้ตรงกับขอบเนื้อหาพอดี */
+  --gut: clamp(18px, 3.4vw, 54px);
+
   --plate-left: url('/home2/plate-left.webp');
   --plate-right: url('/home2/plate-right.webp');
 
@@ -443,7 +452,21 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   display: flex; align-items: center; gap: 22px;
   flex: none;
   width: 100%; max-width: 1540px; margin: 0 auto;
-  padding: clamp(12px, 2.2svh, 22px) clamp(18px, 3.4vw, 54px) 0;
+  padding: clamp(12px, 2.2svh, 22px) var(--gut) clamp(10px, 1.8svh, 18px);
+}
+
+/* เส้นคั่นใต้แถบเมนู — แยกส่วนหัวออกจากเนื้อหา
+   ใช้ ::after แทน border-bottom เพราะต้องการให้ปลายเส้นหยุดตรงขอบเนื้อหา ไม่ใช่ลากถึงขอบ padding */
+.topbar::after {
+  content: ''; position: absolute; left: var(--gut); right: var(--gut); bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(29, 27, 25, 0.34) 5%,
+    rgba(29, 27, 25, 0.34) 95%,
+    transparent
+  );
 }
 
 /* ── โลโก้ KWANG UNLIMIT ──
@@ -452,20 +475,36 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
    ถ้าใส่ height ตรง ๆ ตัวอักษรในโลโก้จะเล็กกว่าเมนูข้าง ๆ มาก
    จึงขยายทั้งผืนให้เนื้อโลโก้สูงเท่า --logo-h แล้วครอบขอบใสทิ้งด้วย overflow:hidden + margin ติดลบ
    ถ้าวันหลังเปลี่ยนเป็นไฟล์ที่ครอบขอบมาแล้ว ลบตัวเลขพวกนี้ออก เหลือ height อย่างเดียวพอ */
+/* ── โลโก้: ขนนก + ชื่อสองบรรทัด ──
+   เคยลองใช้ไฟล์โลโก้รวม (kwang_logo2.png) แต่ไฟล์นั้นมีขอบใสรอบเยอะและตัวอักษรในไฟล์
+   เล็กกว่าเมนูข้าง ๆ พอย่อให้พอดีแถบบนแล้วอ่านไม่ออก จึงกลับมาเรียงเองจากขนนก + ตัวหนังสือ */
 .brand {
-  --logo-h: clamp(52px, 8.4svh, 78px);
-  --logo-box: calc(var(--logo-h) / 0.6555);
+  /* ไฟล์ขนนกเป็นผืน 1920×1080 ที่มีขอบใสซ้าย-ขวารวมกันเกินครึ่ง
+     (ตัวขนนกเริ่มที่ซ้าย 26.09% บน 1.94% กินพื้นที่ 42.03% × 90.65%)
+     ถ้าตั้ง width ตรง ๆ ตัวขนนกจะเหลือไม่ถึงครึ่งของที่ตั้งไว้ จนอ่านเป็นก้อนทึบ
+     จึงขยายทั้งผืนให้ตัวขนนกสูงเท่า --quill-h แล้วครอบขอบใสทิ้ง */
+  --quill-h: clamp(32px, 3.6vw, 46px);
+  --q-box-h: calc(var(--quill-h) / 0.9065);
+  --q-box-w: calc(var(--q-box-h) * 1.7778);
 
-  display: block; text-decoration: none;
-  height: var(--logo-h);
-  width: calc(var(--logo-box) * 0.9);
-  overflow: hidden;
+  display: flex; align-items: center; gap: 12px; text-decoration: none;
 }
-.brand__logo {
-  display: block;
-  width: var(--logo-box); height: var(--logo-box);
-  max-width: none;
-  margin: calc(var(--logo-box) * -0.119) 0 0 calc(var(--logo-box) * -0.044);
+.brand__mark {
+  display: block; flex: none; overflow: hidden;
+  height: var(--quill-h);
+  width: calc(var(--q-box-w) * 0.4203);
+}
+.brand__mark img {
+  display: block; max-width: none;
+  width: var(--q-box-w); height: var(--q-box-h);
+  margin: calc(var(--q-box-h) * -0.0194) 0 0 calc(var(--q-box-w) * -0.2609);
+}
+.brand__name { display: grid; line-height: 1.08; }
+.brand__line1 {
+  font-size: clamp(14px, 1.4vw, 19px); font-weight: 500; letter-spacing: 0.12em; color: var(--ink-soft);
+}
+.brand__line2 {
+  font-size: clamp(14px, 1.4vw, 19px); font-weight: 600; letter-spacing: 0.12em; color: var(--ink);
 }
 
 .topbar__rule { flex: none; width: 1px; height: 38px; background: rgba(29, 27, 25, 0.22); }
@@ -474,10 +513,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 .nav__link {
   position: relative;
   padding: 4px 0;
-  font-family: inherit;
-  font-size: clamp(11px, 1.02vw, 13.5px);
+  /* เมนูเป็นเซอริฟตามตัวอย่าง เข้าชุดกับหัวข้อใหญ่ ไม่ใช่ซานส์แบบตราโลโก้ */
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(12px, 1.12vw, 15px);
   font-weight: 500;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.13em;
   color: var(--ink-soft);
   text-decoration: none;
   background: none; border: 0; cursor: pointer;
@@ -521,7 +561,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   flex: 1 1 auto; min-height: 0;
   display: flex; align-items: center;
   width: 100%; max-width: 1540px; margin: 0 auto;
-  padding: clamp(12px, 3svh, 44px) clamp(18px, 3.4vw, 54px);
+  padding: clamp(12px, 3svh, 44px) var(--gut);
 }
 /* คอลัมน์ข้อความกินราวครึ่งซ้าย ที่เหลือปล่อยให้ภาพและวงโคจรหายใจ
    กว้างพอให้ ANTICIPATE WHAT COMES NEXT. อยู่บรรทัดเดียวบนจอกว้าง แต่ยังไม่ชนดวงอาทิตย์ */
@@ -640,7 +680,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 .rail {
   position: relative; z-index: 10; flex: none;
   width: 100%; max-width: 1540px; margin: 0 auto;
-  padding: 0 clamp(18px, 3.4vw, 54px) clamp(12px, 2.4svh, 34px);
+  padding: 0 var(--gut) clamp(12px, 2.4svh, 30px);
 }
 .rail__steps {
   display: flex; align-items: center; justify-content: center;
@@ -665,6 +705,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   animation: kwNudge 2.6s ease-in-out infinite;
 }
 .rail__down svg { width: 100%; height: 100%; }
+
 @keyframes kwNudge {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(5px); }
@@ -724,7 +765,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   .nav {
     position: absolute; top: 100%; left: 0; right: 0; z-index: 20;
     flex-direction: column; align-items: stretch; gap: 0;
-    margin: 0; padding: 0 clamp(18px, 3.4vw, 54px);
+    margin: 0; padding: 0 var(--gut);
     max-height: 0; overflow: hidden;
     background: var(--paper-2);
     transition: max-height 0.28s ease;
