@@ -4322,7 +4322,7 @@ onMounted(() => {
 }
 
 /* ── 05 · ตัวเลขหลักสามช่อง ── */
-.lk-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+.lk-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
 .lk {
   display: grid; align-content: start; gap: 2px;
   padding: 11px 10px 12px; border-radius: 12px;
@@ -4446,7 +4446,7 @@ onMounted(() => {
 .lf-xaxis span { flex: 1; text-align: center; }
 
 /* ── 07 · การ์ดสถานการณ์ ── */
-.ls-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.ls-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
 .ls {
   display: grid; gap: 3px; padding: 12px 9px; border-radius: 12px; cursor: pointer;
   background: rgba(10, 25, 44, 0.55); border: 1px solid var(--line); color: var(--muted);
@@ -4512,6 +4512,51 @@ onMounted(() => {
 .lr-student__txt b { font-size: 11.5px; color: #fff; }
 .lr-student__txt small { font-size: 9.5px; line-height: 1.55; color: #ddd6fe; }
 .lr-student > :deep(.ic) { flex: none; width: 16px; height: 16px; color: #ddd6fe; }
+
+/* ตั้งแต่ 1000px หน้าผลลัพธ์วาง 4 แผงเรียงข้างกัน แผงจึงเหลือกว้างแค่ ~238px บน iPad Mini
+   แต่บล็อก 640px ขยาย .lk-v เป็น 28px กับ .h-th-lead เป็น 19px ไว้ตอนที่แผงยังเต็ม/ครึ่งความกว้าง
+   ค่าเดิมจึงใหญ่เกินการ์ด — ไล่ขนาดตามความกว้างจอ แล้วไปบรรจบค่าเดิมพอดีที่ 1320px จะได้ไม่กระโดดตอนข้ามช่วง */
+@media (min-width: 1000px) and (max-width: 1320px) {
+  .panel .p-head { gap: 7px; }
+  .panel .p-head .h-th-lead { font-size: clamp(13px, calc(1.88vw - 5.75px), 19px); }
+  .panel .p-chip { padding: 4px 7px; font-size: 8px; }
+
+  .panel .lk { padding: 9px 7px 10px; }
+  .panel .lk-v { font-size: clamp(17px, calc(3.44vw - 17.38px), 28px); }
+  /* "(368 / 450)" เป็นบรรทัดที่ตัดคำไม่ได้ จึงต้องย่อตามการ์ดด้วย */
+  .panel .lk-u { gap: 3px; font-size: clamp(8.2px, calc(0.41vw + 4.14px), 9.5px); }
+  .panel .lk-u :deep(.ic) { width: 9px; height: 9px; }
+
+  .panel .lb-plot { height: clamp(100px, 10vw, 132px); }
+  .panel .ls { padding: 10px 7px; }
+
+  /* ความสูงของทั้งแถวมาจากแผงข้อเสนอแนะที่ยาวที่สุด บน iPad Mini (สูง 768px) จึงยาวเกินจอ
+     ตัวการหลักคือปุ่ม "ดูรายละเอียด" ที่ nowrap กินกว้าง ~94px จากเนื้อที่การ์ด ~194px
+     เหลือให้ข้อความแค่ ~52px ทุกบรรทัดเลยตัดคำเป็น 3-4 บรรทัด
+     ย่อปุ่มเหลือหัวลูกศร — ข้อความยังอยู่ใน DOM ให้ screen reader อ่านได้เหมือนเดิม */
+  .panel .lr-more { gap: 0; padding: 6px; font-size: 0; }
+  .panel .lr-more :deep(.ic) { width: 13px; height: 13px; }
+
+  /* บีบระยะแนวตั้งของการ์ดย่อย และเลิกดันท้ายแผงด้วย margin-top: auto
+     (เหตุผลเดียวกับ .peak-badge ในบล็อก 1000px ด้านบน — ช่องว่างควรไปกองท้ายการ์ด ไม่เปิดเป็นช่องโหว่กลางแผง) */
+  .panel { padding: 13px 11px 15px; }
+  .panel .lk-row { margin-top: 12px; }
+  .panel .lb-title { margin-top: 14px; }
+  .panel .lb-chart { margin-bottom: 12px; }
+  .panel .lb-now { margin-top: 12px; gap: 9px; padding: 10px; }
+  .panel .lb-now__ic { width: 26px; height: 26px; }
+  .panel .li-wrap { margin-top: 13px; }
+  .panel .li-list { gap: 8px; margin-bottom: 10px; }
+  .panel .li-list li { gap: 9px; padding: 9px; }
+  .panel .li-ic { width: 24px; height: 24px; }
+  .panel .li-rel { margin-top: 10px; gap: 9px; padding: 10px; }
+  .panel .ls-row { margin-top: 8px; }
+  .panel .lf-note { margin-top: 11px; gap: 9px; padding: 10px; }
+  .panel .lr-wrap { margin-top: 13px; gap: 7px; }
+  .panel .lr-head { gap: 8px; padding: 9px; }
+  .panel .lr-student { margin-top: 4px; gap: 9px; padding: 10px; }
+  .panel .lr-student__ic { width: 27px; height: 27px; }
+}
 
 @media (min-width: 640px) {
   /* คงไว้ 2 คอลัมน์ตามแบบ — 3 คอลัมน์แล้วชื่อไทยยาว ๆ อย่าง "ความหนาแน่นผู้ใช้" จะตัดคำ */
