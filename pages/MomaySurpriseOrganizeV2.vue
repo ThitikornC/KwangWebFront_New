@@ -252,7 +252,7 @@
         </section>
 
         <!-- ═════════ 02 · Awakening ═════════ -->
-        <section v-else-if="step === 2" key="s2" class="screen">
+        <section v-else-if="step === 2" key="s2" class="screen" :class="{ 'screen-lw': isLibrary }">
           <!-- ครอบด้วยกล่องที่ไม่ถูกถอดออก เพื่อจองความสูงไว้ตอนสลับข้อความ
                ไม่งั้นช่วงที่โหนดเก่าออกแล้วโหนดใหม่ยังไม่เข้า หน้าจะหดแล้วเด้งกลับ -->
           <!-- ห้องสมุดใช้หัวข้อนิ่ง ความคืบหน้าไปอยู่ที่เช็กลิสต์กับแถบด้านล่างแทน
@@ -290,16 +290,11 @@
             </ul>
 
             <div class="lw-art">
-              <svg class="lw-svg" viewBox="0 0 400 360" aria-hidden="true">
+              <!-- ตัวอาคารเป็นภาพจริง (ไอโซเมตริกตอนกลางคืน ตัดพื้นหลังออกแล้ว) แทนที่ตึกที่เคยวาดด้วย SVG
+                   สายข้อมูล/คลื่นที่ฐาน/ฟองไอคอน ยังเป็นชั้นซ้อนทับอยู่เหมือนเดิม -->
+              <img class="lw-photo" src="/momay/lib-iso-building.webp" alt="" aria-hidden="true" />
+              <svg class="lw-svg" viewBox="0 0 400 279" aria-hidden="true">
                 <defs>
-                  <linearGradient id="lwSlab" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#5eead4" stop-opacity="0.22" />
-                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.06" />
-                  </linearGradient>
-                  <linearGradient id="lwWall" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.16" />
-                    <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0.04" />
-                  </linearGradient>
                   <!-- สายข้อมูลไล่สีคนละเส้น ให้ดูเหมือนคนละกระแสที่ไหลเข้าหาอาคาร -->
                   <linearGradient id="lwFlow1" x1="0" y1="1" x2="1" y2="0">
                     <stop offset="0%" stop-color="#22c55e" stop-opacity="0" />
@@ -322,59 +317,19 @@
                   </radialGradient>
                 </defs>
 
-                <ellipse class="lw-shadow" cx="180" cy="300" rx="150" ry="52" fill="url(#lwGlow)" />
+                <ellipse class="lw-shadow" cx="195" cy="182" rx="200" ry="92" fill="url(#lwGlow)" />
 
                 <!-- วงคลื่นที่ฐาน แผ่ออกเป็นจังหวะ ให้รู้สึกว่าอาคารกำลัง "ทำงาน" อยู่ -->
-                <ellipse class="lw-pulse" cx="180" cy="300" rx="120" ry="42" />
-                <ellipse class="lw-pulse lw-pulse--2" cx="180" cy="300" rx="120" ry="42" />
+                <ellipse class="lw-pulse" cx="195" cy="179" rx="145" ry="62" />
+                <ellipse class="lw-pulse lw-pulse--2" cx="195" cy="179" rx="145" ry="62" />
 
-                <!-- สายข้อมูลอยู่หลังอาคาร โค้งอ้อมจากฐานซ้ายขึ้นไปทางขวาบน
-                     ถ้าวาดทับอาคารจะกลายเป็นเส้นพาดหน้าตึกแทนที่จะเป็นกระแสที่ไหลผ่าน -->
+                <!-- สายข้อมูลพาดหน้าภาพอาคาร โค้งอ้อมจากฐานซ้ายขึ้นไปทางขวาบน
+                     ความทึบต่ำพอให้ดูเหมือนลำแสงที่ไหลผ่าน ไม่บังตัวตึก -->
                 <g class="lw-flows">
-                  <path d="M -10 330 C 90 320 60 200 170 140 S 330 96 410 62" stroke="url(#lwFlow1)" />
-                  <path d="M -10 286 C 110 286 90 170 200 112 S 340 60 410 26" stroke="url(#lwFlow2)" />
-                  <path d="M 0 356 C 120 352 130 246 240 196 S 350 150 410 122" stroke="url(#lwFlow3)" />
+                  <path d="M -24 172 C 22 244 118 276 208 256 C 302 236 368 172 424 108" stroke="url(#lwFlow1)" />
+                  <path d="M -24 124 C 54 176 132 196 220 158 C 312 118 374 66 424 30" stroke="url(#lwFlow2)" />
+                  <path d="M -24 212 C 42 266 152 286 252 260 C 340 238 390 202 424 174" stroke="url(#lwFlow3)" />
                 </g>
-
-                <!-- ชั้นของอาคารซ้อนกันขึ้นไป วาดจากชั้นล่างสุดก่อนเพื่อให้ชั้นบนทับถูกลำดับ -->
-                <g class="lw-bld">
-                  <template v-for="f in LW_FLOORS" :key="f.y">
-                    <!-- ผนังระหว่างชั้น -->
-                    <path
-                      :d="`M 60 ${f.y} L 60 ${f.y - 44} L 180 ${f.y - 44 + 58} L 180 ${f.y + 58} Z`"
-                      fill="url(#lwWall)"
-                    />
-                    <path
-                      :d="`M 300 ${f.y} L 300 ${f.y - 44} L 180 ${f.y - 44 + 58} L 180 ${f.y + 58} Z`"
-                      fill="url(#lwWall)"
-                      opacity="0.6"
-                    />
-                    <!-- แผ่นพื้นชั้น -->
-                    <path
-                      :d="`M 180 ${f.y - 58} L 300 ${f.y} L 180 ${f.y + 58} L 60 ${f.y} Z`"
-                      fill="url(#lwSlab)"
-                      class="lw-slab"
-                    />
-                    <!-- แถวหน้าต่าง -->
-                    <g class="lw-win">
-                      <line
-                        v-for="w in 4"
-                        :key="'a' + f.y + w"
-                        :x1="78 + w * 22" :y1="f.y - 9 + w * 11"
-                        :x2="78 + w * 22" :y2="f.y - 9 + w * 11 + 16"
-                      />
-                      <line
-                        v-for="w in 4"
-                        :key="'b' + f.y + w"
-                        :x1="282 - w * 22" :y1="f.y - 9 + w * 11"
-                        :x2="282 - w * 22" :y2="f.y - 9 + w * 11 + 16"
-                      />
-                    </g>
-                  </template>
-                </g>
-
-                <!-- ลำแสงกวาดขึ้นตามตัวอาคาร บอกว่ากำลังไล่อ่านข้อมูลทีละชั้น -->
-                <rect class="lw-scan" x="46" y="0" width="268" height="26" rx="13" />
               </svg>
 
               <!-- ประกายลอยขึ้นรอบอาคาร -->
@@ -2205,7 +2160,6 @@ const LIB_AWAKEN_STEPS = [
 ]
 
 /** ชั้นของอาคารไอโซเมตริก — ค่า y คือระดับพื้นของแต่ละชั้นใน viewBox 400×360 */
-const LW_FLOORS = [{ y: 262 }, { y: 218 }, { y: 174 }, { y: 130 }]
 
 /** ประกายที่ลอยขึ้นรอบอาคาร — กระจายด้วยมุมทองให้ไม่จับกลุ่มเป็นแถว */
 const LW_SPARKS = Array.from({ length: 18 }, (_, i) => {
@@ -4152,55 +4106,62 @@ onMounted(() => {
 
 .lw-head { margin-bottom: clamp(14px, 2.4vw, 26px); }
 .lw-head .center { text-align: center; }
+.lw-head .h-th-lead { font-size: clamp(19px, 2.4vw, 28px); }
+.lw-head .h-en-sub { font-size: clamp(11px, 1.2vw, 14px); margin-top: 6px; }
 
 /* เช็กลิสต์ซ้าย · ภาพขวา · แถบความคืบหน้าพาดเต็มความกว้างด้านล่าง */
+.screen-lw { display: flex; flex-direction: column; }
 .lw {
   display: grid; gap: clamp(16px, 3vw, 36px);
   grid-template-columns: 1fr;
   align-items: center;
+  /* flex-grow + align-content ทำให้ช่องว่างที่เหลือถูกเกลี่ยบน-ล่าง แทนที่จะค้างไว้ใต้สุด */
+  flex: 1 0 auto; align-content: center;
 }
-.lw-foot { grid-column: 1 / -1; }
+.lw-foot { grid-column: 1 / -1; margin-top: clamp(18px, 4vh, 44px); }
 
 .lw-steps { display: flex; flex-direction: column; gap: clamp(12px, 1.8vw, 20px); list-style: none; margin: 0; }
 .lw-steps li {
-  display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: center;
+  display: grid; grid-template-columns: 30px 1fr; gap: 14px; align-items: center;
   opacity: 0.4; transition: opacity 0.35s;
 }
 .lw-steps li.done, .lw-steps li.now { opacity: 1; }
 .lw-mark {
-  display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
   background: rgba(34, 197, 94, 0.16); color: var(--good);
 }
 .lw-steps li:not(.done) .lw-mark { background: rgba(120, 160, 200, 0.12); }
-.lw-mark :deep(.ic) { width: 14px; height: 14px; stroke-width: 3; }
+.lw-mark :deep(.ic) { width: 17px; height: 17px; stroke-width: 3; }
 /* ขั้นที่กำลังทำ = วงหมุน · ขั้นที่ยังไม่ถึง = วงกลมกลวง */
 .lw-mark .spin {
-  width: 14px; height: 14px; border-radius: 50%;
+  width: 17px; height: 17px; border-radius: 50%;
   border: 2px solid rgba(110, 231, 183, 0.3); border-top-color: var(--good);
   animation: lwSpin 0.9s linear infinite;
 }
 @keyframes lwSpin { to { transform: rotate(360deg); } }
-.lw-mark .hollow { width: 12px; height: 12px; border-radius: 50%; border: 1.6px solid rgba(120, 160, 200, 0.4); }
-.lw-text { font-size: clamp(11.5px, 1.25vw, 14px); line-height: 1.6; color: #d8e6f7; }
+.lw-mark .hollow { width: 15px; height: 15px; border-radius: 50%; border: 1.6px solid rgba(120, 160, 200, 0.4); }
+.lw-text { font-size: clamp(14px, 1.7vw, 19px); line-height: 1.6; color: #d8e6f7; }
 
 /* ── ภาพอาคาร ── */
-.lw-art { position: relative; width: 100%; max-width: 440px; margin: 0 auto; aspect-ratio: 400 / 360; }
+.lw-art { position: relative; width: 100%; max-width: 440px; margin: 0 auto; aspect-ratio: 1200 / 838; }
 .lw-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-/* ขอบชั้นเรืองแสง — drop-shadow ทำให้ตัวอาคารดูเป็นโฮโลแกรมจริง ไม่ใช่เส้นแบน */
-.lw-slab {
-  stroke: rgba(125, 250, 224, 0.75); stroke-width: 1.3;
-  filter: drop-shadow(0 0 5px rgba(94, 234, 212, 0.65));
+
+/* ภาพอาคารไอโซเมตริก — ไฟล์ตัดพื้นหลังออกแล้ว (อัลฟาโปร่ง) จึงไม่ต้องมาสก์ขอบช่วย */
+.lw-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain;
+  filter: saturate(1.06) contrast(1.04) drop-shadow(0 0 26px rgba(56, 189, 248, 0.22));
+  animation: lwPhotoIn 0.9s ease both;
 }
-.lw-bld path { stroke-linejoin: round; }
-.lw-win line {
-  stroke: rgba(186, 230, 253, 0.62); stroke-width: 2.4; stroke-linecap: round;
-  filter: drop-shadow(0 0 3px rgba(125, 211, 252, 0.6));
+@keyframes lwPhotoIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
 }
 
 /* คลื่นที่ฐาน */
 .lw-pulse {
   fill: none; stroke: rgba(94, 234, 212, 0.5); stroke-width: 1.4;
-  transform-origin: 180px 300px;
+  transform-origin: 195px 179px;
   animation: lwPulse 3.6s ease-out infinite;
 }
 .lw-pulse--2 { animation-delay: -1.8s; }
@@ -4208,19 +4169,6 @@ onMounted(() => {
   0% { transform: scale(0.45); opacity: 0; }
   25% { opacity: 0.75; }
   100% { transform: scale(1.35); opacity: 0; }
-}
-
-/* ลำแสงกวาดขึ้นตามอาคาร */
-.lw-scan {
-  fill: rgba(125, 211, 252, 0.13);
-  filter: blur(3px);
-  animation: lwScan 5.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-}
-@keyframes lwScan {
-  0% { transform: translateY(300px); opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { transform: translateY(70px); opacity: 0; }
 }
 
 /* ประกายลอยขึ้น */
@@ -4238,14 +4186,14 @@ onMounted(() => {
 }
 /* สายข้อมูลเป็นริบบิ้นยาว ค่อย ๆ ไหลเข้าหาอาคาร ไม่ใช่เส้นประสั้น ๆ */
 .lw-flows path {
-  fill: none; stroke-width: 5; stroke-linecap: round;
-  stroke-dasharray: 560 360;
-  filter: drop-shadow(0 0 7px rgba(139, 92, 246, 0.5));
-  animation: lwFlow 6.5s linear infinite;
+  fill: none; stroke-width: 2.2; stroke-linecap: round;
+  stroke-dasharray: 700 300;
+  filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.55));
+  animation: lwFlow 7.5s linear infinite;
 }
-.lw-flows path:nth-child(2) { animation-delay: -2.2s; }
-.lw-flows path:nth-child(3) { animation-delay: -4.4s; }
-@keyframes lwFlow { from { stroke-dashoffset: 920; } to { stroke-dashoffset: 0; } }
+.lw-flows path:nth-child(2) { animation-delay: -2.5s; }
+.lw-flows path:nth-child(3) { animation-delay: -5s; }
+@keyframes lwFlow { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
 
 .lw-bubble {
   position: absolute; transform: translate(-50%, -50%) scale(0.6);
@@ -4294,13 +4242,13 @@ onMounted(() => {
 }
 .lw-ready {
   margin-top: clamp(12px, 1.8vw, 18px); text-align: center;
-  font-size: clamp(16px, 2vw, 24px); font-weight: 700; color: #eaf6ff;
+  font-size: clamp(20px, 2.6vw, 30px); font-weight: 700; color: #eaf6ff;
 }
-.lw-sub { margin-top: 4px; text-align: center; font-size: clamp(10px, 1.1vw, 13px); color: var(--dim); }
+.lw-sub { margin-top: 6px; text-align: center; font-size: clamp(12px, 1.35vw, 16px); color: var(--dim); }
 
 @media (min-width: 820px) {
-  .lw { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
-  .lw-art { margin: 0; }
+  .lw { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+  .lw-art { margin: 0; max-width: 560px; }
 }
 
 /* ══════════════ ห้องสมุด ══════════════ */
