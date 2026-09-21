@@ -159,7 +159,7 @@ const PLATFORMS: {
     name: 'MOMAY',
     nameTh: 'ตัวกลางรับ–ส่งข้อมูลระหว่างระบบ',
     kicker: 'BEHAVIORAL INTELLIGENCE',
-    logo: '/MOMAY_logo.png',
+    logo: '/MOMAY_mark.png',
     body: 'MOMAY คือ source code ที่เป็นตัวกลางในการรับข้อมูลจากแหล่งต่าง ๆ ได้ตามความต้องการ แล้วส่งต่อไปยัง Espresso เพื่อแสดงผลแบบเรียลไทม์',
     bullets: ['พลังงานไฟฟ้า', 'กล้องวงจรปิด', 'ห้องสมุดออนไลน์'],
     primary: { label: 'EXPLORE MOMAY', href: '/renewablesort/MomayforSaleV2' },
