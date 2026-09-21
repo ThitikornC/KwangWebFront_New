@@ -545,7 +545,6 @@
               <!-- ห้องสมุดขึ้นหัวข้อไทยนำ พร้อมป้ายบอกว่ากำลังดูแผงไหนอยู่
                    หมวดอื่นใช้หัวข้ออังกฤษนำเหมือนเดิม -->
               <div v-if="isLibrary" class="p-head">
-                <span class="p-no">05</span>
                 <div>
                   <h2 class="h-th-lead font-thai">เห็นภาพรวมที่สำคัญ</h2>
                   <p class="h-en-sub">SEE — What matters now?</p>
@@ -726,7 +725,6 @@
             <!-- ── แผง 02 · Understand ── -->
             <section class="panel panel-relate">
               <div v-if="isLibrary" class="p-head">
-                <span class="p-no">06</span>
                 <div>
                   <h2 class="h-th-lead font-thai">เข้าใจเหตุผล</h2>
                   <p class="h-en-sub">UNDERSTAND — Why does it matter?</p>
@@ -909,7 +907,6 @@
             <!-- ── แผง 03 · Anticipate & Simulate ── -->
             <section class="panel panel-sim">
               <div v-if="isLibrary" class="p-head">
-                <span class="p-no">07</span>
                 <div>
                   <h2 class="h-th-lead font-thai">มองเห็นอนาคตและจำลองสถานการณ์</h2>
                   <p class="h-en-sub">ANTICIPATE &amp; SIMULATE — What happens next?</p>
@@ -1121,7 +1118,6 @@
             <!-- ── แผง 04 · Decide ── -->
             <section class="panel panel-decide">
               <div v-if="isLibrary" class="p-head">
-                <span class="p-no">08</span>
                 <div>
                   <h2 class="h-th-lead font-thai">ข้อเสนอแนะและทางเลือก</h2>
                   <p class="h-en-sub">DECIDE — What should we do?</p>
@@ -4304,15 +4300,8 @@ onMounted(() => {
 }
 .lpk-check :deep(.ic) { width: 9px; height: 9px; stroke-width: 3.6; }
 
-/* ── หัวแผง: เลขลำดับ + ไทยนำ + ป้ายชื่อแผง ── */
+/* ── หัวแผง: ไทยนำ + ป้ายชื่อแผง ── */
 .p-head { display: flex; align-items: flex-start; gap: 10px; }
-/* เลขลำดับบอกว่ากำลังอ่านแผงที่เท่าไรของสี่จังหวะ SEE → UNDERSTAND → ANTICIPATE → DECIDE */
-.p-no {
-  display: grid; place-items: center; flex: none;
-  width: 28px; height: 28px; border-radius: 50%;
-  background: rgba(62, 160, 255, 0.14); border: 1px solid var(--line-on);
-  font-size: 11px; font-weight: 700; color: #9ecbff;
-}
 .p-head > div { flex: 1; min-width: 0; }
 .h-th-lead { font-size: 16px; font-weight: 700; line-height: 1.3; color: #eaf6ff; }
 .h-en-sub { margin-top: 3px; font-size: 9.5px; letter-spacing: 0.05em; line-height: 1.4; color: var(--dim); }
