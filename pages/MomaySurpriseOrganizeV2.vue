@@ -12,7 +12,43 @@
   แก้ตรรกะที่นั่นแล้วต้องตามมาแก้ที่นี่ด้วย — จงใจแลกความซ้ำกับการไม่กระทบหน้าที่ใช้อยู่
 -->
 <template>
-  <div class="momay-demo">
+  <div class="momay-demo" :class="org.theme ? 'theme-' + org.theme : null">
+    <!-- ── ชุดไล่สีของดวงความหนาแน่น ──
+         อยู่ตรงนี้ตัวเดียวเพราะผังคณะถูกวาดสองที่ (จอวิเคราะห์กับแผง 05)
+         ถ้าประกาศซ้ำในแต่ละ <svg> จะได้ id ชนกันตอนสองจอซ้อนกันชั่วขณะระหว่างเปลี่ยนหน้า
+
+         แต่ละชั้นไล่จากแกนสีจัดออกไปจนโปร่งใส ดวงที่ทับกันจึงรวมเป็นปื้นเดียว
+         ไม่ใช่วงรีซ้อนกันเป็นชั้น ๆ -->
+    <svg class="fac-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="facGradHot">
+          <stop offset="0%" stop-color="#c8140d" stop-opacity="0.97" />
+          <stop offset="14%" stop-color="#e42a12" stop-opacity="0.95" />
+          <stop offset="27%" stop-color="#f44e15" stop-opacity="0.9" />
+          <stop offset="42%" stop-color="#fb7a16" stop-opacity="0.82" />
+          <stop offset="58%" stop-color="#fda616" stop-opacity="0.68" />
+          <stop offset="74%" stop-color="#fecb1d" stop-opacity="0.47" />
+          <stop offset="88%" stop-color="#ffe558" stop-opacity="0.22" />
+          <stop offset="100%" stop-color="#fff3b4" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="facGradWarm">
+          <stop offset="0%" stop-color="#f4520f" stop-opacity="0.94" />
+          <stop offset="18%" stop-color="#fa7513" stop-opacity="0.9" />
+          <stop offset="38%" stop-color="#fd9b16" stop-opacity="0.8" />
+          <stop offset="58%" stop-color="#fec01d" stop-opacity="0.62" />
+          <stop offset="80%" stop-color="#ffdf4b" stop-opacity="0.32" />
+          <stop offset="100%" stop-color="#fff0a8" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="facGradMild">
+          <stop offset="0%" stop-color="#fda516" stop-opacity="0.9" />
+          <stop offset="26%" stop-color="#fec11d" stop-opacity="0.82" />
+          <stop offset="55%" stop-color="#fdd93a" stop-opacity="0.62" />
+          <stop offset="80%" stop-color="#feea78" stop-opacity="0.3" />
+          <stop offset="100%" stop-color="#fef7c8" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+    </svg>
+
     <!-- ══════════════════ หน้าจอ (ซ่อนตอนพิมพ์) ══════════════════ -->
     <div class="app" :class="{ 'app-wide': step === TOTAL }">
       <!-- ── แถบแบรนด์ ── -->
@@ -82,6 +118,12 @@
                         <div v-if="o.id === 'library'" class="q-intro font-thai">
                           <b>เพียง 3 ข้อมูลง่าย ๆ</b>
                           <span>MOMAY จะค้นหาความสัมพันธ์และมุมมองใหม่ให้คุณ</span>
+                        </div>
+
+                        <!-- คณะ: บอกตั้งแต่ต้นเช่นกันว่ากรอกแค่สามช่องก็เริ่มได้ -->
+                        <div v-else-if="o.id === 'faculty'" class="q-intro font-thai">
+                          <b>บอกข้อมูลพื้นฐานของคณะ</b>
+                          <span>เพียง 3 ข้อมูล เพื่อให้ MOMAY เข้าใจภาพรวมเบื้องต้น</span>
                         </div>
 
                         <template v-else>
@@ -182,6 +224,50 @@
                           </div>
                         </template>
 
+                        <!-- ── คณะ: เลือกหัวข้อที่อยากให้วิเคราะห์ ──
+                             ตารางของตัวเอง ไม่ใช่ signal กลาง เพราะคณะไม่ได้ดูจราจร/ที่จอด
+                             แต่ดูการเรียนการสอน การใช้พื้นที่ กิจกรรม และทรัพยากร -->
+                        <template v-if="o.id === 'faculty'">
+                          <p class="dd-title dd-gap font-thai">เลือกหัวข้อที่ต้องการวิเคราะห์</p>
+                          <p class="dd-sub font-thai">เลือกได้มากกว่า 1 ข้อ (แนะนำ {{ FAC_FOCUS_MIN }}–{{ FAC_FOCUS_HINT_MAX }} หัวข้อ)</p>
+
+                          <div class="foc-grid foc-grid--fac">
+                            <button
+                              v-for="fc in FAC_FOCUS"
+                              :key="fc.id"
+                              type="button"
+                              class="foc"
+                              :class="{ on: form.facFocus.includes(fc.id) }"
+                              :style="{ '--sig': fc.color }"
+                              @click="toggleFacFocus(fc.id)"
+                            >
+                              <span class="foc-ic"><Ico :name="fc.icon" /></span>
+                              <span class="foc-txt">
+                                <span class="foc-th font-thai">{{ fc.th }}</span>
+                                <span class="foc-en">{{ fc.en }}</span>
+                              </span>
+                              <span v-if="form.facFocus.includes(fc.id)" class="foc-check"><Ico name="check" /></span>
+                            </button>
+                          </div>
+
+                          <p class="dd-title dd-gap font-thai">ช่วงเวลาที่ต้องการให้เน้นเป็นพิเศษ</p>
+                          <div class="lpk-row lpk-row--fac">
+                            <button
+                              v-for="pk in FAC_PEAKS"
+                              :key="pk.id"
+                              type="button"
+                              class="lpk"
+                              :class="{ on: form.facPeak === pk.id }"
+                              @click="form.facPeak = pk.id"
+                            >
+                              <span class="lpk-ic"><Ico :name="pk.icon" /></span>
+                              <span class="lpk-th font-thai">{{ pk.th }}</span>
+                              <span class="lpk-win">{{ pk.en }}</span>
+                              <span v-if="form.facPeak === pk.id" class="lpk-check"><Ico name="check" /></span>
+                            </button>
+                          </div>
+                        </template>
+
                         <!-- สิ่งที่เปลี่ยนแปลงระหว่างวัน — บางหมวด (เช่นโซลาร์) ไม่ต้องถาม
                              ส่วนช่วงพีคด้านล่างยังถามทุกหมวด -->
                         <template v-if="o.dailyChanges !== false">
@@ -210,10 +296,10 @@
                         </template>
 
                         <!-- ช่วงเวลาหนาแน่น — ห้องสมุดถามไปแล้วด้านบนด้วยตัวเลือกของตัวเอง -->
-                        <p v-if="o.id !== 'library'" class="dd-title dd-gap font-thai">ช่วงไหนของวันที่คนเยอะที่สุด?</p>
+                        <p v-if="!ownPeakOrg(o.id)" class="dd-title dd-gap font-thai">ช่วงไหนของวันที่คนเยอะที่สุด?</p>
                         <!-- ใช้หน้าตาชุดเดียวกับของห้องสมุด: ไอคอน + ชื่อช่วง + กรอบเวลา
                              เวลาที่แสดงมาจาก PEAKS ของแต่ละหมวด จึงไม่ใช่ชุดเดียวกับห้องสมุด -->
-                        <div v-if="o.id !== 'library'" class="lpk-row">
+                        <div v-if="!ownPeakOrg(o.id)" class="lpk-row">
                           <button
                             v-for="pk in PEAKS"
                             :key="pk.id"
@@ -230,14 +316,14 @@
                         </div>
 
                         <!-- ปุ่มไปต่อท้ายดร๊อปดาวน์ กรอกเสร็จกดได้เลยไม่ต้องเลื่อนลงไปท้ายหน้า -->
-                        <div class="dd-next" :class="{ 'dd-next--wide': o.id === 'library' }">
+                        <div class="dd-next" :class="{ 'dd-next--wide': ownPeakOrg(o.id) }">
                           <button
                             type="button"
                             class="btn-next font-thai"
-                            :class="{ 'btn-next--grad': o.id === 'library' }"
+                            :class="{ 'btn-next--grad': ownPeakOrg(o.id) }"
                             :disabled="!canAdvance"
                             @click="next"
-                          >{{ o.id === 'library' ? 'วิเคราะห์ให้เลย' : 'ต่อไป' }} <Ico name="arrow-right" /></button>
+                          >{{ ownPeakOrg(o.id) ? 'วิเคราะห์ให้เลย' : 'ต่อไป' }} <Ico name="arrow-right" /></button>
                         </div>
                       </div>
                     </div>
@@ -252,13 +338,18 @@
         </section>
 
         <!-- ═════════ 02 · Awakening ═════════ -->
-        <section v-else-if="step === 2" key="s2" class="screen" :class="{ 'screen-lw': isLibrary }">
+        <section v-else-if="step === 2" key="s2" class="screen" :class="{ 'screen-lw': isLibrary || isFaculty }">
           <!-- ครอบด้วยกล่องที่ไม่ถูกถอดออก เพื่อจองความสูงไว้ตอนสลับข้อความ
                ไม่งั้นช่วงที่โหนดเก่าออกแล้วโหนดใหม่ยังไม่เข้า หน้าจะหดแล้วเด้งกลับ -->
           <!-- ห้องสมุดใช้หัวข้อนิ่ง ความคืบหน้าไปอยู่ที่เช็กลิสต์กับแถบด้านล่างแทน
                หมวดอื่นยังสลับหัวข้อไปตามขั้นที่กำลังทำ -->
           <div v-if="isLibrary" class="lw-head">
             <h2 class="h-th-lead center font-thai">กำลังวิเคราะห์ข้อมูลของคุณ</h2>
+            <p class="h-en-sub center">Awakening</p>
+          </div>
+
+          <div v-else-if="isFaculty" class="lw-head">
+            <h2 class="h-th-lead center font-thai">กำลังเชื่อมโยงข้อมูล เพื่อเข้าใจคณะของคุณ...</h2>
             <p class="h-en-sub center">Awakening</p>
           </div>
 
@@ -362,6 +453,144 @@
             <div class="lw-foot">
               <div class="lw-bar"><span :style="{ width: awakenPct + '%' }" /></div>
               <p class="lw-ready">Your Library MOMAY is ready.</p>
+              <p class="lw-sub">From Data to New Possibilities.</p>
+            </div>
+          </div>
+
+          <!-- ══ คณะ: ผังคณะไอโซเมตริกชุดเดียวกับแผง 05 กำลังถูกไล่อ่านทีละโซน ══
+               เดิมหมวดนี้ตกไปใช้วงเมืองของหมวดกลาง ซึ่งเป็นตัวชี้วัดคนละชุด
+               (จราจร · ที่จอดรถ · ขยะ) และเป็นโทนฟ้า ไม่ใช่เรื่องของคณะเลย -->
+          <div v-else-if="isFaculty" class="lw">
+            <ul class="lw-steps">
+              <li
+                v-for="(t, i) in awakenSteps"
+                :key="t.th"
+                :class="{ done: i < awakenAt, now: i === awakenAt }"
+              >
+                <span class="lw-mark">
+                  <Ico v-if="i < awakenAt" name="check" />
+                  <span v-else-if="i === awakenAt" class="spin" />
+                  <span v-else class="hollow" />
+                </span>
+                <span class="lw-text">
+                  <b>{{ t.en }}</b>
+                  <span class="font-thai">{{ t.th }}</span>
+                </span>
+              </li>
+            </ul>
+
+            <div class="lw-art fw-art">
+              <svg
+                class="fw-svg"
+                :viewBox="`0 0 ${facReport.campusBox.w} ${facReport.campusBox.h}`"
+                aria-hidden="true"
+              >
+                <defs>
+                  <filter id="facWakeBlur" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="1.1" />
+                  </filter>
+                </defs>
+
+                <polygon class="cg-base" :points="facReport.campusGround" />
+                <polygon
+                  v-for="(g, n) in facReport.campusStreets"
+                  :key="'wst' + n"
+                  class="cg-street"
+                  :points="g"
+                />
+                <polygon
+                  v-for="(g, n) in facReport.campusRoads"
+                  :key="'wstr' + n"
+                  class="cg-road"
+                  :points="g"
+                />
+                <polygon
+                  v-for="(g, n) in facReport.campusLanes"
+                  :key="'wstl' + n"
+                  class="cg-lane"
+                  :points="g"
+                />
+                <polygon
+                  v-for="(g, n) in facReport.campusCrossings"
+                  :key="'wstc' + n"
+                  class="cg-cross"
+                  :points="g"
+                />
+
+                <!-- อาคารทยอยสว่างขึ้นตามความคืบหน้า ให้รู้สึกว่ากำลังไล่อ่านทีละย่าน -->
+                <g
+                  v-for="(it, i) in facReport.campusItems"
+                  :key="'fi' + i"
+                  class="ci fw-b"
+                  :class="[
+                    it.t === 'b' ? 'cb cb--t' + it.tone : 'cg-tree cg-tree--t' + it.tone,
+                    { lit: (awakenAt + 1) / awakenSteps.length > i / facReport.campusItems.length },
+                  ]"
+                  :style="{ '--i': i }"
+                >
+                  <template v-if="it.t === 'b'">
+                    <polygon class="cb-left" :points="it.faceLeft" />
+                    <polygon v-for="(w, k) in it.winLeft" :key="'wl' + k" class="cb-win-l" :points="w" />
+                    <polygon class="cb-right" :points="it.faceRight" />
+                    <polygon v-for="(w, k) in it.winRight" :key="'wr' + k" class="cb-win-r" :points="w" />
+                    <polygon class="cb-top" :points="it.faceTop" />
+                    <polygon class="cb-roof" :points="it.roofIn" />
+                    <template v-if="it.roofBox">
+                      <polygon class="cb-left" :points="it.roofBox.left" />
+                      <polygon class="cb-right" :points="it.roofBox.right" />
+                      <polygon class="cb-top" :points="it.roofBox.top" />
+                    </template>
+                  </template>
+                  <template v-else>
+                    <ellipse class="ct-shade" :cx="it.x" :cy="it.y" :rx="it.r * 0.78" :ry="it.r * 0.4" />
+                    <polygon v-if="it.trunkPts" class="ct-trunk" :points="it.trunkPts" />
+                    <circle
+                      v-for="(q, k) in it.puffs"
+                      :key="'pf' + k"
+                      :class="'ct-l' + q.l"
+                      :cx="q.cx" :cy="q.cy" :r="q.r"
+                    />
+                  </template>
+                </g>
+
+                <!-- ความหนาแน่นเป็นคำตอบ จึงยังไม่โผล่จนกว่าจะไล่อ่านใกล้เสร็จ -->
+                <g
+                  class="fmap-heat fw-heat"
+                  :class="{ on: awakenAt >= awakenSteps.length - 1 }"
+                  filter="url(#facWakeBlur)"
+                >
+                  <g
+                    v-for="(z, n) in facReport.campusHeat"
+                    :key="'fhbz' + n"
+                    class="fmap-throb"
+                    :style="{ '--d': z.delay + 's' }"
+                  >
+                    <ellipse
+                      v-for="(g, k) in z.blobs"
+                      :key="'fhb' + k"
+                      :cx="g.x" :cy="g.y" :rx="g.rx" :ry="g.ry"
+                      :fill="`url(#facGrad${z.tier})`" :opacity="g.opacity"
+                    />
+                  </g>
+                </g>
+              </svg>
+
+              <span
+                v-for="(sp, i) in LW_SPARKS"
+                :key="'fsp' + i"
+                class="lw-spark"
+                :style="{
+                  left: sp.x + '%', bottom: sp.b + '%',
+                  '--sz': sp.size + 'px',
+                  animationDelay: sp.delay + 's',
+                  animationDuration: sp.dur + 's',
+                }"
+              />
+            </div>
+
+            <div class="lw-foot">
+              <div class="lw-bar"><span :style="{ width: awakenPct + '%' }" /></div>
+              <p class="lw-ready">Your Faculty MOMAY is ready.</p>
               <p class="lw-sub">From Data to New Possibilities.</p>
             </div>
           </div>
@@ -519,7 +748,7 @@
             </div>
 
             <ul class="await-list">
-              <li v-for="(t, i) in AWAKEN_STEPS" :key="t.en" :class="{ done: i < awakenAt, now: i === awakenAt }">
+              <li v-for="(t, i) in awakenSteps" :key="t.en" :class="{ done: i < awakenAt, now: i === awakenAt }">
                 <span class="await-mark">
                   <Ico v-if="i < awakenAt" name="check" />
                   <span v-else-if="i === awakenAt" class="spin" />
@@ -538,18 +767,18 @@
         <section v-else key="s3" class="screen screen-result">
           <div class="panels">
             <!-- ── แผง 01 · See ── -->
-            <section class="panel panel-see" :class="{ 'panel-quiet': isLibrary }">
+            <section class="panel panel-see" :class="{ 'panel-quiet': isLibrary || isFaculty, 'panel-light': isFaculty }">
               <!-- ภาพเมืองช่วงพีคเป็นพื้นหลังของแผงนี้ -->
               <div class="screen-photo photo-slot photo-05" />
 
               <!-- ห้องสมุดขึ้นหัวข้อไทยนำ พร้อมป้ายบอกว่ากำลังดูแผงไหนอยู่
                    หมวดอื่นใช้หัวข้ออังกฤษนำเหมือนเดิม -->
-              <div v-if="isLibrary" class="p-head">
+              <div v-if="isLibrary || isFaculty" class="p-head">
                 <div>
                   <h2 class="h-th-lead font-thai">เห็นภาพรวมที่สำคัญ</h2>
                   <p class="h-en-sub">SEE — What matters now?</p>
                 </div>
-                <span class="p-chip">Library Overview</span>
+                <span class="p-chip">{{ isFaculty ? 'Faculty Overview' : 'Library Overview' }}</span>
               </div>
               <template v-else>
                 <!-- หัวข้อใช้ร่วมกันทุกหมวด เปลี่ยนเฉพาะเนื้อในของแผง -->
@@ -677,6 +906,208 @@
                 </div>
               </template>
 
+              <!-- ── คณะ: สิ่งที่ MOMAY เห็น แล้วตามด้วยตัวเลขหลักสี่ช่อง ── -->
+              <template v-else-if="isFaculty">
+                <div class="fi">
+                  <span class="fi-ic"><Ico name="bulb" /></span>
+                  <div>
+                    <p class="fi-k">INSIGHT จาก MOMAY</p>
+                    <p class="fi-v font-thai">{{ facReport.insightTh }}</p>
+                  </div>
+                </div>
+
+                <div class="lk-row lk-row--4">
+                  <div class="lk">
+                    <span class="lk-v"><NumTicker :value="facReport.students" comma /></span>
+                    <span class="lk-u font-thai">นักศึกษา</span>
+                  </div>
+                  <div class="lk">
+                    <span class="lk-v"><NumTicker :value="facReport.rooms" comma /></span>
+                    <span class="lk-u font-thai">พื้นที่</span>
+                  </div>
+                  <div class="lk">
+                    <span class="lk-v"><NumTicker :value="facReport.activities" comma /></span>
+                    <span class="lk-u font-thai">กิจกรรม/วัน</span>
+                  </div>
+                  <div class="lk">
+                    <span class="lk-v lk-v--sm">Peak</span>
+                    <span class="lk-u lk-u--wide">{{ facReport.peakWindow }}</span>
+                  </div>
+                </div>
+
+                <div class="ftabs">
+                  <button
+                    type="button" class="ftab" :class="{ on: facTab === 'space' }"
+                    @click="facTab = 'space'"
+                  ><span class="font-thai">ภาพรวมการใช้พื้นที่</span></button>
+                  <button
+                    type="button" class="ftab" :class="{ on: facTab === 'time' }"
+                    @click="facTab = 'time'"
+                  ><span class="font-thai">ตามช่วงเวลา</span></button>
+                </div>
+
+                <!-- ผังคณะไอโซเมตริก · สองชั้นแยกหน้าที่กัน
+                     ชั้นเมือง = อาคาร ถนน ต้นไม้ เป็นสีกลางทั้งผัง ทำหน้าที่เป็นฉากอย่างเดียว
+                     ชั้นความร้อน = ดวงไล่สีลอยทับ บอก "ย่านไหนแน่น"
+                     ที่ต้องแยกเพราะถ้าระบายสีความหนาแน่นลงตัวอาคาร สีจะทำสองหน้าที่พร้อมกัน
+                     (บอกทั้งประเภทพื้นที่และความหนาแน่น) คนอ่านจะแยกไม่ออกว่าสีส้มแปลว่าอะไร -->
+                <div v-if="facTab === 'space'" class="fmap">
+                  <svg
+                    class="fmap-svg"
+                    :viewBox="`0 0 ${facReport.campusBox.w} ${facReport.campusBox.h}`"
+                    aria-hidden="true"
+                  >
+                    <!-- ขอบดวงต้องฟุ้ง ไม่งั้นอ่านเป็นแผ่นสีวางทับ ไม่ใช่ความร้อนที่แผ่ออกมา -->
+                    <defs>
+                      <filter id="facHeatBlur" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="1.1" />
+                      </filter>
+                    </defs>
+
+                    <!-- ชั้นที่ 1 · พื้นและถนน -->
+                    <polygon class="cg-base" :points="facReport.campusGround" />
+                    <polygon
+                      v-for="(g, n) in facReport.campusStreets"
+                      :key="'cst' + n"
+                      class="cg-street"
+                      :points="g"
+                    />
+                    <polygon
+                      v-for="(g, n) in facReport.campusRoads"
+                      :key="'cstr' + n"
+                      class="cg-road"
+                      :points="g"
+                    />
+                    <polygon
+                      v-for="(g, n) in facReport.campusLanes"
+                      :key="'cstl' + n"
+                      class="cg-lane"
+                      :points="g"
+                    />
+                    <polygon
+                      v-for="(g, n) in facReport.campusCrossings"
+                      :key="'cstc' + n"
+                      class="cg-cross"
+                      :points="g"
+                    />
+
+                    <!-- ชั้นที่ 2 · อาคารกับต้นไม้ วาดเรียงตามระยะลึกสลับกันไป
+                         ถ้าแยกวาดทีละชนิด ต้นไม้แถวหลังจะไปทับตึกแถวหน้า -->
+                    <g
+                      v-for="(it, i) in facReport.campusItems"
+                      :key="'ci' + i"
+                      class="ci"
+                      :class="it.t === 'b' ? 'cb cb--t' + it.tone : 'cg-tree cg-tree--t' + it.tone"
+                      :style="{ '--i': i }"
+                    >
+                      <template v-if="it.t === 'b'">
+                        <polygon class="cb-left" :points="it.faceLeft" />
+                        <polygon v-for="(w, k) in it.winLeft" :key="'wl' + k" class="cb-win-l" :points="w" />
+                        <polygon class="cb-right" :points="it.faceRight" />
+                        <polygon v-for="(w, k) in it.winRight" :key="'wr' + k" class="cb-win-r" :points="w" />
+                        <polygon class="cb-top" :points="it.faceTop" />
+                        <polygon class="cb-roof" :points="it.roofIn" />
+                        <template v-if="it.roofBox">
+                          <polygon class="cb-left" :points="it.roofBox.left" />
+                          <polygon class="cb-right" :points="it.roofBox.right" />
+                          <polygon class="cb-top" :points="it.roofBox.top" />
+                        </template>
+                      </template>
+                      <template v-else>
+                        <ellipse class="ct-shade" :cx="it.x" :cy="it.y" :rx="it.r * 0.78" :ry="it.r * 0.4" />
+                        <polygon v-if="it.trunkPts" class="ct-trunk" :points="it.trunkPts" />
+                        <circle
+                          v-for="(q, k) in it.puffs"
+                          :key="'pf' + k"
+                          :class="'ct-l' + q.l"
+                          :cx="q.cx" :cy="q.cy" :r="q.r"
+                        />
+                      </template>
+                    </g>
+
+                    <!-- ชั้นที่ 3 · ความหนาแน่น -->
+                    <g class="fmap-heat" filter="url(#facHeatBlur)">
+                      <g
+                        v-for="(z, n) in facReport.campusHeat"
+                        :key="'hbz' + n"
+                        class="fmap-throb"
+                        :style="{ '--d': z.delay + 's' }"
+                      >
+                        <ellipse
+                          v-for="(g, k) in z.blobs"
+                          :key="'hb' + k"
+                          :cx="g.x" :cy="g.y" :rx="g.rx" :ry="g.ry"
+                          :fill="`url(#facGrad${z.tier})`" :opacity="g.opacity"
+                        />
+                      </g>
+                    </g>
+
+                    <!-- ชั้นที่ 4 · วงแหวนชี้ย่านที่แน่นที่สุด
+                         ขึ้นเฉพาะตอนที่ไม่มีดวงความร้อนเลย เพราะถ้ามีดวง แกนแดงที่เข้มสุด
+                         ก็ชี้จุดนั้นอยู่แล้วในตัว วงแหวนซ้อนทับไปจะกลายเป็นป้ายห้ามเข้า
+                         บังแกนสีที่เป็นข้อมูลจริง เหลือไว้ใช้ตอนผังเย็นสนิทซึ่งไม่มีอะไรชี้ -->
+                    <template v-if="!facReport.campusHeat.length">
+                      <ellipse
+                        class="fmap-ring-halo fmap-ring-halo--calm"
+                        :cx="facReport.campusRing.x" :cy="facReport.campusRing.y" rx="11" ry="6"
+                      />
+                      <ellipse class="fmap-ring" :cx="facReport.campusRing.x" :cy="facReport.campusRing.y" rx="11" ry="6" />
+                      <ellipse class="fmap-ring fmap-ring--2" :cx="facReport.campusRing.x" :cy="facReport.campusRing.y" rx="11" ry="6" />
+                    </template>
+                  </svg>
+
+                  <!-- ป้ายไปอยู่มุมบนซ้ายซึ่งเป็นที่ว่างเสมอ (ผังเป็นทรงข้าวหลามตัด มุมจึงโล่ง)
+                       เดิมผูกป้ายไว้กับพิกัดก้อนที่ร้อนที่สุด แล้วป้ายไปบังก้อนนั้นเองเวลาจุดร้อนอยู่กลางผัง -->
+                  <!-- คณะที่ยังโล่งไม่มีก้อนไหนร้อน ป้ายจึงห้ามพูดว่า "หนาแน่นสูง"
+                       วงแหวนยังมีประโยชน์อยู่เพราะชี้จุดที่แน่นสุดในผัง แต่ต้องเปลี่ยนคำ
+                       ให้ตรงกับสิ่งที่ผังแสดงจริง ไม่งั้นป้ายเตือนภัยบนผังที่เย็นสนิท -->
+                  <p class="fmap-tip font-thai" :class="{ 'fmap-tip--calm': !facReport.campusHeat.length }">
+                    <i />{{ facReport.campusHeat.length ? 'พื้นที่ที่มีความหนาแน่นสูง' : 'จุดที่แน่นที่สุดในผัง' }}
+                    <br /><small>{{ facReport.campusHeat.length ? facReport.peakWindow : 'ยังไม่มีพื้นที่ที่หนาแน่น' }}</small>
+                  </p>
+
+                  <!-- แถบไล่สีบอกว่าสีไหนคือหนาแน่นแค่ไหน + จำนวนพื้นที่รายประเภท -->
+                  <div class="fmap-scale font-thai"><span>ต่ำ</span><i /><span>สูง</span></div>
+                  <ul class="fmap-key">
+                    <!-- ตัวผังเป็นสีกลางแล้ว จุดสีตรงนี้จึงกลับมาหมายถึง "ประเภทพื้นที่" ได้
+                         และเป็นชุดเดียวกับสีเส้นในแผง 07 -->
+                    <li v-for="z in facReport.zones" :key="'k' + z.th">
+                      <i :style="{ background: z.color }" />
+                      <span class="font-thai">{{ z.th }}</span>
+                      <b class="font-thai">{{ z.rooms }}</b>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- ตามช่วงเวลา — ใช้แท่งชุดเดียวกับห้องสมุด แต่ค่ามาจากเอนจินของคณะ -->
+                <div v-else class="lb-chart">
+                  <div class="lb-plot">
+                    <div class="lb-yaxis">
+                      <span v-for="t in [100, 75, 50, 25, 0]" :key="t">{{ t }}%</span>
+                    </div>
+                    <div class="lb-bars">
+                      <span
+                        v-for="hb in facReport.hours"
+                        :key="hb.at"
+                        class="lb-bar fb-bar"
+                        :style="{ height: (hb.value * 100).toFixed(1) + '%' }"
+                        :class="{ now: Math.abs(hb.at - facReport.nowHour) < 0.01 }"
+                      />
+                    </div>
+                  </div>
+                  <div class="lb-xaxis">
+                    <span v-for="hb in facReport.hours" :key="'fx' + hb.at">{{ hb.label }}</span>
+                  </div>
+                </div>
+
+                <div class="lb-now">
+                  <span class="lb-now__ic"><Ico name="clock" /></span>
+                  <p class="font-thai">
+                    <b>ตอนนี้ ({{ facReport.nowLabel }})</b><br />{{ facReport.nowTh }}
+                  </p>
+                </div>
+              </template>
+
               <template v-else>
               <div v-if="alert" class="flag">
                 <span class="flag-ic"><Ico name="alert" /></span>
@@ -723,8 +1154,8 @@
             </section>
 
             <!-- ── แผง 02 · Understand ── -->
-            <section class="panel panel-relate">
-              <div v-if="isLibrary" class="p-head">
+            <section class="panel panel-relate" :class="{ 'panel-light': isFaculty }">
+              <div v-if="isLibrary || isFaculty" class="p-head">
                 <div>
                   <h2 class="h-th-lead font-thai">เข้าใจเหตุผล</h2>
                   <p class="h-en-sub">UNDERSTAND — Why does it matter?</p>
@@ -750,6 +1181,40 @@
                   <div>
                     <p class="li-rel__k font-thai">ความสัมพันธ์ที่พบ</p>
                     <p class="li-rel__v font-thai">{{ libReport.relationTh }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── คณะ: ห่วงโซ่ที่ MOMAY พบ เรียงจากต้นทาง (ตารางเรียน) ไปปลายทาง (ทรัพยากร) ── -->
+              <div v-else-if="isFaculty" class="fr-wrap">
+                <p class="fr-lead font-thai">ความสัมพันธ์ที่ MOMAY พบ</p>
+                <p class="fr-sub font-thai">จากข้อมูลที่เชื่อมโยงกัน</p>
+
+                <ol class="fr-grid">
+                  <li
+                    v-for="(rl, i) in facReport.relations"
+                    :key="rl.en"
+                    class="fr"
+                    :class="{ 'fr--last': i === facReport.relations.length - 1 }"
+                    :style="{ '--sig': rl.color }"
+                  >
+                    <span class="fr-ic"><Ico :name="rl.icon" /></span>
+                    <span class="fr-txt">
+                      <span class="fr-th font-thai">{{ rl.th }}</span>
+                      <span class="fr-en">{{ rl.en }}</span>
+                    </span>
+                    <!-- ลูกศรชี้ไปโหนดถัดไป — ตัวสุดท้ายเป็นปลายทางจึงไม่มี -->
+                    <span v-if="i < facReport.relations.length - 1" class="fr-arrow" aria-hidden="true">
+                      <Ico name="arrow-down" />
+                    </span>
+                  </li>
+                </ol>
+
+                <div class="fr-note">
+                  <span class="fr-note__ic"><Ico name="bulb" /></span>
+                  <div>
+                    <p class="fr-note__k font-thai">สิ่งที่อาจเกิดขึ้น</p>
+                    <p class="fr-note__v font-thai">{{ facReport.mayHappenTh }}</p>
                   </div>
                 </div>
               </div>
@@ -905,8 +1370,8 @@
             </section>
 
             <!-- ── แผง 03 · Anticipate & Simulate ── -->
-            <section class="panel panel-sim">
-              <div v-if="isLibrary" class="p-head">
+            <section class="panel panel-sim" :class="{ 'panel-light': isFaculty }">
+              <div v-if="isLibrary || isFaculty" class="p-head">
                 <div>
                   <h2 class="h-th-lead font-thai">มองเห็นอนาคตและจำลองสถานการณ์</h2>
                   <p class="h-en-sub">ANTICIPATE &amp; SIMULATE — What happens next?</p>
@@ -980,6 +1445,93 @@
                 <div class="lf-note">
                   <span class="lf-note__ic"><Ico :name="libScenario === 'down' ? 'arrow-down' : 'alert'" /></span>
                   <p class="font-thai">{{ libScenarioNote }}</p>
+                </div>
+              </template>
+
+              <!-- ── คณะ: เลือกสถานการณ์ทางซ้าย แล้วดูเส้นความต้องการพื้นที่ทางขวา ── -->
+              <template v-else-if="isFaculty">
+                <p class="lb-title font-thai">ลองปรับสถานการณ์ แล้วดูว่าจะเกิดอะไรขึ้น?</p>
+                <p class="fs-sub font-thai">เลือกสถานการณ์เพื่อดูผลกระทบต่อพื้นที่</p>
+
+                <div class="fs">
+                  <div class="fs-list">
+                    <button
+                      v-for="sc in FAC_SCENARIOS"
+                      :key="sc.id"
+                      type="button"
+                      class="fs-opt"
+                      :class="{ on: facScenario === sc.id }"
+                      @click="facScenario = sc.id"
+                    >
+                      <span class="fs-opt__ic"><Ico :name="sc.icon" /></span>
+                      <span class="fs-opt__th font-thai">{{ sc.th }}</span>
+                      <Ico name="arrow-right" />
+                    </button>
+
+
+                    <!-- "กำหนดเอง" กางสไลเดอร์สองตัว — ตัวเลขเข้าเอนจินตัวเดียวกับการ์ดสำเร็จรูป -->
+                    <div v-if="facScenario === 'custom'" class="fc">
+                      <label v-for="c in FAC_CUSTOM_FIELDS" :key="c.key" class="fc-row">
+                        <span class="fc-k font-thai">{{ c.th }}</span>
+                        <input
+                          v-model.number="facCustom[c.key]"
+                          type="range" :min="FAC_CUSTOM_MIN" :max="FAC_CUSTOM_MAX" step="5"
+                          class="fc-range"
+                        />
+                        <span class="fc-v">{{ signed(facCustom[c.key]) }}%</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="fs-panel">
+                    <div class="fs-head">
+                      <div>
+                        <p class="fs-head__k font-thai">ผลจำลอง (Simulation)</p>
+                        <p class="fs-head__s font-thai">ความหนาแน่นพื้นที่ (Peak Space Demand)</p>
+                      </div>
+                      <span class="fs-delta">{{ signed(facReport.simDeltaPct) }}%</span>
+                    </div>
+
+                    <div class="fs-plot">
+                      <svg :viewBox="`0 0 ${facChart.vw} ${facChart.vh}`" preserveAspectRatio="none" class="fs-svg">
+                        <!-- แถบแรเงา = ช่วงที่ความต้องการล้นความจุของพื้นที่ประเภทที่ตึงที่สุด -->
+                        <rect
+                          class="fs-band"
+                          :x="facChart.bandX" :y="facChart.y0"
+                          :width="facChart.bandW" :height="facChart.y1 - facChart.y0"
+                        />
+                        <!-- เส้นประ = ความจุ 100% ของแต่ละประเภท เส้นที่ข้ามไปคือส่วนที่รับไม่ไหว -->
+                        <line
+                          class="fs-cap"
+                          :x1="facChart.x0" :y1="facChart.capY" :x2="facChart.x1" :y2="facChart.capY"
+                        />
+                        <polyline
+                          v-for="ln in facChart.lines"
+                          :key="ln.th"
+                          class="fs-line"
+                          :points="ln.d"
+                          :stroke="ln.color"
+                        />
+                      </svg>
+
+                      <div class="fs-yaxis font-thai"><span>สูง</span><span>ต่ำ</span></div>
+
+                      <!-- ป้ายเกาะมุมบนขวาซึ่งเป็นที่ว่างเสมอ (เส้นพีคอยู่กลางกราฟ)
+                           เดิมเลื่อนตามจุดเริ่มแถบแล้วไปคร่อมเส้นที่กำลังไต่ขึ้นพอดี
+                           ตำแหน่งที่เกิดแรงกดดันอ่านได้จากแถบแรเงาอยู่แล้ว -->
+                      <div class="fs-flag font-thai">{{ facReport.pressureTh }}</div>
+                    </div>
+
+                    <div class="fs-xaxis">
+                      <span v-for="x in facChart.xLabels" :key="'fxa' + x.at">{{ x.label }}</span>
+                    </div>
+
+                    <ul class="fs-legend">
+                      <li v-for="ln in facChart.lines" :key="'lg' + ln.th">
+                        <i :style="{ background: ln.color }" /><span class="font-thai">{{ ln.th }}</span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </template>
 
@@ -1116,8 +1668,8 @@
             </section>
 
             <!-- ── แผง 04 · Decide ── -->
-            <section class="panel panel-decide">
-              <div v-if="isLibrary" class="p-head">
+            <section class="panel panel-decide" :class="{ 'panel-light': isFaculty }">
+              <div v-if="isLibrary || isFaculty" class="p-head">
                 <div>
                   <h2 class="h-th-lead font-thai">ข้อเสนอแนะและทางเลือก</h2>
                   <p class="h-en-sub">DECIDE — What should we do?</p>
@@ -1169,6 +1721,41 @@
                   </span>
                   <Ico name="arrow-right" />
                 </a>
+              </div>
+
+              <!-- ── คณะ: ข้อเสนอเดียวที่ชัด แล้วกางเป็น ทำไม / ทำอะไร / ได้อะไร ── -->
+              <div v-else-if="isFaculty" class="fd">
+                <div class="fd-top">
+                  <span class="fd-top__ic"><Ico name="star" /></span>
+                  <div>
+                    <p class="fd-top__k">MOMAY RECOMMENDS</p>
+                    <p class="fd-top__v font-thai">{{ facReport.recTitleTh }}</p>
+                  </div>
+                </div>
+
+                <dl class="fd-rows">
+                  <div class="fd-row">
+                    <dt>
+                      <span class="fd-row__ic"><Ico name="question" /></span>
+                      <span class="fd-row__k">WHY<small class="font-thai">ทำไมต้องทำ?</small></span>
+                    </dt>
+                    <dd class="font-thai">{{ facReport.whyTh }}</dd>
+                  </div>
+                  <div class="fd-row">
+                    <dt>
+                      <span class="fd-row__ic"><Ico name="grid" /></span>
+                      <span class="fd-row__k">ACTION<small class="font-thai">ควรทำอะไร?</small></span>
+                    </dt>
+                    <dd class="font-thai">{{ facReport.actionTh }}</dd>
+                  </div>
+                  <div class="fd-row">
+                    <dt>
+                      <span class="fd-row__ic"><Ico name="chart" /></span>
+                      <span class="fd-row__k">EXPECTED IMPACT<small class="font-thai">ผลที่คาดว่าจะเกิดขึ้น</small></span>
+                    </dt>
+                    <dd class="font-thai">{{ facReport.impactTh }}</dd>
+                  </div>
+                </dl>
               </div>
 
               <!-- หมวดโซลาร์แนะนำจากสัดส่วนกลางวัน-กลางคืน และช่วงพีคที่เลือกไว้ -->
@@ -1461,6 +2048,72 @@
         </ol>
       </template>
 
+      <!-- คณะก็วัดคนละชุดเช่นกัน (ดู utils/.../faculty.ts) -->
+      <template v-else-if="isFaculty">
+        <h2>ข้อมูลที่ใช้</h2>
+        <table class="rp-table">
+          <tbody>
+            <tr v-for="f in fieldList" :key="f.key">
+              <th>{{ f.label }} {{ f.note }}</th>
+              <td>{{ nf(form[f.key]) }} {{ f.unit }}</td>
+            </tr>
+            <tr><th>หัวข้อที่ต้องการวิเคราะห์</th><td>{{ facFocusNames }}</td></tr>
+            <tr>
+              <th>ช่วงเวลาที่เน้น</th>
+              <td>
+                {{ facPeakDef.th }} ({{ facReport.peakWindow }})
+                <em v-if="facReport.peakGuessed">— MOMAY เลือกช่วงที่ตารางหนาที่สุดให้</em>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>ภาพรวมที่สำคัญ</h2>
+        <p class="rp-why">{{ facReport.insightTh }}</p>
+        <table class="rp-table">
+          <tbody>
+            <tr><th>นักศึกษา</th><td>{{ nf(facReport.students) }} คน</td></tr>
+            <tr><th>ห้องเรียน / พื้นที่ที่ใช้งาน</th><td>{{ nf(facReport.rooms) }} พื้นที่</td></tr>
+            <tr><th>รายวิชา / กิจกรรมต่อวัน</th><td>{{ nf(facReport.activities) }} รายการ</td></tr>
+            <tr><th>ช่วงที่ความต้องการสูงสุด</th><td>{{ facReport.peakWindow }}</td></tr>
+            <tr>
+              <th>คนอยู่พร้อมกันตอนพีค</th>
+              <td>{{ nf(facReport.peakConcurrent) }} คน (ความต้องการพื้นที่ {{ facReport.spaceLoadPct }}% ของที่มี)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>ความหนาแน่นรายประเภทพื้นที่</h2>
+        <table class="rp-table">
+          <thead><tr><th>ประเภทพื้นที่</th><th>จำนวน</th><th>ความหนาแน่นเทียบพื้นที่ที่แน่นที่สุด</th></tr></thead>
+          <tbody>
+            <tr v-for="z in facReport.zones" :key="'rpz' + z.th">
+              <th>{{ z.th }}</th>
+              <td>{{ z.rooms }} พื้นที่</td>
+              <td>{{ Math.round(z.load * 100) }}%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>ความสัมพันธ์ที่พบ</h2>
+        <p class="rp-why">{{ facReport.relations.map(r => r.th).join(' → ') }}</p>
+        <p class="rp-why"><strong>สิ่งที่อาจเกิดขึ้น:</strong> {{ facReport.mayHappenTh }}</p>
+
+        <h2>ผลจำลองสถานการณ์</h2>
+        <p class="rp-why">
+          <strong>สถานการณ์ที่เลือก:</strong> {{ FAC_SCENARIO_MAP[facScenario].th }} —
+          ความต้องการพื้นที่ตอนพีค {{ signed(facReport.simDeltaPct) }}% · {{ facReport.pressureTh }}
+        </p>
+
+        <h2>ข้อเสนอแนะและทางเลือก</h2>
+        <p class="rp-why"><strong>{{ facReport.recTitleTh }}</strong></p>
+        <ol class="rp-list">
+          <li><strong>ทำไมต้องทำ:</strong> {{ facReport.whyTh }}</li>
+          <li><strong>ควรทำอะไร:</strong> {{ facReport.actionTh }}</li>
+          <li><strong>ผลที่คาดว่าจะเกิดขึ้น:</strong> {{ facReport.impactTh }}</li>
+        </ol>
+      </template>
+
       <template v-else>
       <h2>ข้อมูลที่ใช้</h2>
       <table class="rp-table">
@@ -1529,6 +2182,11 @@ import {
   LIB_FOCUS, LIB_FOCUS_MAP, LIB_PEAKS, LIB_PEAK_MAP, LIB_PEAK_TO_ENGINE, libraryReport,
   type LibFocusId, type LibPeakId,
 } from '~/utils/momaySurpriseOrganize/library'
+import {
+  FAC_FOCUS, FAC_FOCUS_MAP, FAC_PEAKS, FAC_PEAK_MAP, FAC_PEAK_TO_ENGINE,
+  FAC_SCENARIOS, FAC_SCENARIO_MAP, facultyReport,
+  type FacFocusId, type FacPeakId, type FacScenarioId,
+} from '~/utils/momaySurpriseOrganize/faculty'
 
 // ชื่อ route ต้องไม่ซ้ำกับหน้าเดิม ไม่งั้นตัวที่ลงทะเบียนทีหลังจะทับกัน แล้วหน้าเดิมกลายเป็น 404
 definePageMeta({ name: 'momay-surprise-organize-v2', layout: false })
@@ -1641,11 +2299,16 @@ const form = reactive({
   energy: 120000,
   /** จำนวนชั้น — ถามเฉพาะห้องสมุด */
   floors: 6,
+  /** จำนวนรายวิชา/กิจกรรมต่อวัน — ถามเฉพาะหมวดคณะ */
+  activities: 80,
   signals: [] as SignalId[],
   peak: null as PeakId | null,
   /** ห้องสมุดมีชุดคำถามของตัวเอง: สิ่งที่อยากให้ช่วยดู และช่วงเวลาที่คนเยอะที่สุด */
   libFocus: [] as LibFocusId[],
   libPeak: null as LibPeakId | null,
+  /** คณะก็มีชุดของตัวเอง: หัวข้อที่อยากให้วิเคราะห์ และช่วงเวลาที่ต้องการเน้น */
+  facFocus: [] as FacFocusId[],
+  facPeak: null as FacPeakId | null,
   /** สัดส่วนการใช้ไฟตอนกลางวัน (%) — ใช้เฉพาะหมวดที่เปิด dayNight */
   dayShare: 60,
   scenario: 'normal' as ScenarioId,
@@ -1659,17 +2322,18 @@ const orgId = computed<OrgId>(() => form.org ?? 'municipality')
 
 const org = computed(() => ORG_MAP[orgId.value] ?? ORG_MAP.municipality)
 const isLibrary = computed(() => org.value.id === 'library')
+const isFaculty = computed(() => org.value.id === 'faculty')
 
 /* ห้องสมุดเลือกช่วงเวลาจากชุดของตัวเอง (มี "ไม่แน่ใจ" ด้วย) แล้วแปลงเป็นช่วงพีค
    ของเอนจินกลางอีกที — ตัวเลขในรายงาน PDF และลิงก์ที่แชร์จะได้เป็นชุดเดียวกัน */
-const peakId = computed<PeakId>(() =>
-  isLibrary.value
-    ? LIB_PEAK_TO_ENGINE[form.libPeak ?? 'midday']
-    : form.peak ?? 'midday',
-)
+const peakId = computed<PeakId>(() => {
+  if (isLibrary.value) return LIB_PEAK_TO_ENGINE[form.libPeak ?? 'midday']
+  if (isFaculty.value) return FAC_PEAK_TO_ENGINE[form.facPeak ?? 'midday']
+  return form.peak ?? 'midday'
+})
 
 /** หมวดที่เปิดให้เลือกในหน้านี้ — หมวดที่เหลือยังอยู่ในโมเดล รอเปิดทีหลัง */
-const VISIBLE_ORGS: OrgId[] = ['municipality', 'library']
+const VISIBLE_ORGS: OrgId[] = ['municipality', 'faculty', 'library']
 const orgList = computed(() => ORG_TYPES.filter(o => VISIBLE_ORGS.includes(o.id)))
 
 /* ก่อนผู้ใช้เลือกหมวด ภาพปกใช้ภาพเมืองกลาง ๆ จะได้ไม่สื่อว่าเลือกหมวดไหนไว้ให้แล้ว */
@@ -1794,8 +2458,14 @@ const FIELD_COLORS: Record<InputKey, string> = {
   people: '#38bdf8',
   capacity: '#f59e0b',
   floors: '#a855f7',
+  activities: '#c084fc',
   energy: '#fbbf24',
 }
+
+/** หมวดที่ถามช่วงเวลาด้วยชุดตัวเลือกของตัวเองไปแล้ว — ไม่ต้องถามด้วยชุดกลางซ้ำ
+    และเป็นหมวดที่จบการกรอกในดร๊อปดาวน์เดียว ปุ่มท้ายจึงเป็น "วิเคราะห์ให้เลย" */
+const OWN_PEAK_ORGS: OrgId[] = ['library', 'faculty']
+const ownPeakOrg = (id: OrgId) => OWN_PEAK_ORGS.includes(id)
 
 const ALL_INPUTS: InputKey[] = ['people', 'capacity', 'energy']
 /** บางหมวดให้กรอกไม่ครบสามช่อง (เช่นโซลาร์กรอกแค่ค่าไฟ) */
@@ -1820,6 +2490,7 @@ function pickOrg(id: OrgId) {
     form.capacity = f.capacity.default
     form.energy = f.energy.default
     form.floors = f.floors.default
+    form.activities = f.activities.default
   }
 }
 
@@ -1833,6 +2504,19 @@ function toggleFocus(id: LibFocusId) {
   const i = form.libFocus.indexOf(id)
   if (i >= 0) form.libFocus.splice(i, 1)
   else form.libFocus.push(id)
+}
+
+/** หัวข้อที่คณะอยากให้วิเคราะห์ — กดติด/กดออกได้ทุกใบ เหมือนตารางของหมวดอื่น
+    เดิมล็อกไว้ไม่เกินสี่ข้อ แล้วใบที่ห้าขึ้นไปกดแล้วเงียบ ซึ่งกดแล้วรู้สึกเหมือนปุ่มเสีย
+    จำนวนที่แนะนำเลยย้ายไปเป็นคำอธิบายใต้หัวข้อแทน ส่วนขั้นต่ำสองข้อคุมด้วยปุ่มไปต่อ
+    (ดู canAdvance) ด้วยวิธีเดียวกับที่ห้องสมุดคุมขั้นต่ำหนึ่งข้อ */
+const FAC_FOCUS_MIN = 2
+/** จำนวนที่แนะนำ — ใช้เขียนคำอธิบายอย่างเดียว ไม่ได้บังคับ */
+const FAC_FOCUS_HINT_MAX = 4
+function toggleFacFocus(id: FacFocusId) {
+  const i = form.facFocus.indexOf(id)
+  if (i >= 0) form.facFocus.splice(i, 1)
+  else form.facFocus.push(id)
 }
 
 /* ─────────── การกรอกตัวเลข ─────────── */
@@ -1970,6 +2654,86 @@ const libChart = computed(() => {
     // ป้ายเตือนเป็น HTML ที่ลอยทับ svg จึงต้องคิดตำแหน่งเป็น % ของความกว้างแผง
     // บีบไว้ไม่ให้ชิดขอบ ไม่งั้นครึ่งหนึ่งของป้ายจะล้นออกนอกแผงตอนเรียง 4 คอลัมน์
     peakLeft: Math.min(82, Math.max(14, (px(peakIdx) / vw) * 100)),
+  }
+})
+
+/* ─────────── คณะ: ผลวิเคราะห์ของหน้า 05–08 ───────────
+   คนละเอนจินกับหมวดอื่นเช่นกัน (ดู utils/momaySurpriseOrganize/faculty.ts) */
+
+const facPeakDef = computed(() => FAC_PEAK_MAP[form.facPeak ?? 'midday'])
+
+/** สถานการณ์ที่กำลังดูในแผง 07 — ตั้งต้นที่ "นักศึกษาเพิ่ม" เพราะเป็นกรณีที่คณะต้องเตรียมตัว */
+const facScenario = ref<FacScenarioId>('students')
+
+/** ตัวเลขของสถานการณ์ "กำหนดเอง" (% ที่เพิ่มขึ้น) — การ์ดใบสุดท้ายกางสไลเดอร์สองตัวนี้ */
+const facCustom = reactive({ people: 10, activity: 10 })
+const FAC_CUSTOM_MIN = -20
+const FAC_CUSTOM_MAX = 50
+const FAC_CUSTOM_FIELDS = [
+  { key: 'people' as const, th: 'จำนวนนักศึกษา' },
+  { key: 'activity' as const, th: 'จำนวนกิจกรรม' },
+]
+
+const facReport = computed(() =>
+  facultyReport({
+    students: form.people,
+    rooms: form.capacity,
+    activities: form.activities,
+    focus: form.facFocus,
+    peak: form.facPeak ?? 'midday',
+    scenario: facScenario.value,
+    custom: facCustom,
+    nowHour: nowHour.value ?? undefined,
+  }),
+)
+
+const facFocusNames = computed(() =>
+  form.facFocus.map(f => FAC_FOCUS_MAP[f].th).join(' · ') || '—',
+)
+
+/** แท็บของแผง 05 — ภาพรวมรายประเภทพื้นที่ หรือดูตามช่วงเวลา */
+const facTab = ref<'space' | 'time'>('space')
+
+/* เส้นจำลองของแผง 07 — คิดพิกัดใน viewBox ที่นี่ ไม่ปล่อยให้เทมเพลตคิดเลข
+   แกน Y ยืดตามค่าสูงสุดที่เกิดขึ้นจริง โดยมีพื้นอย่างน้อย 1.15 เท่าของความจุ
+   เพื่อให้เส้นประ 100% อยู่ในกรอบเสมอ — เดิมล็อกไว้ที่ 1.4 เท่า พอสถานการณ์ดันค่าเกิน
+   ยอดเส้นจะถูกตัดจนแบน อ่านเป็นกราฟที่ค้างอยู่ แทนที่จะเป็นยอดที่พุ่งเลยความจุ */
+const FAC_Y_FLOOR = 1.15
+
+const facChart = computed(() => {
+  const r = facReport.value
+  const peakValue = Math.max(
+    FAC_Y_FLOOR,
+    ...r.series.flatMap(se => se.points.map(pt => pt.value)),
+  )
+  const yMax = peakValue * 1.08
+  const vw = 320
+  const vh = 150
+  const x0 = 6
+  const x1 = 314
+  const y0 = 8
+  const y1 = 132
+
+  const hours = r.hours
+  const t0 = hours[0]?.at ?? 8
+  const t1 = hours[hours.length - 1]?.at ?? 18
+  const px = (t: number) => (t1 === t0 ? (x0 + x1) / 2 : x0 + ((x1 - x0) * (t - t0)) / (t1 - t0))
+  const py = (v: number) => y1 - (y1 - y0) * Math.min(v / yMax, 1)
+
+  return {
+    vw, vh, x0, x1, y0, y1,
+    lines: r.series.map(se => ({
+      th: se.th,
+      color: se.color,
+      d: se.points.map(pt => `${px(pt.at).toFixed(1)},${py(pt.value).toFixed(1)}`).join(' '),
+    })),
+    // แถบแรเงาคลุมช่วงที่เส้นของประเภทที่ตึงที่สุดอยู่เหนือความจุ
+    bandX: px(r.pressureFrom),
+    bandW: Math.max(6, px(r.pressureTo) - px(r.pressureFrom)),
+    // เส้นประ 100% = ความจุของประเภทนั้น เส้นที่ขึ้นเหนือเส้นนี้คือส่วนที่รับไม่ไหว
+    capY: py(1),
+    xLabels: [t0, (t0 + t1) / 2 - 1, (t0 + t1) / 2 + 1, t1 - 1, t1]
+      .map(t => ({ at: t, left: ((px(t) - x0) / (x1 - x0)) * 100, label: `${Math.round(t)}:00` })),
   }
 })
 
@@ -2178,6 +2942,14 @@ const LW_BUBBLES = [
   { icon: 'bolt',     color: '#f59e0b', x: 66, y: 85 },
 ]
 
+/* ── คณะ: สี่ขั้น เล่าด้วยคำที่ตรงกับสิ่งที่คณะสนใจ ── */
+const FAC_AWAKEN_STEPS = [
+  { en: 'Connecting your faculty ...', th: 'กำลังเชื่อมโยงข้อมูลของคณะ...' },
+  { en: 'Finding relationships ...',   th: 'กำลังหาความสัมพันธ์ระหว่างตารางเรียนกับการใช้พื้นที่...' },
+  { en: 'Detecting patterns ...',      th: 'กำลังตรวจหารูปแบบการใช้พื้นที่ในแต่ละช่วงเวลา...' },
+  { en: 'Simulating possibilities ...', th: 'กำลังจำลองสถานการณ์ที่อาจเกิดขึ้น...' },
+]
+
 const AWAKEN_STEPS = [
   { en: 'Connecting your data ...', th: 'กำลังเชื่อมข้อมูลของคุณเข้าด้วยกัน' },
   { en: 'Finding relationships ...', th: 'ดูว่าเรื่องไหนเกี่ยวกับเรื่องไหน' },
@@ -2216,13 +2988,22 @@ function stopLaunch() {
 const awakenAt = ref(0)
 
 /** ขั้นตอนที่ใช้จริงของหมวดนี้ — ห้องสมุดมีสี่ขั้น หมวดอื่นห้าขั้น */
-const awakenSteps = computed(() => (isLibrary.value ? LIB_AWAKEN_STEPS : AWAKEN_STEPS))
+const awakenSteps = computed(() =>
+  isLibrary.value ? LIB_AWAKEN_STEPS : isFaculty.value ? FAC_AWAKEN_STEPS : AWAKEN_STEPS,
+)
 const awakenPct = computed(() =>
   Math.min(100, (awakenAt.value / awakenSteps.value.length) * 100),
 )
 
 const awakenDone = computed(() => awakenAt.value >= awakenSteps.value.length)
-const stage = computed(() => AWAKEN_STAGES[Math.min(awakenAt.value, AWAKEN_STAGES.length - 1)])
+const stage = computed(() => {
+  const st = AWAKEN_STAGES[Math.min(awakenAt.value, AWAKEN_STAGES.length - 1)]
+  // ขั้นสุดท้ายเรียกชื่อหมวดด้วย ให้รู้สึกว่าเป็น MOMAY ของคณะนี้จริง ๆ ไม่ใช่ตัวกลาง ๆ
+  if (isFaculty.value && awakenAt.value >= AWAKEN_STAGES.length - 1) {
+    return { ...st, en: 'Your Faculty MOMAY is ready.', core: ['FACULTY', 'READY'] }
+  }
+  return st
+})
 let awakenTimer: ReturnType<typeof setInterval> | null = null
 
 function stopAwaken() {
@@ -2290,6 +3071,8 @@ const canAdvance = computed(() => {
     if (!fieldList.value.every(f => form[f.key] > 0)) return false
     // ห้องสมุดตอบชุดของตัวเอง: ต้องเลือกสิ่งที่อยากให้ช่วยดูอย่างน้อยหนึ่งข้อ และช่วงเวลา
     if (isLibrary.value) return form.libFocus.length > 0 && !!form.libPeak
+    // คณะต้องเลือกหัวข้ออย่างน้อยสองข้อ ผลลัพธ์จึงจะเล่าความสัมพันธ์ระหว่างเรื่องได้
+    if (isFaculty.value) return form.facFocus.length >= FAC_FOCUS_MIN && !!form.facPeak
     if (!form.peak) return false
     return org.value.dailyChanges === false || loadSignals.value.length > 0
   }
@@ -2359,11 +3142,21 @@ const FOCUS_TO_SIGNAL: Record<LibFocusId, SignalId> = {
   environment: 'waste',
 }
 
-const engineSignals = computed<SignalId[]>(() =>
-  isLibrary.value
-    ? [...new Set(form.libFocus.map(f => FOCUS_TO_SIGNAL[f]))]
-    : form.signals,
-)
+/** หัวข้อที่คณะเลือก → signal ของเอนจินกลาง (ใช้เหตุผลเดียวกับ FOCUS_TO_SIGNAL) */
+const FAC_FOCUS_TO_SIGNAL: Record<FacFocusId, SignalId> = {
+  learning: 'people',
+  space: 'people',
+  activity: 'events',
+  resources: 'events',
+  environment: 'waste',
+  energy: 'energy',
+}
+
+const engineSignals = computed<SignalId[]>(() => {
+  if (isLibrary.value) return [...new Set(form.libFocus.map(f => FOCUS_TO_SIGNAL[f]))]
+  if (isFaculty.value) return [...new Set(form.facFocus.map(f => FAC_FOCUS_TO_SIGNAL[f]))]
+  return form.signals
+})
 
 /** คำตอบจากแบบสอบถามในรูปแบบ query string — ใช้ชื่อพารามิเตอร์ชุดเดียวกับ shareUrl */
 const surveyQuery = computed(() =>
@@ -2377,6 +3170,9 @@ const surveyQuery = computed(() =>
     fo: form.libFocus.join(','),
     k: peakId.value,
     lk: form.libPeak ?? '',
+    ac: String(form.activities),
+    ff: form.facFocus.join(','),
+    fk: form.facPeak ?? '',
   }).toString(),
 )
 
@@ -2514,6 +3310,12 @@ const shareUrl = computed(() => {
     fo: form.libFocus.join(','),
     k: peakId.value,
     lk: form.libPeak ?? '',
+    ac: String(form.activities),
+    ff: form.facFocus.join(','),
+    fk: form.facPeak ?? '',
+    fs: facScenario.value,
+    fcp: String(facCustom.people),
+    fca: String(facCustom.activity),
     sc: form.scenario,
     d: String(form.delta),
     dn: String(form.dayShare),
@@ -2560,6 +3362,7 @@ onMounted(() => {
     }
   }
   num('p', 'people'); num('c', 'capacity'); num('e', 'energy'); num('f', 'floors')
+  num('ac', 'activities')
 
   const s = q.get('s')
   if (s) {
@@ -2578,6 +3381,27 @@ onMounted(() => {
 
   const lk = q.get('lk') as LibPeakId | null
   if (lk && LIB_PEAK_MAP[lk]) form.libPeak = lk
+
+  const ff = q.get('ff')
+  if (ff) {
+    const ids = ff.split(',').filter(x => x in FAC_FOCUS_MAP) as FacFocusId[]
+    if (ids.length) form.facFocus = ids
+  }
+
+  const fk = q.get('fk') as FacPeakId | null
+  if (fk && FAC_PEAK_MAP[fk]) form.facPeak = fk
+
+  const fs = q.get('fs') as FacScenarioId | null
+  if (fs && FAC_SCENARIO_MAP[fs]) facScenario.value = fs
+
+  const customNum = (key: string, target: 'people' | 'activity') => {
+    const v = Number(q.get(key))
+    if (Number.isFinite(v)) {
+      facCustom[target] = Math.min(FAC_CUSTOM_MAX, Math.max(FAC_CUSTOM_MIN, Math.round(v / 5) * 5))
+    }
+  }
+  if (q.has('fcp')) customNum('fcp', 'people')
+  if (q.has('fca')) customNum('fca', 'activity')
 
   const sc = q.get('sc') as ScenarioId | null
   if (sc && SCENARIOS.some(x => x.id === sc)) form.scenario = sc
@@ -4554,6 +5378,651 @@ onMounted(() => {
   .h-th-lead { font-size: 19px; }
   .lk-v { font-size: 28px; }
 }
+
+
+/* ══════════════ หมวดคณะ ══════════════ */
+
+/* ── ชุดสีม่วงของหมวดคณะ ──
+   ทับเฉพาะตัวแปรสี ทุกบล็อกที่อ้าง var(--brand) / var(--line) จึงเปลี่ยนตามเองทั้งหน้า
+   โดยไม่ต้องเขียนกฎซ้ำต่อคอมโพเนนต์ */
+.momay-demo.theme-violet {
+  --bg: #08061a;
+  --bg2: #150f31;
+  --card: rgba(24, 18, 52, 0.72);
+  --line: rgba(139, 110, 220, 0.24);
+  --line-on: rgba(167, 139, 250, 0.58);
+  --text: #ece7fb;
+  --muted: #a99cc9;
+  --dim: #8478a6;
+  --brand: #a78bfa;
+  --cyan: #c4b5fd;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #2c1f63 0%, transparent 60%),
+    radial-gradient(90% 60% at 90% 110%, #1d1445 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg2) 0%, var(--bg) 55%);
+  background-color: var(--bg);
+}
+.momay-demo.theme-violet::before {
+  background-image:
+    linear-gradient(rgba(167, 139, 250, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.06) 1px, transparent 1px);
+}
+.theme-violet .p-chip,
+.theme-violet .lk,
+.theme-violet .li-rel {
+  background: rgba(167, 139, 250, 0.14);
+  border-color: var(--line-on);
+  color: #cfc2fb;
+}
+.theme-violet .lk-v { color: #f2ecff; }
+
+/* จุดที่ฝังสีฟ้าไว้ตรง ๆ (ไม่ได้อ้าง var) ต้องทับเป็นรายตัว
+   ไล่จากหน้า 01 (แถวหมวด · การ์ดกรอกข้อมูล · ปุ่ม) ไปถึงแผงผลลัพธ์และแถบความคืบหน้า */
+.theme-violet .panel {
+  background: linear-gradient(180deg, rgba(38, 28, 74, 0.55), rgba(20, 14, 44, 0.66));
+}
+.theme-violet .org-row { background: rgba(24, 18, 52, 0.6); }
+.theme-violet .org-row.active {
+  background: linear-gradient(92deg, rgba(91, 52, 178, 0.62), rgba(40, 26, 84, 0.5));
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.3), 0 8px 26px rgba(109, 60, 210, 0.24);
+}
+.theme-violet .org-ic { color: #d3c5f8; }
+.theme-violet .org-row.active .org-ic { color: #f6f1ff; }
+.theme-violet .dd-inner {
+  background: linear-gradient(180deg, rgba(50, 36, 96, 0.72), rgba(30, 21, 62, 0.72));
+  border-color: rgba(167, 139, 250, 0.36);
+  box-shadow: inset 0 1px 0 rgba(196, 181, 253, 0.12), 0 12px 30px rgba(6, 4, 20, 0.5);
+}
+.theme-violet .field-ic { color: #c0acf0; }
+.theme-violet .btn-next {
+  background: linear-gradient(95deg, #6d3cd2, #9061f0);
+  box-shadow: 0 8px 26px rgba(109, 60, 210, 0.4);
+}
+.theme-violet .btn-next--grad {
+  background: linear-gradient(95deg, #7c3aed, #a855f7 55%, #8b5cf6);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.42);
+}
+.theme-violet .fill {
+  background: linear-gradient(90deg, #6d3cd2, var(--cyan));
+  box-shadow: 0 0 10px rgba(196, 181, 253, 0.5);
+}
+.theme-violet .diamond { background: #ede9fe; }
+
+/* ── 01 · ตารางหัวข้อของคณะ ──
+   หกหัวข้อ สองคอลัมน์ ใช้การ์ด .foc กับเครื่องหมายถูก .foc-check ชุดเดียวกับหมวดอื่น
+   จึงไม่มีกฎของตัวเองนอกจากจำนวนคอลัมน์ */
+.foc-grid--fac { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ห้าช่วงเวลาของคณะวางเป็น 3 + 2 ตามแบบ — ล็อกสามคอลัมน์ไว้ทุกความกว้าง
+   ถ้าปล่อยให้ auto-fit คิดเอง จอกว้างจะได้ 4 + 1 แล้ว "ไม่แน่ใจ" เหลือโดดอยู่แถวล่าง */
+.lpk-row--fac { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+
+/* ── 05 · กล่อง INSIGHT เปิดแผง ── */
+.fi {
+  display: flex; align-items: flex-start; gap: 11px; margin-top: 16px;
+  padding: 13px; border-radius: 13px;
+  background: rgba(167, 139, 250, 0.12); border: 1px solid var(--line-on);
+}
+.fi-ic {
+  display: grid; place-items: center; flex: none; width: 30px; height: 30px;
+  border-radius: 9px; color: #f0abfc; background: rgba(240, 171, 252, 0.16);
+}
+.fi-ic :deep(.ic) { width: 17px; height: 17px; }
+.fi-k { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: #d8b4fe; }
+.fi-v { margin-top: 5px; font-size: 11px; line-height: 1.7; color: #ede4ff; }
+
+/* ตัวเลขหลักของคณะมีสี่ช่อง — ช่องสุดท้ายเป็นกรอบเวลาจึงตัวเล็กกว่าเพื่อน
+   สี่ช่องเรียงแถวเดียวไม่ได้ในหน้าผลลัพธ์: แผงกว้างราว 340px เมื่อเรียงสี่แผงข้างกัน
+   "2,500" ที่ 24px กินไปแล้ว ~62px จากช่องละ ~58px เลขจึงชนกันเป็น "2,50035"
+   วางเป็น 2x2 แล้วย่อตัวเลขลง ทุกช่องจึงอ่านออกครบทุกความกว้าง */
+.lk-row--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lk-row--4 .lk-v { font-size: 19px; }
+.lk-v--sm { font-size: 15px; }
+.lk-u--wide { font-size: 9px; white-space: nowrap; }
+
+/* ── 05 · แท็บสลับมุมมอง ── */
+.ftabs {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 16px;
+  padding: 4px; border-radius: 11px;
+  background: rgba(8, 6, 26, 0.6); border: 1px solid var(--line);
+}
+.ftab {
+  padding: 8px 6px; border: 0; border-radius: 8px; cursor: pointer;
+  font-size: 10.5px; color: var(--muted); background: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+.ftab.on { color: #f2ecff; background: rgba(167, 139, 250, 0.22); }
+
+/* ── 05 · ผังคณะไอโซเมตริก ──
+   ทั้งย่านเป็นสีกลาง ไม่ได้ระบายตามความหนาแน่น ความหนาแน่นอยู่ที่ชั้นดวงไล่สีต่างหาก
+   อาคารสามหน้าใช้สีชุดเดียวกัน ต่างกันแค่ความสว่างตามทิศแสง จึงอ่านเป็นทรงกล่อง
+   โดยไม่ต้องมีเส้นขอบ (เส้นขอบที่ขนาดเล็กขนาดนี้จะกลายเป็นตารางหนาทึบ)
+
+   ค่าตั้งต้นเป็นโทนมืดสำหรับจอวิเคราะห์ ส่วน .panel-light ทับเป็นโทนสว่างอีกที */
+.fmap { position: relative; margin-top: 12px; }
+.fmap-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.fac-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.ci { animation: fmapUp 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards; animation-delay: calc(var(--i) * 9ms); }
+@keyframes fmapUp { from { opacity: 0; transform: translateY(7px); } }
+
+/* พื้นผัง · ทางเท้า · ผิวถนน · เส้นแบ่งเลน · ทางม้าลาย
+   ทุกชั้นต่างกันทีละนิดเดียว รวมกันแล้วอ่านออกว่าเป็นถนน
+   แต่ไม่มีชั้นไหนเด่นพอจะแย่งสายตาไปจากดวงความหนาแน่นซึ่งเป็นเนื้อหาจริงของผัง */
+.cg-base { fill: #241e3c; }
+.cg-street { fill: #2c2648; }
+.cg-road { fill: #262042; }
+.cg-lane { fill: #433b66; }
+.cg-cross { fill: #4a4270; }
+
+/* ขอบดาดฟ้าสว่างกว่าหลังคานิดเดียว อ่านเป็นขอบกันตก ถ้าต่างมากจะกลายเป็นกรอบทึบ
+   หน้าต่างต้องหรี่กว่าผนังที่มันอยู่ และหน้าขวาหรี่กว่าหน้าซ้ายตามทิศแสงเดิม
+   ถ้าให้หน้าต่างสองหน้าสีเท่ากัน มุมตึกจะแบนหายไป */
+.cb-top { fill: #4c4370; }
+.cb-left { fill: #332c52; }
+.cb-right { fill: #241e3c; }
+.cb-roof { fill: #554b7d; }
+.cb-win-l { fill: #221c3a; }
+.cb-win-r { fill: #191430; }
+/* เฉดอาคารสี่แบบ ให้ย่านไม่เป็นสีเดียวกันทั้งผัง */
+.cb--t1 .cb-top { fill: #554a7d; }
+.cb--t1 .cb-left { fill: #3a3159; }
+.cb--t1 .cb-roof { fill: #5e5289; }
+.cb--t2 .cb-top { fill: #443c66; }
+.cb--t2 .cb-left { fill: #2e2749; }
+.cb--t2 .cb-roof { fill: #4d4373; }
+.cb--t3 .cb-top { fill: #5b5089; }
+.cb--t3 .cb-left { fill: #3f3663; }
+
+/* ขอบดาดฟ้า: หลังคาที่ร่นเข้ามาหนึ่งชั้น อ่านเป็นขอบกันตกรอบหลังคา
+   สว่างกว่าหลังคานิดเดียว ถ้าต่างมากจะกลายเป็นกรอบทึบรอบตึกทุกหลัง */
+.cb-roof { fill: rgba(255, 255, 255, 0.05); }
+
+/* หน้าต่างต้องหรี่กว่าผนังที่มันอยู่ ไม่ใช่สีเดียวกันทั้งสองหน้า
+   ไม่งั้นมุมตึกจะแบนหายไปเพราะสองหน้ามาบรรจบกันด้วยค่าความสว่างเท่ากัน */
+.cb-win-l { fill: #221c3c; }
+.cb-win-r { fill: #191431; }
+.cb--t3 .cb-roof { fill: #665a96; }
+
+/* ต้นไม้: l0 เนื้อพุ่ม · l1 เงาล่างขวา · l2 ไฮไลต์บนซ้าย
+   ทิศแสงต้องตรงกับผนังอาคาร (สว่างบนซ้าย เงาล่างขวา) ไม่งั้นต้นไม้จะดูหลุดจากฉาก */
+/* ฉากกลางคืนต้องหรี่สีเขียวลงมาก ไม่งั้นต้นไม้จะสดกว่าทั้งเมืองจนดูแปะทับ
+   และเจือม่วงเข้าไปนิดให้อยู่ในแสงเดียวกับอาคาร */
+.ct-shade { fill: rgba(0, 0, 0, 0.22); }
+.ct-trunk { fill: #1e1930; }
+.ct-l0 { fill: #29543f; }
+.ct-l1 { fill: #1e4130; }
+.ct-l2 { fill: #356b4f; }
+.cg-tree--t1 .ct-l0 { fill: #244b3a; }
+.cg-tree--t1 .ct-l1 { fill: #1a3a2d; }
+.cg-tree--t1 .ct-l2 { fill: #2f6146; }
+.cg-tree--t2 .ct-l0 { fill: #2d5c45; }
+.cg-tree--t2 .ct-l1 { fill: #224a38; }
+.cg-tree--t2 .ct-l2 { fill: #3a7355; }
+
+/* ชั้นความหนาแน่น — บนพื้นมืดใช้ screen ดวงจึงสว่างขึ้นมาจากเมืองที่มืด */
+.fmap-heat { mix-blend-mode: screen; }
+
+/* จังหวะเต้นของย่านที่แน่น
+   ตั้งใจให้เป็นการ "หายใจ" ช้า ๆ ไม่ใช่ไฟกะพริบ — คาบ 2.8 วิ ราว 0.36 ครั้ง/วินาที
+   ห่างจากเกณฑ์เสี่ยงชักของ WCAG (3 ครั้ง/วินาที) อยู่มาก และไม่ดับสนิทในจังหวะต่ำ
+   ผังจึงอ่านได้ตลอดเวลา ไม่ใช่มีข้อมูลเป็นช่วง ๆ
+
+   animation อยู่ที่ระดับกลุ่ม opacity ของกลุ่มจึงไปคูณกับของแต่ละดวง
+   ค่าความจางรายดวงที่คำนวณมาไม่ถูกทับ และทั้งย่านเต้นเป็นก้อนเดียวไม่บิดเบี้ยว */
+.fmap-throb {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: facThrob 2.8s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+@keyframes facThrob {
+  0%, 100% { opacity: 0.72; transform: scale(0.97); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+/* ผู้ที่ตั้งค่าลดการเคลื่อนไหวต้องเห็นผังนิ่ง และต้องเห็นที่ความเข้มเต็ม
+   ไม่ใช่ค้างที่จังหวะจาง ไม่งั้นเท่ากับได้ข้อมูลอ่อนกว่าคนอื่น */
+@media (prefers-reduced-motion: reduce) {
+  .fmap-throb { animation: none; opacity: 1; transform: none; }
+}
+
+/* เส้นขาวรองใต้วงแหวน ให้วงแหวนไม่จมหายไปกับดาดฟ้าที่แดงจัด
+   บนผังที่เย็น ดาดฟ้าเป็นสีอ่อนอยู่แล้ว เส้นรองสีขาวจะกลืนหาย จึงสลับเป็นสีเข้มแทน */
+.fmap-ring-halo { fill: none; stroke: rgba(255, 255, 255, 0.9); stroke-width: 2; }
+.fmap-ring-halo--calm { stroke: rgba(70, 60, 110, 0.3); }
+
+/* วงแหวนบนก้อนที่ร้อนที่สุด — แผ่ออกเป็นจังหวะ ให้ตาไปหยุดที่จุดกระจุก */
+.fmap-ring {
+  fill: none; stroke: #fff; stroke-width: 0.9;
+  transform-box: fill-box; transform-origin: center;
+  animation: fmapRing 2.4s ease-out infinite;
+}
+.fmap-ring--2 { animation-delay: -1.2s; }
+@keyframes fmapRing {
+  0% { opacity: 0.85; transform: scale(0.5); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* ป้ายจุดหนาแน่นสูง อยู่มุมบนซ้ายของผัง ซึ่งเป็นที่ว่างเสมอ */
+.fmap-tip {
+  position: absolute; top: 0; left: 0;
+  max-width: 142px;
+  padding: 5px 9px; border-radius: 9px;
+  font-size: 9px; line-height: 1.5; color: #fff;
+  background: rgba(60, 22, 96, 0.88); border: 1px solid rgba(196, 181, 253, 0.5);
+  box-shadow: 0 6px 18px rgba(4, 2, 16, 0.5);
+  backdrop-filter: blur(2px);
+}
+.fmap-tip i {
+  display: inline-block; width: 6px; height: 6px; margin-right: 5px;
+  border-radius: 50%; background: #ef4444; box-shadow: 0 0 6px #ef4444;
+}
+.fmap-tip small { display: block; margin-left: 11px; color: #d8b4fe; }
+/* ไม่มีอะไรร้อน ป้ายก็ไม่ควรเป็นสีเตือนภัย */
+.fmap-tip--calm i { background: #a5b4fc; box-shadow: 0 0 6px rgba(165, 180, 252, 0.7); }
+
+.fmap-scale { display: flex; align-items: center; gap: 7px; margin-top: 8px; font-size: 8.5px; color: var(--dim); }
+/* แถบนี้ต้องใช้สีชุดเดียวกับดวงบนผัง (ดู facGrad* ในเทมเพลต)
+   ของเดิมไล่จากฟ้า-เขียว ซึ่งเป็นสีที่ผังไม่เคยแสดงเลย เพราะพื้นที่ไม่แน่นคือ
+   "ไม่มีดวง" ไม่ใช่ "ดวงสีฟ้า" แถบจึงต้องเริ่มจากสีอาคารแล้วไล่ไปเหลือง-ส้ม-แดง */
+.fmap-scale i {
+  flex: 1; height: 5px; border-radius: 3px;
+  background: linear-gradient(90deg, #4c4370, #fecb1d 28%, #fda616 48%, #fb7a16 66%, #f44e15 82%, #c8140d);
+}
+.panel-light .fmap-scale i {
+  background: linear-gradient(90deg, #dfe4ec, #fecb1d 28%, #fda616 48%, #fb7a16 66%, #f44e15 82%, #c8140d);
+}
+
+.fmap-key {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px;
+  margin-top: 9px; list-style: none;
+}
+.fmap-key li { display: flex; align-items: center; gap: 6px; font-size: 9px; color: var(--muted); }
+.fmap-key i { flex: none; width: 7px; height: 7px; border-radius: 2px; }
+.fmap-key span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fmap-key b { flex: none; font-weight: 700; color: #ddd3f5; }
+
+/* แท่งรายชั่วโมงของคณะไม่ได้ไล่สีตามค่าเหมือนห้องสมุด — ใช้สีเดียวของธีม */
+.fb-bar { background: linear-gradient(180deg, #c4b5fd, #7c3aed); }
+
+/* ── 02 · ผังคณะในหน้าวิเคราะห์ ──
+   ใช้ก้อนชุดเดียวกับแผง 05 แต่เริ่มจากหรี่ แล้วทยอยสว่างตามความคืบหน้า
+   อัตราส่วนล็อกไว้เท่ากรอบผัง (272 x 161.6) ภาพจะได้ไม่ยืดตอนคอลัมน์กว้างขึ้น */
+.fw-art { aspect-ratio: 272 / 162; display: grid; place-items: center; }
+.fw-svg { width: 100%; height: auto; overflow: visible; }
+/* ก้อนที่ยังไม่ถูกอ่านต้องยัง "เห็นเป็นผัง" อยู่ ไม่ใช่จางจนหาย
+   ไม่งั้นช่วงต้นภาพจะเหลือก้อนเดียวลอยอยู่กลางจอ ดูเหมือนภาพโหลดไม่ขึ้น */
+/* ปื้นความหนาแน่นเป็นคำตอบ จึงยังไม่โผล่จนกว่าจะไล่อ่านใกล้เสร็จ */
+.fw-heat { opacity: 0; transition: opacity 0.9s ease; }
+.fw-heat.on { opacity: 1; }
+
+/* อาคารเป็นสีกลางแล้ว การ "ถูกอ่านแล้ว" จึงบอกด้วยความสว่าง ไม่ใช่ความอิ่มสี */
+.fw-b { opacity: 0.45; transition: opacity 0.5s ease; }
+.fw-b.lit { opacity: 1; animation: fwPulse 2.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.12s); }
+@keyframes fwPulse { 50% { filter: brightness(1.3); } }
+
+/* เครื่องหมายถูกและแถบความคืบหน้าของหน้าวิเคราะห์ยังเป็นเขียว/ฟ้าที่ฝังไว้ตรง ๆ */
+.theme-violet .lw-mark { background: rgba(167, 139, 250, 0.18); color: var(--brand); }
+.theme-violet .lw-steps li:not(.done) .lw-mark { background: rgba(139, 110, 220, 0.14); }
+.theme-violet .lw-mark .spin { border-color: rgba(196, 181, 253, 0.3); border-top-color: var(--brand); }
+.theme-violet .lw-mark .hollow { border-color: rgba(167, 139, 250, 0.4); }
+.theme-violet .lw-bar { background: rgba(139, 110, 220, 0.18); }
+.theme-violet .lw-bar > span { background: linear-gradient(90deg, #6d3cd2, #a855f7, #e879f9); }
+
+/* หมวดคณะโชว์ชื่อขั้นตอนเป็นอังกฤษนำ ไทยตาม เหมือนเช็กลิสต์ของหมวดกลาง */
+.lw-text b { display: block; font-size: clamp(13px, 1.5vw, 17px); font-weight: 700; color: #f2ecff; }
+.lw-text b + span { display: block; margin-top: 3px; font-size: clamp(11px, 1.2vw, 14px); color: var(--dim); }
+
+/* ── 06 · ห่วงโซ่ความสัมพันธ์ ── */
+.fr-wrap { display: flex; flex-direction: column; flex: 1; margin-top: 18px; }
+.fr-lead { font-size: 13px; font-weight: 700; color: #f2ecff; }
+.fr-sub { margin-top: 3px; font-size: 10px; color: var(--dim); }
+.fr-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px; margin-top: 13px; list-style: none;
+}
+.fr {
+  position: relative; display: flex; align-items: center; gap: 10px;
+  padding: 12px 10px; border-radius: 13px;
+  background: rgba(20, 14, 44, 0.7); border: 1px solid var(--line);
+}
+.fr-ic {
+  display: grid; place-items: center; flex: none; width: 28px; height: 28px;
+  border-radius: 9px; color: var(--sig);
+  background: color-mix(in srgb, var(--sig) 20%, transparent);
+}
+.fr-ic :deep(.ic) { width: 16px; height: 16px; }
+.fr-txt { display: grid; gap: 2px; min-width: 0; }
+.fr-th { font-size: 10.5px; font-weight: 600; line-height: 1.4; color: #e8e0fb; }
+.fr-en { font-size: 8.5px; color: var(--dim); }
+/* ลูกศรห้อยใต้การ์ด ชี้ลงไปการ์ดที่อยู่ใต้มันในคอลัมน์เดียวกัน
+   ตาราง 2x2 อ่านเป็นสองสาย: ตารางเรียน↓ความต้องการพื้นที่ · การเคลื่อนย้าย↓การใช้ทรัพยากร
+   การ์ดแถวล่างจึงไม่มีลูกศร (ตัวที่ 3 ถูกซ่อนไว้ ส่วนตัวที่ 4 ไม่ได้เรนเดอร์ตั้งแต่แรก) */
+.fr-arrow {
+  position: absolute; left: 50%; bottom: -11px; transform: translateX(-50%);
+  display: grid; place-items: center; color: var(--line-on);
+}
+.fr-arrow :deep(.ic) { width: 13px; height: 13px; }
+.fr:nth-child(3) .fr-arrow { display: none; }
+
+.fr-note {
+  display: flex; align-items: flex-start; gap: 11px; margin-top: auto; padding-top: 14px;
+}
+.fr-note > div {
+  flex: 1; min-width: 0;
+}
+.fr-note__ic {
+  display: grid; place-items: center; flex: none; width: 28px; height: 28px;
+  border-radius: 9px; color: #f0abfc; background: rgba(240, 171, 252, 0.16);
+}
+.fr-note__ic :deep(.ic) { width: 16px; height: 16px; }
+.fr-note__k { font-size: 11px; font-weight: 700; color: #d8b4fe; }
+.fr-note__v { margin-top: 5px; font-size: 10.5px; line-height: 1.7; color: #ddd3f5; }
+
+/* ── 07 · เลือกสถานการณ์ + เส้นจำลอง ── */
+.fs-sub { margin-top: 3px; font-size: 10px; color: var(--dim); }
+.fs { display: grid; gap: 12px; margin-top: 12px; }
+.fs-list { display: flex; flex-direction: column; gap: 7px; }
+.fs-opt {
+  display: flex; align-items: center; gap: 9px; text-align: left; cursor: pointer;
+  padding: 10px; border-radius: 11px;
+  background: rgba(20, 14, 44, 0.7); border: 1px solid var(--line); color: var(--muted);
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.fs-opt.on { border-color: var(--line-on); background: rgba(167, 139, 250, 0.2); color: #f2ecff; }
+.fs-opt__ic { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 7px; background: rgba(167, 139, 250, 0.16); }
+.fs-opt__ic :deep(.ic) { width: 14px; height: 14px; }
+.fs-opt__th { flex: 1; min-width: 0; font-size: 10.5px; font-weight: 600; }
+.fs-opt > :deep(.ic) { flex: none; width: 13px; height: 13px; opacity: 0.6; }
+
+.fs-panel {
+  padding: 12px; border-radius: 14px;
+  background: rgba(8, 6, 26, 0.7); border: 1px solid var(--line);
+}
+.fs-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.fs-head__k { font-size: 11px; font-weight: 700; color: #f2ecff; }
+.fs-head__s { margin-top: 3px; font-size: 9px; line-height: 1.5; color: var(--dim); }
+.fs-delta { flex: none; font-size: 22px; font-weight: 800; line-height: 1; color: #f472b6; }
+
+.fs-plot { position: relative; margin-top: 10px; }
+.fs-svg { display: block; width: 100%; height: 132px; overflow: visible; }
+.fs-band { fill: rgba(244, 114, 182, 0.14); }
+.fs-cap { stroke: rgba(167, 139, 250, 0.4); stroke-width: 1; stroke-dasharray: 4 4; }
+.fs-line {
+  fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round;
+  /* เส้นวิ่งเข้ามาจากซ้ายตอนเปลี่ยนสถานการณ์ ให้เห็นว่าค่าถูกคิดใหม่ */
+  animation: fsDraw 0.65s ease-out backwards;
+}
+@keyframes fsDraw { from { opacity: 0; transform: translateY(6px); } }
+.fs-yaxis {
+  position: absolute; top: 0; bottom: 0; left: 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+  font-size: 8px; color: var(--dim); pointer-events: none;
+}
+/* ป้ายช่วงที่ล้นความจุ ลอยที่มุมบนขวาของกราฟ */
+.fs-flag {
+  position: absolute; top: 2px; right: 2px;
+  max-width: 116px;
+  padding: 4px 7px; border-radius: 7px;
+  font-size: 7.5px; line-height: 1.45; text-align: right; color: #ffe4f1;
+  background: rgba(88, 20, 58, 0.9); border: 1px solid rgba(244, 114, 182, 0.5);
+}
+.fs-xaxis { display: flex; justify-content: space-between; margin-top: 5px; font-size: 8px; color: var(--dim); }
+.fs-legend {
+  display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px;
+  list-style: none; font-size: 8.5px; color: var(--muted);
+}
+.fs-legend li { display: flex; align-items: center; gap: 5px; }
+.fs-legend i { width: 7px; height: 7px; border-radius: 50%; }
+
+/* สไลเดอร์ของสถานการณ์ "กำหนดเอง" — เกาะอยู่ใต้การ์ดใบสุดท้าย ไม่ใช่กล่องลอยแยก */
+.fc {
+  display: flex; flex-direction: column; gap: 9px;
+  margin-top: -2px; padding: 11px 10px;
+  border: 1px solid var(--line-on); border-top: 0;
+  border-radius: 0 0 11px 11px;
+  background: rgba(167, 139, 250, 0.1);
+}
+.fc-row { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+.fc-k { flex: none; width: 76px; font-size: 9.5px; color: #ddd3f5; }
+.fc-v { flex: none; width: 36px; text-align: right; font-size: 10px; font-weight: 700; color: #f2ecff; }
+.fc-range {
+  flex: 1; min-width: 0; height: 4px; padding: 0; cursor: pointer;
+  appearance: none; -webkit-appearance: none;
+  border-radius: 3px; background: rgba(139, 110, 220, 0.3);
+}
+.fc-range::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 13px; height: 13px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--brand); box-shadow: 0 0 8px rgba(167, 139, 250, 0.7);
+}
+.fc-range::-moz-range-thumb {
+  width: 13px; height: 13px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--brand); box-shadow: 0 0 8px rgba(167, 139, 250, 0.7);
+}
+
+/* ── 08 · ข้อเสนอแนะของคณะ ── */
+.fd { display: flex; flex-direction: column; flex: 1; gap: 12px; margin-top: 18px; }
+.fd-top {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 13px; border-radius: 13px;
+  background: rgba(167, 139, 250, 0.14); border: 1px solid var(--line-on);
+}
+.fd-top__ic {
+  display: grid; place-items: center; flex: none; width: 30px; height: 30px;
+  border-radius: 9px; color: #f0abfc; background: rgba(240, 171, 252, 0.18);
+}
+.fd-top__ic :deep(.ic) { width: 17px; height: 17px; }
+.fd-top__k { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: #d8b4fe; }
+.fd-top__v { margin-top: 5px; font-size: 13px; font-weight: 700; line-height: 1.5; color: #f6f1ff; }
+
+.fd-rows { display: flex; flex-direction: column; gap: 12px; }
+.fd-row { display: flex; align-items: flex-start; gap: 11px; }
+.fd-row dt { display: flex; align-items: flex-start; gap: 9px; flex: none; width: 118px; }
+.fd-row__ic {
+  display: grid; place-items: center; flex: none; width: 26px; height: 26px;
+  border-radius: 8px; color: var(--brand); background: rgba(167, 139, 250, 0.16);
+}
+.fd-row__ic :deep(.ic) { width: 15px; height: 15px; }
+.fd-row__k {
+  display: grid; gap: 2px; min-width: 0;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.06em; color: #cfc2fb;
+}
+.fd-row__k small { font-size: 8.5px; font-weight: 500; letter-spacing: 0; color: var(--dim); }
+.fd-row dd { flex: 1; min-width: 0; font-size: 10.5px; line-height: 1.75; color: #ddd3f5; }
+
+/* สถานการณ์อยู่ซ้าย กราฟอยู่ขวา ได้เฉพาะตอนแผงยังกินความกว้างเต็มหน้า
+   ตั้งแต่ 1000px ขึ้นไปหน้าผลลัพธ์เรียงสี่แผงข้างกัน แผงเหลือกว้างราว 340px
+   แบ่งสองคอลัมน์ตรงนั้นจะเหลือฝั่งซ้าย ~130px ชื่อสถานการณ์ตัดคำเป็นสามบรรทัด */
+@media (min-width: 640px) and (max-width: 999px) {
+  .fs { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); align-items: start; }
+}
+
+/* เรียงสี่แผงข้างกันแล้วแต่ละแผงแคบมาก — คืนทุกอย่างเป็นคอลัมน์เดียวและย่อระยะลง */
+@media (min-width: 1000px) and (max-width: 1320px) {
+  .panel .fs { grid-template-columns: minmax(0, 1fr); }
+  .panel .fr-grid { grid-template-columns: minmax(0, 1fr); }
+  /* คอลัมน์เดียวแล้วห่วงโซ่กลับมาเป็นสายเดียว 1→2→3→4 ลูกศรตัวที่ 3 จึงต้องกลับมา */
+  .panel .fr:nth-child(3) .fr-arrow { display: grid; }
+  .panel .lk-row--4 .lk-v { font-size: 17px; }
+  .panel .fd-row { flex-direction: column; gap: 7px; }
+  .panel .fd-row dt { width: auto; }
+  .panel .fi { margin-top: 12px; gap: 9px; padding: 10px; }
+  .panel .ftabs { margin-top: 12px; }
+  .panel .fr-wrap, .panel .fd { margin-top: 13px; }
+}
+
+
+/* บนพื้นขาว อาคารเป็นเทาอมม่วงอ่อน และปื้นความร้อนใช้ multiply
+   เพื่อให้ทับลงบนหลังคาแล้วยังเห็นทรงอาคารอยู่ (screen จะฟอกจนขาวหาย) */
+/* ── ผังบนการ์ดขาว ──
+   เมืองเป็นเทาอ่อนเกือบขาว เพื่อให้ดวงความหนาแน่นเป็นสิ่งเดียวที่มีสีในภาพ
+   ตาจึงวิ่งไปที่จุดร้อนทันทีโดยไม่ต้องมีอะไรชี้ */
+.panel-light .cg-base { fill: #f2f4f8; }
+.panel-light .cg-street { fill: #e4e8ef; }
+.panel-light .cg-road { fill: #d5dae3; }
+.panel-light .cg-lane { fill: #f3f5f9; }
+.panel-light .cg-cross { fill: #f7f9fc; }
+
+.panel-light .cb-top { fill: #f4f6f9; }
+.panel-light .cb-left { fill: #d3dae5; }
+.panel-light .cb-right { fill: #b2bbca; }
+.panel-light .cb-roof { fill: #fbfcfd; }
+/* หน้าต่างบนพื้นขาวใช้ฟ้าอมเทา อ่านเป็นกระจก ถ้าใช้เทาล้วนจะดูเป็นรูดำ */
+.panel-light .cb-win-l { fill: #aab8cb; }
+.panel-light .cb-win-r { fill: #8d9bb1; }
+
+.panel-light .cb--t1 .cb-top { fill: #f2efe8; }
+.panel-light .cb--t1 .cb-left { fill: #d8d2c5; }
+.panel-light .cb--t1 .cb-right { fill: #b9b2a3; }
+.panel-light .cb--t1 .cb-roof { fill: #faf8f3; }
+.panel-light .cb--t1 .cb-win-l { fill: #b3ab9b; }
+.panel-light .cb--t1 .cb-win-r { fill: #978f7f; }
+
+.panel-light .cb--t2 .cb-top { fill: #eef2f7; }
+.panel-light .cb--t2 .cb-left { fill: #ccd5e2; }
+.panel-light .cb--t2 .cb-right { fill: #a9b4c5; }
+.panel-light .cb--t2 .cb-roof { fill: #f7fafd; }
+.panel-light .cb--t2 .cb-win-l { fill: #a3b2c7; }
+.panel-light .cb--t2 .cb-win-r { fill: #8695ac; }
+
+.panel-light .cb--t3 .cb-top { fill: #fafbfd; }
+.panel-light .cb--t3 .cb-left { fill: #dde3ec; }
+.panel-light .cb--t3 .cb-right { fill: #bcc5d2; }
+
+.panel-light .cb-roof { fill: rgba(255, 255, 255, 0.3); }
+/* บนพื้นขาว หน้าต่างเป็นเทาอมฟ้า ให้อ่านเป็นกระจกไม่ใช่รูดำ */
+.panel-light .cb-win-l { fill: #a9b6c9; }
+.panel-light .cb-win-r { fill: #8d9bb1; }
+.panel-light .cb--t3 .cb-roof { fill: #ffffff; }
+.panel-light .cb--t3 .cb-win-l { fill: #b4c0d0; }
+.panel-light .cb--t3 .cb-win-r { fill: #97a3b6; }
+
+.panel-light .ct-shade { fill: rgba(90, 105, 120, 0.14); }
+.panel-light .ct-trunk { fill: #8a7256; }
+.panel-light .ct-l0 { fill: #57b25b; }
+.panel-light .ct-l1 { fill: #3f9247; }
+.panel-light .ct-l2 { fill: #83cf76; }
+.panel-light .cg-tree--t1 .ct-l0 { fill: #4aa554; }
+.panel-light .cg-tree--t1 .ct-l1 { fill: #35863f; }
+.panel-light .cg-tree--t1 .ct-l2 { fill: #74c46c; }
+.panel-light .cg-tree--t2 .ct-l0 { fill: #66bf62; }
+.panel-light .cg-tree--t2 .ct-l1 { fill: #4da14e; }
+.panel-light .cg-tree--t2 .ct-l2 { fill: #93d982; }
+
+/* บนพื้นขาวใช้ normal ไม่ใช่ multiply — ไล่สีมีอัลฟาในตัวอยู่แล้ว
+   ถ้าคูณซ้ำแกนสีแดงจะคล้ำจนดูเป็นคราบ ไม่ใช่ความร้อน */
+.panel-light .fmap-heat { mix-blend-mode: normal; }
+
+/* ══════════════ แผง 05–08 ของคณะ: การ์ดพื้นขาว ══════════════
+   ตามแบบที่ออกไว้ — แผงผลลัพธ์เป็นการ์ดกระดาษสีขาววางบนพื้นม่วงเข้มของหน้า
+   ชั้นแรกคือทับตัวแปรสีทั้งชุดที่ตัวการ์ด ทุกกฎที่อ้าง var() จึงพลิกเป็นโทนสว่างเอง
+   ชั้นที่สองคือจุดที่ฝังสีเข้มไว้ตรง ๆ ต้องไล่ทับเป็นรายตัว */
+.panel-light {
+  --card: #ffffff;
+  --line: rgba(76, 46, 140, 0.14);
+  --line-on: rgba(124, 58, 237, 0.34);
+  --text: #241c42;
+  --muted: #6d6490;
+  /* เทาอมม่วงของโทนมืดอ่อนเกินไปบนพื้นขาว — ตัวหนังสือรองขนาด 8–10px
+     ได้คอนทราสต์แค่ ~3.4:1 ซึ่งต่ำกว่าเกณฑ์ 4.5:1 ของตัวอักษรขนาดปกติ
+     ค่านี้ให้ ~5.9:1 บนพื้นขาว โดยยังอ่านเป็นตัวหนังสือรองอยู่ */
+  --dim: #665f85;
+  --brand: #7c3aed;
+  --cyan: #8b5cf6;
+
+  color: var(--text);
+  background: #fff;
+  border-color: rgba(76, 46, 140, 0.16);
+  box-shadow: 0 14px 34px rgba(6, 3, 24, 0.42);
+}
+.theme-violet .panel-light { background: #fff; }
+
+/* หัวแผง */
+.panel-light .h-th-lead { color: #1d1636; }
+.panel-light .h-en-sub { color: var(--dim); }
+.theme-violet .panel-light .p-chip {
+  background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.28); color: #6d28d9;
+}
+
+/* 05 · กล่อง INSIGHT + ตัวเลขหลัก */
+.panel-light .fi { background: #f5f1ff; border-color: rgba(124, 58, 237, 0.2); }
+.panel-light .fi-ic { background: rgba(192, 38, 211, 0.12); color: #a21caf; }
+.panel-light .fi-k { color: #7e22ce; }
+.panel-light .fi-v { color: #2c2250; }
+.theme-violet .panel-light .lk {
+  background: #f7f5ff; border-color: rgba(124, 58, 237, 0.16); color: var(--muted);
+}
+.theme-violet .panel-light .lk-v { color: #1d1636; }
+.panel-light .lk-k, .panel-light .lk-u { color: var(--muted); }
+
+/* 05 · แท็บ */
+.panel-light .ftabs { background: #f1edfb; border-color: rgba(124, 58, 237, 0.14); }
+.panel-light .ftab { color: var(--muted); }
+.panel-light .ftab.on { color: #2c2250; background: #fff; box-shadow: 0 1px 4px rgba(40, 20, 90, 0.16); }
+
+/* 05 · ผังไอโซเมตริก — ก้อนยังเป็นสีความหนาแน่นเดิม เปลี่ยนแค่ของประกอบ */
+.panel-light .fmap-ring { stroke: #3b2a63; }
+.panel-light .fmap-tip {
+  color: #fff; background: rgba(46, 16, 74, 0.92); border-color: rgba(124, 58, 237, 0.4);
+}
+.panel-light .fmap-tip small { color: #d8b4fe; }
+.panel-light .fmap-key b { color: #2c2250; }
+
+/* 05 · แท่งรายชั่วโมง + กล่อง "ตอนนี้" */
+.panel-light .lb-title { color: #4c3f7a; }
+.panel-light .fb-bar { background: linear-gradient(180deg, #a78bfa, #6d28d9); }
+.panel-light .lb-now { background: #f7f5ff; border-color: rgba(124, 58, 237, 0.16); }
+.panel-light .lb-now__ic { background: rgba(217, 119, 6, 0.14); color: #b45309; }
+.panel-light .lb-now p { color: var(--muted); }
+.panel-light .lb-now b { color: #8a5a00; }
+
+/* 06 · ห่วงโซ่ความสัมพันธ์ */
+.panel-light .fr-lead { color: #1d1636; }
+.panel-light .fr { background: #f7f5ff; border-color: rgba(76, 46, 140, 0.14); }
+.panel-light .fr-th { color: #2c2250; }
+.panel-light .fr-arrow { color: rgba(124, 58, 237, 0.5); }
+.panel-light .fr-note__ic { background: rgba(192, 38, 211, 0.12); color: #a21caf; }
+.panel-light .fr-note__k { color: #7e22ce; }
+.panel-light .fr-note__v { color: var(--muted); }
+
+/* 07 · สถานการณ์ + กราฟ */
+.panel-light .fs-opt { background: #f7f5ff; border-color: rgba(76, 46, 140, 0.14); color: var(--muted); }
+.panel-light .fs-opt.on {
+  background: #efe7ff; border-color: rgba(124, 58, 237, 0.42); color: #2c2250;
+}
+.panel-light .fs-opt__ic { background: rgba(124, 58, 237, 0.13); color: #6d28d9; }
+.panel-light .fs-panel { background: #faf9ff; border-color: rgba(76, 46, 140, 0.13); }
+.panel-light .fs-head__k { color: #1d1636; }
+.panel-light .fs-delta { color: #db2777; }
+.panel-light .fs-band { fill: rgba(236, 72, 153, 0.12); }
+.panel-light .fs-cap { stroke: rgba(76, 46, 140, 0.3); }
+.panel-light .fs-flag {
+  color: #fff; background: rgba(131, 24, 67, 0.92); border-color: rgba(236, 72, 153, 0.5);
+}
+/* เส้นบนพื้นขาวต้องเข้มขึ้น ไม่งั้นสีนีออนเดิมจะจาง — หรี่ลงด้วยฟิลเตอร์ทีเดียวทุกเส้น
+   จะได้ไม่ต้องแยกชุดสีสองชุดใน faculty.ts */
+.panel-light .fs-line { filter: brightness(0.82) saturate(1.25); }
+.panel-light .fs-legend i, .panel-light .fmap-key i { filter: brightness(0.86) saturate(1.2); }
+
+/* 07 · สไลเดอร์ของ "กำหนดเอง" */
+.panel-light .fc { background: #efe7ff; border-color: rgba(124, 58, 237, 0.34); }
+.panel-light .fc-k { color: #4c3f7a; }
+.panel-light .fc-v { color: #2c2250; }
+.panel-light .fc-range { background: rgba(124, 58, 237, 0.22); }
+
+/* 08 · ข้อเสนอแนะ */
+.panel-light .fd-top { background: #f5f1ff; border-color: rgba(124, 58, 237, 0.24); }
+.panel-light .fd-top__ic { background: rgba(192, 38, 211, 0.12); color: #a21caf; }
+.panel-light .fd-top__k { color: #7e22ce; }
+.panel-light .fd-top__v { color: #1d1636; }
+.panel-light .fd-row__ic { background: rgba(124, 58, 237, 0.12); color: #6d28d9; }
+.panel-light .fd-row__k { color: #4c3f7a; }
+.panel-light .fd-row__k small { color: var(--dim); }
+.panel-light .fd-row dd { color: #3b3160; }
+
+/* ══════════════ จบหมวดคณะ ══════════════ */
 
 /* ══════════════ ฟอร์มขอให้ติดต่อกลับ ══════════════ */
 .ct-mask {

@@ -11,13 +11,14 @@
  */
 
 export type OrgId =
-  | 'municipality' | 'university' | 'hotel' | 'business'
+  | 'municipality' | 'university' | 'faculty' | 'hotel' | 'business'
   | 'library' | 'hospital' | 'solar' | 'other'
 export type SignalId = 'people' | 'traffic' | 'parking' | 'energy' | 'waste' | 'events'
 export type PeakId = 'morning' | 'midday' | 'evening' | 'event'
 export type ScenarioId = 'normal' | 'weekend' | 'event'
-/** floors ใช้เฉพาะหมวดห้องสมุด — หมวดอื่นไม่ถาม (ดู ORG_TYPES[x].inputs) */
-export type InputKey = 'people' | 'capacity' | 'energy' | 'floors'
+/** floors ใช้เฉพาะหมวดห้องสมุด · activities ใช้เฉพาะหมวดคณะ
+    หมวดอื่นไม่ถาม (ดู ORG_TYPES[x].inputs) */
+export type InputKey = 'people' | 'capacity' | 'energy' | 'floors' | 'activities'
 
 /* ─────────────────────────── signals ─────────────────────────── */
 
@@ -157,6 +158,9 @@ export interface OrgDef {
   /** false = ไม่ถามว่าอะไรเปลี่ยนระหว่างวัน (ตารางเลือก signal)
       คำถามช่วงพีคยังถามทุกหมวด · ค่า signal ยังใช้ค่าตั้งต้นป้อนเข้าเอนจินตามเดิม */
   dailyChanges?: boolean
+  /** ชุดสีของหมวด — ไม่ระบุ = ฟ้าตามค่ากลางของหน้า
+      หน้าเอาไปใส่เป็นคลาสที่ราก แล้วทับตัวแปรสีทั้งชุด (ดู .theme-violet) */
+  theme?: 'violet'
   model: MomayModel
 }
 
@@ -180,6 +184,11 @@ const baseFields = (): Record<InputKey, FieldDef> => ({
     key: 'floors', icon: 'layers',
     label: 'จำนวนชั้น / พื้นที่ให้บริการ', note: '',
     unit: 'ชั้น', hint: 'นับเฉพาะชั้นที่เปิดให้ผู้ใช้เข้าไปนั่งได้', default: 4,
+  },
+  activities: {
+    key: 'activities', icon: 'calendar',
+    label: 'จำนวนรายวิชา / กิจกรรมที่ใช้พื้นที่ต่อวัน', note: '',
+    unit: 'รายการ / วัน', hint: 'นับทุกคาบเรียนและกิจกรรมที่ต้องจองพื้นที่', default: 80,
   },
 })
 
@@ -220,6 +229,37 @@ export const ORG_TYPES: OrgDef[] = [
         normal:  { people: 1.00, traffic: 1.00, energy: 1.00, waste: 1.00 },
         weekend: { people: 0.35, traffic: 0.40, energy: 0.65, waste: 0.45 },
         event:   { people: 1.55, traffic: 1.25, energy: 1.10, waste: 1.35 },
+      },
+    }),
+  },
+  {
+    id: 'faculty', en: 'Faculty', th: 'คณะ',
+    icon: 'cap', photo: '/momay/org-university.webp', subject: 'faculty',
+    // คณะตอบได้ทันทีสามค่านี้โดยไม่ต้องไปเปิดบิลหรือรวมเลขจากหลายหน่วยงาน
+    // ค่าไฟใช้ค่าตั้งต้นของหมวดป้อนเข้าเอนจินกลางตามเดิม
+    inputs: ['people', 'capacity', 'activities'],
+    // มีตารางหัวข้อที่อยากวิเคราะห์เป็นของตัวเอง (FAC_FOCUS) จึงไม่ใช้ตาราง signal กลาง
+    dailyChanges: false,
+    theme: 'violet',
+    fields: withFields({
+      people: { icon: 'users', label: 'จำนวนนักศึกษา', note: '(ประมาณการ)', unit: 'คน', hint: 'นักศึกษาที่เข้าใช้พื้นที่คณะในหนึ่งวัน', default: 2500 },
+      capacity: { icon: 'grid', label: 'จำนวนห้องเรียน / พื้นที่ที่ใช้งาน', note: '(ประมาณการ)', unit: 'พื้นที่', hint: 'ห้องเรียน ห้องปฏิบัติการ และพื้นที่ส่วนกลางที่จองได้', default: 35 },
+      activities: { default: 80 },
+      energy: { hint: 'ค่าไฟรวมของอาคารเรียนและส่วนกลางของคณะ', default: 160000 },
+    }),
+    model: model({
+      // นักศึกษาส่วนใหญ่เดินหรือใช้รถสาธารณะในคณะ สัดส่วนรถต่อคนจึงต่ำกว่ามหาวิทยาลัยทั้งวิทยาเขต
+      vehiclesPerPerson: 0.24,
+      parkingTurnover: 1.7,
+      // หนึ่ง "พื้นที่" ของคณะรองรับคนได้มากกว่าหนึ่งช่องจอด ตัวเลขจึงสูงกว่าค่ากลางมาก
+      peopleCapacityPerUnit: 32,
+      energyBenchmarkPerPerson: 64,
+      energyBaseLoadShare: 0.26,
+      wasteCoupling: 0.62,
+      scenarios: {
+        normal:  { people: 1.00, traffic: 1.00, energy: 1.00, waste: 1.00 },
+        weekend: { people: 0.30, traffic: 0.35, energy: 0.60, waste: 0.40 },
+        event:   { people: 1.50, traffic: 1.25, energy: 1.12, waste: 1.35 },
       },
     }),
   },
