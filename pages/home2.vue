@@ -159,7 +159,7 @@
           <!-- สองปุ่มนี้ชี้ไปที่ตัวผลิตภัณฑ์จริงทั้งคู่ ไม่ใช่หน้ารวมงาน
                ชื่อปุ่มกับปลายทางจึงตรงกัน กดแล้วได้สิ่งที่ชื่อบอกเลย -->
           <a class="btn btn--solid" href="/SurpriseV220926">MOMAY SURPRISE</a>
-          <a class="btn btn--ghost" href="/renewablesort/MomayforSaleV2#map">MOMAY MAP</a>
+          <button type="button" class="btn btn--ghost" @click="mapOpen = true">MOMAY MAP</button>
         </div>
       </div>
     </main>
@@ -183,6 +183,9 @@
     </footer>
 
   </div>
+
+    <!-- แผนที่ลูกค้า — เปิดทับอยู่บนหน้านี้เลย ไม่ต้องพาผู้ใช้ออกไปหน้าอื่น -->
+    <MomayCustomerMap :open="mapOpen" @close="mapOpen = false" />
 </template>
 
 <script setup lang="ts">
@@ -231,6 +234,9 @@ const STEPS = ['SEE', 'UNDERSTAND', 'ANTICIPATE', 'SIMULATE']
 /** ตราคำว่า MOMAY — ผูก src เป็นตัวแปร ไม่ใส่พาธตรง ๆ ใน template
     เพราะตอน build ตัวรวมไฟล์จะพยายาม resolve พาธในแอตทริบิวต์ src แล้ว build พังถ้ายังไม่มีไฟล์ */
 const LOGO_SRC = '/home2/momay-enlightenment.png'
+
+// แผนที่ลูกค้า — ปุ่ม MOMAY MAP เปิดตัวนี้
+const mapOpen = ref(false)
 
 /** ไฟล์โลโก้ยังไม่ถูกวาง (หรือโหลดไม่ขึ้น) → ตกมาใช้ตราแบบตัวอักษรแทน
     หน้าจะได้ไม่มีช่องว่างตรงหัวเรื่องระหว่างที่ยังไม่มีไฟล์ */
