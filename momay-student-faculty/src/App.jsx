@@ -365,9 +365,14 @@ export default function App() {
             report={report}
             hour={hour}
             intent={intent}
+            pill={pill}
             onOpen={zid => {
               setPickedId(zid)
               go('detail')
+            }}
+            onRoute={zid => {
+              setPickedId(zid)
+              go('route')
             }}
           />
         )}
@@ -502,13 +507,17 @@ export default function App() {
    แสดงทุกโซนในตึกนั้นพร้อมสถานะ เรียงตามว่าเหมาะกับโหมดที่เลือกแค่ไหน
    ที่ต้องมีหน้านี้คั่น เพราะหนึ่งอาคารมีหลายโซนคนละประเภท กดตึกแล้วกระโดด
    ไปโซนใดโซนหนึ่งเลยจะเป็นการตัดสินใจแทนผู้ใช้ */
-function BuildingZones({ buildingId, report, hour, intent, onOpen }) {
+/* กดอาคารบนผังแล้วต้องได้คำแนะนำทันที ไม่ใช่รายชื่อโซนให้ไปเดาต่อเอง
+   ผู้ใช้กดตึกเพราะอยากรู้ว่า "ตรงนี้มีที่ให้ฉันไหม" ไม่ใช่ "ตึกนี้มีห้องอะไรบ้าง"
+   จึงยกโซนที่เหมาะที่สุดขึ้นมาเป็นการ์ดใหญ่พร้อมเหตุผล แล้วที่เหลือค่อยเป็นตัวเลือกรอง
+   หน้าตาชุดเดียวกับจอ MOMAY RECOMMENDS ต่างแค่ขอบเขตอยู่ในอาคารที่กดเท่านั้น */
+function BuildingZones({ buildingId, report, hour, intent, pill, onOpen, onRoute }) {
   const b = BUILDING_MAP[buildingId]
-  const zones = SPACES.filter(z => z.building === buildingId)
+  const rows = SPACES.filter(z => z.building === buildingId)
     .map(z => {
       const load = loadAt(report, z, hour)
       return {
-        z,
+        space: z,
         load,
         free: freeSeats(z, load),
         crowd: crowdWord(load),
@@ -516,41 +525,67 @@ function BuildingZones({ buildingId, report, hour, intent, onOpen }) {
         fit: intent ? z.fits[intent] ?? 0 : 0,
       }
     })
+    /* เรียงตามความเหมาะกับสิ่งที่ผู้ใช้มาทำก่อน แล้วค่อยดูความว่าง
+       ไม่เรียงตามความว่างอย่างเดียว เพราะห้องที่ว่างแต่ใช้ทำสิ่งที่ต้องการไม่ได้
+       ก็ไม่ใช่คำตอบ */
     .sort((x, y) => y.fit - x.fit || x.load - y.load)
 
-  const worst = zones.reduce((m, r) => Math.max(m, r.load), 0)
+  const best = rows[0]
+  const rest = rows.slice(1)
+  const worst = rows.reduce((m, r) => Math.max(m, r.load), 0)
   const w = crowdWord(worst)
 
   return (
     <>
       <div className="vhead">
-        <h1>{b.th}</h1>
+        {pill}
+        <h1>MOMAY แนะนำพื้นที่ใน{b.shortTh}</h1>
         <p>
-          ในอาคารนี้มี {zones.length} โซน · ตอนนี้โดยรวม
-          <b className={'txt--' + w.tone}> {w.th}</b> · เดิน {zones[0]?.walk.minutes} นาที
+          มี {rows.length} โซน · ตอนนี้โดยรวม
+          <b className={'txt--' + w.tone}> {w.th}</b> · เดิน {best?.walk.minutes} นาที
         </p>
       </div>
 
-      <div className="alts">
-        {zones.map(r => (
-          <button key={r.z.id} type="button" className="alt" onClick={() => onOpen(r.z.id)}>
-            <span className={'alt__art art--' + r.z.tone}>
-              {photoOf(r.z) && <img src={photoOf(r.z)} alt="" loading="lazy" />}
-            </span>
-            <span className="alt__txt">
-              <b>{r.z.th}</b>
-              <small>{KIND_TH[r.z.kind]}</small>
-              <span className={'chip chip--' + r.crowd.tone}>
-                <Icon name="seat" size={12} />
-                คน{r.crowd.th} · ว่าง {r.free} ที่
-              </span>
-            </span>
-            <span className="alt__walk">
-              <Icon name="next" size={14} />
-            </span>
-          </button>
-        ))}
-      </div>
+      {best && (
+        <BestCard
+          pick={best}
+          intent={intent}
+          onOpen={() => onOpen(best.space.id)}
+          onRoute={() => onRoute(best.space.id)}
+        />
+      )}
+
+      {rest.length > 0 && (
+        <>
+          <h4 className="subhead">โซนอื่นในอาคารนี้</h4>
+          <div className="alts">
+            {rest.map(r => (
+              <button
+                key={r.space.id}
+                type="button"
+                className="alt"
+                onClick={() => onOpen(r.space.id)}
+              >
+                <span className={'alt__art art--' + r.space.tone}>
+                  {photoOf(r.space) && <img src={photoOf(r.space)} alt="" loading="lazy" />}
+                </span>
+                <span className="alt__txt">
+                  <b>{r.space.th}</b>
+                  <small>{KIND_TH[r.space.kind]}</small>
+                  <span className={'chip chip--' + r.crowd.tone}>
+                    <Icon name="seat" size={12} />
+                    คน{r.crowd.th} · ว่าง {r.free} ที่
+                  </span>
+                </span>
+                <span className="alt__walk">
+                  <Icon name="walk" size={14} />
+                  {r.walk.minutes} นาที
+                </span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </>
   )
 }
