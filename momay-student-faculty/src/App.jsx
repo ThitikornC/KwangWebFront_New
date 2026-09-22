@@ -269,9 +269,10 @@ export default function App() {
               ))}
             </div>
             <div className="bot">
-              <span className="bot__ic">
-                <Icon name="star" size={18} />
-              </span>
+              {/* มาสคอต MOMAY แทนไอคอนดาว การ์ดนี้เป็นเสียงของผู้ช่วย
+                  ใบหน้าสื่อว่ามีใครกำลังช่วยอยู่ ชัดกว่าสัญลักษณ์ทั่วไป
+                  alt ว่างเพราะข้อความข้าง ๆ บอกครบแล้ว ไม่ต้องให้อ่านซ้ำ */}
+              <img className="bot__ic" src="./MOMAY_bot.png" alt="" width="40" height="40" decoding="async" />
               <p>
                 <b>MOMAY ช่วยคุณได้</b>
                 บอกสิ่งที่คุณต้องการ แล้ว MOMAY จะหาตัวเลือกที่เหมาะที่สุดให้คุณแบบเรียลไทม์

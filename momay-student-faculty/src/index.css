@@ -237,15 +237,15 @@ button {
   background: linear-gradient(135deg, #f3efff, #eef4ff);
   border: 1px solid #e3dbff;
 }
+/* มาสคอตเป็นรูปโปร่งใสที่มีเงาในตัวอยู่แล้ว จึงไม่ต้องมีกรอบขาวรองอีกชั้น
+   กรอบขาวจะตัดหัวมันเป็นสี่เหลี่ยมและกินพื้นที่ไปโดยเปล่าประโยชน์ */
 .bot__ic {
-  display: grid;
-  place-items: center;
   flex: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: #fff;
-  color: var(--brand);
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  /* ดันขึ้นนิดให้หน้ามาสคอตอยู่ระดับเดียวกับบรรทัดหัวข้อ ไม่ใช่ลอยกลางย่อหน้า */
+  margin-top: -2px;
 }
 .bot p {
   margin: 0;
