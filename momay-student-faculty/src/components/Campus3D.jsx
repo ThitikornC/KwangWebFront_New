@@ -90,11 +90,11 @@ const TURN_DEG = 45
 /** ระยะกล้อง ไม่มีผลกับขนาดภาพ (กล้องออร์โธกราฟิก) แค่ต้องไกลพอไม่ให้ตัดวัตถุ */
 const CAM_DIST = 24
 
-/* ความหนาเส้นนำทาง — เส้นมีหน้าที่บอกทาง ไม่ใช่บังผัง
-   ของเดิม 0.15 หนาจนกลืนถนนที่มันวิ่งทับอยู่ เลยดูเหมือนแถบพลาสติกวางพาดเมือง
-   ROUTE_R_BASE คือค่าที่ความถี่ลูกศรถูกปรับจูนไว้ เก็บไว้เทียบสัดส่วนตอนเปลี่ยนความหนา */
-const ROUTE_R_BASE = 0.15
-const ROUTE_R = 0.075
+/* เส้นนำทางเป็นจุดกลมเรียงกัน แบบเดียวกับทางเดินเท้าในแผนที่ทั่วไป */
+const ROUTE_Y = 0.1
+// รัศมีจุดและระยะห่าง — ห่างราวสามเท่าของขนาดจุด จะได้อ่านเป็น "จุด ๆ" ไม่ใช่เส้นประถี่ ๆ
+const DOT_R = 0.1
+const DOT_GAP = 0.34
 
 function camPos(tiltDeg, turnDeg) {
   const t = (tiltDeg * Math.PI) / 180
@@ -250,23 +250,25 @@ export default function Campus3D({
     let lastFrame = 0
     /* ลูปเดิมหมุนตลอดเวลาแม้จอนั้นไม่มีเส้นทางให้วิ่ง เท่ากับกันไม่ให้เครื่องพัก
        และตอนมีเส้นทางก็วาดฉากใหม่ทั้งฉาก 60 ครั้งต่อวินาที ทั้งที่ลูกศรที่ขยับ
-       ช้ากว่านั้นมาก ลูกศรที่เลื่อนช้า ๆ ที่ 15 เฟรมต่อวินาทียังดูลื่นอยู่
+       ช้ากว่านั้นมาก จุดที่ไหลช้า ๆ ที่ 15 เฟรมต่อวินาทียังดูลื่นอยู่
        แต่ใช้แรงเครื่องเหลือหนึ่งในสี่ของเดิม */
     const FRAME_MS = 1000 / 15
     const tick = now => {
       raf = requestAnimationFrame(tick)
-      const f = stateRef.current?.flow
+      const d = stateRef.current?.dots
       // ไม่มีเส้นทาง แท็บถูกซ่อน หรือผู้ใช้ขอลดการเคลื่อนไหว → ไม่ต้องวาดอะไรเลย
-      if (!f || calm?.matches || document.hidden) return
+      if (!d || calm?.matches || document.hidden) return
       if (now - lastFrame < FRAME_MS) return
       lastFrame = now
-      f.offset.x -= 0.006 * (FRAME_MS / 16.7)
+      // จุดไหลไปทางปลายทาง ไม่ใช่ย้อนกลับ
+      d.phase += 0.11
+      d.place(d.phase)
       renderer.render(scene, camera)
     }
     raf = requestAnimationFrame(tick)
     stateRef.current.stopLoop = () => cancelAnimationFrame(raf)
 
-    /* กลับมาที่แท็บแล้วค่อยเริ่มนับเฟรมใหม่ ไม่งั้นลูกศรจะกระโดด
+    /* กลับมาที่แท็บแล้วค่อยเริ่มนับเฟรมใหม่ ไม่งั้นจุดจะกระโดด
        เพราะ timestamp ห่างจากครั้งก่อนเป็นนาที */
     const onVis = () => {
       lastFrame = 0
@@ -518,38 +520,54 @@ export default function Campus3D({
        (ผังฝั่งคณะยังใช้ดวงเรืองอยู่ เพราะที่นั่นอ่าน "ย่าน" ไม่ใช่ "ตึก") */
 
     /* ── เส้นทาง ──
-       วาดเป็นท่อแบนวางบนพื้น ไม่ใช่ THREE.Line
-       เพราะ linewidth ของ LineBasicMaterial ถูกเพิกเฉยบนเบราว์เซอร์แทบทุกตัว
-       (ข้อจำกัดของ WebGL เอง) เส้นจึงบางเป็นเส้นผมเสมอไม่ว่าจะตั้งเท่าไร
+       วาดเป็นจุดกลมเรียงตามทาง ไม่ใช่เส้นทึบยาว
+       เส้นทึบกินพื้นที่ผังเยอะและบังถนนที่มันวางทับอยู่จนดูไม่ออกว่าเดินตรงไหน
+       จุดเว้นระยะอ่านง่ายกว่าและเป็นภาษาที่แผนที่เดินเท้าใช้กันอยู่แล้ว
 
-       ใช้ TubeGeometry เพราะ UV ของมันวิ่งไปตามความยาวเส้นพอดี
-       เลื่อน texture ตามแกนนั้นก็ได้ลูกศรไหลไปทางปลายทางทันที
-       ถ้าต่อกล่องทีละท่อน แต่ละท่อนจะมี UV ของตัวเอง ลูกศรจะกระตุกที่รอยต่อ */
+       ใช้ InstancedMesh ก้อนเดียวแทนการสร้าง mesh ทีละจุด
+       จุดมีหลายสิบจุดและขยับทุกเฟรม ถ้าแยกเป็น mesh ละจุดจะกลายเป็น
+       draw call หลายสิบครั้งต่อเฟรม ซึ่งเป็นปัญหาเดิมที่เพิ่งแก้ไป */
     if (route && route.points && route.points.length > 1) {
-      const v = route.points.map(p => new THREE.Vector3(wx(p.gx), 0.09, wx(p.gy)))
+      const v = route.points.map(p => new THREE.Vector3(wx(p.gx), ROUTE_Y, wx(p.gy)))
       const curve = new THREE.CurvePath()
       for (let i = 0; i < v.length - 1; i++) curve.add(new THREE.LineCurve3(v[i], v[i + 1]))
 
       const len = curve.getLength()
-      const tex = flowTexture()
-      /* ลูกศรพันรอบท่อหนึ่งรอบพอดี (repeat.y = 1) พอท่อบางลง เส้นรอบวงก็สั้นลงตาม
-         ถ้าไม่เพิ่มจำนวนรอบตามแกนยาว ลูกศรจะถูกยืดจนผอมยาวผิดรูป */
-      tex.repeat.set(Math.max(2, Math.round(len * ROUTE_R_BASE / ROUTE_R * 1.05)), 1)
+      const count = Math.max(2, Math.round(len / DOT_GAP))
 
-      const tube = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, Math.max(24, v.length * 12), ROUTE_R, 8, false),
+      const dots = new THREE.InstancedMesh(
+        new THREE.SphereGeometry(DOT_R, 12, 10),
         new THREE.MeshStandardMaterial({
-          map: tex,
-          color: 0xffffff,
+          color: 0x6d4aff,
           emissive: 0x2a1580,
-          emissiveIntensity: 0.28,
-          roughness: 0.45,
+          emissiveIntensity: 0.3,
+          roughness: 0.42,
         }),
+        count,
       )
-      tube.castShadow = true
-      tube.userData.keep = true
-      root.add(tube)
-      st.flow = tex
+      dots.castShadow = true
+      // อย่าให้ mergeByMaterial ไปยุบรวม จุดต้องขยับได้เป็นอิสระ
+      dots.userData.keep = true
+      dots.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
+      root.add(dots)
+
+      /* วางจุดตามระยะทางจริง ไม่ใช่ตามพารามิเตอร์ t ของเส้นโค้ง
+         เพราะ CurvePath แบ่ง t เท่า ๆ กันต่อหนึ่งท่อน ท่อนสั้นจะได้จุดถี่กว่าท่อนยาว
+         ระยะห่างระหว่างจุดจึงจะไม่สม่ำเสมอถ้าใช้ t ตรง ๆ */
+      // สร้างตัวช่วยไว้นอกลูป ฟังก์ชันนี้ถูกเรียกทุกเฟรม การจองวัตถุใหม่ทุกครั้งคือขยะที่ GC ต้องตามเก็บ
+      const m = new THREE.Matrix4()
+      const at = new THREE.Vector3()
+      const place = phase => {
+        for (let i = 0; i < count; i++) {
+          const d = ((i + phase) % count) / count
+          curve.getPointAt(Math.min(0.9999, Math.max(0, d)), at)
+          m.makeTranslation(at.x, at.y, at.z)
+          dots.setMatrixAt(i, m)
+        }
+        dots.instanceMatrix.needsUpdate = true
+      }
+      place(0)
+      st.dots = { place, phase: 0 }
 
       // จุดเริ่มต้น
       const ring = new THREE.Mesh(
@@ -565,7 +583,7 @@ export default function Campus3D({
       dot.position.copy(v[0]).setY(0.11)
       root.add(dot)
     } else {
-      st.flow = null
+      st.dots = null
     }
 
     if (route) {
@@ -797,7 +815,8 @@ function mergeByMaterial(root) {
   root.updateMatrixWorld(true)
 
   root.traverse(o => {
-    if (!o.isMesh || Array.isArray(o.material) || !o.geometry?.attributes?.position) return
+    if (!o.isMesh || o.isInstancedMesh || Array.isArray(o.material)) return
+    if (!o.geometry?.attributes?.position) return
     // ข้ามเส้นนำทาง texture ของมันต้องเลื่อนได้อิสระ
     if (o.userData.keep) return
     const key = o.material.uuid + '|' + (o.castShadow ? 1 : 0) + (o.receiveShadow ? 1 : 0)
@@ -859,34 +878,3 @@ function Drop() {
 
 /* ลายลูกศรสำหรับเส้นนำทาง — วาดครั้งเดียวแล้วใช้ซ้ำ
    ลูกศรชี้ไปทางปลายทาง ผู้ใช้จึงรู้ทิศแม้ดูภาพนิ่ง ไม่ต้องรอให้มันวิ่ง */
-let FLOW_TEX = null
-function flowTexture() {
-  if (!FLOW_TEX) {
-    const c = document.createElement('canvas')
-    c.width = 64
-    c.height = 32
-    const g = c.getContext('2d')
-    /* ตัว texture ต้องเป็นสีสุดท้ายในตัวมันเอง แล้วตั้ง material.color เป็นขาว
-       ถ้าปล่อยให้ material เป็นสีม่วง มันจะคูณทับ texture ลูกศรก็จะกลืนไปกับพื้นเส้น */
-    g.fillStyle = '#6d4aff'
-    g.fillRect(0, 0, 64, 32)
-    /* ลูกศรกินความสูงเต็ม texture เพราะแกนนี้คือเส้นรอบวงของท่อ
-       ถ้าวาดแค่แถบกลาง ลูกศรจะไปอยู่ใต้ท้องท่อเมื่อเฟรมของเส้นโค้งหมุน
-       ยิ่งท่อบาง ส่วนที่มองเห็นจากด้านบนยิ่งแคบ ลูกศรก็ยิ่งหายไปทั้งเส้น */
-    g.fillStyle = '#ffffff'
-    g.beginPath()
-    g.moveTo(13, 0)
-    g.lineTo(41, 16)
-    g.lineTo(13, 32)
-    g.lineTo(25, 16)
-    g.closePath()
-    g.fill()
-    FLOW_TEX = new THREE.CanvasTexture(c)
-    FLOW_TEX.colorSpace = THREE.SRGBColorSpace
-  }
-  const t = FLOW_TEX.clone()
-  t.needsUpdate = true
-  t.wrapS = THREE.RepeatWrapping
-  t.wrapT = THREE.ClampToEdgeWrapping
-  return t
-}
