@@ -263,6 +263,10 @@
                             >
                               <span class="lpk-ic"><Ico :name="pk.icon" /></span>
                               <span class="lpk-th font-thai">{{ pk.th }}</span>
+                              <!-- บอกเวลาจริงไปเลย ไม่ใช่แค่ชื่อช่วง
+                                   "เช้า" ของแต่ละคนไม่ตรงกัน แต่ 08:00 – 11:00 ตรงกันแน่นอน
+                                   และเป็นเลขชุดเดียวกับที่จะไปโผล่ในผลลัพธ์ เพราะคิดจากฟังก์ชันเดียวกัน -->
+                              <span class="lpk-time">{{ facPeakWindow(pk) }}</span>
                               <span class="lpk-win">{{ pk.en }}</span>
                               <span v-if="form.facPeak === pk.id" class="lpk-check"><Ico name="check" /></span>
                             </button>
@@ -2184,7 +2188,7 @@ import {
 } from '~/utils/momaySurpriseOrganize/library'
 import {
   FAC_FOCUS, FAC_FOCUS_MAP, FAC_PEAKS, FAC_PEAK_MAP, FAC_PEAK_TO_ENGINE,
-  FAC_SCENARIOS, FAC_SCENARIO_MAP, facultyReport,
+  FAC_SCENARIOS, FAC_SCENARIO_MAP, facultyReport, facPeakWindow,
   type FacFocusId, type FacPeakId, type FacScenarioId,
 } from '~/utils/momaySurpriseOrganize/faculty'
 
@@ -3436,6 +3440,13 @@ onMounted(() => {
 
 <style scoped>
 .momay-demo {
+  /* ตัวคูณขนาดตัวหนังสือทั้งหน้า — ปรับที่เดียวได้ทั้งหน้า
+     หน้านี้มีการประกาศ font-size กว่าสองร้อยจุด ถ้าไล่แก้ทีละค่าจะพลาดง่าย
+     และครั้งหน้าที่อยากปรับก็ต้องไล่ใหม่ทั้งหมดอีกรอบ
+     คูณเฉพาะตัวอักษรที่เล็กกว่า 20px ซึ่งเป็นตัวอักษรใช้งานจริงที่อ่านยาก
+     ส่วนหัวเรื่องใหญ่ปล่อยไว้ เพราะมันพอดีอยู่แล้วและถ้าโตอีกจะล้นกรอบ */
+  --fs: 1.14;
+
   --bg: #030b18;
   --bg2: #071628;
   --card: rgba(10, 25, 44, 0.72);
@@ -3508,7 +3519,7 @@ onMounted(() => {
 /* ── แบรนด์ ── */
 .brand-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px 10px; overflow: visible; }
 .logo { display: flex; align-items: baseline; gap: 9px; overflow: visible; }
-.logo-main { font-weight: 800; font-size: 18px; letter-spacing: 0.08em; }
+.logo-main { font-weight: 800; font-size: calc(18px * var(--fs)); letter-spacing: 0.08em; }
 .logo-script {
   font-family: 'Great Vibes', cursive;
   font-size: 31px;
@@ -3540,23 +3551,23 @@ onMounted(() => {
   45% { background-position: -40% 0; }
   100% { background-position: -40% 0; }
 }
-.tag { font-size: 10.5px; line-height: 1.45; text-align: right; color: var(--dim); max-width: 160px; }
+.tag { font-size: calc(10.5px * var(--fs)); line-height: 1.45; text-align: right; color: var(--dim); max-width: 160px; }
 
 /* ── progress ── */
 .progbar { display: flex; align-items: center; gap: 12px; padding: 0 18px 18px; }
 .track { position: relative; flex: 1; height: 2px; border-radius: 2px; background: rgba(90, 140, 190, 0.2); }
 .fill { position: absolute; inset: 0 auto 0 0; border-radius: 2px; background: linear-gradient(90deg, #1868b8, var(--cyan)); box-shadow: 0 0 10px rgba(79, 216, 255, 0.55); transition: width 0.45s ease; }
 .diamond { position: absolute; top: 50%; width: 7px; height: 7px; background: #d7f2ff; transform: translate(-50%, -50%) rotate(45deg); box-shadow: 0 0 10px var(--cyan); transition: left 0.45s ease; }
-.count { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.count { font-size: calc(11px * var(--fs)); color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* ── หัวข้อ ── */
 .h-en { font-size: 26px; font-weight: 800; line-height: 1.18; letter-spacing: -0.01em; }
 .h-en.upper { text-transform: uppercase; font-size: 23px; letter-spacing: 0.01em; }
 .h-en.center, .h-th.center { text-align: center; }
 .h-en .accent { color: var(--brand); }
-.h-th { margin-top: 7px; font-size: 13px; color: var(--muted); }
-.sub-q { margin: 26px 0 12px; font-size: 14px; font-weight: 500; }
-.list-title { margin: 24px 0 13px; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; }
+.h-th { margin-top: 7px; font-size: calc(13px * var(--fs)); color: var(--muted); }
+.sub-q { margin: 26px 0 12px; font-size: calc(14px * var(--fs)); font-weight: 500; }
+.list-title { margin: 24px 0 13px; font-size: calc(14px * var(--fs)); font-weight: 700; letter-spacing: 0.02em; }
 
 .ic { width: 20px; height: 20px; flex: none; }
 
@@ -3633,8 +3644,8 @@ onMounted(() => {
 }
 .org-ic { color: #bcd8f5; }
 .org-label { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-.org-en { font-size: 13.5px; font-weight: 600; }
-.org-th { font-size: 10.5px; color: var(--dim); }
+.org-en { font-size: calc(13.5px * var(--fs)); font-weight: 600; }
+.org-th { font-size: calc(10.5px * var(--fs)); color: var(--dim); }
 .org-go { color: var(--brand); }
 .org-row.active .org-ic { color: #eaf6ff; }
 
@@ -3654,10 +3665,10 @@ onMounted(() => {
   box-shadow: inset 0 1px 0 rgba(130, 195, 255, 0.1), 0 12px 30px rgba(2, 10, 22, 0.5);
 }
 .dd-inner > .dd-title:first-child { margin-top: 0; }
-.dd-title { margin-top: 13px; font-size: 12px; font-weight: 700; line-height: 1.35; color: #dcecfb; }
+.dd-title { margin-top: 13px; font-size: calc(12px * var(--fs)); font-weight: 700; line-height: 1.35; color: #dcecfb; }
 .dd-title.dd-gap { margin-top: 16px; }
 .dd-title .accent { color: var(--brand); }
-.dd-sub { margin-top: 3px; font-size: 10px; color: var(--dim); }
+.dd-sub { margin-top: 3px; font-size: calc(10px * var(--fs)); color: var(--dim); }
 .dd .field-list { margin-top: 8px; gap: 8px; }
 .dd .sig-grid { margin-top: 8px; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .dd .lpk-row { margin-top: 8px; gap: 7px; }
@@ -3667,43 +3678,43 @@ onMounted(() => {
 .dd .field-ic { margin-top: 0; }
 .dd .field-ic :deep(.ic) { width: 17px; height: 17px; }
 .dd .field-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; }
-.dd .field-label { font-size: 11px; line-height: 1.35; }
-.dd .field-note { font-size: 9px; }
+.dd .field-label { font-size: calc(11px * var(--fs)); line-height: 1.35; }
+.dd .field-note { font-size: calc(9px * var(--fs)); }
 .dd .field-input { margin: 0; gap: 7px; }
-.dd .field-input input { flex: none; width: 104px; padding: 6px 10px; border-radius: 8px; font-size: 14px; text-align: right; }
-.dd .field-unit { font-size: 9.5px; }
-.dd .field-hint { grid-column: 1 / -1; margin-top: 4px; font-size: 9px; }
+.dd .field-input input { flex: none; width: 104px; padding: 6px 10px; border-radius: 8px; font-size: calc(14px * var(--fs)); text-align: right; }
+.dd .field-unit { font-size: calc(9.5px * var(--fs)); }
+.dd .field-hint { grid-column: 1 / -1; margin-top: 4px; font-size: calc(9px * var(--fs)); }
 
 .dd .sig { padding: 10px 5px 9px; gap: 3px; border-radius: 11px; }
 .dd .sig-ic :deep(.ic) { width: 19px; height: 19px; }
-.dd .sig-en { font-size: 10.5px; }
-.dd .sig-th { font-size: 8.5px; }
+.dd .sig-en { font-size: calc(10.5px * var(--fs)); }
+.dd .sig-th { font-size: calc(8.5px * var(--fs)); }
 .dd .sig-mark { top: 6px; right: 6px; }
 .dd .sig-check { width: 14px; height: 14px; }
 .dd .sig-ring { width: 13px; height: 13px; }
-.dd .peak { padding: 7px 12px; font-size: 11px; border-radius: 9px; }
+.dd .peak { padding: 7px 12px; font-size: calc(11px * var(--fs)); border-radius: 9px; }
 .dd-next { display: flex; justify-content: flex-end; margin-top: 14px; }
-.dd-next .btn-next { padding: 9px 20px; font-size: 12.5px; }
+.dd-next .btn-next { padding: 9px 20px; font-size: calc(12.5px * var(--fs)); }
 
-.quote-mini { margin: 20px 2px 4px; font-size: 12.5px; line-height: 1.7; color: #b9cfe6; }
-.qm { color: var(--brand); font-size: 19px; font-weight: 700; margin-right: 3px; }
+.quote-mini { margin: 20px 2px 4px; font-size: calc(12.5px * var(--fs)); line-height: 1.7; color: #b9cfe6; }
+.qm { color: var(--brand); font-size: calc(19px * var(--fs)); font-weight: 700; margin-right: 3px; }
 
 /* ── 02 ฟิลด์กรอกข้อมูล ── */
 .field-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
 .field { display: flex; gap: 14px; padding: 15px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
 .field-ic { color: #9ec6ee; margin-top: 3px; }
 .field-main { flex: 1; min-width: 0; }
-.field-label { font-size: 12.5px; line-height: 1.45; color: #c9dcf0; }
-.field-note { font-size: 10.5px; color: var(--dim); }
+.field-label { font-size: calc(12.5px * var(--fs)); line-height: 1.45; color: #c9dcf0; }
+.field-note { font-size: calc(10.5px * var(--fs)); color: var(--dim); }
 .field-input { display: flex; align-items: center; gap: 10px; margin: 9px 0 7px; }
 .field-input input {
   flex: 1; min-width: 0; padding: 9px 13px; border-radius: 10px;
   background: rgba(4, 13, 26, 0.9); border: 1px solid rgba(70, 140, 210, 0.32);
-  color: #dff1ff; font-size: 19px; font-weight: 700; letter-spacing: 0.01em;
+  color: #dff1ff; font-size: calc(19px * var(--fs)); font-weight: 700; letter-spacing: 0.01em;
 }
 .field-input input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(62, 160, 255, 0.16); }
-.field-unit { font-size: 11px; color: var(--muted); white-space: nowrap; }
-.field-hint { font-size: 10.5px; color: var(--dim); }
+.field-unit { font-size: calc(11px * var(--fs)); color: var(--muted); white-space: nowrap; }
+.field-hint { font-size: calc(10.5px * var(--fs)); color: var(--dim); }
 
 /* ── 03 signal ── */
 .sig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
@@ -3716,8 +3727,8 @@ onMounted(() => {
 .sig.on { border-color: var(--brand); background: rgba(23, 66, 116, 0.5); }
 .sig-ic { color: var(--sig); }
 .sig-ic :deep(.ic) { width: 24px; height: 24px; }
-.sig-en { font-size: 12px; font-weight: 600; }
-.sig-th { font-size: 9.5px; color: var(--dim); }
+.sig-en { font-size: calc(12px * var(--fs)); font-weight: 600; }
+.sig-th { font-size: calc(9.5px * var(--fs)); color: var(--dim); }
 .sig.on .sig-th { color: var(--muted); }
 .sig-mark { position: absolute; top: 8px; right: 8px; }
 .sig-check { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; background: var(--brand); color: #04101f; }
@@ -3918,8 +3929,8 @@ onMounted(() => {
   border: 1.5px solid var(--sig); box-shadow: 0 0 16px color-mix(in srgb, var(--sig) 45%, transparent);
 }
 .node-dot :deep(.ic) { width: calc(var(--dot) * 0.5); height: calc(var(--dot) * 0.5); }
-.node-label { font-size: 11.5px; font-weight: 600; color: #eaf5ff; white-space: nowrap; }
-.node-val { font-size: 12px; font-weight: 700; color: var(--sig); }
+.node-label { font-size: calc(11.5px * var(--fs)); font-weight: 600; color: #eaf5ff; white-space: nowrap; }
+.node-val { font-size: calc(12px * var(--fs)); font-weight: 700; color: var(--sig); }
 
 /* ── หน้า 06: โหนดเป็นวงกลม มีไอคอน ชื่อ และตัวเลขอยู่ในวง ── */
 .rel-node {
@@ -3939,10 +3950,10 @@ onMounted(() => {
 .rel-node.lead { width: 26%; height: 26%; }
 .rel-node :deep(.ic) { width: 25px; height: 25px; stroke-width: 2.2; }
 .rel-node.lead :deep(.ic) { width: 29px; height: 29px; stroke-width: 2.2; }
-.rel-label { font-size: 12px; font-weight: 600; color: #eaf5ff; white-space: nowrap; }
-.rel-val { font-size: 13px; font-weight: 800; color: var(--sig); white-space: nowrap; }
-.rel-node.lead .rel-label { font-size: 13px; }
-.rel-node.lead .rel-val { font-size: 15px; }
+.rel-label { font-size: calc(12px * var(--fs)); font-weight: 600; color: #eaf5ff; white-space: nowrap; }
+.rel-val { font-size: calc(13px * var(--fs)); font-weight: 800; color: var(--sig); white-space: nowrap; }
+.rel-node.lead .rel-label { font-size: calc(13px * var(--fs)); }
+.rel-node.lead .rel-val { font-size: calc(15px * var(--fs)); }
 
 /* ไล่ไฮไลต์ทีละไอคอนวนไปเรื่อย ๆ — 6 โหนด × 2.2s = ครบรอบ 13.2s
    ช่วงที่เป็นของตัวเอง = 1/6 แรกของไทม์ไลน์ (≈16.7%) แล้วส่งต่อให้ตัวถัดไป */
@@ -4082,8 +4093,8 @@ onMounted(() => {
 .spin { width: 15px; height: 15px; border-radius: 50%; border: 1.7px solid rgba(120, 160, 200, 0.3); border-top-color: var(--cyan); animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .await-text { display: flex; flex-direction: column; gap: 2px; }
-.await-en { font-size: 12.5px; }
-.await-th { font-size: 10px; color: var(--dim); }
+.await-en { font-size: calc(12.5px * var(--fs)); }
+.await-th { font-size: calc(10px * var(--fs)); color: var(--dim); }
 
 /* ── 05 ── */
 .flag {
@@ -4091,8 +4102,8 @@ onMounted(() => {
   background: rgba(190, 40, 50, 0.14); border: 1px solid rgba(240, 82, 82, 0.42);
 }
 .flag-ic { color: var(--danger); margin-top: 1px; }
-.flag-en { font-size: 13.5px; font-weight: 700; line-height: 1.45; color: #ffc9c9; }
-.flag-th { margin-top: 6px; font-size: 11.5px; line-height: 1.6; color: #e4a9a9; }
+.flag-en { font-size: calc(13.5px * var(--fs)); font-weight: 700; line-height: 1.45; color: #ffc9c9; }
+.flag-th { margin-top: 6px; font-size: calc(11.5px * var(--fs)); line-height: 1.6; color: #e4a9a9; }
 
 /* แถบเวลาพีค — ลอยชิดขวาบนภาพเมืองที่เป็นฉากหลังเต็มจอ */
 .peak-badge {
@@ -4101,8 +4112,8 @@ onMounted(() => {
   padding: 11px 13px; border-radius: 12px;
   background: rgba(4, 14, 28, 0.8); border: 1px solid var(--line-on); backdrop-filter: blur(6px);
 }
-.peak-time { font-size: 15px; font-weight: 800; color: #eaf6ff; }
-.peak-cap { font-size: 9.5px; color: var(--muted); margin-top: 2px; }
+.peak-time { font-size: calc(15px * var(--fs)); font-weight: 800; color: #eaf6ff; }
+.peak-cap { font-size: calc(9.5px * var(--fs)); color: var(--muted); margin-top: 2px; }
 .peak-chip { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: rgba(34, 197, 94, 0.16); color: var(--good); }
 
 .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 14px; }
@@ -4116,7 +4127,7 @@ onMounted(() => {
   animation-delay: calc(var(--i, 0) * 0.1s);
 }
 @keyframes tileIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.tile-head { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; color: #e3eefb; }
+.tile-head { display: flex; align-items: center; gap: 7px; font-size: calc(10.5px * var(--fs)); font-weight: 600; color: #e3eefb; }
 /* กล่องไอคอนสีประจำ signal ตามตัวอย่าง */
 .tile-chip {
   display: grid; place-items: center; flex: none;
@@ -4126,7 +4137,7 @@ onMounted(() => {
 }
 .tile-chip :deep(.ic) { width: 13px; height: 13px; }
 .tile-val { margin-top: 9px; font-size: 22px; font-weight: 800; line-height: 1.1; color: var(--sig); }
-.tile-cap { margin-top: 4px; font-size: 8.5px; line-height: 1.4; color: var(--muted); }
+.tile-cap { margin-top: 4px; font-size: calc(8.5px * var(--fs)); line-height: 1.4; color: var(--muted); }
 
 /* ── 06 ── */
 .insight-list { display: flex; flex-direction: column; gap: 12px; }
@@ -4134,15 +4145,15 @@ onMounted(() => {
 .num {
   display: grid; place-items: center; flex: none; width: 19px; height: 19px; margin-top: 1px;
   border-radius: 50%; background: rgba(62, 160, 255, 0.16); border: 1px solid var(--line-on);
-  font-size: 10px; font-weight: 700; color: var(--brand);
+  font-size: calc(10px * var(--fs)); font-weight: 700; color: var(--brand);
 }
-.ins-en { display: block; font-size: 12px; line-height: 1.45; }
-.ins-th { display: block; margin-top: 3px; font-size: 10px; line-height: 1.5; color: var(--dim); }
+.ins-en { display: block; font-size: calc(12px * var(--fs)); line-height: 1.45; }
+.ins-th { display: block; margin-top: 3px; font-size: calc(10px * var(--fs)); line-height: 1.5; color: var(--dim); }
 
 /* ── 07 ── */
 .scn-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 20px; }
 .scn-tab {
-  padding: 13px 8px; border-radius: 11px; font-size: 13px; cursor: pointer;
+  padding: 13px 8px; border-radius: 11px; font-size: calc(13px * var(--fs)); cursor: pointer;
   background: rgba(10, 25, 44, 0.55); border: 1px solid var(--line); color: var(--muted);
 }
 .scn-tab.on { border-color: var(--brand); color: #dcefff; background: rgba(23, 66, 116, 0.55); }
@@ -4176,7 +4187,7 @@ onMounted(() => {
 /* ตัวเลขวางกลางแต่ละฝั่ง ขยับตามตำแหน่งปุ่ม */
 .dn-num {
   position: absolute; top: 50%; transform: translate(-50%, -50%);
-  font-size: 12px; font-weight: 800; white-space: nowrap; pointer-events: none;
+  font-size: calc(12px * var(--fs)); font-weight: 800; white-space: nowrap; pointer-events: none;
   text-shadow: 0 1px 2px rgba(2, 10, 22, 0.35);
 }
 /* ปกติวางกลางฝั่งของตัวเอง แต่ต้องกันไม่ให้ไปซ้อนปุ่มลากตอนสัดส่วนสุดขอบ
@@ -4208,18 +4219,18 @@ onMounted(() => {
 }
 .dn-ends {
   display: flex; justify-content: space-between;
-  margin: 12px 42px 0; font-size: 10.5px; color: var(--dim);
+  margin: 12px 42px 0; font-size: calc(10.5px * var(--fs)); color: var(--dim);
 }
 
 .slider-box { margin-top: 20px; padding: 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
 .slider-head {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  font-size: 13px; color: var(--muted);
+  font-size: calc(13px * var(--fs)); color: var(--muted);
 }
 .slider-rail { position: relative; padding-top: 16px; }
 .slider-bubble {
   padding: 3px 11px; border-radius: 7px; background: var(--brand);
-  color: #04101f; font-size: 11px; font-weight: 800; white-space: nowrap;
+  color: #04101f; font-size: calc(11px * var(--fs)); font-weight: 800; white-space: nowrap;
 }
 .slider {
   -webkit-appearance: none; appearance: none; width: 100%; height: 4px; margin: 0 0 8px;
@@ -4234,7 +4245,7 @@ onMounted(() => {
   width: 16px; height: 16px; border-radius: 50%;
   background: #eaf7ff; border: 2px solid var(--brand); box-shadow: 0 0 12px rgba(79, 216, 255, 0.65);
 }
-.slider-ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); }
+.slider-ends { display: flex; justify-content: space-between; font-size: calc(10px * var(--fs)); color: var(--dim); }
 
 /* ── แผง 01 ของหมวดโซลาร์: ไล่ที่มาของตัวเลข + ขนาดระบบ ── */
 .sol-chain {
@@ -4243,13 +4254,13 @@ onMounted(() => {
 }
 .sol-row {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 9px 13px; font-size: 12px;
+  padding: 9px 13px; font-size: calc(12px * var(--fs));
 }
 .sol-row + .sol-row { border-top: 1px solid rgba(66, 133, 199, 0.14); }
 .sol-k { display: flex; align-items: center; gap: 7px; color: var(--muted); min-width: 0; }
 .sol-k :deep(.ic) { width: 15px; height: 15px; flex: none; }
 .sol-v { font-weight: 800; color: #dceaf9; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.sol-v i { font-style: normal; font-weight: 600; font-size: 10.5px; color: var(--dim); margin-left: 3px; }
+.sol-v i { font-style: normal; font-weight: 600; font-size: calc(10.5px * var(--fs)); color: var(--dim); margin-left: 3px; }
 /* บรรทัดสรุปต่อวัน = จุดตั้งต้นของการแบ่งกลางวัน-กลางคืน */
 .sol-strong .sol-k { color: #cfe3f7; }
 .sol-strong .sol-v { color: #eaf6ff; }
@@ -4263,13 +4274,13 @@ onMounted(() => {
 .panel .sol-ring .rel-node :deep(.ic) { width: 15px; height: 15px; }
 
 .tiles-2 { grid-template-columns: 1fr 1fr; }
-.tile-u { margin-left: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.tile-u { margin-left: 4px; font-size: calc(12px * var(--fs)); font-weight: 700; color: var(--muted); }
 
 .table-wrap { margin-top: 16px; border-radius: 14px; overflow-x: auto; background: var(--card); border: 1px solid var(--line); }
-.sim-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+.sim-table { width: 100%; border-collapse: collapse; font-size: calc(13px * var(--fs)); white-space: nowrap; }
 .sim-table th, .sim-table td { padding: 14px 12px; text-align: right; }
 .sim-table th:first-child, .sim-table td:first-child { text-align: left; }
-.sim-table thead th { font-size: 11px; font-weight: 600; color: var(--dim); background: rgba(6, 18, 34, 0.7); }
+.sim-table thead th { font-size: calc(11px * var(--fs)); font-weight: 600; color: var(--dim); background: rgba(6, 18, 34, 0.7); }
 .sim-table tbody tr + tr { border-top: 1px solid rgba(66, 133, 199, 0.14); }
 .sim-table tbody td { font-variant-numeric: tabular-nums; color: #d6e7f8; }
 /* เน้นคอลัมน์ผลจำลอง (คอลัมน์ที่ 3) ให้เด่นกว่าค่าปัจจุบัน */
@@ -4287,9 +4298,9 @@ onMounted(() => {
 
 /* จอแคบ: บีบระยะและตัวอักษรให้ตารางพอดีความกว้าง ไม่ต้องเลื่อนแนวนอน */
 @media (max-width: 439px) {
-  .sim-table { font-size: 11.5px; }
+  .sim-table { font-size: calc(11.5px * var(--fs)); }
   .sim-table th, .sim-table td { padding: 11px 5px; }
-  .sim-table thead th { font-size: 9.5px; }
+  .sim-table thead th { font-size: calc(9.5px * var(--fs)); }
   .cell-ic { margin-right: 5px; }
   .cell-ic :deep(.ic) { width: 12px; height: 12px; }
 }
@@ -4297,27 +4308,27 @@ onMounted(() => {
 
 /* ── 08 ── */
 .reco { display: flex; gap: 12px; margin-top: 20px; align-items: flex-start; }
-.pill { flex: none; padding: 4px 10px; border-radius: 7px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.05em; }
+.pill { flex: none; padding: 4px 10px; border-radius: 7px; font-size: calc(9.5px * var(--fs)); font-weight: 800; letter-spacing: 0.05em; }
 .pill.priority { background: rgba(34, 197, 94, 0.18); color: #6ee7a0; border: 1px solid rgba(34, 197, 94, 0.4); }
 .pill.critical { background: rgba(240, 82, 82, 0.18); color: #ff9d9d; border: 1px solid rgba(240, 82, 82, 0.45); }
 .pill.watch { background: rgba(62, 160, 255, 0.16); color: #8ecbff; border: 1px solid var(--line-on); }
-.reco-en { font-size: 15.5px; font-weight: 800; line-height: 1.35; }
-.reco-th { margin-top: 7px; font-size: 12px; line-height: 1.6; color: var(--muted); }
+.reco-en { font-size: calc(15.5px * var(--fs)); font-weight: 800; line-height: 1.35; }
+.reco-th { margin-top: 7px; font-size: calc(12px * var(--fs)); line-height: 1.6; color: var(--muted); }
 
 .more-recs { margin-top: 18px; }
 .more-rec { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; }
-.more-en { font-size: 12.5px; font-weight: 700; line-height: 1.4; }
-.more-th { margin-top: 4px; font-size: 11px; line-height: 1.55; color: var(--muted); }
+.more-en { font-size: calc(12.5px * var(--fs)); font-weight: 700; line-height: 1.4; }
+.more-th { margin-top: 4px; font-size: calc(11px * var(--fs)); line-height: 1.55; color: var(--muted); }
 
 .why { display: flex; gap: 12px; margin-top: 20px; align-items: flex-start; }
-.why-k { flex: none; font-size: 12px; font-weight: 800; color: var(--brand); }
-.why-en { font-size: 12.5px; line-height: 1.5; color: #c6dbf0; }
-.why-th { margin-top: 6px; font-size: 11.5px; line-height: 1.6; color: var(--dim); }
+.why-k { flex: none; font-size: calc(12px * var(--fs)); font-weight: 800; color: var(--brand); }
+.why-en { font-size: calc(12.5px * var(--fs)); line-height: 1.5; color: #c6dbf0; }
+.why-th { margin-top: 6px; font-size: calc(11.5px * var(--fs)); line-height: 1.6; color: var(--dim); }
 
 .impacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
 .impact {
   display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center;
-  padding: 14px 7px; border-radius: 12px; font-size: 10px; line-height: 1.35;
+  padding: 14px 7px; border-radius: 12px; font-size: calc(10px * var(--fs)); line-height: 1.35;
   background: var(--card); border: 1px solid var(--line);
 }
 .impact.good { color: #6ee7a0; border-color: rgba(34, 197, 94, 0.32); }
@@ -4328,12 +4339,12 @@ onMounted(() => {
   border-radius: 14px; background: rgba(23, 66, 116, 0.36); border: 1px solid var(--line-on);
 }
 .closing-ic { color: #6ee7a0; }
-.closing p { font-size: 13.5px; line-height: 1.55; color: #d6e7f8; }
+.closing p { font-size: calc(13.5px * var(--fs)); line-height: 1.55; color: #d6e7f8; }
 
 .final-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 26px; }
 .share-link {
   display: block; width: 100%; margin: 16px 0 30px; padding: 6px;
-  font-size: 11.5px; color: var(--brand); text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+  font-size: calc(11.5px * var(--fs)); color: var(--brand); text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
 }
 
 /* ── หน้า 03 · ผลลัพธ์ 4 แผงในหน้าเดียว ── */
@@ -4352,65 +4363,65 @@ onMounted(() => {
 .panel > *:not(.screen-photo) { position: relative; z-index: 1; }
 
 /* เนื้อหาเดิมออกแบบไว้เต็มจอ — ย่อให้พอดีความกว้างแผง */
-.panel .h-en, .panel .h-en.upper { font-size: 17px; }
-.panel .h-th { margin-top: 5px; font-size: 11px; }
+.panel .h-en, .panel .h-en.upper { font-size: calc(17px * var(--fs)); }
+.panel .h-th { margin-top: 5px; font-size: calc(11px * var(--fs)); }
 .panel .cols { display: block; margin-top: 0; }
-.panel .list-title { margin: 16px 0 10px; font-size: 12.5px; }
-.panel .quote-mini { margin: 14px 0 0; font-size: 11.5px; }
+.panel .list-title { margin: 16px 0 10px; font-size: calc(12.5px * var(--fs)); }
+.panel .quote-mini { margin: 14px 0 0; font-size: calc(11.5px * var(--fs)); }
 
 .panel .flag { margin-top: 12px; }
-.panel .flag-en { font-size: 12px; }
-.panel .flag-th { font-size: 10.5px; margin-top: 4px; }
+.panel .flag-en { font-size: calc(12px * var(--fs)); }
+.panel .flag-th { font-size: calc(10.5px * var(--fs)); margin-top: 4px; }
 .panel .peak-badge { margin-top: 12px; }
 .panel-see .peak-badge { margin-top: auto; }
 .panel-sim .flag { margin-top: auto; }
-.panel .peak-time { font-size: 14px; }
-.panel .peak-cap { font-size: 9px; }
+.panel .peak-time { font-size: calc(14px * var(--fs)); }
+.panel .peak-cap { font-size: calc(9px * var(--fs)); }
 .panel .tiles { margin-top: 12px; gap: 7px; }
 .panel .tile { padding: 11px 8px 12px; }
-.panel .tile-head { font-size: 9.5px; gap: 5px; }
+.panel .tile-head { font-size: calc(9.5px * var(--fs)); gap: 5px; }
 .panel .tile-chip { width: 21px; height: 21px; }
-.panel .tile-val { margin-top: 6px; font-size: 19px; }
-.panel .tile-cap { font-size: 8px; }
+.panel .tile-val { margin-top: 6px; font-size: calc(19px * var(--fs)); }
+.panel .tile-cap { font-size: calc(8px * var(--fs)); }
 
 .panel .ring-wrap, .panel .ring-wrap.relations { max-width: 250px; margin: 8px auto 0; }
 .panel .rel-node :deep(.ic) { width: 18px; height: 18px; }
 .panel .rel-node.lead :deep(.ic) { width: 21px; height: 21px; }
-.panel .rel-label, .panel .rel-node.lead .rel-label { font-size: 10px; }
-.panel .rel-val, .panel .rel-node.lead .rel-val { font-size: 11px; }
+.panel .rel-label, .panel .rel-node.lead .rel-label { font-size: calc(10px * var(--fs)); }
+.panel .rel-val, .panel .rel-node.lead .rel-val { font-size: calc(11px * var(--fs)); }
 .panel .insight-list { gap: 9px; }
-.panel .ins-en { font-size: 11px; }
-.panel .ins-th { font-size: 9.5px; }
+.panel .ins-en { font-size: calc(11px * var(--fs)); }
+.panel .ins-th { font-size: calc(9.5px * var(--fs)); }
 .panel .num { flex: none; }
 
 .panel .scn-tabs { margin-top: 14px; gap: 6px; }
-.panel .scn-tab { font-size: 10.5px; padding: 8px 4px; }
+.panel .scn-tab { font-size: calc(10.5px * var(--fs)); padding: 8px 4px; }
 .panel .slider-box { margin-top: 12px; padding: 13px; }
-.panel .slider-head { font-size: 11.5px; }
-.panel .slider-bubble { font-size: 10.5px; padding: 3px 10px; }
+.panel .slider-head { font-size: calc(11.5px * var(--fs)); }
+.panel .slider-bubble { font-size: calc(10.5px * var(--fs)); padding: 3px 10px; }
 .panel .table-wrap { margin-top: 12px; }
-.panel .sim-table { font-size: 11px; }
+.panel .sim-table { font-size: calc(11px * var(--fs)); }
 .panel .sim-table th, .panel .sim-table td { padding: 8px 7px; }
-.panel .sim-table thead th { font-size: 9.5px; }
+.panel .sim-table thead th { font-size: calc(9.5px * var(--fs)); }
 .panel .cell-ic { margin-right: 5px; }
 .panel .cell-ic :deep(.ic) { width: 12px; height: 12px; }
 
 .panel .reco { margin-top: 12px; gap: 9px; }
-.panel .reco-en { font-size: 13.5px; }
-.panel .reco-th { font-size: 11px; margin-top: 5px; }
-.panel .pill { font-size: 8.5px; padding: 3px 8px; }
+.panel .reco-en { font-size: calc(13.5px * var(--fs)); }
+.panel .reco-th { font-size: calc(11px * var(--fs)); margin-top: 5px; }
+.panel .pill { font-size: calc(8.5px * var(--fs)); padding: 3px 8px; }
 .panel .why { margin-top: 14px; gap: 9px; }
 .panel .more-recs { margin-top: 14px; }
 .panel .more-rec { gap: 8px; margin-top: 8px; }
-.panel .more-en { font-size: 11px; }
-.panel .more-th { font-size: 9.5px; margin-top: 3px; }
-.panel .why-k { font-size: 11.5px; }
-.panel .why-en { font-size: 11px; }
-.panel .why-th { font-size: 10px; }
+.panel .more-en { font-size: calc(11px * var(--fs)); }
+.panel .more-th { font-size: calc(9.5px * var(--fs)); margin-top: 3px; }
+.panel .why-k { font-size: calc(11.5px * var(--fs)); }
+.panel .why-en { font-size: calc(11px * var(--fs)); }
+.panel .why-th { font-size: calc(10px * var(--fs)); }
 .panel .impacts { gap: 6px; }
-.panel .impact { font-size: 9px; padding: 11px 5px; }
+.panel .impact { font-size: calc(9px * var(--fs)); padding: 11px 5px; }
 .panel .closing { margin-top: 14px; padding: 12px; gap: 9px; }
-.panel .closing p { font-size: 11.5px; }
+.panel .closing p { font-size: calc(11.5px * var(--fs)); }
 
 /* ── ปุ่ม / แถบล่าง ── */
 /* ชุดปุ่มจบงานของหน้าสุดท้าย วางชิดขวาในแถบล่างคู่กับปุ่มกลับ */
@@ -4432,7 +4443,7 @@ onMounted(() => {
 .btn-next {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 11px 22px; border-radius: 999px; cursor: pointer;
-  font-size: 13px; font-weight: 700; color: #eaf7ff;
+  font-size: calc(13px * var(--fs)); font-weight: 700; color: #eaf7ff;
   background: linear-gradient(95deg, #1d6ecd, #3390f2);
   box-shadow: 0 8px 26px rgba(29, 110, 205, 0.38);
   transition: opacity 0.2s, transform 0.15s;
@@ -4444,7 +4455,7 @@ onMounted(() => {
 .btn-outline {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 11px 22px; border-radius: 999px; cursor: pointer;
-  font-size: 13px; font-weight: 600; color: #cfe3f7;
+  font-size: calc(13px * var(--fs)); font-weight: 600; color: #cfe3f7;
   background: rgba(10, 25, 44, 0.7); border: 1px solid var(--line-on);
   transition: border-color 0.2s, color 0.2s;
 }
@@ -4556,10 +4567,10 @@ onMounted(() => {
 }
 .demolink__label { display: flex; flex-direction: column; gap: 3px; line-height: 1.3; min-width: 0; }
 .demolink__label b {
-  font-size: 14px; font-weight: 800; letter-spacing: 0.09em;
+  font-size: calc(14px * var(--fs)); font-weight: 800; letter-spacing: 0.09em;
   color: var(--accent); white-space: nowrap;
 }
-.demolink__label small { font-size: 11.5px; letter-spacing: 0.06em; text-align: center; color: var(--muted); transition: color 0.35s var(--ease); }
+.demolink__label small { font-size: calc(11.5px * var(--fs)); letter-spacing: 0.06em; text-align: center; color: var(--muted); transition: color 0.35s var(--ease); }
 .demolink:hover .demolink__label small { color: #eaf6ff; }
 
 /* ── ปุ่มกลาง — ตัวหลักของแถว ──
@@ -4608,11 +4619,11 @@ onMounted(() => {
 }
 .demolink--lead .demolink__icon :deep(svg) { width: 25px; height: 25px; stroke-width: 1.8; }
 .demolink--lead .demolink__label b {
-  font-size: 14.5px; letter-spacing: 0.095em;
+  font-size: calc(14.5px * var(--fs)); letter-spacing: 0.095em;
   color: #ffffff;
   text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 85%, transparent);
 }
-.demolink--lead .demolink__label small { font-size: 11.5px; font-weight: 600; color: #dff3e6; }
+.demolink--lead .demolink__label small { font-size: calc(11.5px * var(--fs)); font-weight: 600; color: #dff3e6; }
 
 /* เครื่องเคลื่อนไหวปิดอยู่ → ยังต้องเด่นด้วยเงาคงที่ */
 @media (prefers-reduced-motion: reduce) {
@@ -4629,9 +4640,9 @@ onMounted(() => {
   .demolink { gap: 10px; padding: 13px 14px; }
   .demolink__icon { width: 40px; height: 40px; }
   .demolink--lead .demolink__icon { width: 42px; height: 42px; }
-  .demolink__label b { font-size: 12px; letter-spacing: 0.05em; }
-  .demolink--lead .demolink__label b { font-size: 12.5px; letter-spacing: 0.055em; }
-  .demolink__label small { font-size: 10.5px; }
+  .demolink__label b { font-size: calc(12px * var(--fs)); letter-spacing: 0.05em; }
+  .demolink--lead .demolink__label b { font-size: calc(12.5px * var(--fs)); letter-spacing: 0.055em; }
+  .demolink__label small { font-size: calc(10.5px * var(--fs)); }
 }
 
 /* จอแคบ: สามปุ่มเรียงกันไม่ไหว ให้ซ้อนลงมาเป็นแถวเดียว */
@@ -4640,7 +4651,7 @@ onMounted(() => {
   .demolink--lead, .demolink--lead:hover { transform: none; }
 }
 
-.btn-back { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--muted); cursor: pointer; }
+.btn-back { display: inline-flex; align-items: center; gap: 7px; font-size: calc(12.5px * var(--fs)); color: var(--muted); cursor: pointer; }
 .btn-back:hover { color: #cfe3f7; }
 .btn-back :deep(.ic) { width: 15px; height: 15px; }
 
@@ -4675,7 +4686,7 @@ onMounted(() => {
   /* หน้ากรอกข้อมูล — ช่องเรียงลงมาเสมอ อยู่กลางจอ ไม่ยืดเต็มความกว้าง */
   .screen-narrow { max-width: 560px; margin-inline: auto; }
   .ring-wrap { margin-top: 6px; max-width: 380px; }
-  .sim-table { font-size: 13px; }
+  .sim-table { font-size: calc(13px * var(--fs)); }
   .sim-table th, .sim-table td { padding: 13px 16px; }
 }
 
@@ -4684,19 +4695,19 @@ onMounted(() => {
   .brand-bar { padding: 10px 16px 8px; }
   .progbar { padding-bottom: 12px; }
   .h-en { font-size: 21px; }
-  .h-en.upper { font-size: 19px; }
+  .h-en.upper { font-size: calc(19px * var(--fs)); }
   .cover-img { height: 128px; }
   .peak-badge { margin-top: 24px; }
   .ring-wrap { max-width: 268px; margin: 12px auto; }
   .ring-node { --dot: 42px; }
-  .node-label { font-size: 11.5px; }
-  .ring-core { font-size: 16px; }
+  .node-label { font-size: calc(11.5px * var(--fs)); }
+  .ring-core { font-size: calc(16px * var(--fs)); }
   .core-halo { width: 130px; height: 130px; }
   .rel-node { width: 26%; height: 26%; }
   .rel-node.lead { width: 29%; height: 29%; }
   .rel-node :deep(.ic) { width: 22px; height: 22px; }
-  .rel-label { font-size: 10px; }
-  .rel-val { font-size: 11px; }
+  .rel-label { font-size: calc(10px * var(--fs)); }
+  .rel-val { font-size: calc(11px * var(--fs)); }
   .stage-slot { height: 74px; }
   .field-list { gap: 10px; margin-top: 14px; max-width: 520px; }
   .screen-narrow { max-width: 520px; margin-inline: auto; }
@@ -4715,33 +4726,33 @@ onMounted(() => {
 
   .h-en { font-size: 33px; }
   .h-en.upper { font-size: 30px; }
-  .h-th { font-size: 14px; }
-  .tag { font-size: 12px; max-width: 200px; }
-  .list-title { font-size: 16px; }
+  .h-th { font-size: calc(14px * var(--fs)); }
+  .tag { font-size: calc(12px * var(--fs)); max-width: 200px; }
+  .list-title { font-size: calc(16px * var(--fs)); }
 
   /* 01 */
   .org-row { padding: 16px 18px; }
-  .org-en { font-size: 15px; }
-  .org-th { font-size: 12px; }
-  .quote-mini { font-size: 14px; }
-  .dd-title { font-size: 13px; }
-  .dd-sub { font-size: 11px; }
+  .org-en { font-size: calc(15px * var(--fs)); }
+  .org-th { font-size: calc(12px * var(--fs)); }
+  .quote-mini { font-size: calc(14px * var(--fs)); }
+  .dd-title { font-size: calc(13px * var(--fs)); }
+  .dd-sub { font-size: calc(11px * var(--fs)); }
 
   /* 02 */
   .screen-narrow { max-width: 640px; }
   .field { padding: 18px; }
-  .field-label { font-size: 14px; }
-  .field-note { font-size: 12px; }
+  .field-label { font-size: calc(14px * var(--fs)); }
+  .field-note { font-size: calc(12px * var(--fs)); }
   .field-input input { font-size: 22px; padding: 12px 15px; }
-  .field-unit { font-size: 12.5px; }
-  .field-hint { font-size: 12px; }
+  .field-unit { font-size: calc(12.5px * var(--fs)); }
+  .field-hint { font-size: calc(12px * var(--fs)); }
 
   /* 03 */
   .sig { padding: 20px 10px 16px; }
-  .sig-en { font-size: 13.5px; }
-  .sig-th { font-size: 11px; }
-  .sub-q { font-size: 16px; }
-  .peak { font-size: 13.5px; padding: 11px 18px; }
+  .sig-en { font-size: calc(13.5px * var(--fs)); }
+  .sig-th { font-size: calc(11px * var(--fs)); }
+  .sub-q { font-size: calc(16px * var(--fs)); }
+  .peak { font-size: calc(13.5px * var(--fs)); padding: 11px 18px; }
 
   /* บีบช่องหัวข้อกับแถบบนให้แคบลง = ทั้งวงและรายการขยับขึ้นไปทางหัวจอ
      โดยไม่ต้องย่อขนาดวง (ขนาดวงคุมด้วย .cols-awaken ด้านล่าง) */
@@ -4773,51 +4784,51 @@ onMounted(() => {
   .ring-core { font-size: 33px; }
   .core-halo { width: 280px; height: 280px; }
   .ring-node { --dot: 60px; }
-  .node-label { font-size: 14.5px; }
+  .node-label { font-size: calc(14.5px * var(--fs)); }
   .await-list { gap: 15px; }
   .await-list li { grid-template-columns: 22px 1fr; gap: 13px; }
   .await-mark :deep(.ic) { width: 19px; height: 19px; }
   .hollow, .spin { width: 18px; height: 18px; }
-  .await-en { font-size: 17px; }
-  .await-th { font-size: 13px; }
-  .rel-label { font-size: 14px; }
-  .rel-val { font-size: 15px; }
-  .rel-node.lead .rel-label { font-size: 15px; }
-  .rel-node.lead .rel-val { font-size: 17px; }
-  .ins-en { font-size: 14px; }
-  .ins-th { font-size: 11.5px; }
+  .await-en { font-size: calc(17px * var(--fs)); }
+  .await-th { font-size: calc(13px * var(--fs)); }
+  .rel-label { font-size: calc(14px * var(--fs)); }
+  .rel-val { font-size: calc(15px * var(--fs)); }
+  .rel-node.lead .rel-label { font-size: calc(15px * var(--fs)); }
+  .rel-node.lead .rel-val { font-size: calc(17px * var(--fs)); }
+  .ins-en { font-size: calc(14px * var(--fs)); }
+  .ins-th { font-size: calc(11.5px * var(--fs)); }
 
   /* 05 */
-  .flag-en { font-size: 15px; }
-  .flag-th { font-size: 12.5px; }
-  .peak-time { font-size: 17px; }
-  .peak-cap { font-size: 11px; }
+  .flag-en { font-size: calc(15px * var(--fs)); }
+  .flag-th { font-size: calc(12.5px * var(--fs)); }
+  .peak-time { font-size: calc(17px * var(--fs)); }
+  .peak-cap { font-size: calc(11px * var(--fs)); }
   .tile { padding: 16px 14px 17px; }
-  .tile-head { font-size: 12px; }
+  .tile-head { font-size: calc(12px * var(--fs)); }
   .tile-chip { width: 26px; height: 26px; }
   .tile-val { font-size: 28px; }
-  .tile-cap { font-size: 10.5px; }
+  .tile-cap { font-size: calc(10.5px * var(--fs)); }
 
   /* 07 */
-  .scn-tab { font-size: 14px; padding: 14px 10px; }
-  .slider-head { font-size: 14px; }
-  .slider-bubble { font-size: 12.5px; padding: 4px 13px; }
-  .sim-table { font-size: 14.5px; }
+  .scn-tab { font-size: calc(14px * var(--fs)); padding: 14px 10px; }
+  .slider-head { font-size: calc(14px * var(--fs)); }
+  .slider-bubble { font-size: calc(12.5px * var(--fs)); padding: 4px 13px; }
+  .sim-table { font-size: calc(14.5px * var(--fs)); }
   .sim-table th, .sim-table td { padding: 16px 18px; }
-  .sim-table thead th { font-size: 12px; }
+  .sim-table thead th { font-size: calc(12px * var(--fs)); }
 
   /* 08 */
-  .reco-en { font-size: 18px; }
-  .reco-th { font-size: 13px; }
-  .why-k { font-size: 14px; }
-  .why-en { font-size: 14px; }
-  .why-th { font-size: 12.5px; }
-  .impact { font-size: 11.5px; padding: 18px 10px; }
-  .closing p { font-size: 15px; }
-  .share-link { font-size: 13px; }
+  .reco-en { font-size: calc(18px * var(--fs)); }
+  .reco-th { font-size: calc(13px * var(--fs)); }
+  .why-k { font-size: calc(14px * var(--fs)); }
+  .why-en { font-size: calc(14px * var(--fs)); }
+  .why-th { font-size: calc(12.5px * var(--fs)); }
+  .impact { font-size: calc(11.5px * var(--fs)); padding: 18px 10px; }
+  .closing p { font-size: calc(15px * var(--fs)); }
+  .share-link { font-size: calc(13px * var(--fs)); }
 
   /* ปุ่ม — ไม่ให้ปุ่มบันทึกยืดเต็มความกว้างจนเสียสัดส่วน */
-  .btn-next, .btn-outline { font-size: 14.5px; padding: 13px 26px; }
+  .btn-next, .btn-outline { font-size: calc(14.5px * var(--fs)); padding: 13px 26px; }
   .final-row .btn-next { flex: 0 1 auto; min-width: 320px; }
 
   /* จอสูงมาก: หัวข้ออยู่บน แล้วเนื้อหาหลักลอยกึ่งกลางพื้นที่ที่เหลือ
@@ -4848,26 +4859,26 @@ onMounted(() => {
      มุมโค้งก็ต้องเล็กลงตามขนาดการ์ด ไม่งั้นดูบวมเกินกรอบ */
   .panel .tiles { gap: 6px; }
   .panel .tile { padding: 9px 8px 10px; border-radius: 10px; }
-  .panel .tile-head { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 10px; }
+  .panel .tile-head { flex-direction: column; align-items: flex-start; gap: 4px; font-size: calc(10px * var(--fs)); }
   .panel .tile-chip { width: 19px; height: 19px; border-radius: 6px; }
   .panel .tile-chip :deep(.ic) { width: 11px; height: 11px; }
-  .panel .tile-val { margin-top: 4px; font-size: 17px; }
-  .panel .tile-cap { margin-top: 2px; font-size: 8px; line-height: 1.35; }
+  .panel .tile-val { margin-top: 4px; font-size: calc(17px * var(--fs)); }
+  .panel .tile-cap { margin-top: 2px; font-size: calc(8px * var(--fs)); line-height: 1.35; }
 
   /* โหนดในวงความสัมพันธ์: ไอคอน + ชื่อ + ตัวเลข ซ้อนกันสูงเกือบเท่าเส้นผ่านศูนย์กลาง
      แถวตัวเลขจึงไปอยู่ช่วงล่างที่คอร์ดของวงกลมแคบ แล้วล้นออกนอกขอบวง
      ย่อไอคอนกับตัวอักษรให้กองข้อความสั้นลง ทุกแถวจะขยับเข้าใกล้กลางวงที่กว้างกว่า */
   .panel .rel-node :deep(.ic) { width: 14px; height: 14px; }
   .panel .rel-node.lead :deep(.ic) { width: 16px; height: 16px; }
-  .panel .rel-label, .panel .rel-node.lead .rel-label { font-size: 9px; }
-  .panel .rel-val, .panel .rel-node.lead .rel-val { font-size: 9.5px; }
+  .panel .rel-label, .panel .rel-node.lead .rel-label { font-size: calc(9px * var(--fs)); }
+  .panel .rel-val, .panel .rel-node.lead .rel-val { font-size: calc(9.5px * var(--fs)); }
 
   /* ตารางมี 4 คอลัมน์ (Metric · Current · Scenario · Change) แต่แผงกว้างแค่ ~238px
      ค่าเดิมทำให้ตารางกว้างเกินจนคอลัมน์ Change หลุดออกนอกกรอบ เห็นไม่ครบ
      บีบระยะ + ให้หัวคอลัมน์ตัดบรรทัดได้ ตารางจะพอดีกรอบโดยไม่ต้องเลื่อนแนวนอน */
-  .panel .sim-table { font-size: 10.5px; }
+  .panel .sim-table { font-size: calc(10.5px * var(--fs)); }
   .panel .sim-table th, .panel .sim-table td { padding: 7px 4px; }
-  .panel .sim-table thead th { font-size: 8.5px; white-space: normal; line-height: 1.3; }
+  .panel .sim-table thead th { font-size: calc(8.5px * var(--fs)); white-space: normal; line-height: 1.3; }
   .panel .cell-ic { margin-right: 4px; }
   .panel .cell-ic :deep(.ic) { width: 11px; height: 11px; }
 
@@ -4901,7 +4912,7 @@ onMounted(() => {
 .dd-next--wide { display: block; }
 .btn-next--grad {
   width: 100%; justify-content: center;
-  padding: 14px 22px; font-size: 13.5px;
+  padding: 14px 22px; font-size: calc(13.5px * var(--fs));
   background: linear-gradient(95deg, #7c3aed, #3b82f6 55%, #2563eb);
   box-shadow: 0 10px 30px rgba(99, 54, 221, 0.38);
 }
@@ -4912,8 +4923,8 @@ onMounted(() => {
   padding: 2px 0 2px 13px;
   border-left: 2px solid var(--brand);
 }
-.q-intro b { font-size: 15px; font-weight: 700; color: #eaf6ff; }
-.q-intro span { font-size: 11.5px; line-height: 1.6; color: var(--dim); }
+.q-intro b { font-size: calc(15px * var(--fs)); font-weight: 700; color: #eaf6ff; }
+.q-intro span { font-size: calc(11.5px * var(--fs)); line-height: 1.6; color: var(--dim); }
 
 /* ไอคอนช่องกรอกเป็นกล่องสีประจำช่อง ไม่ใช่เส้นเทาลอย ๆ */
 .field-ic {
@@ -5099,8 +5110,8 @@ onMounted(() => {
 }
 .foc-ic :deep(.ic) { width: 17px; height: 17px; }
 .foc-txt { display: grid; gap: 2px; min-width: 0; }
-.foc-th { font-size: 11.5px; font-weight: 600; color: #e3eefb; }
-.foc-en { font-size: 9.5px; color: var(--dim); }
+.foc-th { font-size: calc(11.5px * var(--fs)); font-weight: 600; color: #e3eefb; }
+.foc-en { font-size: calc(9.5px * var(--fs)); color: var(--dim); }
 .foc-check {
   position: absolute; top: 9px; right: 9px;
   display: grid; place-items: center; width: 16px; height: 16px;
@@ -5117,9 +5128,19 @@ onMounted(() => {
 }
 .lpk.on { border-color: var(--brand); color: #dcefff; background: rgba(23, 66, 116, 0.5); }
 .lpk-ic :deep(.ic) { width: 19px; height: 19px; }
-.lpk-th { font-size: 11.5px; font-weight: 600; }
-.lpk-win { font-size: 9px; color: var(--dim); }
+.lpk-th { font-size: calc(11.5px * var(--fs)); font-weight: 600; }
+.lpk-win { font-size: calc(9px * var(--fs)); color: var(--dim); }
 .lpk.on .lpk-win { color: var(--muted); }
+/* กรอบเวลาเป็นข้อมูลที่ใช้ตัดสินใจจริง จึงเด่นกว่าชื่อภาษาอังกฤษที่อยู่ล่างสุด
+   ใช้ตัวเลขความกว้างเท่ากันทุกหลัก เลขจะได้ไม่ขยับตอนสลับช่วง */
+.lpk-time {
+  font-size: calc(10.5px * var(--fs));
+  font-weight: 600;
+  color: var(--cyan);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+.lpk.on .lpk-time { color: #9ee9ff; }
 .lpk-check {
   position: absolute; top: 7px; right: 7px;
   display: grid; place-items: center; width: 15px; height: 15px;
@@ -5130,10 +5151,10 @@ onMounted(() => {
 /* ── หัวแผง: ไทยนำ + ป้ายชื่อแผง ── */
 .p-head { display: flex; align-items: flex-start; gap: 10px; }
 .p-head > div { flex: 1; min-width: 0; }
-.h-th-lead { font-size: 16px; font-weight: 700; line-height: 1.3; color: #eaf6ff; }
-.h-en-sub { margin-top: 3px; font-size: 9.5px; letter-spacing: 0.05em; line-height: 1.4; color: var(--dim); }
+.h-th-lead { font-size: calc(16px * var(--fs)); font-weight: 700; line-height: 1.3; color: #eaf6ff; }
+.h-en-sub { margin-top: 3px; font-size: calc(9.5px * var(--fs)); letter-spacing: 0.05em; line-height: 1.4; color: var(--dim); }
 .p-chip {
-  flex: none; padding: 5px 10px; border-radius: 999px; font-size: 9px; white-space: nowrap;
+  flex: none; padding: 5px 10px; border-radius: 999px; font-size: calc(9px * var(--fs)); white-space: nowrap;
   background: rgba(62, 160, 255, 0.14); border: 1px solid var(--line-on); color: #9ecbff;
 }
 
@@ -5144,27 +5165,27 @@ onMounted(() => {
   padding: 11px 10px 12px; border-radius: 12px;
   background: rgba(8, 20, 37, 0.8); border: 1px solid var(--line-on);
 }
-.lk-k { font-size: 9px; line-height: 1.35; color: var(--muted); }
+.lk-k { font-size: calc(9px * var(--fs)); line-height: 1.35; color: var(--muted); }
 /* ตัวเลขเป็นพระเอกของการ์ด จึงบีบ line-height ให้ชิด ไม่ให้มีช่องว่างคั่นกับหน่วย */
 .lk-v { margin-top: 2px; font-size: 24px; font-weight: 800; line-height: 1.05; color: #eaf6ff; }
-.lk-u { display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: var(--dim); }
+.lk-u { display: flex; align-items: center; gap: 4px; font-size: calc(9.5px * var(--fs)); color: var(--dim); }
 .lk-u :deep(.ic) { width: 11px; height: 11px; }
 /* ตัวเลขเทียบสัปดาห์ก่อนอยู่บรรทัดเดียวกัน ไม่ตัดคำลงไปดันการ์ดให้สูงกว่าเพื่อน */
 .lk-d {
   display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 4px; margin-top: 4px;
-  font-size: 10px; color: var(--good);
+  font-size: calc(10px * var(--fs)); color: var(--good);
 }
 .lk-d :deep(.ic) { width: 10px; height: 10px; align-self: center; }
-.lk-d small { font-size: 8.5px; color: var(--dim); }
+.lk-d small { font-size: calc(8.5px * var(--fs)); color: var(--dim); }
 
 /* ── 05 · กราฟความหนาแน่นรายวัน ── */
-.lb-title { margin-top: 20px; font-size: 11.5px; font-weight: 600; color: #cfe0ff; }
+.lb-title { margin-top: 20px; font-size: calc(11.5px * var(--fs)); font-weight: 600; color: #cfe0ff; }
 .lb-title--gap { margin-top: 24px; }
 .lb-chart { margin-top: 10px; margin-bottom: 16px; }
 .lb-plot { display: flex; gap: 8px; height: 132px; }
 .lb-yaxis {
   display: flex; flex-direction: column; justify-content: space-between;
-  flex: none; font-size: 8.5px; color: var(--dim);
+  flex: none; font-size: calc(8.5px * var(--fs)); color: var(--dim);
 }
 /* แท่งวางบนเส้นฐานเดียวกัน ความสูงเป็น % ของกรอบ จึงต้องชิดล่าง */
 .lb-bars {
@@ -5180,7 +5201,7 @@ onMounted(() => {
 @keyframes lbBar { from { height: 0 !important; } }
 .lb-xaxis {
   display: flex; gap: 2px; margin-top: 5px; padding-left: 30px;
-  font-size: 8.5px; color: var(--dim);
+  font-size: calc(8.5px * var(--fs)); color: var(--dim);
 }
 .lb-xaxis span { flex: 1; text-align: center; white-space: nowrap; }
 
@@ -5197,8 +5218,8 @@ onMounted(() => {
   border-radius: 9px; background: rgba(251, 191, 36, 0.16); color: #fbbf24;
 }
 .lb-now__ic :deep(.ic) { width: 17px; height: 17px; }
-.lb-now p { flex: 1; min-width: 0; font-size: 10.5px; line-height: 1.6; color: var(--dim); }
-.lb-now b { font-size: 11px; color: #ffe9b0; }
+.lb-now p { flex: 1; min-width: 0; font-size: calc(10.5px * var(--fs)); line-height: 1.6; color: var(--dim); }
+.lb-now b { font-size: calc(11px * var(--fs)); color: #ffe9b0; }
 .lb-now > :deep(.ic) { flex: none; width: 15px; height: 15px; color: var(--muted); }
 
 /* ── 06 · ข้อสังเกต + ความสัมพันธ์ที่พบ ── */
@@ -5216,7 +5237,7 @@ onMounted(() => {
   background: color-mix(in srgb, var(--sig) 18%, transparent);
 }
 .li-ic :deep(.ic) { width: 16px; height: 16px; }
-.li-th { font-size: 11px; line-height: 1.65; color: #d8e6f7; }
+.li-th { font-size: calc(11px * var(--fs)); line-height: 1.65; color: #d8e6f7; }
 
 .li-rel {
   display: flex; align-items: flex-start; gap: 11px; margin-top: auto;
@@ -5224,11 +5245,11 @@ onMounted(() => {
   background: rgba(62, 160, 255, 0.1); border: 1px solid var(--line-on);
 }
 .li-rel__ic { flex: none; color: var(--brand); }
-.li-rel__k { font-size: 11px; font-weight: 700; color: #9ecbff; }
-.li-rel__v { margin-top: 5px; font-size: 10.5px; line-height: 1.7; color: #cfe0ff; }
+.li-rel__k { font-size: calc(11px * var(--fs)); font-weight: 700; color: #9ecbff; }
+.li-rel__v { margin-top: 5px; font-size: calc(10.5px * var(--fs)); line-height: 1.7; color: #cfe0ff; }
 
 /* ── 07 · เส้นคาดการณ์ 7 วัน ── */
-.lf-legend { display: flex; gap: 14px; margin-top: 8px; font-size: 9.5px; color: var(--muted); }
+.lf-legend { display: flex; gap: 14px; margin-top: 8px; font-size: calc(9.5px * var(--fs)); color: var(--muted); }
 .lf-legend span { display: flex; align-items: center; gap: 5px; }
 .lf-legend i { width: 8px; height: 8px; border-radius: 50%; }
 
@@ -5247,18 +5268,18 @@ onMounted(() => {
 .lf-yaxis {
   position: absolute; left: 0; top: 5px; height: 122px;
   display: flex; flex-direction: column; justify-content: space-between;
-  font-size: 8.5px; color: var(--dim); pointer-events: none;
+  font-size: calc(8.5px * var(--fs)); color: var(--dim); pointer-events: none;
 }
 /* ป้ายเตือนขึ้นบรรทัดเองด้วย <br> แล้ว ถ้าปล่อยให้ตัดคำตามความกว้างแผง
    ตอนเรียง 4 คอลัมน์มันจะถูกบีบจนเป็นแท่งสูงพาดทับเส้นกราฟ */
 .lf-flag {
   position: absolute; top: -2px; transform: translateX(-50%); white-space: nowrap;
   padding: 6px 10px; border-radius: 10px; text-align: center; line-height: 1.35;
-  font-size: 9.5px; font-weight: 700; color: #ffd9d9;
+  font-size: calc(9.5px * var(--fs)); font-weight: 700; color: #ffd9d9;
   background: rgba(190, 40, 50, 0.9); border: 1px solid rgba(240, 82, 82, 0.6);
 }
-.lf-flag small { font-size: 8.5px; font-weight: 500; opacity: 0.85; }
-.lf-xaxis { display: flex; margin-top: 4px; font-size: 9px; color: var(--dim); }
+.lf-flag small { font-size: calc(8.5px * var(--fs)); font-weight: 500; opacity: 0.85; }
+.lf-xaxis { display: flex; margin-top: 4px; font-size: calc(9px * var(--fs)); color: var(--dim); }
 .lf-xaxis span { flex: 1; text-align: center; }
 
 /* ── 07 · การ์ดสถานการณ์ ── */
@@ -5268,9 +5289,9 @@ onMounted(() => {
   background: rgba(10, 25, 44, 0.55); border: 1px solid var(--line); color: var(--muted);
 }
 .ls.on { border-color: var(--brand); background: rgba(23, 66, 116, 0.55); color: #dcefff; }
-.ls-th { font-size: 11.5px; font-weight: 600; }
-.ls-sub { font-size: 13px; font-weight: 800; color: #eaf6ff; }
-.ls-v { font-size: 9px; color: var(--dim); }
+.ls-th { font-size: calc(11.5px * var(--fs)); font-weight: 600; }
+.ls-sub { font-size: calc(13px * var(--fs)); font-weight: 800; color: #eaf6ff; }
+.ls-v { font-size: calc(9px * var(--fs)); color: var(--dim); }
 .ls.on .ls-v { color: var(--muted); }
 
 .lf-note {
@@ -5279,7 +5300,7 @@ onMounted(() => {
   background: rgba(8, 20, 37, 0.7); border: 1px solid var(--line);
 }
 .lf-note__ic { flex: none; color: var(--brand); }
-.lf-note p { font-size: 10.5px; line-height: 1.7; color: #cfe0ff; }
+.lf-note p { font-size: calc(10.5px * var(--fs)); line-height: 1.7; color: #cfe0ff; }
 
 /* ── 08 · ข้อเสนอแนะ ── */
 .lr-wrap { display: flex; flex-direction: column; gap: 9px; margin-top: 18px; }
@@ -5297,18 +5318,18 @@ onMounted(() => {
 }
 .lr-ic :deep(.ic) { width: 16px; height: 16px; }
 .lr-txt { flex: 1; min-width: 0; }
-.lr-title { font-size: 11px; font-weight: 700; line-height: 1.35; color: #e3eefb; }
-.lr-sub { margin-top: 2px; font-size: 9.5px; line-height: 1.5; color: var(--dim); }
+.lr-title { font-size: calc(11px * var(--fs)); font-weight: 700; line-height: 1.35; color: #e3eefb; }
+.lr-sub { margin-top: 2px; font-size: calc(9.5px * var(--fs)); line-height: 1.5; color: var(--dim); }
 /* ปุ่มเล็กและไม่ตัดคำ ไม่งั้นมันกินความกว้างจนชื่อข้อเสนอแนะถูกบีบขึ้นบรรทัดใหม่ */
 .lr-more {
   flex: none; display: flex; align-items: center; gap: 4px; white-space: nowrap;
-  padding: 6px 9px; border-radius: 8px; font-size: 9px; cursor: pointer;
+  padding: 6px 9px; border-radius: 8px; font-size: calc(9px * var(--fs)); cursor: pointer;
   background: rgba(62, 160, 255, 0.12); border: 1px solid var(--line-on); color: #9ecbff;
 }
 .lr-more :deep(.ic) { width: 10px; height: 10px; }
 .lr-detail {
   display: flex; flex-direction: column; gap: 6px;
-  padding: 0 11px 12px 49px; font-size: 9.5px; line-height: 1.6; color: #cfe0ff;
+  padding: 0 11px 12px 49px; font-size: calc(9.5px * var(--fs)); line-height: 1.6; color: #cfe0ff;
 }
 .lr-detail li { list-style: disc; }
 
@@ -5325,8 +5346,8 @@ onMounted(() => {
   border-radius: 10px; background: rgba(255, 255, 255, 0.16); color: #ffe9b0;
 }
 .lr-student__txt { flex: 1; display: grid; gap: 3px; min-width: 0; }
-.lr-student__txt b { font-size: 11.5px; color: #fff; }
-.lr-student__txt small { font-size: 9.5px; line-height: 1.55; color: #ddd6fe; }
+.lr-student__txt b { font-size: calc(11.5px * var(--fs)); color: #fff; }
+.lr-student__txt small { font-size: calc(9.5px * var(--fs)); line-height: 1.55; color: #ddd6fe; }
 .lr-student > :deep(.ic) { flex: none; width: 16px; height: 16px; color: #ddd6fe; }
 
 /* ตั้งแต่ 1000px หน้าผลลัพธ์วาง 4 แผงเรียงข้างกัน แผงจึงเหลือกว้างแค่ ~238px บน iPad Mini
@@ -5335,7 +5356,7 @@ onMounted(() => {
 @media (min-width: 1000px) and (max-width: 1320px) {
   .panel .p-head { gap: 7px; }
   .panel .p-head .h-th-lead { font-size: clamp(13px, calc(1.88vw - 5.75px), 19px); }
-  .panel .p-chip { padding: 4px 7px; font-size: 8px; }
+  .panel .p-chip { padding: 4px 7px; font-size: calc(8px * var(--fs)); }
 
   .panel .lk { padding: 9px 7px 10px; }
   .panel .lk-v { font-size: clamp(17px, calc(3.44vw - 17.38px), 28px); }
@@ -5378,7 +5399,7 @@ onMounted(() => {
   /* คงไว้ 2 คอลัมน์ตามแบบ — 3 คอลัมน์แล้วชื่อไทยยาว ๆ อย่าง "ความหนาแน่นผู้ใช้" จะตัดคำ */
   /* ช่วงเวลาเรียงเต็มแถวเสมอ ห้องสมุดมีสามช่วง หมวดอื่นมีสี่ช่วง จึงไม่ล็อกจำนวนคอลัมน์ */
   .lpk-row { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
-  .h-th-lead { font-size: 19px; }
+  .h-th-lead { font-size: calc(19px * var(--fs)); }
   .lk-v { font-size: 28px; }
 }
 
@@ -5473,17 +5494,17 @@ onMounted(() => {
   border-radius: 9px; color: #f0abfc; background: rgba(240, 171, 252, 0.16);
 }
 .fi-ic :deep(.ic) { width: 17px; height: 17px; }
-.fi-k { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: #d8b4fe; }
-.fi-v { margin-top: 5px; font-size: 11px; line-height: 1.7; color: #ede4ff; }
+.fi-k { font-size: calc(9px * var(--fs)); font-weight: 700; letter-spacing: 0.08em; color: #d8b4fe; }
+.fi-v { margin-top: 5px; font-size: calc(11px * var(--fs)); line-height: 1.7; color: #ede4ff; }
 
 /* ตัวเลขหลักของคณะมีสี่ช่อง — ช่องสุดท้ายเป็นกรอบเวลาจึงตัวเล็กกว่าเพื่อน
    สี่ช่องเรียงแถวเดียวไม่ได้ในหน้าผลลัพธ์: แผงกว้างราว 340px เมื่อเรียงสี่แผงข้างกัน
    "2,500" ที่ 24px กินไปแล้ว ~62px จากช่องละ ~58px เลขจึงชนกันเป็น "2,50035"
    วางเป็น 2x2 แล้วย่อตัวเลขลง ทุกช่องจึงอ่านออกครบทุกความกว้าง */
 .lk-row--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.lk-row--4 .lk-v { font-size: 19px; }
-.lk-v--sm { font-size: 15px; }
-.lk-u--wide { font-size: 9px; white-space: nowrap; }
+.lk-row--4 .lk-v { font-size: calc(19px * var(--fs)); }
+.lk-v--sm { font-size: calc(15px * var(--fs)); }
+.lk-u--wide { font-size: calc(9px * var(--fs)); white-space: nowrap; }
 
 /* ── 05 · แท็บสลับมุมมอง ── */
 .ftabs {
@@ -5493,7 +5514,7 @@ onMounted(() => {
 }
 .ftab {
   padding: 8px 6px; border: 0; border-radius: 8px; cursor: pointer;
-  font-size: 10.5px; color: var(--muted); background: transparent;
+  font-size: calc(10.5px * var(--fs)); color: var(--muted); background: transparent;
   transition: background 0.2s, color 0.2s;
 }
 .ftab.on { color: #f2ecff; background: rgba(167, 139, 250, 0.22); }
@@ -5614,7 +5635,7 @@ onMounted(() => {
   position: absolute; top: 0; left: 0;
   max-width: 142px;
   padding: 5px 9px; border-radius: 9px;
-  font-size: 9px; line-height: 1.5; color: #fff;
+  font-size: calc(9px * var(--fs)); line-height: 1.5; color: #fff;
   background: rgba(60, 22, 96, 0.88); border: 1px solid rgba(196, 181, 253, 0.5);
   box-shadow: 0 6px 18px rgba(4, 2, 16, 0.5);
   backdrop-filter: blur(2px);
@@ -5627,7 +5648,7 @@ onMounted(() => {
 /* ไม่มีอะไรร้อน ป้ายก็ไม่ควรเป็นสีเตือนภัย */
 .fmap-tip--calm i { background: #a5b4fc; box-shadow: 0 0 6px rgba(165, 180, 252, 0.7); }
 
-.fmap-scale { display: flex; align-items: center; gap: 7px; margin-top: 8px; font-size: 8.5px; color: var(--dim); }
+.fmap-scale { display: flex; align-items: center; gap: 7px; margin-top: 8px; font-size: calc(8.5px * var(--fs)); color: var(--dim); }
 /* แถบนี้ต้องใช้สีชุดเดียวกับดวงบนผัง (ดู facGrad* ในเทมเพลต)
    ของเดิมไล่จากฟ้า-เขียว ซึ่งเป็นสีที่ผังไม่เคยแสดงเลย เพราะพื้นที่ไม่แน่นคือ
    "ไม่มีดวง" ไม่ใช่ "ดวงสีฟ้า" แถบจึงต้องเริ่มจากสีอาคารแล้วไล่ไปเหลือง-ส้ม-แดง */
@@ -5643,7 +5664,7 @@ onMounted(() => {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px;
   margin-top: 9px; list-style: none;
 }
-.fmap-key li { display: flex; align-items: center; gap: 6px; font-size: 9px; color: var(--muted); }
+.fmap-key li { display: flex; align-items: center; gap: 6px; font-size: calc(9px * var(--fs)); color: var(--muted); }
 .fmap-key i { flex: none; width: 7px; height: 7px; border-radius: 2px; }
 .fmap-key span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fmap-key b { flex: none; font-weight: 700; color: #ddd3f5; }
@@ -5681,8 +5702,8 @@ onMounted(() => {
 
 /* ── 06 · ห่วงโซ่ความสัมพันธ์ ── */
 .fr-wrap { display: flex; flex-direction: column; flex: 1; margin-top: 18px; }
-.fr-lead { font-size: 13px; font-weight: 700; color: #f2ecff; }
-.fr-sub { margin-top: 3px; font-size: 10px; color: var(--dim); }
+.fr-lead { font-size: calc(13px * var(--fs)); font-weight: 700; color: #f2ecff; }
+.fr-sub { margin-top: 3px; font-size: calc(10px * var(--fs)); color: var(--dim); }
 .fr-grid {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px 12px; margin-top: 13px; list-style: none;
@@ -5699,8 +5720,8 @@ onMounted(() => {
 }
 .fr-ic :deep(.ic) { width: 16px; height: 16px; }
 .fr-txt { display: grid; gap: 2px; min-width: 0; }
-.fr-th { font-size: 10.5px; font-weight: 600; line-height: 1.4; color: #e8e0fb; }
-.fr-en { font-size: 8.5px; color: var(--dim); }
+.fr-th { font-size: calc(10.5px * var(--fs)); font-weight: 600; line-height: 1.4; color: #e8e0fb; }
+.fr-en { font-size: calc(8.5px * var(--fs)); color: var(--dim); }
 /* ลูกศรห้อยใต้การ์ด ชี้ลงไปการ์ดที่อยู่ใต้มันในคอลัมน์เดียวกัน
    ตาราง 2x2 อ่านเป็นสองสาย: ตารางเรียน↓ความต้องการพื้นที่ · การเคลื่อนย้าย↓การใช้ทรัพยากร
    การ์ดแถวล่างจึงไม่มีลูกศร (ตัวที่ 3 ถูกซ่อนไว้ ส่วนตัวที่ 4 ไม่ได้เรนเดอร์ตั้งแต่แรก) */
@@ -5722,11 +5743,11 @@ onMounted(() => {
   border-radius: 9px; color: #f0abfc; background: rgba(240, 171, 252, 0.16);
 }
 .fr-note__ic :deep(.ic) { width: 16px; height: 16px; }
-.fr-note__k { font-size: 11px; font-weight: 700; color: #d8b4fe; }
-.fr-note__v { margin-top: 5px; font-size: 10.5px; line-height: 1.7; color: #ddd3f5; }
+.fr-note__k { font-size: calc(11px * var(--fs)); font-weight: 700; color: #d8b4fe; }
+.fr-note__v { margin-top: 5px; font-size: calc(10.5px * var(--fs)); line-height: 1.7; color: #ddd3f5; }
 
 /* ── 07 · เลือกสถานการณ์ + เส้นจำลอง ── */
-.fs-sub { margin-top: 3px; font-size: 10px; color: var(--dim); }
+.fs-sub { margin-top: 3px; font-size: calc(10px * var(--fs)); color: var(--dim); }
 .fs { display: grid; gap: 12px; margin-top: 12px; }
 .fs-list { display: flex; flex-direction: column; gap: 7px; }
 .fs-opt {
@@ -5738,7 +5759,7 @@ onMounted(() => {
 .fs-opt.on { border-color: var(--line-on); background: rgba(167, 139, 250, 0.2); color: #f2ecff; }
 .fs-opt__ic { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 7px; background: rgba(167, 139, 250, 0.16); }
 .fs-opt__ic :deep(.ic) { width: 14px; height: 14px; }
-.fs-opt__th { flex: 1; min-width: 0; font-size: 10.5px; font-weight: 600; }
+.fs-opt__th { flex: 1; min-width: 0; font-size: calc(10.5px * var(--fs)); font-weight: 600; }
 .fs-opt > :deep(.ic) { flex: none; width: 13px; height: 13px; opacity: 0.6; }
 
 .fs-panel {
@@ -5746,8 +5767,8 @@ onMounted(() => {
   background: rgba(8, 6, 26, 0.7); border: 1px solid var(--line);
 }
 .fs-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.fs-head__k { font-size: 11px; font-weight: 700; color: #f2ecff; }
-.fs-head__s { margin-top: 3px; font-size: 9px; line-height: 1.5; color: var(--dim); }
+.fs-head__k { font-size: calc(11px * var(--fs)); font-weight: 700; color: #f2ecff; }
+.fs-head__s { margin-top: 3px; font-size: calc(9px * var(--fs)); line-height: 1.5; color: var(--dim); }
 .fs-delta { flex: none; font-size: 22px; font-weight: 800; line-height: 1; color: #f472b6; }
 
 .fs-plot { position: relative; margin-top: 10px; }
@@ -5763,20 +5784,20 @@ onMounted(() => {
 .fs-yaxis {
   position: absolute; top: 0; bottom: 0; left: 0;
   display: flex; flex-direction: column; justify-content: space-between;
-  font-size: 8px; color: var(--dim); pointer-events: none;
+  font-size: calc(8px * var(--fs)); color: var(--dim); pointer-events: none;
 }
 /* ป้ายช่วงที่ล้นความจุ ลอยที่มุมบนขวาของกราฟ */
 .fs-flag {
   position: absolute; top: 2px; right: 2px;
   max-width: 116px;
   padding: 4px 7px; border-radius: 7px;
-  font-size: 7.5px; line-height: 1.45; text-align: right; color: #ffe4f1;
+  font-size: calc(7.5px * var(--fs)); line-height: 1.45; text-align: right; color: #ffe4f1;
   background: rgba(88, 20, 58, 0.9); border: 1px solid rgba(244, 114, 182, 0.5);
 }
-.fs-xaxis { display: flex; justify-content: space-between; margin-top: 5px; font-size: 8px; color: var(--dim); }
+.fs-xaxis { display: flex; justify-content: space-between; margin-top: 5px; font-size: calc(8px * var(--fs)); color: var(--dim); }
 .fs-legend {
   display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px;
-  list-style: none; font-size: 8.5px; color: var(--muted);
+  list-style: none; font-size: calc(8.5px * var(--fs)); color: var(--muted);
 }
 .fs-legend li { display: flex; align-items: center; gap: 5px; }
 .fs-legend i { width: 7px; height: 7px; border-radius: 50%; }
@@ -5790,8 +5811,8 @@ onMounted(() => {
   background: rgba(167, 139, 250, 0.1);
 }
 .fc-row { display: flex; align-items: center; gap: 9px; cursor: pointer; }
-.fc-k { flex: none; width: 76px; font-size: 9.5px; color: #ddd3f5; }
-.fc-v { flex: none; width: 36px; text-align: right; font-size: 10px; font-weight: 700; color: #f2ecff; }
+.fc-k { flex: none; width: 76px; font-size: calc(9.5px * var(--fs)); color: #ddd3f5; }
+.fc-v { flex: none; width: 36px; text-align: right; font-size: calc(10px * var(--fs)); font-weight: 700; color: #f2ecff; }
 .fc-range {
   flex: 1; min-width: 0; height: 4px; padding: 0; cursor: pointer;
   appearance: none; -webkit-appearance: none;
@@ -5819,8 +5840,8 @@ onMounted(() => {
   border-radius: 9px; color: #f0abfc; background: rgba(240, 171, 252, 0.18);
 }
 .fd-top__ic :deep(.ic) { width: 17px; height: 17px; }
-.fd-top__k { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: #d8b4fe; }
-.fd-top__v { margin-top: 5px; font-size: 13px; font-weight: 700; line-height: 1.5; color: #f6f1ff; }
+.fd-top__k { font-size: calc(9px * var(--fs)); font-weight: 700; letter-spacing: 0.08em; color: #d8b4fe; }
+.fd-top__v { margin-top: 5px; font-size: calc(13px * var(--fs)); font-weight: 700; line-height: 1.5; color: #f6f1ff; }
 
 .fd-rows { display: flex; flex-direction: column; gap: 12px; }
 .fd-row { display: flex; align-items: flex-start; gap: 11px; }
@@ -5832,10 +5853,10 @@ onMounted(() => {
 .fd-row__ic :deep(.ic) { width: 15px; height: 15px; }
 .fd-row__k {
   display: grid; gap: 2px; min-width: 0;
-  font-size: 9px; font-weight: 700; letter-spacing: 0.06em; color: #cfc2fb;
+  font-size: calc(9px * var(--fs)); font-weight: 700; letter-spacing: 0.06em; color: #cfc2fb;
 }
-.fd-row__k small { font-size: 8.5px; font-weight: 500; letter-spacing: 0; color: var(--dim); }
-.fd-row dd { flex: 1; min-width: 0; font-size: 10.5px; line-height: 1.75; color: #ddd3f5; }
+.fd-row__k small { font-size: calc(8.5px * var(--fs)); font-weight: 500; letter-spacing: 0; color: var(--dim); }
+.fd-row dd { flex: 1; min-width: 0; font-size: calc(10.5px * var(--fs)); line-height: 1.75; color: #ddd3f5; }
 
 /* สถานการณ์อยู่ซ้าย กราฟอยู่ขวา ได้เฉพาะตอนแผงยังกินความกว้างเต็มหน้า
    ตั้งแต่ 1000px ขึ้นไปหน้าผลลัพธ์เรียงสี่แผงข้างกัน แผงเหลือกว้างราว 340px
@@ -5850,7 +5871,7 @@ onMounted(() => {
   .panel .fr-grid { grid-template-columns: minmax(0, 1fr); }
   /* คอลัมน์เดียวแล้วห่วงโซ่กลับมาเป็นสายเดียว 1→2→3→4 ลูกศรตัวที่ 3 จึงต้องกลับมา */
   .panel .fr:nth-child(3) .fr-arrow { display: grid; }
-  .panel .lk-row--4 .lk-v { font-size: 17px; }
+  .panel .lk-row--4 .lk-v { font-size: calc(17px * var(--fs)); }
   .panel .fd-row { flex-direction: column; gap: 7px; }
   .panel .fd-row dt { width: auto; }
   .panel .fi { margin-top: 12px; gap: 9px; padding: 10px; }
@@ -6059,18 +6080,18 @@ onMounted(() => {
 .ct-x:hover { color: #fff; background: rgba(255, 255, 255, 0.12); }
 .ct-x svg { width: 16px; height: 16px; }
 .ct-title { margin: 0; font-size: 20px; font-weight: 600; color: #fff; }
-.ct-sub { margin: 8px 0 0; font-size: 13px; line-height: 1.7; color: #93a4be; }
+.ct-sub { margin: 8px 0 0; font-size: calc(13px * var(--fs)); line-height: 1.7; color: #93a4be; }
 .ct-sub b { color: #cfe0ff; font-weight: 600; }
 .ct-form { margin-top: 20px; display: grid; gap: 13px; text-align: left; }
 .ct-field { display: grid; gap: 6px; }
-.ct-label { font-size: 12px; color: #93a4be; }
+.ct-label { font-size: calc(12px * var(--fs)); color: #93a4be; }
 .ct-field input {
   height: 44px;
   padding: 0 14px;
   border: 1px solid rgba(120, 180, 255, 0.2);
   border-radius: 12px;
   background: rgba(4, 11, 24, 0.9);
-  color: #eaf1ff; font-size: 14px;
+  color: #eaf1ff; font-size: calc(14px * var(--fs));
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -6079,12 +6100,12 @@ onMounted(() => {
   border-color: rgba(79, 216, 255, 0.55);
   box-shadow: 0 0 0 3px rgba(79, 216, 255, 0.14);
 }
-.ct-err { margin: 0; font-size: 12px; color: #ff8d9b; }
+.ct-err { margin: 0; font-size: calc(12px * var(--fs)); color: #ff8d9b; }
 .ct-submit {
   margin-top: 4px; height: 46px;
   border: 0; border-radius: 999px;
   background: linear-gradient(90deg, #2f7dff, #4fd8ff);
-  color: #04121f; font-size: 14px; font-weight: 600;
+  color: #04121f; font-size: calc(14px * var(--fs)); font-weight: 600;
   cursor: pointer;
   transition: filter 0.2s, opacity 0.2s;
 }
@@ -6113,15 +6134,15 @@ onMounted(() => {
   .app { display: none !important; }
   .report { display: block; padding: 0; font-family: 'Kanit', sans-serif; color: #111; }
   .rp-title { font-size: 20px; font-weight: 700; }
-  .rp-sub { margin-top: 4px; font-size: 11px; color: #555; }
-  .report h2 { margin: 18px 0 7px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #bbb; padding-bottom: 4px; }
-  .rp-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .rp-sub { margin-top: 4px; font-size: calc(11px * var(--fs)); color: #555; }
+  .report h2 { margin: 18px 0 7px; font-size: calc(13px * var(--fs)); font-weight: 700; border-bottom: 1px solid #bbb; padding-bottom: 4px; }
+  .rp-table { width: 100%; border-collapse: collapse; font-size: calc(11px * var(--fs)); }
   .rp-table th, .rp-table td { border: 1px solid #ccc; padding: 5px 8px; text-align: left; }
   .rp-table thead th { background: #eee; }
-  .rp-list { margin-left: 18px; font-size: 11px; line-height: 1.7; }
-  .rp-reco { font-size: 13px; font-weight: 700; }
-  .rp-why, .rp-impact { margin-top: 6px; font-size: 11px; line-height: 1.65; }
-  .rp-foot { margin-top: 22px; font-size: 9px; color: #777; }
+  .rp-list { margin-left: 18px; font-size: calc(11px * var(--fs)); line-height: 1.7; }
+  .rp-reco { font-size: calc(13px * var(--fs)); font-weight: 700; }
+  .rp-why, .rp-impact { margin-top: 6px; font-size: calc(11px * var(--fs)); line-height: 1.65; }
+  .rp-foot { margin-top: 22px; font-size: calc(9px * var(--fs)); color: #777; }
   @page { margin: 14mm; }
 }
 </style>

@@ -82,6 +82,18 @@ export const FAC_PEAKS: FacPeakDef[] = [
   },
 ]
 
+/** ชั่วโมงทศนิยม → "HH:MM" */
+const hhmmOf = (h: number) => {
+  const hh = Math.floor(h)
+  const mm = Math.round((h - hh) * 60)
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
+}
+
+/** กรอบเวลาของช่วงพีค เช่น "08:00 – 11:00"
+    ใช้ทั้งบนปุ่มตัวเลือกและในผลลัพธ์ จะได้ไม่มีทางบอกเวลาคนละชุดกัน */
+export const facPeakWindow = (p: FacPeakDef) =>
+  `${hhmmOf(p.center - p.half)} – ${hhmmOf(p.center + p.half)}`
+
 export const FAC_PEAK_MAP: Record<FacPeakId, FacPeakDef> =
   Object.fromEntries(FAC_PEAKS.map(p => [p.id, p])) as Record<FacPeakId, FacPeakDef>
 
@@ -542,12 +554,6 @@ const HEAT_BLOB_REL = 0.5
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
 const safe = (n: number, dflt: number) => (Number.isFinite(n) && n > 0 ? n : dflt)
 
-const hhmm = (h: number) => {
-  const hh = Math.floor(h)
-  const mm = Math.round((h - hh) * 60)
-  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
-}
-
 /** ระฆังคว่ำรอบจุดยอด — ใช้ทั้งเส้นรวมและเส้นรายประเภท */
 const bell = (t: number, center: number) => {
   const d = t - center
@@ -570,7 +576,7 @@ export function facultyReport(input: FacultyInput): FacultyReport {
 
   /* ── ภาพรวมตอนพีค ── */
 
-  const peakWindow = `${hhmm(peakDef.center - peakDef.half)} – ${hhmm(peakDef.center + peakDef.half)}`
+  const peakWindow = facPeakWindow(peakDef)
   const peakConcurrent = Math.round(students * peakDef.concurrency)
 
   // พื้นที่รองรับได้พร้อมกันกี่คน — ห้องเรียนคละขนาด เฉลี่ยทั้งคณะ
@@ -869,7 +875,7 @@ export function facultyReport(input: FacultyInput): FacultyReport {
 
   const rawHour = input.nowHour ?? peakDef.center
   const nowHour = clamp(Math.round(rawHour), OPEN_FROM, Math.floor(OPEN_TO))
-  const nowLabel = hhmm(nowHour)
+  const nowLabel = hhmmOf(nowHour)
   const nowBusy = bell(nowHour, peakDef.center)
   const nowTh =
     nowBusy >= 0.7
@@ -937,7 +943,7 @@ export function facultyReport(input: FacultyInput): FacultyReport {
   const over = tightSeries.points.filter(p => p.value >= 1)
   const pressureFrom = over.length ? over[0].at : peakDef.center - peakDef.half
   const pressureTo = over.length ? over[over.length - 1].at : peakDef.center + peakDef.half
-  const pressureTh = `เกิด Pressure ก่อนใน${tightKindTh} (${hhmm(pressureFrom)} – ${hhmm(pressureTo)})`
+  const pressureTh = `เกิด Pressure ก่อนใน${tightKindTh} (${hhmmOf(pressureFrom)} – ${hhmmOf(pressureTo)})`
 
   /* ── ข้อเสนอแนะ (แผง 08) ── */
 
