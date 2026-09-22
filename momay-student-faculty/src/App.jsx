@@ -116,7 +116,8 @@ export default function App() {
   /* แผงล่างของหน้าผัง — ยุบอยู่โผล่แค่บรรทัดสภาพอากาศ ลากขึ้นดูรายละเอียดได้
      หน้านี้คำถามหลักคือ "ตอนนี้ที่ไหนว่าง" ซึ่งตอบด้วยผัง ไม่ใช่ด้วยตัวเลข
      ตัวเลขจึงรอให้ถามค่อยกาง */
-  const ctxSheet = useSheet(116, Math.round(vh * 0.56))
+  // 84 = ความสูงหัวแผงพอดี ไม่เหลือที่ว่างเปล่าใต้หัวตอนยุบ
+  const ctxSheet = useSheet(84, Math.round(vh * 0.56))
 
   /* ผังหน้านี้กินเต็มพื้นที่เนื้อหา แผงล่างลอยทับอยู่ข้างบนมันอีกที
      ค่าที่คำนวณจาก vh เป็นแค่ค่าสำรองไว้ใช้เฟรมแรกก่อน ResizeObserver จะรายงานกลับมา */
@@ -448,6 +449,7 @@ export default function App() {
               tilt={tilt}
               turn={turn}
               onBack={back}
+              onNext={() => go('extra')}
             />
           </>
         )}
@@ -965,7 +967,7 @@ function Detail({ pick, report, hour, tab, onTab, onBack }) {
 /* tilt/turn ต้องรับเป็น prop ไม่ใช่อ่านจากขอบเขตนอก
    ตอนเพิ่มตัวปรับมุมผมใส่ tilt={tilt} ให้ Campus3D ทุกจุดด้วย sed
    รวมถึงจุดนี้ซึ่งอยู่คนละคอมโพเนนต์ หน้าเส้นทางจึงพังทั้งหน้า */
-function Route({ report, pick, route, districtTone, mapH, tilt, turn, onBack }) {
+function Route({ report, pick, route, districtTone, mapH, tilt, turn, onBack, onNext }) {
   /* ขยายเต็มจอ — ผังในหน้ายังต้องเหลือที่ให้ขั้นตอนข้างล่าง
      พอผู้ใช้อยากดูทางละเอียดก็กดขยาย ไม่ต้องเลือกอย่างใดอย่างหนึ่งตั้งแต่แรก */
   const [big, setBig] = useState(false)
@@ -1081,8 +1083,10 @@ function Route({ report, pick, route, districtTone, mapH, tilt, turn, onBack }) 
           </ol>
         </div>
 
-        <button type="button" className="btn">
-          เริ่มนำทาง
+        {/* ปุ่มนี้พาไปหน้าถัดไปจริง ๆ ไม่ใช่ "เริ่มนำทาง" ที่ไม่ได้ทำอะไร
+            ปุ่มที่กดแล้วไม่เกิดอะไรขึ้นแย่กว่าไม่มีปุ่ม เพราะผู้ใช้จะกดซ้ำแล้วสงสัยว่าพัง */}
+        <button type="button" className="btn" onClick={onNext}>
+          สิ่งที่คุณอาจสนใจ
           <Icon name="next" size={16} />
         </button>
       </div>

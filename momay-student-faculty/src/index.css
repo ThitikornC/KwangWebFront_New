@@ -1947,6 +1947,13 @@ html, body { height: 100%; overflow: hidden; }
   overflow-y: auto;
   padding-bottom: 10px;
 }
+/* height: 0 อย่างเดียวไม่พอ เพราะ flex: 1 ยืดกล่องกลับมาเต็มที่ว่างที่เหลืออยู่ดี
+   เนื้อหาจึงโผล่มาครึ่งแถวใต้หัวแผง ดูเหมือนแผงค้างกลางทางมากกว่าตั้งใจให้เห็น
+   ตอนยุบต้องห้ามยืด ให้หัวแผงกับปุ่มเป็นทุกอย่างที่เห็น */
+.sheet:not(.is-open) .sheet__body {
+  flex: none;
+  height: 0;
+}
 
 .sheet .route__sum {
   margin: 0;
@@ -1972,12 +1979,10 @@ html, body { height: 100%; overflow: hidden; }
 .sheet__head:active {
   cursor: grabbing;
 }
-.sheet__body {
-  height: auto;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-}
+/* เคยมี .sheet__body { height: auto } ซ้ำอยู่ตรงนี้ ซึ่งมาทีหลังจึงชนะกฎ height: 0
+   ข้างบน ตอนแผงยุบอยู่เนื้อหาข้างในจึงยังกินที่ ดันปุ่มล่างจนล้นและโผล่มาแค่เสี้ยว
+   เห็นเป็นขีดแปลก ๆ คั่นอยู่ใต้หัวแผง — ความสูงของแผงคุมด้วย JS
+   ส่วนการซ่อน/กางเนื้อหาคุมด้วยคลาส is-open ที่ประกาศไว้แล้วข้างบน */
 
 
 /* ── จอที่ผังเป็นพระเอก ──
