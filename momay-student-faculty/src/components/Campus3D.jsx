@@ -14,6 +14,7 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { districtCenter } from '../lib/spaces'
 
 /** ต้องตรงกับ faculty.ts — ใช้แปลงหน่วยกริดเป็นหน่วยฉาก */
@@ -89,6 +90,12 @@ const TURN_DEG = 45
 /** ระยะกล้อง ไม่มีผลกับขนาดภาพ (กล้องออร์โธกราฟิก) แค่ต้องไกลพอไม่ให้ตัดวัตถุ */
 const CAM_DIST = 24
 
+/* ความหนาเส้นนำทาง — เส้นมีหน้าที่บอกทาง ไม่ใช่บังผัง
+   ของเดิม 0.15 หนาจนกลืนถนนที่มันวิ่งทับอยู่ เลยดูเหมือนแถบพลาสติกวางพาดเมือง
+   ROUTE_R_BASE คือค่าที่ความถี่ลูกศรถูกปรับจูนไว้ เก็บไว้เทียบสัดส่วนตอนเปลี่ยนความหนา */
+const ROUTE_R_BASE = 0.15
+const ROUTE_R = 0.075
+
 function camPos(tiltDeg, turnDeg) {
   const t = (tiltDeg * Math.PI) / 180
   const r = (turnDeg * Math.PI) / 180
@@ -132,10 +139,21 @@ export default function Campus3D({
     const scene = new THREE.Scene()
     scene.background = null
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    /* จอมือถือความละเอียดสูงไม่ต้องใช้ MSAA ก็คมพออยู่แล้ว
+       เพราะหนึ่งพิกเซล CSS กินหลายพิกเซลจริง ขอบจึงเนียนเองโดยปริยาย
+       เปิด antialias ทิ้งไว้เท่ากับจ่ายค่าประมวลผลฟรีบนเครื่องที่ช้าที่สุด */
+    const dpr = window.devicePixelRatio || 1
+    const renderer = new THREE.WebGLRenderer({ antialias: dpr < 1.5, alpha: true, powerPreference: 'low-power' })
+    /* 1.5 เท่าคมพอสำหรับผังที่เป็นสีเรียบ ๆ ไม่มีลวดลายละเอียด
+       ขยับจาก 1.75 เป็น 1.5 ตัดจำนวนพิกเซลที่ต้องวาดลงราวหนึ่งในสี่ */
+    renderer.setPixelRatio(Math.min(dpr, 1.5))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFShadowMap
+    /* ฉากนี้นิ่งสนิท มีแต่ texture ลูกศรที่เลื่อน เงาจึงไม่มีวันเปลี่ยน
+       ถ้าปล่อย autoUpdate ไว้ เงาทั้งฉากจะถูกคำนวณใหม่ทุกเฟรมที่วาด
+       ซึ่งบนมือถือคือต้นตอหลักที่ทำให้เครื่องร้อนและหน่วง */
+    renderer.shadowMap.autoUpdate = false
+    renderer.shadowMap.needsUpdate = true
     renderer.outputColorSpace = THREE.SRGBColorSpace
     host.appendChild(renderer.domElement)
 
@@ -147,7 +165,8 @@ export default function Campus3D({
     const sun = new THREE.DirectionalLight(0xfff6e8, 2.4)
     sun.position.set(9, 16, 7)
     sun.castShadow = true
-    sun.shadow.mapSize.set(2048, 2048)
+    // 2048 เกินจำเป็นสำหรับผังขนาดนี้ 1024 ให้เงาคุณภาพใกล้กันแต่ใช้หน่วยความจำ 1 ใน 4
+    sun.shadow.mapSize.set(1024, 1024)
     const sc = sun.shadow.camera
     sc.left = -12
     sc.right = 12
@@ -228,16 +247,32 @@ export default function Campus3D({
        และหยุดให้คนที่ตั้งค่าลดการเคลื่อนไหวด้วย */
     const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     let raf = 0
-    const tick = () => {
-      const f = stateRef.current?.flow
-      if (f && !calm?.matches) {
-        f.offset.x -= 0.006
-        renderer.render(scene, camera)
-      }
+    let lastFrame = 0
+    /* ลูปเดิมหมุนตลอดเวลาแม้จอนั้นไม่มีเส้นทางให้วิ่ง เท่ากับกันไม่ให้เครื่องพัก
+       และตอนมีเส้นทางก็วาดฉากใหม่ทั้งฉาก 60 ครั้งต่อวินาที ทั้งที่ลูกศรที่ขยับ
+       ช้ากว่านั้นมาก ลูกศรที่เลื่อนช้า ๆ ที่ 15 เฟรมต่อวินาทียังดูลื่นอยู่
+       แต่ใช้แรงเครื่องเหลือหนึ่งในสี่ของเดิม */
+    const FRAME_MS = 1000 / 15
+    const tick = now => {
       raf = requestAnimationFrame(tick)
+      const f = stateRef.current?.flow
+      // ไม่มีเส้นทาง แท็บถูกซ่อน หรือผู้ใช้ขอลดการเคลื่อนไหว → ไม่ต้องวาดอะไรเลย
+      if (!f || calm?.matches || document.hidden) return
+      if (now - lastFrame < FRAME_MS) return
+      lastFrame = now
+      f.offset.x -= 0.006 * (FRAME_MS / 16.7)
+      renderer.render(scene, camera)
     }
     raf = requestAnimationFrame(tick)
     stateRef.current.stopLoop = () => cancelAnimationFrame(raf)
+
+    /* กลับมาที่แท็บแล้วค่อยเริ่มนับเฟรมใหม่ ไม่งั้นลูกศรจะกระโดด
+       เพราะ timestamp ห่างจากครั้งก่อนเป็นนาที */
+    const onVis = () => {
+      lastFrame = 0
+    }
+    document.addEventListener('visibilitychange', onVis)
+    stateRef.current.stopVis = () => document.removeEventListener('visibilitychange', onVis)
 
     const ro = new ResizeObserver(resize)
     ro.observe(host)
@@ -283,12 +318,18 @@ export default function Campus3D({
 
     return () => {
       stateRef.current?.stopLoop?.()
+      stateRef.current?.stopVis?.()
       host.removeEventListener('pointerdown', onDown)
       host.removeEventListener('pointermove', onMove)
       host.removeEventListener('pointerup', onUp)
       host.removeEventListener('pointercancel', onUp)
       ro.disconnect()
       renderer.dispose()
+      /* dispose() คืนแค่ทรัพยากรฝั่ง three ไม่ได้ปล่อย WebGL context ของเบราว์เซอร์
+         แอปนี้สร้าง Campus3D ใหม่ทุกครั้งที่เปลี่ยนหน้า ถ้าไม่บังคับปล่อย
+         context จะค้างสะสมจนชนเพดาน (ราว 16 ตัว) แล้วเบราว์เซอร์จะทิ้งตัวเก่า
+         ผังหน้าที่เคยเปิดไว้ก็กลายเป็นจอว่าง และเครื่องก็แบกหน่วยความจำ GPU ไว้เปล่า ๆ */
+      renderer.forceContextLoss?.()
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement)
       scene.traverse(o => {
         if (o.geometry) o.geometry.dispose()
@@ -491,10 +532,12 @@ export default function Campus3D({
 
       const len = curve.getLength()
       const tex = flowTexture()
-      tex.repeat.set(Math.max(2, Math.round(len * 1.6)), 1)
+      /* ลูกศรพันรอบท่อหนึ่งรอบพอดี (repeat.y = 1) พอท่อบางลง เส้นรอบวงก็สั้นลงตาม
+         ถ้าไม่เพิ่มจำนวนรอบตามแกนยาว ลูกศรจะถูกยืดจนผอมยาวผิดรูป */
+      tex.repeat.set(Math.max(2, Math.round(len * ROUTE_R_BASE / ROUTE_R * 1.05)), 1)
 
       const tube = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, Math.max(24, v.length * 12), 0.15, 8, false),
+        new THREE.TubeGeometry(curve, Math.max(24, v.length * 12), ROUTE_R, 8, false),
         new THREE.MeshStandardMaterial({
           map: tex,
           color: 0xffffff,
@@ -504,6 +547,7 @@ export default function Campus3D({
         }),
       )
       tube.castShadow = true
+      tube.userData.keep = true
       root.add(tube)
       st.flow = tex
 
@@ -560,7 +604,11 @@ export default function Campus3D({
       st.fit = { cw: GRID_N * 0.74 * k, ch: GRID_N * 0.5 * k }
       st.shift = { x: 0, y: 0 }
     }
+    mergeByMaterial(root)
     st.resize()
+    /* เงาถูกปิด autoUpdate ไว้ จึงต้องสั่งคำนวณใหม่เองทุกครั้งที่ฉากเปลี่ยน
+       (เปลี่ยนโหมด เลือกอาคารใหม่ เพิ่มเส้นทาง) ครั้งเดียวต่อการเปลี่ยน ไม่ใช่ทุกเฟรม */
+    renderer.shadowMap.needsUpdate = true
     renderer.render(scene, camera)
 
     /* ฉายตำแหน่งป้ายหลังกล้องถูกตั้งค่าแล้วเท่านั้น ไม่งั้นได้เมทริกซ์เก่า
@@ -735,6 +783,66 @@ function makeGlow(tier) {
 }
 
 
+/* ── ยุบ mesh ที่ใช้วัสดุเดียวกันให้เหลือก้อนเดียว ──
+   ผังนี้มี mesh แปดร้อยกว่าชิ้นแต่มีสามเหลี่ยมแค่เจ็ดพัน
+   แปลว่าต้นทุนไม่ได้อยู่ที่รูปทรง แต่อยู่ที่จำนวนครั้งที่สั่งการ์ดจอวาด
+   ซึ่งเป็นงานของ CPU ล้วน ๆ บนมือถือจึงหน่วงแม้ฉากจะเรียบง่าย
+
+   ฉากนี้นิ่งสนิทและไม่มีใครต้องอ้างถึง mesh รายชิ้น (การกดหมุดใช้ HTML ไม่ใช่ raycast)
+   จึงยุบรวมได้ทั้งหมดอย่างปลอดภัย เหลือหนึ่งก้อนต่อหนึ่งวัสดุ
+   แยกกลุ่มตามการรับ/ทอดเงาด้วย เพราะสองอย่างนี้ตั้งได้ทีละก้อน */
+function mergeByMaterial(root) {
+  const groups = new Map()
+  const victims = []
+  root.updateMatrixWorld(true)
+
+  root.traverse(o => {
+    if (!o.isMesh || Array.isArray(o.material) || !o.geometry?.attributes?.position) return
+    // ข้ามเส้นนำทาง texture ของมันต้องเลื่อนได้อิสระ
+    if (o.userData.keep) return
+    const key = o.material.uuid + '|' + (o.castShadow ? 1 : 0) + (o.receiveShadow ? 1 : 0)
+    if (!groups.has(key)) groups.set(key, { mat: o.material, cast: o.castShadow, recv: o.receiveShadow, geos: [] })
+    const g = o.geometry.clone()
+    g.applyMatrix4(o.matrixWorld)
+    // ยุบรวมได้เฉพาะรูปทรงที่มีชุด attribute ตรงกัน ตัด attribute ส่วนเกินทิ้งก่อน
+    for (const name of Object.keys(g.attributes)) {
+      if (name !== 'position' && name !== 'normal' && name !== 'uv') g.deleteAttribute(name)
+    }
+    if (!g.attributes.uv) {
+      const n = g.attributes.position.count
+      g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(n * 2), 2))
+    }
+    groups.get(key).geos.push(g)
+    victims.push(o)
+  })
+
+  victims.forEach(o => o.parent?.remove(o))
+  groups.forEach(({ mat, cast, recv, geos }) => {
+    if (!geos.length) return
+    let geo
+    try {
+      geo = geos.length === 1 ? geos[0] : mergeGeometries(geos, false)
+    } catch {
+      geo = null
+    }
+    // ยุบไม่สำเร็จก็ใส่กลับไปทีละชิ้นตามเดิม ดีกว่าฉากหาย
+    if (!geo) {
+      geos.forEach(g => {
+        const m = new THREE.Mesh(g, mat)
+        m.castShadow = cast
+        m.receiveShadow = recv
+        root.add(m)
+      })
+      return
+    }
+    if (geos.length > 1) geos.forEach(g => g.dispose())
+    const m = new THREE.Mesh(geo, mat)
+    m.castShadow = cast
+    m.receiveShadow = recv
+    root.add(m)
+  })
+}
+
 /** หมุดหยดน้ำแบบแผนที่ — วาดเป็น SVG จะได้คมทุกความละเอียด */
 function Drop() {
   return (
@@ -762,12 +870,15 @@ function flowTexture() {
        ถ้าปล่อยให้ material เป็นสีม่วง มันจะคูณทับ texture ลูกศรก็จะกลืนไปกับพื้นเส้น */
     g.fillStyle = '#6d4aff'
     g.fillRect(0, 0, 64, 32)
+    /* ลูกศรกินความสูงเต็ม texture เพราะแกนนี้คือเส้นรอบวงของท่อ
+       ถ้าวาดแค่แถบกลาง ลูกศรจะไปอยู่ใต้ท้องท่อเมื่อเฟรมของเส้นโค้งหมุน
+       ยิ่งท่อบาง ส่วนที่มองเห็นจากด้านบนยิ่งแคบ ลูกศรก็ยิ่งหายไปทั้งเส้น */
     g.fillStyle = '#ffffff'
     g.beginPath()
-    g.moveTo(14, 6)
-    g.lineTo(38, 16)
-    g.lineTo(14, 26)
-    g.lineTo(22, 16)
+    g.moveTo(13, 0)
+    g.lineTo(41, 16)
+    g.lineTo(13, 32)
+    g.lineTo(25, 16)
     g.closePath()
     g.fill()
     FLOW_TEX = new THREE.CanvasTexture(c)
