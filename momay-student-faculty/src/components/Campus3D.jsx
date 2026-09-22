@@ -92,9 +92,10 @@ const CAM_DIST = 24
 
 /* เส้นนำทางเป็นจุดกลมเรียงกัน แบบเดียวกับทางเดินเท้าในแผนที่ทั่วไป */
 const ROUTE_Y = 0.1
-// รัศมีจุดและระยะห่าง — ห่างราวสามเท่าของขนาดจุด จะได้อ่านเป็น "จุด ๆ" ไม่ใช่เส้นประถี่ ๆ
-const DOT_R = 0.1
-const DOT_GAP = 0.34
+/* รัศมีจุดและระยะห่าง — จุดโตขึ้นและห่างขึ้น อ่านเป็น "รอยเท้า" ชัดกว่าจุดเล็กถี่ ๆ
+   จุดถี่เกินไปจะกลายเป็นเส้นประที่ตาอ่านรวมเป็นเส้นเดียว ซึ่งก็คือเส้นทึบที่เพิ่งเลิกใช้ */
+const DOT_R = 0.125
+const DOT_GAP = 0.58
 
 function camPos(tiltDeg, turnDeg) {
   const t = (tiltDeg * Math.PI) / 180
@@ -250,18 +251,24 @@ export default function Campus3D({
     let lastFrame = 0
     /* ลูปเดิมหมุนตลอดเวลาแม้จอนั้นไม่มีเส้นทางให้วิ่ง เท่ากับกันไม่ให้เครื่องพัก
        และตอนมีเส้นทางก็วาดฉากใหม่ทั้งฉาก 60 ครั้งต่อวินาที ทั้งที่ลูกศรที่ขยับ
-       ช้ากว่านั้นมาก จุดที่ไหลช้า ๆ ที่ 15 เฟรมต่อวินาทียังดูลื่นอยู่
-       แต่ใช้แรงเครื่องเหลือหนึ่งในสี่ของเดิม */
-    const FRAME_MS = 1000 / 15
+       ช้ากว่านั้นมาก 24 เฟรมต่อวินาทีพอให้จุดไหลลื่น
+       (15 ประหยัดกว่าแต่ตาจับได้ว่ากระตุก ส่วน 30 ลื่นขึ้นอีกนิดเดียว
+        แต่บนมือถือช้า ๆ กินเวลาว่างของเครื่องหายไปเกือบครึ่ง ไม่คุ้มกัน) */
+    const FRAME_MS = 1000 / 24
+    // ความเร็วจุดคิดเป็น "ช่องต่อวินาที" ไม่ใช่ "ช่องต่อเฟรม"
+    // ปรับจำนวนเฟรมขึ้นลงได้โดยจุดไม่ไหลเร็วหรือช้าตาม
+    const DOT_PER_SEC = 1.65
     const tick = now => {
       raf = requestAnimationFrame(tick)
       const d = stateRef.current?.dots
       // ไม่มีเส้นทาง แท็บถูกซ่อน หรือผู้ใช้ขอลดการเคลื่อนไหว → ไม่ต้องวาดอะไรเลย
       if (!d || calm?.matches || document.hidden) return
-      if (now - lastFrame < FRAME_MS) return
+      const dt = now - lastFrame
+      if (dt < FRAME_MS) return
+      // เฟรมแรกหลังกลับมาที่แท็บ dt จะใหญ่มาก จำกัดไว้ไม่ให้จุดกระโดด
       lastFrame = now
       // จุดไหลไปทางปลายทาง ไม่ใช่ย้อนกลับ
-      d.phase += 0.11
+      d.phase += DOT_PER_SEC * (Math.min(dt, 200) / 1000)
       d.place(d.phase)
       renderer.render(scene, camera)
     }
@@ -557,11 +564,18 @@ export default function Campus3D({
       // สร้างตัวช่วยไว้นอกลูป ฟังก์ชันนี้ถูกเรียกทุกเฟรม การจองวัตถุใหม่ทุกครั้งคือขยะที่ GC ต้องตามเก็บ
       const m = new THREE.Matrix4()
       const at = new THREE.Vector3()
+      /* จุดที่ไหลถึงปลายทางต้องวนกลับไปเริ่มใหม่ที่ต้นทาง
+         ถ้าย้ายตำแหน่งดื้อ ๆ จะเห็นจุดวาบหายที่ปลายแล้วโผล่ที่ต้นทางทุกรอบ
+         ซึ่งคือสิ่งที่ทำให้ดูกระตุก จึงย่อจุดให้เล็กลงจนหายไปก่อนถึงขอบทั้งสองด้าน
+         ตาจะเห็นเป็นจุดค่อย ๆ จางเข้าจางออก ไม่ใช่กระโดด */
+      const FADE = 0.09
       const place = phase => {
         for (let i = 0; i < count; i++) {
           const d = ((i + phase) % count) / count
           curve.getPointAt(Math.min(0.9999, Math.max(0, d)), at)
-          m.makeTranslation(at.x, at.y, at.z)
+          const k = Math.max(0, Math.min(1, Math.min(d, 1 - d) / FADE))
+          m.makeScale(k, k, k)
+          m.setPosition(at.x, at.y, at.z)
           dots.setMatrixAt(i, m)
         }
         dots.instanceMatrix.needsUpdate = true
