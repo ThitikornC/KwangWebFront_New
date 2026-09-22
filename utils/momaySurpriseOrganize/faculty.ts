@@ -191,6 +191,14 @@ export interface FacBuilding {
   lv: number
   /** เฉดสีอาคาร 0–3 — ให้ย่านไม่เป็นสีเดียวกันหมด */
   tone: number
+  /** ย่านที่อาคารนี้ตั้งอยู่ (0–8) — หน้าอื่นใช้ย้อมสีอาคารตามสถานะของย่าน */
+  district: number
+  /** พิกัดและขนาดบนกริด (ไม่ใช่พิกัดจอ) — ให้หน้าที่เรนเดอร์สามมิติเอาไปวางกล่องเองได้
+      faceTop/faceLeft/faceRight เป็นผลของการฉายแบบไอโซเมตริกไปแล้ว ย้อนกลับไม่ได้ */
+  gx: number
+  gy: number
+  gw: number
+  gd: number
   /** ความหนาแน่นของย่านที่อาคารนี้ตั้งอยู่ 0–1 */
   heat: number
   /** ประเภทพื้นที่ของย่านนี้ */
@@ -211,6 +219,10 @@ export interface FacBuilding {
 /** ต้นไม้หนึ่งต้น — พุ่มเป็นก้อนวงกลมซ้อนกัน เรียงมาแล้วตามลำดับที่ต้องวาด */
 export interface FacGrove {
   t: 'g'
+  /** พิกัดบนกริดและรัศมีเป็นหน่วยกริด — ใช้ตอนเรนเดอร์สามมิติ */
+  gx: number
+  gy: number
+  gr: number
   d: number
   /** ชุดสีเขียว 0–2 */
   tone: number
@@ -735,6 +747,11 @@ export function facultyReport(input: FacultyInput): FacultyReport {
       d: l.gx + l.gy,
       lv: l.lv,
       tone: l.tone,
+      district: blockOf(l.gy) * 3 + blockOf(l.gx),
+      gx: x0,
+      gy: y0,
+      gw: x1 - x0,
+      gd: y1 - y0,
       heat: Math.round(heatAt(l.gx, l.gy) * 100) / 100,
       kindTh: SPACE_KINDS[kindAt(l.gx, l.gy)].th,
       faceTop: [P(x0, y0, h), P(x1, y0, h), P(x1, y1, h), P(x0, y1, h)].join(' '),
@@ -758,6 +775,9 @@ export function facultyReport(input: FacultyInput): FacultyReport {
     campusItems.push({
       t: 'g',
       d: g.gx + g.gy,
+      gx: g.gx,
+      gy: g.gy,
+      gr: Math.round((g.r / TW) * 1000) / 1000,
       tone: g.tone,
       x,
       y,

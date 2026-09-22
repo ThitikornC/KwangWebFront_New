@@ -4,9 +4,10 @@
   ยกมาจาก MomaySurpriseOrganize.vue ทั้งไฟล์ ต่างกันที่เดียวคือปลายทางของปุ่มกลาง
   บนหน้าผลลัพธ์ (ดู citizenHref):
 
-    ห้องสมุด  → /momay-student/   แดชบอร์ดนักศึกษาสไตล์ 8-bit
-    โซลาร์    → /momay-citizen/   ไม่แปลผล ใช้ข้อมูลตัวอย่าง
-    ที่เหลือ  → /momay-citizen/   พร้อมคำตอบจากแบบสอบถาม
+    ห้องสมุด  → /momay-student/           แดชบอร์ดนักศึกษาสไตล์ 8-bit
+    คณะ       → /momay-student-faculty/   มุมมองนักศึกษาของคณะ ใช้ engine ผังเดียวกับหน้านี้
+    โซลาร์    → /momay-citizen/           ไม่แปลผล ใช้ข้อมูลตัวอย่าง
+    ที่เหลือ  → /momay-citizen/           พร้อมคำตอบจากแบบสอบถาม
 
   หน้าเดิมยังทำงานเหมือนเดิมทุกอย่าง (ห้องสมุดไปหน้า CITIZEN แบบไม่แปลผล)
   แก้ตรรกะที่นั่นแล้วต้องตามมาแก้ที่นี่ด้วย — จงใจแลกความซ้ำกับการไม่กระทบหน้าที่ใช้อยู่
@@ -3181,6 +3182,9 @@ const surveyQuery = computed(() =>
 const citizenHref = computed(() => {
   if (!form.org) return '/momay-citizen/'
   if (form.org === 'library') return `/momay-student/?${surveyQuery.value}`
+  // คณะมีหน้า STUDENT ของตัวเอง (แอป React ที่ momay-student-faculty/)
+  // ส่งคำตอบชุดเดียวกันไปด้วย หน้านั้นจึงคำนวณจาก facultyReport ตัวเดียวกับที่นี่
+  if (form.org === 'faculty') return `/momay-student-faculty/?${surveyQuery.value}`
   if (CITIZEN_EXCLUDED.includes(form.org)) return '/momay-citizen/'
   return `/momay-citizen/?${surveyQuery.value}`
 })
