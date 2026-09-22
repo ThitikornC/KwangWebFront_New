@@ -14,7 +14,7 @@ import { ORG_MAP, PEAK_MAP, computeBaseline } from '../../utils/momaySurpriseOrg
 const SLOTS = 48
 const HISTORY_DAYS = 7
 
-/** กุญแจที่หน้า /MomaySurpriseOrganizeV2 เขียนผังห้องสมุดไว้ — ต้องตรงกันทั้งสองฝั่ง */
+/** กุญแจที่หน้า /SurpriseV220926 เขียนผังห้องสมุดไว้ — ต้องตรงกันทั้งสองฝั่ง */
 const SETUP_KEY = 'momay:library-setup'
 
 /* ── ผังห้องสมุด — ชุดเดียวกับที่หน้าขาย MomayforSaleV2 ใช้เล่าเรื่องแอป STUDENT ── */

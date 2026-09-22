@@ -1,5 +1,5 @@
 /*
-  อ่านคำตอบที่ MomaySurpriseOrganizeV2 ส่งมาทาง query string
+  อ่านคำตอบที่ SurpriseV220926 ส่งมาทาง query string
 
   หน้า ORGANIZE สร้างลิงก์มาด้วย surveyQuery ของมัน (ดู citizenHref ในไฟล์นั้น)
   ชื่อพารามิเตอร์สั้นมากเพราะลิงก์ถูกออกแบบให้เอาไปแชร์ต่อได้ จึงต้องแปลชื่อที่นี่
@@ -57,5 +57,5 @@ export function backToOrganize(search) {
   const q = new URLSearchParams(search || '')
   q.set('step', '3')
   if (!q.get('o')) q.set('o', 'faculty')
-  return `/MomaySurpriseOrganizeV2?${q}`
+  return `/SurpriseV220926?${q}`
 }
