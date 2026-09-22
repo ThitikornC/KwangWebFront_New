@@ -42,7 +42,7 @@ export const FAC_FOCUS_MAP: Record<FacFocusId, FacFocusDef> =
 
 /** "ไม่แน่ใจ" เป็นคำตอบที่ยอมรับได้ — คณะส่วนใหญ่ยังไม่เคยวัด จึงให้ MOMAY เลือกช่วง
     ที่ตารางสอนหนาที่สุดให้แทน (= กลางวัน) แต่ติดธงไว้ว่าเป็นค่าที่ระบบเดาให้ */
-export type FacPeakId = 'morning' | 'midday' | 'evening' | 'event' | 'unsure'
+export type FacPeakId = 'morning' | 'midday' | 'evening' | 'event'
 
 export interface FacPeakDef {
   id: FacPeakId
@@ -80,11 +80,6 @@ export const FAC_PEAKS: FacPeakDef[] = [
     center: 14, half: 2.5, concurrency: 0.46,
     becauseTh: 'สอดคล้องกับวันที่มีกิจกรรมคณะซ้อนกับตารางเรียนปกติ',
   },
-  {
-    id: 'unsure', th: 'ไม่แน่ใจ', en: 'Not sure', icon: 'question',
-    center: 12, half: 2, concurrency: 0.38,
-    becauseTh: 'เป็นช่วงที่ตารางสอนของคณะหนาที่สุดจากข้อมูลที่กรอกมา',
-  },
 ]
 
 export const FAC_PEAK_MAP: Record<FacPeakId, FacPeakDef> =
@@ -96,7 +91,6 @@ export const FAC_PEAK_TO_ENGINE: Record<FacPeakId, 'morning' | 'midday' | 'eveni
   midday: 'midday',
   evening: 'evening',
   event: 'event',
-  unsure: 'midday',
 }
 
 /* ─────────────────────────── สถานการณ์จำลอง ─────────────────────────── */
@@ -282,7 +276,6 @@ export interface FacultyReport {
   activities: number
   peakWindow: string
   /** ธงว่าช่วงพีคมาจากการเดาของระบบ ไม่ใช่คำตอบของผู้ใช้ */
-  peakGuessed: boolean
   insightTh: string
   /** คนที่อยู่ในคณะพร้อมกันตอนพีค */
   peakConcurrent: number
@@ -968,7 +961,6 @@ export function facultyReport(input: FacultyInput): FacultyReport {
     rooms,
     activities,
     peakWindow,
-    peakGuessed: peakDef.id === 'unsure',
     insightTh,
     peakConcurrent,
     spaceLoadPct,
