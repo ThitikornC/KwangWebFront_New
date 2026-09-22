@@ -94,6 +94,9 @@ const CAM_DIST = 24
 const ROUTE_Y = 0.1
 /* รัศมีจุดและระยะห่าง — จุดโตขึ้นและห่างขึ้น อ่านเป็น "รอยเท้า" ชัดกว่าจุดเล็กถี่ ๆ
    จุดถี่เกินไปจะกลายเป็นเส้นประที่ตาอ่านรวมเป็นเส้นเดียว ซึ่งก็คือเส้นทึบที่เพิ่งเลิกใช้ */
+// ขอบเขตการซูม — แคบพอที่ผู้ใช้จะไม่หลงออกไปอยู่กลางพื้นเปล่าหรือจมอยู่ในตัวตึก
+const ZOOM_MIN = 0.55
+const ZOOM_MAX = 3
 const DOT_R = 0.125
 const DOT_GAP = 0.58
 
@@ -121,6 +124,7 @@ export default function Campus3D({
   headroom = 0,
 }) {
   const hostRef = useRef(null)
+  const zoomRef = useRef(1)
   const stateRef = useRef(null)
   /* ตำแหน่งป้ายต้องมาจากกล้องจริง ไม่ใช่สูตรฉายที่เขียนมือขึ้นมาอีกชุด
      สองชุดจะเพี้ยนจากกันทันทีที่กล้องขยับหรือกรอบเปลี่ยนอัตราส่วน
@@ -207,7 +211,10 @@ export default function Campus3D({
       const { cw, ch } = stateRef.current.fit || { cw: 9, ch: 6 }
       const base = stateRef.current.shift || { x: 0, y: 0 }
       const aspect = w / h
-      const sx = Math.max(cw, ch * aspect)
+      /* ซูมคือการย่อ/ขยายกรอบที่กล้องมองเห็น กรอบเล็กลง = เห็นใกล้ขึ้น
+         กล้องเป็นออร์โธกราฟิก จึงขยับกล้องเข้าออกไม่ได้ ต้องปรับกรอบแทน */
+      const z = zoomRef.current || 1
+      const sx = Math.max(cw, ch * aspect) / z
       const sy = sx / aspect
       /* แปลงพิกเซลที่ลาก เป็นหน่วยฉาก ตามอัตราส่วนของกรอบกล้องกับขนาดจริงของ canvas
          ลากขวา = โลกเลื่อนขวา = กรอบกล้องต้องเลื่อนซ้าย จึงเป็นเครื่องหมายลบ */
@@ -289,6 +296,23 @@ export default function Campus3D({
     /* ลากเลื่อนผัง
        ใช้ pointer event ตัวเดียวคุมทั้งเมาส์และนิ้ว ไม่ต้องเขียนสองชุด
        setPointerCapture ทำให้ลากออกนอกกรอบแล้วยังลากต่อได้ ไม่หลุดกลางคัน */
+    /* ── ซูมด้วยสองนิ้วหรือล้อเมาส์ ──
+       เก็บนิ้วที่แตะอยู่ไว้ทั้งหมด เพราะต้องรู้ว่ากำลังใช้กี่นิ้ว
+       นิ้วเดียว = ลากเลื่อน สองนิ้ว = ซูม ปนกันไม่ได้ */
+    const touches = new Map()
+    let pinch = null
+    const applyZoom = next => {
+      zoomRef.current = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, next))
+      stateRef.current?.resize?.()
+      // ป้ายต้องฉายใหม่ ไม่ใช่แค่เลื่อน เพราะระยะห่างระหว่างป้ายเปลี่ยนไปตามสเกล
+      stateRef.current?.reproject?.()
+      setPan({ ...panRef.current })
+    }
+    const dist = () => {
+      const [a, b] = [...touches.values()]
+      return Math.hypot(a.x - b.x, a.y - b.y)
+    }
+
     let dragging = false
     let last = null
     const onDown = e => {
@@ -296,12 +320,27 @@ export default function Campus3D({
          setPointerCapture จะดูด pointer ไปไว้ที่ตัวผัง เหตุการณ์ที่เหลือรวมถึง
          การตัดสินว่ากดอะไรจึงไม่ไปถึงปุ่มหมุด กดยังไงก็ไม่ติด */
       if (e.target.closest?.('.p3, .p3drop, .p3dot')) return
+      touches.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (touches.size === 2) {
+        // นิ้วที่สองลง = เลิกลาก เริ่มซูม ไม่งั้นผังจะทั้งเลื่อนทั้งซูมพร้อมกันจนมึน
+        dragging = false
+        last = null
+        pinch = { d: dist(), z: zoomRef.current }
+        return
+      }
+      if (touches.size > 2) return
       dragging = true
       last = { x: e.clientX, y: e.clientY }
       host.setPointerCapture?.(e.pointerId)
       host.classList.add('is-dragging')
     }
     const onMove = e => {
+      if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (pinch && touches.size === 2) {
+        const d = dist()
+        if (pinch.d > 0) applyZoom(pinch.z * (d / pinch.d))
+        return
+      }
       if (!dragging || !last) return
       const dx = e.clientX - last.x
       const dy = e.clientY - last.y
@@ -315,11 +354,22 @@ export default function Campus3D({
       setPan({ ...panRef.current })
     }
     const onUp = e => {
+      touches.delete(e.pointerId)
+      if (touches.size < 2) pinch = null
       dragging = false
       last = null
       host.releasePointerCapture?.(e.pointerId)
       host.classList.remove('is-dragging')
     }
+
+    /* ล้อเมาส์และการถ่างนิ้วบนแทร็กแพด (เบราว์เซอร์ส่งมาเป็น wheel + ctrlKey)
+       ต้อง preventDefault ไม่งั้นหน้าเว็บจะเลื่อนหรือซูมทั้งหน้าไปด้วย
+       และต้องลงทะเบียนแบบ passive: false ถึงจะ preventDefault ได้ */
+    const onWheel = e => {
+      e.preventDefault()
+      applyZoom(zoomRef.current * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0018)))
+    }
+    host.addEventListener('wheel', onWheel, { passive: false })
     host.addEventListener('pointerdown', onDown)
     host.addEventListener('pointermove', onMove)
     host.addEventListener('pointerup', onUp)
@@ -332,6 +382,7 @@ export default function Campus3D({
       host.removeEventListener('pointermove', onMove)
       host.removeEventListener('pointerup', onUp)
       host.removeEventListener('pointercancel', onUp)
+      host.removeEventListener('wheel', onWheel)
       ro.disconnect()
       renderer.dispose()
       /* dispose() คืนแค่ทรัพยากรฝั่ง three ไม่ได้ปล่อย WebGL context ของเบราว์เซอร์
@@ -649,72 +700,80 @@ export default function Campus3D({
        และป้ายกว้างกว่าตัวอาคารหลายเท่า จึงต้องไล่วางทีละใบแล้วดันใบที่ชนขึ้นไปหลบ
        ใบไหนดันแล้วยังชนอยู่ ยุบเป็นจุดแทน — ป้ายที่อ่านไม่ออกไม่มีประโยชน์
        และยังไปบังผังที่อยู่ข้างหลังอีก */
-    const next = {}
-    pins.forEach(p => {
-      const c = districtCenter(p.district)
-      /* ยกป้ายให้พ้นหลังคาที่สูงที่สุดของย่านนั้นพอดี ไม่ใช่ยกเท่ากันหมด
-         ย่านที่มีแต่ตึกเตี้ยจะได้ไม่มีป้ายลอยสูงเก้อ */
-      const tallest = report.campusItems.reduce(
-        (m, i) => (i.t === 'b' && i.district === p.district ? Math.max(m, i.lv) : m),
-        1,
-      )
-      next[p.id] = {
-        label: st.project(c.gx, c.gy, tallest * LEVEL_H + 0.45),
-        dot: st.project(c.gx, c.gy, 0.1),
-      }
-    })
-    // ยกป้ายให้พ้นหมุดของตัวเอง ไม่งั้นตัวอักษรทับจุดจนอ่านไม่ออก
-    if (you)
-      next.__you = {
-        label: st.project(you.gx, you.gy, 2.6),
-        dot: st.project(you.gx, you.gy, 0.15),
-      }
-
-    /* ── หลบไม่ให้ป้ายทับกัน ──
-       ทำงานบนหน่วยเปอร์เซ็นต์ของกรอบ เพราะป้ายวางด้วยเปอร์เซ็นต์
-       ขนาดป้ายประมาณจากจำนวนตัวอักษร (อักษรไทยกว้างกว่าละติน)
-       ลำดับความสำคัญ: ตำแหน่งของคุณ > อาคารที่เลือก > ตามอันดับที่ engine จัดมา */
-    const box = w => ({ w, h: 7.2 })
-    const wOf = p => {
-      const t = Math.max((p.label || '').length, (p.sub || '').length)
-      return Math.min(46, 9 + t * 2.6)
-    }
-
-    const order = []
-    if (you && next.__you) order.push({ id: '__you', at: next.__you.label, w: 24 })
-    const labelled = pins.filter(p => p.showLabel && next[p.id])
-    labelled
-      .slice()
-      .sort((a, b) => (a.id === activeId ? -1 : b.id === activeId ? 1 : 0))
-      .forEach(p => order.push({ id: p.id, at: next[p.id].label, w: wOf(p) }))
-
-    const placed = []
-    const hidden = new Set()
-    order.forEach(it => {
-      const b = box(it.w)
-      let top = it.at.top
-      const left = it.at.left
-      let tries = 0
-      const hits = () =>
-        placed.some(
-          q =>
-            Math.abs(q.left - left) < (q.w + b.w) / 2 + 1 &&
-            Math.abs(q.top - top) < b.h + 0.6,
+    /* ฉายป้ายใหม่ได้ตามต้องการ ไม่ใช่แค่ตอนฉากเปลี่ยน
+       การซูมทำให้กรอบกล้องเปลี่ยน ตำแหน่งที่ฉายไว้เดิมจึงใช้ไม่ได้อีก
+       (การลากใช้ transform เลื่อนทั้งชั้นเอาได้ แต่การซูมเลื่อนเฉย ๆ ไม่พอ
+        เพราะป้ายต้องขยับออกจากกันตามสเกล ไม่ใช่ขยับไปทางเดียวกันทั้งชุด) */
+    const reproject = () => {
+      const next = {}
+      pins.forEach(p => {
+        const c = districtCenter(p.district)
+        /* ยกป้ายให้พ้นหลังคาที่สูงที่สุดของย่านนั้นพอดี ไม่ใช่ยกเท่ากันหมด
+           ย่านที่มีแต่ตึกเตี้ยจะได้ไม่มีป้ายลอยสูงเก้อ */
+        const tallest = report.campusItems.reduce(
+          (m, i) => (i.t === 'b' && i.district === p.district ? Math.max(m, i.lv) : m),
+          1,
         )
-      // ดันขึ้นทีละนิดจนพ้น ป้ายอยู่เหนืออาคารอยู่แล้ว ดันขึ้นจึงไม่ไปบังอะไรเพิ่ม
-      while (hits() && tries < 14) {
-        top -= b.h * 0.85
-        tries++
+        next[p.id] = {
+          label: st.project(c.gx, c.gy, tallest * LEVEL_H + 0.45),
+          dot: st.project(c.gx, c.gy, 0.1),
+        }
+      })
+      // ยกป้ายให้พ้นหมุดของตัวเอง ไม่งั้นตัวอักษรทับจุดจนอ่านไม่ออก
+      if (you)
+        next.__you = {
+          label: st.project(you.gx, you.gy, 2.6),
+          dot: st.project(you.gx, you.gy, 0.15),
+        }
+
+      /* ── หลบไม่ให้ป้ายทับกัน ──
+         ทำงานบนหน่วยเปอร์เซ็นต์ของกรอบ เพราะป้ายวางด้วยเปอร์เซ็นต์
+         ขนาดป้ายประมาณจากจำนวนตัวอักษร (อักษรไทยกว้างกว่าละติน)
+         ลำดับความสำคัญ: ตำแหน่งของคุณ > อาคารที่เลือก > ตามอันดับที่ engine จัดมา */
+      const box = w => ({ w, h: 7.2 })
+      const wOf = p => {
+        const t = Math.max((p.label || '').length, (p.sub || '').length)
+        return Math.min(46, 9 + t * 2.6)
       }
-      if (hits() || top < Math.max(5, headroom)) {
-        hidden.add(it.id)
-        return
-      }
-      placed.push({ left, top, w: b.w })
-      next[it.id] = { ...next[it.id], label: { left, top } }
-    })
-    next.__hidden = hidden
-    setProj(next)
+
+      const order = []
+      if (you && next.__you) order.push({ id: '__you', at: next.__you.label, w: 24 })
+      const labelled = pins.filter(p => p.showLabel && next[p.id])
+      labelled
+        .slice()
+        .sort((a, b) => (a.id === activeId ? -1 : b.id === activeId ? 1 : 0))
+        .forEach(p => order.push({ id: p.id, at: next[p.id].label, w: wOf(p) }))
+
+      const placed = []
+      const hidden = new Set()
+      order.forEach(it => {
+        const b = box(it.w)
+        let top = it.at.top
+        const left = it.at.left
+        let tries = 0
+        const hits = () =>
+          placed.some(
+            q =>
+              Math.abs(q.left - left) < (q.w + b.w) / 2 + 1 &&
+              Math.abs(q.top - top) < b.h + 0.6,
+          )
+        // ดันขึ้นทีละนิดจนพ้น ป้ายอยู่เหนืออาคารอยู่แล้ว ดันขึ้นจึงไม่ไปบังอะไรเพิ่ม
+        while (hits() && tries < 14) {
+          top -= b.h * 0.85
+          tries++
+        }
+        if (hits() || top < Math.max(5, headroom)) {
+          hidden.add(it.id)
+          return
+        }
+        placed.push({ left, top, w: b.w })
+        next[it.id] = { ...next[it.id], label: { left, top } }
+      })
+      next.__hidden = hidden
+      setProj(next)
+    }
+    reproject()
+    st.reproject = reproject
   }, [report, districtTone, route, full, pins, you, tilt, turn, activeId, headroom])
 
   return (
