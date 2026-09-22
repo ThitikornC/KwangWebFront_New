@@ -29,14 +29,6 @@
 
     <!-- ── ระบบวงโคจร: เต็มหน้า วางศูนย์กลางไว้ฝั่งขวาตามแบบ ── -->
     <svg class="orbits" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <radialGradient id="kwSunGlow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0%" stop-color="#e8c56a" stop-opacity="0.5" />
-          <stop offset="60%" stop-color="#e8c56a" stop-opacity="0.12" />
-          <stop offset="100%" stop-color="#e8c56a" stop-opacity="0" />
-        </radialGradient>
-      </defs>
-
       <!-- วงโคจรเอียงคนละมุม ตัดกันเป็นตาข่ายบาง ๆ -->
       <g class="orbits__ring">
         <ellipse cx="1150" cy="470" rx="470" ry="200" transform="rotate(-18 1150 470)" />
@@ -80,27 +72,6 @@
         <path d="M-62 0 H62 M-56 -26 H56 M-56 26 H56" />
         <ellipse rx="24" ry="62" />
         <ellipse rx="46" ry="62" />
-      </g>
-
-      <!-- ดวงอาทิตย์ — ใจกลางของทั้งระบบ
-           scale ขยายทั้งดวง (แสงเรือง รัศมี จาน และความหนาเส้น) พร้อมกันด้วยตัวเลขเดียว
-           ที่ 2 เท่า ปลายแฉกยาวอยู่ที่รัศมี 224 เฉียดวงโคจรวงในสุด (ry 245) แล้ว
-           เกินกว่านี้แฉกจะเริ่มแทงทะลุวงโคจรออกไป -->
-      <g class="sun" transform="translate(1150 470) scale(2)">
-        <circle class="sun__glow" r="180" fill="url(#kwSunGlow)" />
-
-        <!-- รัศมี: แฉกยาวสลับแฉกสั้นรอบวง -->
-        <g class="sun__rays">
-          <path
-            v-for="r in SUN_RAYS"
-            :key="r.a"
-            :d="r.d"
-            :transform="`rotate(${r.a})`"
-          />
-        </g>
-
-        <!-- จานเปล่า ไม่มีหน้า — เอาหน้ายิ้มออกตามที่สั่ง -->
-        <circle class="sun__disc" r="52" />
       </g>
     </svg>
 
@@ -185,8 +156,10 @@
         </p>
 
         <div class="cta">
-          <a class="btn btn--solid" href="/renewablesort/MomayforSaleV2">EXPLORE MOMAY</a>
-          <a class="btn btn--ghost" href="/projectsV2">VIEW OUR WORK</a>
+          <!-- สองปุ่มนี้ชี้ไปที่ตัวผลิตภัณฑ์จริงทั้งคู่ ไม่ใช่หน้ารวมงาน
+               ชื่อปุ่มกับปลายทางจึงตรงกัน กดแล้วได้สิ่งที่ชื่อบอกเลย -->
+          <a class="btn btn--solid" href="/SurpriseV220926">MOMAY SURPRISE</a>
+          <a class="btn btn--ghost" href="/renewablesort/MomayforSaleV2">MOMAY MAP</a>
         </div>
       </div>
     </main>
@@ -254,26 +227,6 @@ const NAV = [
 ] as { label: string; href: string; active?: boolean }[]
 
 const STEPS = ['SEE', 'UNDERSTAND', 'ANTICIPATE', 'SIMULATE']
-
-/* ── รัศมีดวงอาทิตย์ — แฉกยาวสลับแฉกสั้น เรียงรอบวงทีละ 15 องศา
-      วาดจากสูตรเพื่อให้เว้นระยะเท่ากันเป๊ะ เขียนมือ 24 แฉกแล้วมักเบี้ยว
-
-      ตามภาพต้นแบบ: แฉกยาวเป็นเข็มเรียว ส่วนแฉกสั้นฐานกว้างเกือบเท่าตัว
-      (ของเดิมกลับด้านกัน แฉกยาวฐานกว้าง แฉกสั้นเรียว ดวงเลยดูโปร่งกว่าต้นแบบ)
-
-      ฐานอยู่ที่ 58 ซึ่งพ้นขอบจาน (52) ออกมา จึงเหลือวงกระดาษบาง ๆ คั่นระหว่างจานกับโคนแฉก
-      ระยะห่างระหว่างแฉกที่ฐาน = 2π×58/24 ≈ 15.2 จึงกำหนดฐานแฉกสั้นไว้ที่ 15.2 (half 7.6)
-      คือกว้างที่สุดเท่าที่ยังไม่ซ้อนกันจนกลายเป็นวงทึบ ── */
-const SUN_RAYS = Array.from({ length: 24 }, (_, i) => {
-  const long = i % 2 === 0
-  const base = 58
-  const tip = long ? 112 : 82
-  const half = long ? 4.2 : 7.6
-  return {
-    a: i * 15,
-    d: `M ${-half} ${-base} L 0 ${-tip} L ${half} ${-base} Z`,
-  }
-})
 
 /** ตราคำว่า MOMAY — ผูก src เป็นตัวแปร ไม่ใส่พาธตรง ๆ ใน template
     เพราะตอน build ตัวรวมไฟล์จะพยายาม resolve พาธในแอตทริบิวต์ src แล้ว build พังถ้ายังไม่มีไฟล์ */
@@ -402,19 +355,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   fill: none; stroke: var(--gold); stroke-width: 1.1; opacity: 0.45;
 }
 
-.sun__rays path {
-  fill: var(--gold);
-  opacity: 0.62;
-}
-.sun__disc {
-  fill: var(--paper-2);
-  stroke: var(--gold);
-  stroke-width: 1.4;
-}
-/* หมุนช้ามาก — เห็นว่าไม่ใช่ภาพนิ่ง แต่ไม่ดึงสายตาออกจากตัวหนังสือ */
-.sun__rays { animation: kwSpin 220s linear infinite; transform-origin: 0 0; }
 .orbits__ring { animation: kwDrift 26s ease-in-out infinite alternate; transform-origin: 1150px 470px; }
-@keyframes kwSpin { to { transform: rotate(360deg); } }
 @keyframes kwDrift { to { transform: rotate(2.2deg); } }
 
 /* ── แถบบน ───────────────────────────────────────────── */
@@ -744,7 +685,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sun__rays, .orbits__ring, .rail__down,
+  .orbits__ring, .rail__down,
   .wordmark, .hr, .kicker, .kicker-th, .claim, .claim-th, .cta {
     animation: none;
   }

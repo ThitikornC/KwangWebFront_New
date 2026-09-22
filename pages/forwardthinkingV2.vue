@@ -159,7 +159,10 @@ const PLATFORMS: {
     name: 'MOMAY',
     nameTh: 'ตัวกลางรับ–ส่งข้อมูลระหว่างระบบ',
     kicker: 'BEHAVIORAL INTELLIGENCE',
-    logo: '/MOMAY_mark.png',
+    /* ใช้ตราชุดใหม่ (MOMAY ENLIGHTENMENT) ไม่ใช่ตัว M แดงชุดเดิม
+       เลือกไฟล์ใน home2/ เพราะสัดส่วน 612x408 ใกล้จัตุรัส พอดีกับวงกลม
+       ส่วน /MOMAY_logo.png เป็นตราแนวนอน 1200x324 ใส่ในวงกลมแล้วจะเล็กจนอ่านไม่ออก */
+    logo: '/home2/momay-enlightenment.png',
     body: 'MOMAY คือ source code ที่เป็นตัวกลางในการรับข้อมูลจากแหล่งต่าง ๆ ได้ตามความต้องการ แล้วส่งต่อไปยัง Espresso เพื่อแสดงผลแบบเรียลไทม์',
     bullets: ['พลังงานไฟฟ้า', 'กล้องวงจรปิด', 'ห้องสมุดออนไลน์'],
     primary: { label: 'EXPLORE MOMAY', href: '/renewablesort/MomayforSaleV2' },
