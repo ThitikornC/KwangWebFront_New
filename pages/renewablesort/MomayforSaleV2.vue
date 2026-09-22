@@ -2544,6 +2544,12 @@ let driftTimer = null
 let autoTimer = null
 
 onMounted(() => {
+  /* เปิดแผนที่ลูกค้าทันทีเมื่อเข้ามาด้วย #map
+     มีไว้ให้ปุ่ม MOMAY MAP จากหน้าอื่นพามาที่แผนที่ได้ตรง ๆ
+     ไม่ต้องให้ผู้ใช้เข้ามาแล้วมานั่งหาปุ่มเองอีกที
+     ใช้ hash ไม่ใช่ query เพราะไม่ต้องให้ค่านี้ไปโผล่ตอนแชร์ลิงก์หน้าปกติ */
+  if (window.location.hash === '#map') customersOpen.value = true
+
   vw.value = window.innerWidth
   io = new IntersectionObserver(onIntersect, { rootMargin: '0px 0px 18% 0px', threshold: 0.01 })
   waiting.splice(0).forEach((el) => io.observe(el))

@@ -159,7 +159,7 @@
           <!-- สองปุ่มนี้ชี้ไปที่ตัวผลิตภัณฑ์จริงทั้งคู่ ไม่ใช่หน้ารวมงาน
                ชื่อปุ่มกับปลายทางจึงตรงกัน กดแล้วได้สิ่งที่ชื่อบอกเลย -->
           <a class="btn btn--solid" href="/SurpriseV220926">MOMAY SURPRISE</a>
-          <a class="btn btn--ghost" href="/renewablesort/MomayforSaleV2">MOMAY MAP</a>
+          <a class="btn btn--ghost" href="/renewablesort/MomayforSaleV2#map">MOMAY MAP</a>
         </div>
       </div>
     </main>
