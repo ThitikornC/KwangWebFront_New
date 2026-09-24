@@ -117,24 +117,31 @@ function readSurvey(search) {
     peak,
   }
   const baseline = computeBaseline(inputs)
+  // จำนวนชั้นที่กรอกไว้ — ผังตั้งต้นจะตัด/เพิ่มชั้นให้ตรงกับเลขนี้
+  const floors = Math.min(Math.round(n(q.get('f'), FLOORS.length)), 30)
 
   // ผังตั้งต้นเฉลี่ยราว 38% ของความจุ — เทียบกับภาระที่โมเดลคำนวณได้
   const factor = baseline.metrics.people / 38
-  return { inputs, baseline, peak: PEAK_MAP[peak], factor }
+  return { inputs, baseline, peak: PEAK_MAP[peak], factor, floors }
 }
 
 /* ── สร้างข้อมูลจากผัง ── */
 
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
 
-/** ผังตั้งต้น แปลงให้อยู่ในรูปเดียวกับผังที่ผู้ใช้กรอกเอง */
-function defaultLayout() {
-  return FLOORS.map((f, i) => ({
-    floor: i + 1,
+/** ผังตั้งต้น แปลงให้อยู่ในรูปเดียวกับผังที่ผู้ใช้กรอกเอง
+ *  count = จำนวนชั้นที่ผู้ใช้กรอก: น้อยกว่าผังตั้งต้นก็ตัดชั้นบนทิ้ง มากกว่าก็วนใช้แบบชั้น 2–5 ซ้ำ
+ *  (ชั้น 1 เป็นโถง 24 ชม. มีได้ชั้นเดียว) แล้วเปลี่ยนเลขห้องให้ตรงชั้น */
+function defaultLayout(count = FLOORS.length) {
+  return Array.from({ length: count }, (_, i) => {
+    const f = i < FLOORS.length ? FLOORS[i] : FLOORS[1 + ((i - 1) % (FLOORS.length - 1))]
+    return { f, floorNo: i + 1 }
+  }).map(({ f, floorNo }) => ({
+    floor: floorNo,
     zones: f.zones.map((z) => {
       const [openFrom, openTo] = HOURS[z.hours] ?? ['', '']
       return {
-        name: z.name,
+        name: z.name.replace(/^ห้อง \d+(\d\d)$/, `ห้อง ${floorNo}$1`),
         zoneType: z.zoneType ?? KIND_TO_ZONE[z.kind] ?? 'social',
         seats: z.total,
         openFrom,
@@ -193,7 +200,7 @@ function resolveLayout(setup, survey) {
   }
 
   return {
-    floors: defaultLayout(),
+    floors: defaultLayout(survey?.floors),
     inputs: survey?.inputs ?? null,
     baseline: survey?.baseline ?? null,
     peak: survey?.inputs.peak ?? 'midday',
