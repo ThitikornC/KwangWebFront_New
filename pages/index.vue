@@ -1,7 +1,7 @@
 <!--
   KWANG UNLIMITED — หน้าแรกของเว็บ (/ — ยังเปิดจาก /home2 ได้ผ่าน alias)
 
-  หน้าแรกเดิมย้ายไปอยู่ pages/kwang.vue (/kwang) — เมนู KWANG ไม่ลิงก์ไปหน้าเดิมแล้ว ชี้กลับมาหน้าแรกนี้แทน
+  หน้าแรกเดิมย้ายไปอยู่ pages/kwang.vue (/kwang) — เอาเมนู KWANG ออกจากแถบเมนูแล้ว (ลูกค้าไม่ให้ลิงก์ไปหน้าเดิม)
 
   เมนูของหน้านี้ชี้ไปหน้าชุด V2 ทั้งแถว: /aboutV2 · /projectsV2 · /forwardthinkingV2
   · /renewablesort/MomayforSaleV2 · /contactV2
@@ -222,7 +222,6 @@ useSeoMeta({
       แก้ที่นี่แล้วต้องตามไปแก้ที่นั่นด้วย ไม่งั้นเมนูสองหน้าจะพาไปคนละที่
       (หน้าเดิม /valueProposition, /home, /renewable, /contact ยังอยู่ครบ แค่ไม่ได้อยู่ในเมนูชุดนี้แล้ว) ── */
 const NAV = [
-  { label: 'KWANG',            href: '/' },
   { label: 'ABOUT',            href: '/aboutV2' },
   { label: 'PROJECTS',         href: '/projectsV2' },
   { label: 'FORWARD THINKING', href: '/forwardthinkingV2' },
@@ -694,9 +693,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
     align-items: stretch;
     padding: clamp(10px, 2svh, 24px) var(--gut);
   }
+  /* เนื้อหาไม่วางกองกลางจอแล้ว — กางเต็มความสูง: โลโก้ชิดบน ปุ่มชิดล่าง
+     ที่ว่างที่เหลือแบ่งเท่า ๆ กันเป็นช่วงระหว่าง 4 ก้อน (โลโก้ · คำโปรย · หัวเรื่อง · ปุ่ม)
+     ใช้ margin-top:auto + padding-top เป็นระยะขั้นต่ำ จอสั้นก็ยังไม่ชิดกันเกินไป */
   .hero__copy {
-    display: flex; flex-direction: column; justify-content: center;
+    display: flex; flex-direction: column; justify-content: flex-start;
   }
+  .kicker { margin-top: auto; }
 
   .wordmark__crop { --wm-w: min(88vw, 40svh, 520px); }
   .wm-word { font-size: clamp(48px, min(19vw, 11svh), 96px); }
@@ -704,31 +707,38 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
   .hr { width: 100%; margin: clamp(10px, 2.4svh, 26px) 0 clamp(8px, 1.6svh, 18px); }
   .kicker { font-size: clamp(10px, min(2.9vw, 1.7svh), 13px); letter-spacing: 0.2em; }
-  .kicker-th { font-size: clamp(13px, min(3.7vw, 2.2svh), 17px); }
+  .kicker-th { font-size: clamp(12px, min(3.7vw, 2.2svh), 17px); }
 
   .claim {
-    margin-top: clamp(10px, 2.6svh, 28px);
-    font-size: clamp(22px, min(8.2vw, 4.6svh), 42px);
+    margin-top: auto;
+    padding-top: clamp(10px, 2.6svh, 28px);
+    font-size: clamp(18px, min(8.2vw, 4.6svh), 42px);
     line-height: 1.1;
   }
   .claim-th {
     margin-top: clamp(8px, 1.6svh, 18px);
-    font-size: clamp(13px, min(3.7vw, 2.2svh), 17px);
+    font-size: clamp(12px, min(3.7vw, 2.2svh), 17px);
     line-height: 1.6;
   }
 
   .cta {
     flex-direction: column;
     gap: clamp(10px, 1.6svh, 14px);
-    margin-top: clamp(14px, 3.4svh, 40px);
+    margin-top: auto;
+    padding-top: clamp(14px, 3.4svh, 40px);
   }
   .btn {
     flex: none; width: 100%;
-    padding: clamp(11px, 1.9svh, 18px) 20px;
+    padding: clamp(10px, 1.9svh, 18px) 20px;
     font-size: clamp(11px, 3.2vw, 13px);
   }
 
-  .rail__label { font-size: clamp(10px, 2.8vw, 12px); }
+  /* แถบสี่จังหวะให้อยู่บรรทัดเดียวบนมือถือ และตัดลูกศรลงออก
+     (หน้านี้จบใน 1 จอ ลูกศรชี้ลงทำให้คนคิดว่ายังมีต่อ แถมกินที่ความสูงไปเปล่า ๆ) */
+  .rail { padding-bottom: clamp(10px, 2svh, 22px); }
+  .rail__steps { flex-wrap: nowrap; gap: 0 clamp(8px, 3vw, 16px); padding-top: clamp(8px, 1.8svh, 18px); }
+  .rail__label { font-size: clamp(8.5px, 2.6vw, 12px); letter-spacing: 0.14em; }
+  .rail__down { display: none; }
 }
 
 /* จอเตี้ยมาก (มือถือแนวนอน) — ย่อต่อไม่ไหวแล้ว ยอมให้เลื่อนดีกว่าตัดเนื้อหาทิ้ง */

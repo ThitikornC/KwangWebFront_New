@@ -17,7 +17,7 @@
     eyebrow="GET IN TOUCH"
     title="Let's talk."
     title-th="ช่องทางการติดต่อ"
-    lead="โทรหาเราได้โดยตรงในเวลาทำการ หรือทักมาทางอีเมล LINE และ Facebook ก็ได้ ยินดีให้คำปรึกษาตั้งแต่ขั้นสำรวจหน้างาน"
+    lead="โทรหาเราได้โดยตรงในเวลาทำการ หรือทักมาทางอีเมลก็ได้ ยินดีให้คำปรึกษาตั้งแต่ขั้นสำรวจหน้างาน"
   >
     <!-- ── โทรตรง ── -->
     <section class="calls">
@@ -119,8 +119,6 @@ const CALLS = [
 
 const CHANNELS = [
   { k: 'EMAIL',    label: 'Natthaphongphothikoed@gmail.com', href: 'mailto:Natthaphongphothikoed@gmail.com' },
-  { k: 'LINE',     label: 'Mrjob1001' },
-  { k: 'FACEBOOK', label: 'Kwangunlimit / กว้างไม่จำกัด', href: 'https://www.facebook.com/search/top?q=kwangunlimit', external: true },
 ]
 
 const MAP_LINK = 'https://maps.google.com/?q=KWANG+SOCIETY+%E0%B8%81%E0%B8%A7%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94'
