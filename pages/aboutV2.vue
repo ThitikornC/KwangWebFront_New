@@ -151,16 +151,23 @@ const MISSION = [
 <style scoped>
 /* สีทั้งหมดรับมาจาก KwShell ผ่านตัวแปร CSS — ที่นี่ไม่ประกาศสีเองเพื่อไม่ให้สองที่หลุดกัน */
 
+/* ขนาดหัวข้อ — ใช้ทั้งหัวข้อไทยและหัวข้ออังกฤษที่คู่กัน */
+.sect { --head-size: clamp(26px, 3.4vw, 44px); }
+
 /* หัวข้อภาษาไทย — ตัวหลักของหน้า เพราะหน้าเดิมเป็นไทย */
 .th-title {
   font-family: 'Noto Sans Thai', 'Montserrat', sans-serif;
-  font-size: clamp(30px, 4.2vw, 54px); font-weight: 600; line-height: 1.25; color: var(--ink);
+  font-size: var(--head-size); font-weight: 600; line-height: 1.25; color: var(--ink);
 }
 
 .sect { margin-top: clamp(42px, 6.5vw, 96px); }
 .sect--first { margin-top: clamp(28px, 4vw, 52px); }
 .sect__head { margin-bottom: clamp(20px, 3vw, 36px); }
-.sect__en { font-size: clamp(11px, 1.1vw, 13px); font-weight: 600; letter-spacing: 0.3em; color: var(--red); margin-bottom: 6px; }
+/* หัวข้ออังกฤษขนาดเท่าหัวข้อไทย ใช้ตัวแปรเดียวกันจะได้ไม่หลุดกัน */
+.sect__en {
+  font-size: var(--head-size); font-weight: 600; line-height: 1.2; letter-spacing: 0.06em;
+  color: var(--red);
+}
 
 /* ── ย่อหน้าเนื้อความ ── */
 .story { max-width: 900px; display: grid; gap: clamp(14px, 1.8vw, 20px); margin-top: clamp(16px, 2.2vw, 26px); }
