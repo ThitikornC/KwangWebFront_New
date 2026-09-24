@@ -7,27 +7,53 @@
       components/Profile/Mission.vue   — MISSION / ภารกิจ, IMPACT PARTNER
       components/Profile/Contact.vue   — CONTACT / ช่องการติดต่อ
   หน้าเดิมเป็นภาษาไทยเกือบทั้งหมด หัวข้อจึงใช้ภาษาไทยตัวใหญ่ ส่วนคำอังกฤษใช้เฉพาะที่หน้าเดิมมี
+  (หัวเรื่อง MAKE TECH FRESH, GET FORWARD กับ EST 24/01/2024 มาจากตัววิ่งของหน้าเดิม)
+
+  เรียงแบบนิตยสาร: ชื่อ KWANG ตัวใหญ่มีภาพลายเส้นในตัวอักษร → แถบภาพ → เกี่ยวกับเรา 2 คอลัมน์ → …
+  ภาพทั้งหมดอยู่ใน public/about/ ตัดมาจาก public/momay/momay-enlightenment-art.jpg และ public/home2/bg-momay.webp
 
   โครงหน้า แถบเมนู แถบท้าย อยู่ที่ components/Kw/Shell.vue
 -->
 <template>
   <KwShell active="about">
-    <KwTicker :words="['Make tech fresh get forward', 'EST 24/01/2024']" />
+    <!-- ══ หน้าปกแบบนิตยสาร ══
+         ชื่อตัวใหญ่เต็มความกว้าง มีภาพลายเส้นอยู่ในตัวอักษร (SVG text + pattern
+         ใช้ textLength ให้ตัวอักษรยืดเต็มความกว้างพอดีทุกขนาดจอ) ตามด้วยแถบภาพใหญ่ -->
+    <header class="mast">
+      <div class="mast__meta">
+        <span>ABOUT US</span>
+        <span>EST 24/01/2024</span>
+      </div>
+      <svg class="mast__word" viewBox="0 0 1000 200" role="img" aria-label="KWANG">
+        <defs>
+          <pattern id="aboutTypeFill" patternUnits="userSpaceOnUse" width="1000" height="200">
+            <image href="/about/type-fill.webp" x="0" y="0" width="1000" height="200" preserveAspectRatio="none" />
+          </pattern>
+        </defs>
+        <text x="0" y="192" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="url(#aboutTypeFill)">KWANG</text>
+      </svg>
+      <figure class="mast__band">
+        <img src="/about/band-top.webp" alt="" />
+      </figure>
+    </header>
 
-    <!-- ── เกี่ยวกับเรา ── -->
-    <section class="sect sect--first">
-      <h1 class="th-title font-th">เกี่ยวกับเรา</h1>
-      <div class="story font-th">
-        <p>
-          บริษัท กว้างไม่จำกัด ก่อตั้งขึ้นที่จังหวัดพิษณุโลกในปี 2024 ในฐานะบริษัทการออกแบบและติดตั้งระบบโซล่าเซลล์ ไอทีเน็ตเวิร์ค
-          เคยให้บริการทั้งองค์กรภาครัฐบาลและภาคเอกชนในจังหวัดพิษณุโลกและจังหวัดใกล้เคียง
-          หลังจากนั้นได้พัฒนาซอฟแวร์และแพลตฟอร์มผู้ช่วยอัจฉริยะด้านพลังงาน ปลอดภัย การศึกษา
-          ซึ่งผสานการบริหารจัดการการให้คำปรึกษาตามความต้องการสินค้าและบริการเข้าด้วยกันที่มุ่งเน้นนำเทคโนโลยีสร้างความเปลี่ยนแปลง ให้กับสังคมอย่างตรงไปตรงมา
-        </p>
-        <p>
-          หลังจากนั้นได้พัฒนาซอฟแวร์และแพลตฟอร์มบริการด้านจัดการพลังงานทดแทน ความปลอดภัย การศึกษา
-          ซึ่งผสานการบริหารจัดการการให้คำปรึกษาตามความต้องการสินค้าและบริการเข้าด้วยกันที่มุ่งเน้นนำเทคโนโลยีสร้างความเปลี่ยนแปลง ให้กับสังคมอย่างตรงไปตรงมา
-        </p>
+    <!-- ── เกี่ยวกับเรา — ป้ายซ้าย หัวเรื่อง + สองคอลัมน์ขวา ── -->
+    <section class="sect spread">
+      <p class="spread__label">เกี่ยวกับเรา</p>
+      <div class="spread__main">
+        <h1 class="spread__head">MAKE TECH FRESH, GET FORWARD.</h1>
+        <div class="spread__cols font-th">
+          <p>
+            บริษัท กว้างไม่จำกัด ก่อตั้งขึ้นที่จังหวัดพิษณุโลกในปี 2024 ในฐานะบริษัทการออกแบบและติดตั้งระบบโซล่าเซลล์ ไอทีเน็ตเวิร์ค
+            เคยให้บริการทั้งองค์กรภาครัฐบาลและภาคเอกชนในจังหวัดพิษณุโลกและจังหวัดใกล้เคียง
+            หลังจากนั้นได้พัฒนาซอฟแวร์และแพลตฟอร์มผู้ช่วยอัจฉริยะด้านพลังงาน ปลอดภัย การศึกษา
+            ซึ่งผสานการบริหารจัดการการให้คำปรึกษาตามความต้องการสินค้าและบริการเข้าด้วยกันที่มุ่งเน้นนำเทคโนโลยีสร้างความเปลี่ยนแปลง ให้กับสังคมอย่างตรงไปตรงมา
+          </p>
+          <p>
+            หลังจากนั้นได้พัฒนาซอฟแวร์และแพลตฟอร์มบริการด้านจัดการพลังงานทดแทน ความปลอดภัย การศึกษา
+            ซึ่งผสานการบริหารจัดการการให้คำปรึกษาตามความต้องการสินค้าและบริการเข้าด้วยกันที่มุ่งเน้นนำเทคโนโลยีสร้างความเปลี่ยนแปลง ให้กับสังคมอย่างตรงไปตรงมา
+          </p>
+        </div>
       </div>
     </section>
 
@@ -66,6 +92,10 @@
       </article>
     </section>
 
+    <figure class="sect band">
+      <img src="/about/band-bottom.webp" alt="" loading="lazy" />
+    </figure>
+
     <!-- ── ช่องการติดต่อ ── -->
     <section class="sect">
       <header class="sect__head">
@@ -101,6 +131,13 @@
         </div>
       </div>
     </section>
+
+    <!-- แถวภาพเล็กปิดท้าย เหมือนแถบภาพท้ายหน้านิตยสาร — เลื่อนช้า ๆ วนไปเรื่อย ๆ -->
+    <div class="sect strip" aria-hidden="true">
+      <div class="strip__track">
+        <img v-for="(t, i) in [...STRIP, ...STRIP]" :key="i" :src="`/about/t-${t}.webp`" alt="" loading="lazy" />
+      </div>
+    </div>
   </KwShell>
 </template>
 
@@ -114,6 +151,9 @@ useSeoMeta({
   ogDescription: 'Make tech fresh get forward — EST 24/01/2024',
   ogImage: '/kwang_logo.png',
 })
+
+/* ภาพเล็กแถวล่าง — ตัดจากภาพลายเส้นชุดเดียวกับพื้นหลัง (public/about/t-*.webp) */
+const STRIP = ['telescope', 'salon', 'sun', 'quill', 'globe', 'press', 'writer']
 
 /* เส้นเวลา — ข้อความยกมาจาก components/Profile/AboutUs.vue */
 const TIMELINE = [
@@ -161,7 +201,6 @@ const MISSION = [
 }
 
 .sect { margin-top: clamp(42px, 6.5vw, 96px); }
-.sect--first { margin-top: clamp(28px, 4vw, 52px); }
 .sect__head { margin-bottom: clamp(20px, 3vw, 36px); }
 /* หัวข้ออังกฤษขนาดเท่าหัวข้อไทย ใช้ตัวแปรเดียวกันจะได้ไม่หลุดกัน */
 .sect__en {
@@ -169,12 +208,72 @@ const MISSION = [
   color: var(--red);
 }
 
-/* ── ย่อหน้าเนื้อความ ── */
-.story { max-width: 900px; display: grid; gap: clamp(14px, 1.8vw, 20px); margin-top: clamp(16px, 2.2vw, 26px); }
-.story p {
-  font-size: clamp(17px, 1.6vw, 21px); line-height: 1.95; color: var(--ink-soft);
-  text-indent: 2em;
+/* ══ หน้าปกแบบนิตยสาร ══ */
+.mast { margin-top: clamp(8px, 1.6vw, 20px); }
+.mast__meta {
+  display: flex; justify-content: space-between;
+  padding-bottom: 10px; border-bottom: 1px solid rgba(29, 27, 25, 0.25);
+  font-size: clamp(10.5px, 1vw, 12.5px); font-weight: 600; letter-spacing: 0.28em; color: var(--ink);
 }
+.mast__word {
+  display: block; width: 100%; height: auto;
+  margin-top: clamp(10px, 1.6vw, 20px);
+  font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 250px;
+  animation: mastIn 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.mast__word text { font: inherit; letter-spacing: -4px; }
+.mast__band {
+  margin: clamp(6px, 1vw, 12px) 0 0;
+  border-top: 1px solid rgba(29, 27, 25, 0.25);
+  border-bottom: 1px solid rgba(29, 27, 25, 0.25);
+  overflow: hidden;
+}
+.mast__band img {
+  display: block; width: 100%; height: auto;
+  animation: mastBand 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.2s both;
+}
+@keyframes mastIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes mastBand { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: none; } }
+
+/* ── เกี่ยวกับเรา: ป้ายซ้าย ─ หัวเรื่องและสองคอลัมน์ขวา ── */
+.spread {
+  display: grid; gap: clamp(18px, 3vw, 40px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+.spread__label {
+  font-family: 'Noto Sans Thai', 'Montserrat', sans-serif;
+  font-size: clamp(15px, 1.4vw, 18px); font-weight: 600; letter-spacing: 0.06em; color: var(--ink);
+}
+.spread__head {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(24px, 2.8vw, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.spread__cols {
+  display: grid; gap: clamp(18px, 2.6vw, 36px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: clamp(18px, 2.4vw, 28px);
+}
+.spread__cols p { font-size: clamp(15px, 1.3vw, 17px); line-height: 1.9; color: var(--ink-soft); }
+
+/* ── แถบภาพคั่นก่อนช่องการติดต่อ ── */
+.band { margin-left: 0; margin-right: 0; border-top: 1px solid rgba(29, 27, 25, 0.25); border-bottom: 1px solid rgba(29, 27, 25, 0.25); }
+.band img { display: block; width: 100%; height: auto; }
+
+/* ── แถวภาพเล็กปิดท้าย — วิ่งช้า ๆ ไปทางซ้าย ── */
+.strip {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.strip__track { display: flex; gap: 10px; width: max-content; animation: stripRun 60s linear infinite; }
+.strip__track img {
+  display: block; width: clamp(150px, 16vw, 220px); aspect-ratio: 4 / 3; object-fit: cover;
+  border: 1px solid rgba(29, 27, 25, 0.18);
+}
+.strip:hover .strip__track { animation-play-state: paused; }
+/* รายการภาพซ้ำสองชุด เลื่อนไปครึ่งหนึ่ง (บวกครึ่งช่องว่าง) แล้ววนกลับ ภาพจะต่อกันพอดี */
+@keyframes stripRun { to { transform: translateX(calc(-50% - 5px)); } }
 
 /* ── เส้นเวลา — เส้นทางเส้นเดียวลากผ่านทั้งสามปี ปลายเป็นหัวลูกศรชี้ไปข้างหน้า ──
    เส้นลากออกจากซ้ายตอน section โผล่ (KwShell ใส่ .kw-in ให้) หมุดของปีล่าสุดมีวงกระเพื่อม */
@@ -249,6 +348,7 @@ const MISSION = [
 
 @media (prefers-reduced-motion: reduce) {
   .tl__item:last-child .tl__dot::before { animation: none; display: none; }
+  .mast__word, .mast__band img, .strip__track { animation: none; }
 }
 
 /* ── การ์ดภารกิจ — ไทยเป็นตัวหลัก อังกฤษเป็นป้ายเล็กใต้ ── */
@@ -306,7 +406,7 @@ const MISSION = [
 @media (max-width: 860px) {
   .contact { grid-template-columns: 1fr; }
 }
-@media (max-width: 640px) {
-  .story p { text-indent: 0; }
+@media (max-width: 760px) {
+  .spread, .spread__cols { grid-template-columns: 1fr; }
 }
 </style>
