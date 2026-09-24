@@ -595,6 +595,13 @@ onMounted(() => {
 
   scrollElements.forEach(el => observer!.observe(el))
 
+  // การ์ดโผล่ไล่กันทีละใบในแถวเดียวกัน (หน่วง 70ms ต่อใบ วนทุก 5 ใบ = หนึ่งแถว)
+  document.querySelectorAll('.root-bg .spline-link-card').forEach((el, i) => {
+    el.classList.add('card-reveal')
+    ;(el as HTMLElement).style.setProperty('--card-delay', `${(i % 5) * 70}ms`)
+    observer!.observe(el)
+  })
+
   onBeforeUnmount(() => {
     if (typeof window !== 'undefined') {
       window.removeEventListener('keydown', onBuuKeydown)
@@ -770,6 +777,21 @@ function openSplineDesign(key: string) {
 }
 .scroll-reveal.is-visible { opacity: 1; transform: translateY(0); }
 
+.card-reveal {
+  opacity: 0; translate: 0 22px;
+  transition: opacity 0.7s ease var(--card-delay, 0ms), translate 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) var(--card-delay, 0ms),
+              border-color 0.22s, box-shadow 0.22s, transform 0.22s;
+}
+.card-reveal.is-visible { opacity: 1; translate: 0 0; }
+
+/* หัวหน้า: ภาพค่อย ๆ ซูมเข้ามาตอนเปิดหน้า โลโก้กับปุ่มเลื่อนลงตามมาทีหลัง */
+.mm-head__mark img { animation: mmZoomIn 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.mm-brand { animation: mmFadeDown 0.9s ease 0.5s both; }
+.mm-scroll { animation: mmFadeUp 0.9s ease 1.1s both; }
+@keyframes mmZoomIn { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: none; } }
+@keyframes mmFadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+@keyframes mmFadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
 /* ── ข้อความวิ่ง ── */
 .running-text {
   padding: 12px 0;
@@ -884,5 +906,7 @@ function openSplineDesign(key: string) {
   .marquee { animation: none; }
   .scroll-reveal { opacity: 1; transform: none; transition: none; }
   .mm-scroll svg { animation: none; }
+  .card-reveal { opacity: 1; translate: none; }
+  .mm-head__mark img, .mm-brand, .mm-scroll { animation: none; }
 }
 </style>

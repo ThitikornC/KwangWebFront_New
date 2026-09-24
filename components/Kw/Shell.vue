@@ -107,7 +107,7 @@
       </nav>
     </header>
 
-    <main class="kwp__main">
+    <main ref="mainEl" class="kwp__main">
       <!-- หัวหน้า — อังกฤษตัวใหญ่ + ไทยกำกับ ตามจังหวะเดียวกับ hero ของ /home2 -->
       <section v-if="title" class="phead">
         <p v-if="eyebrow" class="phead__eyebrow">{{ eyebrow }}</p>
@@ -207,14 +207,57 @@ function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') navOpen.value = false
 }
 
+/* ── เนื้อหาค่อย ๆ โผล่ตอนเลื่อนมาถึง ──
+   ใช้กับทุกหน้าที่ครอบด้วย KwShell โดยไม่ต้องแก้หน้าเอง:
+     · ลูกชั้นแรกของ <main> (แต่ละ section) โผล่ทั้งก้อน
+     · ลูกของตาราง/รายการที่อยู่ใน REVEAL_GRID โผล่ไล่กันทีละใบ
+   หน้า projectsV2 โหลดข้อมูลทีหลัง จึงมี MutationObserver คอยจับของที่เพิ่งโผล่มาด้วย */
+const REVEAL_GRID = '.plats, .cards, .tl, .lc, .feats, .facts, .grid, .calls, .chans, .jump, .split'
+const mainEl = ref<HTMLElement | null>(null)
+let revealIO: IntersectionObserver | null = null
+let revealMO: MutationObserver | null = null
+
+function markReveal(root: HTMLElement) {
+  if (!revealIO) return
+  const add = (el: Element, delay = 0) => {
+    if (!(el instanceof HTMLElement) || el.dataset.kwReveal !== undefined) return
+    if (el.classList.contains('phead')) return // หัวหน้ามี animation ตอนโหลดของตัวเองแล้ว
+    el.dataset.kwReveal = ''
+    if (delay) el.style.setProperty('--kw-delay', `${delay}ms`)
+    revealIO!.observe(el)
+  }
+  Array.from(root.children).forEach(el => add(el))
+  root.querySelectorAll(REVEAL_GRID).forEach(grid => {
+    // ลูกของตารางไล่กันทีละ 90ms วนทุก 6 ใบ แถวล่าง ๆ จะได้ไม่ต้องรอนาน
+    Array.from(grid.children).forEach((el, i) => add(el, (i % 6) * 90))
+  })
+}
+
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('keydown', onKeydown)
   onScroll()
+
+  const root = mainEl.value
+  if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  revealIO = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return
+      e.target.classList.add('kw-in')
+      revealIO!.unobserve(e.target)
+    })
+  // threshold 0 = โผล่ทันทีที่ขอบบนเข้าจอ — ใช้สัดส่วนไม่ได้ เพราะกล่องที่สูงกว่าจอหลายเท่า
+  // (เช่นกล่องรวมงานของ projectsV2 สูงเป็นหมื่นพิกเซล) จะไม่มีวันเห็นถึงสัดส่วนนั้นแล้วค้างล่องหน
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0 })
+  markReveal(root)
+  revealMO = new MutationObserver(() => markReveal(root))
+  revealMO.observe(root, { childList: true, subtree: true })
 })
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('keydown', onKeydown)
+  revealIO?.disconnect()
+  revealMO?.disconnect()
 })
 
 useHead({
@@ -233,6 +276,19 @@ useHead({
   style: [{ children: 'html,body{background:#f6f1e6 !important;}' }],
 })
 </script>
+
+<style>
+/* ── ตัวโผล่ตอนเลื่อน — ไม่ scoped เพราะต้องใช้กับเนื้อหาที่หน้าแต่ละหน้าส่งเข้ามาทาง slot ──
+   ตั้งจาก JS ใน KwShell (data-kw-reveal → .kw-in) ถ้า JS ไม่ทำงานเนื้อหาก็ยังเห็นตามปกติ */
+.kwp [data-kw-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) var(--kw-delay, 0ms),
+    transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) var(--kw-delay, 0ms);
+}
+.kwp [data-kw-reveal].kw-in { opacity: 1; transform: none; }
+</style>
 
 <style scoped>
 .kwp {
@@ -314,6 +370,19 @@ useHead({
 .kwp__ring { animation: kwpDrift 26s ease-in-out infinite alternate; transform-origin: 1330px 215px; }
 @keyframes kwpSpin { to { transform: rotate(360deg); } }
 @keyframes kwpDrift { to { transform: rotate(2.2deg); } }
+
+/* ดาวกะพริบ จุดบนวงโคจรเต้นเบา ๆ แสงดวงอาทิตย์หายใจ — ช้าและจาง ไม่แย่งสายตาจากเนื้อหา */
+.kwp__star path { animation: kwpTwinkle 5.5s ease-in-out infinite; }
+.kwp__star path:nth-child(2) { animation-delay: -2.7s; }
+.kwp__dot circle { animation: kwpPulse 4.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.kwp__dot circle:nth-child(2n) { animation-delay: -1.6s; }
+.kwp__dot circle:nth-child(3n) { animation-delay: -3.1s; }
+.kwp__sunglow { animation: kwpBreathe 7s ease-in-out infinite; }
+.kwp__globe { animation: kwpFloat 12s ease-in-out infinite alternate; }
+@keyframes kwpTwinkle { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.12; } }
+@keyframes kwpPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.45); } }
+@keyframes kwpBreathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes kwpFloat { to { translate: 0 -14px; } }
 
 /* ── แถบบน ──
    หน้าเนื้อหาเลื่อนยาว แถบเมนูจึงติดขอบบนไว้ (sticky) ต่างจาก home2 ที่จบใน 1 จอ
@@ -408,6 +477,21 @@ useHead({
 }
 
 .phead { max-width: 900px; margin-bottom: clamp(26px, 4vw, 52px); }
+
+/* หัวหน้าเล่นตอนเปิดหน้า — ไล่ทีละบรรทัด เส้นใต้ลากจากซ้ายไปขวา */
+.phead__eyebrow, .phead__title, .phead__th, .phead__lead {
+  animation: kwpRise 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.phead__title { animation-delay: 0.08s; }
+.phead__th { animation-delay: 0.2s; }
+.phead__lead { animation-delay: 0.42s; }
+.phead__rule { animation: kwpDraw 1s cubic-bezier(0.65, 0, 0.35, 1) 0.3s both; transform-origin: left; }
+@keyframes kwpRise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes kwpDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* แถบเมนูไหลลงมาตอนเปิดหน้า */
+.topbar { animation: kwpDrop 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+@keyframes kwpDrop { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
 .phead__eyebrow {
   font-size: clamp(10px, 1.05vw, 13px); font-weight: 500; letter-spacing: 0.26em; color: var(--red);
 }
@@ -531,6 +615,7 @@ useHead({
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kwp__rays, .kwp__ring { animation: none; }
+  .kwp__rays, .kwp__ring, .kwp__star path, .kwp__dot circle, .kwp__sunglow, .kwp__globe,
+  .phead__eyebrow, .phead__title, .phead__th, .phead__lead, .phead__rule, .topbar { animation: none; }
 }
 </style>
