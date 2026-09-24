@@ -142,13 +142,6 @@
         </div>
       </div>
     </section>
-
-    <!-- แถวภาพเล็กปิดท้าย เหมือนแถบภาพท้ายหน้านิตยสาร — เลื่อนช้า ๆ วนไปเรื่อย ๆ -->
-    <div class="sect strip" aria-hidden="true">
-      <div class="strip__track">
-        <img v-for="(t, i) in [...STRIP, ...STRIP]" :key="i" :src="`/about/t-${t}.webp`" alt="" loading="lazy" />
-      </div>
-    </div>
   </KwShell>
 </template>
 
@@ -162,9 +155,6 @@ useSeoMeta({
   ogDescription: 'Make tech fresh get forward — EST 24/01/2024',
   ogImage: '/kwang_logo.png',
 })
-
-/* ภาพเล็กแถวล่าง — ตัดจากภาพลายเส้นชุดเดียวกับพื้นหลัง (public/about/t-*.webp) */
-const STRIP = ['telescope', 'salon', 'sun', 'quill', 'globe', 'press', 'writer']
 
 /* เส้นเวลา — ข้อความยกมาจาก components/Profile/AboutUs.vue */
 const TIMELINE = [
@@ -269,21 +259,6 @@ const MISSION = [
 .band { margin-left: 0; margin-right: 0; border-top: 1px solid rgba(29, 27, 25, 0.25); border-bottom: 1px solid rgba(29, 27, 25, 0.25); }
 .band img { display: block; width: 100%; height: auto; }
 
-/* ── แถวภาพเล็กปิดท้าย — วิ่งช้า ๆ ไปทางซ้าย ── */
-.strip {
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-}
-.strip__track { display: flex; gap: 10px; width: max-content; animation: stripRun 60s linear infinite; }
-.strip__track img {
-  display: block; width: clamp(150px, 16vw, 220px); aspect-ratio: 4 / 3; object-fit: cover;
-  border: 1px solid rgba(29, 27, 25, 0.18);
-}
-.strip:hover .strip__track { animation-play-state: paused; }
-/* รายการภาพซ้ำสองชุด เลื่อนไปครึ่งหนึ่ง (บวกครึ่งช่องว่าง) แล้ววนกลับ ภาพจะต่อกันพอดี */
-@keyframes stripRun { to { transform: translateX(calc(-50% - 5px)); } }
-
 /* ── เส้นเวลา — เส้นทางเส้นเดียวลากผ่านทั้งสามปี ปลายเป็นหัวลูกศรชี้ไปข้างหน้า ──
    เส้นลากออกจากซ้ายตอน section โผล่ (KwShell ใส่ .kw-in ให้) หมุดของปีล่าสุดมีวงกระเพื่อม */
 .tl {
@@ -357,7 +332,7 @@ const MISSION = [
 
 @media (prefers-reduced-motion: reduce) {
   .tl__item:last-child .tl__dot::before { animation: none; display: none; }
-  .mast__word, .strip__track { animation: none; }
+  .mast__word { animation: none; }
 }
 
 /* ── การ์ดภารกิจ — ไทยเป็นตัวหลัก อังกฤษเป็นป้ายเล็กใต้ ── */
