@@ -6001,12 +6001,34 @@ section {
     transform: scale(var(--k));
     transform-origin: 0 0;
   }
-  /* การ์ดใบที่สอง (ภาพ Urban) ให้รูปทรงเดียวกับจอบน 16:10 กว้างเท่ากัน ขอบเท่ากัน
+  /* ในชุดการ์ด เนื้อในจอบนตอนนี้เป็นภาพนิ่งภาพเดียว (.brief--library-image) ไม่ใช่ผังคอนโซลแล้ว
+     ไม่ต้องย่อสองชั้น (เวที --k × การ์ด 880px) ที่ทำให้ภาพเล็กกว่าจอและเหลือขอบดำ
+     ให้เวทีกับการ์ดเต็มจอพอดี แล้วภาพ contain เหมือนใบล่าง สองใบจะออกมาเท่ากัน */
+  .brief-showcase--stack .laptop__screen { aspect-ratio: 16 / 9; }
+  .brief-showcase--stack .laptop__stage,
+  .brief-showcase--stack .laptop__stage > .brief--library-image {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    border: 0;
+    border-radius: 0;
+  }
+  /* ตอนกดขยาย เวทีจะเด้งมากลางจอ (position: fixed) — height 100% ข้างบนจะกลายเป็นสูงเต็มจอ
+     จึงคืนความสูงให้ตามสัดส่วนภาพแทน */
+  .brief-showcase--stack.is-front .laptop__stage {
+    right: auto;
+    bottom: auto;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+  }
+  /* การ์ดใบที่สอง (ภาพ Urban) รูปทรงเดียวกับจอบน 16:9 (ตรงกับไฟล์ภาพ 1920x1080) กว้างเท่ากัน ขอบเท่ากัน
      และตั้งตรงไม่เอียง — สองใบเรียงบนล่างจะได้ขนาดเท่ากันพอดี */
   .brief-showcase--stack .en__backframe {
     width: min(100%, 1080px);
     margin-inline: auto;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
     border-radius: 14px;
     border-color: rgba(255, 255, 255, 0.08);
     transform: none;
