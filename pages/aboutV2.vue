@@ -176,19 +176,80 @@ const MISSION = [
   text-indent: 2em;
 }
 
-/* ── เส้นเวลา ── */
+/* ── เส้นเวลา — เส้นทางเส้นเดียวลากผ่านทั้งสามปี ปลายเป็นหัวลูกศรชี้ไปข้างหน้า ──
+   เส้นลากออกจากซ้ายตอน section โผล่ (KwShell ใส่ .kw-in ให้) หมุดของปีล่าสุดมีวงกระเพื่อม */
 .tl {
+  --node: 18px;
+  position: relative;
   display: grid; gap: clamp(22px, 3vw, 38px);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   list-style: none; margin: 0; padding: 0;
 }
-.tl__item { position: relative; padding-top: 26px; border-top: 1px solid rgba(29, 27, 25, 0.2); }
-.tl__dot { position: absolute; top: -4.5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--red); }
+/* ตัวเส้น — ทองไล่ไปแดงตามเวลา */
+.tl::before {
+  content: ''; position: absolute; left: 0; right: 14px;
+  top: calc(var(--node) / 2 - 1px); height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--red));
+  transform-origin: left;
+  transition: transform 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
+}
+/* หัวลูกศรปลายเส้น */
+.tl::after {
+  content: ''; position: absolute; right: 0;
+  top: calc(var(--node) / 2 - 7px);
+  border-left: 14px solid var(--red); border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+  transition: opacity 0.4s ease 1.6s;
+}
+.sect:not(.kw-in) .tl::before { transform: scaleX(0); }
+.sect:not(.kw-in) .tl::after { opacity: 0; }
+/* ไม่มี JS (หรือปิด animation) — .sect ไม่มี data-kw-reveal จึงไม่ต้องรอ kw-in */
+.sect:not([data-kw-reveal]) .tl::before { transform: none; }
+.sect:not([data-kw-reveal]) .tl::after { opacity: 1; }
+
+.tl__item { position: relative; padding-top: calc(var(--node) + 22px); }
+.tl__dot {
+  position: absolute; top: 0; left: 0;
+  width: var(--node); height: var(--node); border-radius: 50%;
+  background: var(--paper-2);
+  border: 2px solid var(--red);
+  box-shadow: 0 0 0 5px var(--paper);
+}
+.tl__dot::after {
+  content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--red);
+}
+.tl__item:last-child .tl__dot::before {
+  content: ''; position: absolute; inset: -2px; border-radius: 50%;
+  border: 2px solid var(--red);
+  animation: tlPing 2.2s ease-out infinite;
+}
+@keyframes tlPing { from { transform: scale(1); opacity: 0.7; } to { transform: scale(2.6); opacity: 0; } }
 .tl__year {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(28px, 3.2vw, 42px); font-weight: 500; color: var(--ink);
 }
 .tl__body { margin-top: 12px; font-size: clamp(16px, 1.45vw, 18.5px); line-height: 1.9; color: var(--ink-soft); }
+
+/* จอแคบ: เส้นทางเปลี่ยนเป็นแนวตั้งด้านซ้าย ลูกศรชี้ลง */
+@media (max-width: 760px) {
+  .tl { grid-template-columns: 1fr; gap: 34px; padding-left: calc(var(--node) + 20px); }
+  .tl::before {
+    left: calc(var(--node) / 2 - 1px); right: auto; top: 6px; bottom: 14px;
+    width: 2px; height: auto;
+    background: linear-gradient(180deg, var(--gold), var(--red));
+    transform-origin: top;
+  }
+  .sect:not(.kw-in) .tl::before { transform: scaleY(0); }
+  .tl::after {
+    right: auto; top: auto; bottom: 0; left: calc(var(--node) / 2 - 7px);
+    border-top: 14px solid var(--red); border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 0;
+  }
+  .tl__item { padding-top: 0; }
+  .tl__dot { top: 6px; left: calc((var(--node) + 20px) * -1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl__item:last-child .tl__dot::before { animation: none; display: none; }
+}
 
 /* ── การ์ดภารกิจ — ไทยเป็นตัวหลัก อังกฤษเป็นป้ายเล็กใต้ ── */
 .cards {
