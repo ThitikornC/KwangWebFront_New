@@ -15,9 +15,6 @@
 
   <!-- หัวหน้าเพจ: ตรา MOMAY บนกระดาษครีม ชุดเดียวกับหน้าแรก -->
   <header class="mm-head">
-    <a class="mm-brand" href="/" aria-label="KWANG UNLIMIT">
-      <img class="mm-brand__logo" src="/kwang_logo2.png" alt="KWANG UNLIMIT" />
-    </a>
     <div class="mm-head__mark">
       <img src="/momay/momay-enlightenment-art.jpg" alt="MOMAY ENLIGHTENMENT" />
     </div>
@@ -711,7 +708,7 @@ function openSplineDesign(key: string) {
 
 /* ── หัวหน้าเพจ ── */
 /* หัวหน้า — ภาพ MOMAY เต็มจอ ขอบถึงขอบ (ดึงออกไปทับ padding 32px ของ .root-bg)
-   โลโก้ KWANG ลอยทับด้านบน ปุ่มเลื่อนลงลอยทับด้านล่าง */
+   ปุ่มเลื่อนลงลอยทับด้านล่าง */
 .mm-head {
   --bleed: 32px;
   position: relative;
@@ -721,20 +718,6 @@ function openSplineDesign(key: string) {
   padding: clamp(14px, 2.4vh, 26px) 16px clamp(10px, 2vh, 20px);
   text-align: center;
   overflow: hidden;
-}
-.mm-brand { position: relative; z-index: 1; }
-/* ไฟล์โลโก้ KWANG เป็นผืนจัตุรัสที่มีขอบใสรอบเยอะ ครอบทิ้งเหมือนที่ทำในหน้าแรก
-   (เนื้อโลโก้เริ่มที่ซ้าย 4.40% บน 11.90% กินพื้นที่ 90.00% × 65.55%) */
-.mm-brand {
-  --logo-h: clamp(44px, 6vw, 64px);
-  --logo-box: calc(var(--logo-h) / 0.6555);
-  display: block; overflow: hidden;
-  height: var(--logo-h); width: calc(var(--logo-box) * 0.9);
-}
-.mm-brand__logo {
-  display: block; max-width: none;
-  width: var(--logo-box); height: var(--logo-box);
-  margin: calc(var(--logo-box) * -0.119) 0 0 calc(var(--logo-box) * -0.044);
 }
 /* ภาพ MOMAY (1536×1024) ปูเต็มจอ ตัวตราอยู่กลางภาพจึงยังเห็นครบเมื่อครอบขอบ */
 .mm-head__mark { position: absolute; inset: 0; background: #fcf8ef; }
@@ -784,12 +767,10 @@ function openSplineDesign(key: string) {
 }
 .card-reveal.is-visible { opacity: 1; translate: 0 0; }
 
-/* หัวหน้า: ภาพค่อย ๆ ซูมเข้ามาตอนเปิดหน้า โลโก้กับปุ่มเลื่อนลงตามมาทีหลัง */
+/* หัวหน้า: ภาพค่อย ๆ ซูมเข้ามาตอนเปิดหน้า ปุ่มเลื่อนลงตามมาทีหลัง */
 .mm-head__mark img { animation: mmZoomIn 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
-.mm-brand { animation: mmFadeDown 0.9s ease 0.5s both; }
 .mm-scroll { animation: mmFadeUp 0.9s ease 1.1s both; }
 @keyframes mmZoomIn { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: none; } }
-@keyframes mmFadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
 @keyframes mmFadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 /* ── ข้อความวิ่ง ── */
@@ -907,6 +888,6 @@ function openSplineDesign(key: string) {
   .scroll-reveal { opacity: 1; transform: none; transition: none; }
   .mm-scroll svg { animation: none; }
   .card-reveal { opacity: 1; translate: none; }
-  .mm-head__mark img, .mm-brand, .mm-scroll { animation: none; }
+  .mm-head__mark img, .mm-scroll { animation: none; }
 }
 </style>
