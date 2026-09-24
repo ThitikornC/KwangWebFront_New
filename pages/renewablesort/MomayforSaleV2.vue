@@ -2278,10 +2278,8 @@ const heroLinks = [
     labelHtml: '<span class="logo-main">MOMAY</span><span class="logo-script">Surprise</span>',
     cta: 'VIEW DEMO',
     color: '#4fd8ff',
-    /* ยังชี้หน้าเดิมอยู่ ตามที่สั่งไว้ว่ายังไม่ต้องพาคนมา V2
-       V2 (/SurpriseV220926) ขึ้นเซิร์ฟเวอร์แล้วและเปิดตรงจาก URL ได้
-       แต่ยังไม่มีทางเข้าจากหน้าไหน — จะเปิดใช้จริงค่อยเปลี่ยนบรรทัดนี้เป็น V2 */
-    go: () => open('/MomaySurpriseOrganize'),
+    // พาไป V2 แล้ว (https://www.kwangunlimit.com/SurpriseV220926)
+    go: () => open('/SurpriseV220926'),
   },
   {
     key: 'map',

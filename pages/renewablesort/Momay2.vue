@@ -15,7 +15,7 @@
 
   <!-- หัวหน้าเพจ: ตรา MOMAY บนกระดาษครีม ชุดเดียวกับหน้าแรก -->
   <header class="mm-head">
-    <a class="mm-brand" href="/home2" aria-label="KWANG UNLIMIT">
+    <a class="mm-brand" href="/" aria-label="KWANG UNLIMIT">
       <img class="mm-brand__logo" src="/kwang_logo2.png" alt="KWANG UNLIMIT" />
     </a>
     <div class="mm-head__mark">

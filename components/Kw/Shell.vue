@@ -5,7 +5,7 @@
   ส่วนหน้าเนื้อหา (about / projects / forward thinking / contact) เลื่อนยาวได้
   จึงยกฉากหลัง แถบเมนู และแถบท้ายมาไว้ที่นี่ที่เดียว แก้ทีเดียวเปลี่ยนตามกันทุกหน้า
 
-  ค่าสี ตัวอักษร และสัดส่วนแถบบน ลอกมาจาก pages/home2.vue ตรง ๆ เพื่อให้ต่อกันแล้วไม่สะดุด
+  ค่าสี ตัวอักษร และสัดส่วนแถบบน ลอกมาจาก pages/index.vue (/) ตรง ๆ เพื่อให้ต่อกันแล้วไม่สะดุด
   ถ้าแก้โทนที่ home2 ต้องตามมาแก้ที่นี่ด้วย (และกลับกัน)
 
   ฉากหลังตั้งเป็น fixed — เนื้อหาเลื่อนผ่านวงโคจรไป ไม่ใช่ลากวงโคจรตามลงไปด้วย
@@ -72,7 +72,7 @@
 
     <!-- ══════════════ แถบบน — ชุดเดียวกับ /home2 ══════════════ -->
     <header class="topbar">
-      <a class="brand" href="/home2" aria-label="KWANG UNLIMITED — หน้าแรก">
+      <a class="brand" href="/" aria-label="KWANG UNLIMITED — หน้าแรก">
         <span class="brand__mark" aria-hidden="true">
           <img src="/kwang_logo.png" alt="" />
         </span>
@@ -167,8 +167,9 @@ withDefaults(defineProps<{
   lead?: string
 }>(), { active: '', eyebrow: '', title: '', titleTh: '', lead: '' })
 
-/* ── เมนู — ชุดเดียวกับ /home2 แก้ที่นี่แล้วต้องตามไปแก้ NAV ใน pages/home2.vue ── */
+/* ── เมนู — ชุดเดียวกับ /home2 แก้ที่นี่แล้วต้องตามไปแก้ NAV ใน pages/index.vue ── */
 const NAV = [
+  { key: 'kwang',    label: 'KWANG',            href: '/kwang' },
   { key: 'about',    label: 'ABOUT',            href: '/aboutV2' },
   { key: 'projects', label: 'PROJECTS',         href: '/projectsV2' },
   { key: 'forward',  label: 'FORWARD THINKING', href: '/forwardthinkingV2' },
@@ -506,7 +507,7 @@ useHead({
 .kwp-up-enter-from, .kwp-up-leave-to { opacity: 0; transform: translateY(8px); }
 
 /* ── จอแคบ ── */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .topbar { gap: 12px; padding-top: 16px; }
   .topbar__rule { display: none; }
   .navtoggle { display: block; }
@@ -519,7 +520,7 @@ useHead({
     background: var(--paper-2);
     transition: max-height 0.28s ease;
   }
-  .nav.open { max-height: 340px; border-bottom: 1px solid rgba(29, 27, 25, 0.14); }
+  .nav.open { max-height: 380px; border-bottom: 1px solid rgba(29, 27, 25, 0.14); }
   .nav__link { padding: 14px 0; text-align: left; font-size: 12.5px; border-bottom: 1px solid rgba(29, 27, 25, 0.1); }
   .nav__link::after { display: none; }
 
