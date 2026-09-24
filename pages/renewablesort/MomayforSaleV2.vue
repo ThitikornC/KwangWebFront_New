@@ -5759,7 +5759,22 @@ section {
     gap: clamp(46px, 8vw, 78px);
     margin-top: clamp(52px, 9vw, 84px);
   }
-  .brief-showcase--stack .en__wordmark { display: none; }
+  /* เรียงลงมาทีละใบแล้ว ชื่อที่ลอยอยู่เหนือสองคอลัมน์จะไปกองรวมกันข้างบน
+     จึงเปลี่ยนเป็นแถวปกติในกริด วางชื่อไว้เหนือการ์ดของตัวเองทีละคู่ */
+  .brief-showcase--laptop.brief-showcase--stack,
+  .brief-showcase--stack.is-front,
+  .brief-showcase--stack.is-back { row-gap: 10px; }
+  .brief-showcase--stack .en__wordmark {
+    position: static;
+    transform: none;
+    align-self: start;
+    font-size: clamp(1.3rem, 5.6vw, 2.1rem);
+  }
+  .brief-showcase--stack .en__wordmark--library { order: 0; }
+  .brief-showcase--stack .laptop,
+  .brief-showcase--stack .laptop__stage { order: 1; }
+  .brief-showcase--stack .en__wordmark--urban { order: 2; margin-top: clamp(36px, 7vw, 68px); }
+  .brief-showcase--stack .en__backframe { order: 3; }
 }
 /* เบราว์เซอร์เต็มจอบนโน้ตบุ๊กเหลือความสูงจริงไม่ถึง 900px — หัวเรื่องที่ผูกกับความกว้าง
    อย่างเดียวจะดันแถวปุ่มเดโมตกขอบล่าง บล็อกนี้ผูกกับความสูงจอด้วยแล้วบีบระยะลง */
@@ -5985,6 +6000,16 @@ section {
     border-radius: 0;
     transform: scale(var(--k));
     transform-origin: 0 0;
+  }
+  /* การ์ดใบที่สอง (ภาพ Urban) ให้รูปทรงเดียวกับจอบน 16:10 กว้างเท่ากัน ขอบเท่ากัน
+     และตั้งตรงไม่เอียง — สองใบเรียงบนล่างจะได้ขนาดเท่ากันพอดี */
+  .brief-showcase--stack .en__backframe {
+    width: min(100%, 1080px);
+    margin-inline: auto;
+    aspect-ratio: 16 / 10;
+    border-radius: 14px;
+    border-color: rgba(255, 255, 255, 0.08);
+    transform: none;
   }
   .brief-showcase--laptop { max-width: 1080px; }
 
