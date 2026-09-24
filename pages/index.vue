@@ -699,7 +699,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   .hero__copy {
     display: flex; flex-direction: column; justify-content: flex-start;
   }
-  .kicker { margin-top: auto; }
 
   .wordmark__crop { --wm-w: min(88vw, 40svh, 520px); }
   .wm-word { font-size: clamp(48px, min(19vw, 11svh), 96px); }
@@ -709,8 +708,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   .kicker { font-size: clamp(10px, min(2.9vw, 1.7svh), 13px); letter-spacing: 0.2em; }
   .kicker-th { font-size: clamp(12px, min(3.7vw, 2.2svh), 17px); }
 
-  /* หัวเรื่องไม่ลอยกลางช่องว่างแล้ว — เกาะใต้คำโปรยด้วยระยะคงที่
-     ที่ว่างที่เหลือไปอยู่เหนือคำโปรยกับเหนือปุ่มแทน หัวเรื่องจึงขยับขึ้นไปข้างบน */
+  /* คำโปรยกับหัวเรื่องเกาะใต้โลโก้ด้วยระยะคงที่ ไม่ลอยกลางช่องว่าง
+     ที่ว่างที่เหลือทั้งหมดไปอยู่เหนือปุ่ม (ปุ่มยังชิดล่างด้วย margin-top:auto) */
   .claim {
     margin-top: clamp(20px, 4.4svh, 48px);
     font-size: clamp(18px, min(8.2vw, 4.6svh), 42px);
