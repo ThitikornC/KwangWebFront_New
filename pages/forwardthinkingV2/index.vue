@@ -9,8 +9,6 @@
       COLLABORATIVE SENSING  → /forwardthinkingV2/collaborativesensing   (หน้าเดิม /renewablesort/collaborativesensing)
       DASHBOARD              → /renewablesort/dashboard                  (หน้าเดิม เปิดแดชบอร์ดเต็มจอ)
 
-  ปุ่มดาวน์โหลดใต้ Espresso กับ MOMAY มีในหน้าเดิม
-
   โครงหน้า แถบเมนู แถบท้าย อยู่ที่ components/Kw/Shell.vue
 -->
 <template>
@@ -24,7 +22,6 @@
 
         <div class="plat__foot">
           <a class="btn btn--solid" :href="p.href">เข้าชม</a>
-          <a v-if="p.doc" class="btn btn--ghost" :href="p.doc.href" download>{{ p.doc.label }}</a>
         </div>
       </article>
     </div>
@@ -46,14 +43,12 @@ const PLATFORMS: {
   name: string
   logo: string
   href: string
-  doc?: { label: string; href: string }
 }[] = [
   {
     id: 'espresso',
     name: 'ESPRESSO',
     logo: '/ESPRESSO_logo.png',
     href: '/forwardthinkingV2/espresso',
-    doc: { label: 'Download Espresso Document', href: '/Sale Kit Espresso251125.pdf' },
   },
   {
     id: 'momay',
@@ -61,7 +56,6 @@ const PLATFORMS: {
     // ตราแนวนอน /MOMAY_logo.png ใส่ในวงกลมแล้วเล็กจนอ่านไม่ออก จึงใช้ตราชุดใหม่ที่สัดส่วนใกล้จัตุรัส
     logo: '/home2/momay-enlightenment.png',
     href: '/renewablesort/Momay2',
-    doc: { label: 'Download Momay Document', href: '/Sale Kit Momay181125 .pdf' },
   },
   {
     id: 'collaborative-sensing',
@@ -113,7 +107,6 @@ const PLATFORMS: {
   font-size: clamp(22px, 2.2vw, 30px); font-weight: 500; line-height: 1.15; text-align: center; color: var(--ink);
 }
 
-
 /* ปุ่มชิดล่างการ์ดทุกใบ ให้แถวปุ่มตรงกันแม้ข้อความยาวไม่เท่ากัน */
 .plat__foot { display: grid; gap: 10px; margin-top: auto; padding-top: clamp(18px, 2.4vw, 26px); }
 
@@ -127,6 +120,4 @@ const PLATFORMS: {
 }
 .btn--solid { background: var(--red); color: #fdf8ef; }
 .btn--solid:hover { background: #8a171e; transform: translateY(-1px); }
-.btn--ghost { background: transparent; color: var(--ink); border: 1px solid rgba(29, 27, 25, 0.42); }
-.btn--ghost:hover { border-color: var(--ink); background: rgba(29, 27, 25, 0.045); transform: translateY(-1px); }
 </style>
