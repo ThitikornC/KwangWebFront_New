@@ -19,14 +19,6 @@
     <div class="kwp__grain" aria-hidden="true" />
 
     <svg class="kwp__orbits" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <radialGradient id="kwpSunGlow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0%" stop-color="#e8c56a" stop-opacity="0.38" />
-          <stop offset="60%" stop-color="#e8c56a" stop-opacity="0.1" />
-          <stop offset="100%" stop-color="#e8c56a" stop-opacity="0" />
-        </radialGradient>
-      </defs>
-
       <g class="kwp__ring">
         <ellipse cx="1330" cy="215" rx="430" ry="185" transform="rotate(-18 1330 215)" />
         <ellipse cx="1330" cy="215" rx="330" ry="300" transform="rotate(12 1330 215)" />
@@ -60,14 +52,6 @@
         <ellipse rx="40" ry="54" />
       </g>
 
-      <!-- ขยายและเอาหน้ายิ้มออก ชุดเดียวกับ /home2 -->
-      <g class="kwp__sun" transform="translate(1330 215) scale(2)">
-        <circle class="kwp__sunglow" r="150" fill="url(#kwpSunGlow)" />
-        <g class="kwp__rays">
-          <path v-for="r in SUN_RAYS" :key="r.a" :d="r.d" :transform="`rotate(${r.a})`" />
-        </g>
-        <circle class="kwp__disc" r="44" />
-      </g>
     </svg>
 
     <!-- ══════════════ แถบบน — ชุดเดียวกับ /home2 ══════════════ -->
@@ -183,16 +167,6 @@ const CONTACTS = [
 ]
 
 const year = new Date().getFullYear()
-
-/* รัศมีดวงอาทิตย์ — แฉกยาวสลับแฉกสั้น เรียงรอบวงทีละ 15 องศา
-   สูตรเดียวกับ /home2 ย่อตามรัศมีจาน (52 → 44 = ×0.846) ดูคำอธิบายสัดส่วนที่นั่น */
-const SUN_RAYS = Array.from({ length: 24 }, (_, i) => {
-  const long = i % 2 === 0
-  const base = 49
-  const tip = long ? 95 : 69
-  const half = long ? 3.6 : 6.4
-  return { a: i * 15, d: `M ${-half} ${-base} L 0 ${-tip} L ${half} ${-base} Z` }
-})
 
 const navOpen = ref(false)
 const showTop = ref(false)
@@ -363,25 +337,19 @@ useHead({
 .kwp__globe circle,
 .kwp__globe ellipse,
 .kwp__globe path { fill: none; stroke: var(--gold); stroke-width: 1.1; opacity: 0.3; }
-.kwp__rays path { fill: var(--gold); opacity: 0.45; }
-.kwp__disc { fill: var(--paper-2); stroke: var(--gold); stroke-width: 1.3; }
 
-.kwp__rays { animation: kwpSpin 220s linear infinite; transform-origin: 0 0; }
 .kwp__ring { animation: kwpDrift 26s ease-in-out infinite alternate; transform-origin: 1330px 215px; }
-@keyframes kwpSpin { to { transform: rotate(360deg); } }
 @keyframes kwpDrift { to { transform: rotate(2.2deg); } }
 
-/* ดาวกะพริบ จุดบนวงโคจรเต้นเบา ๆ แสงดวงอาทิตย์หายใจ — ช้าและจาง ไม่แย่งสายตาจากเนื้อหา */
+/* ดาวกะพริบ จุดบนวงโคจรเต้นเบา ๆ ลูกโลกลอย — ช้าและจาง ไม่แย่งสายตาจากเนื้อหา */
 .kwp__star path { animation: kwpTwinkle 5.5s ease-in-out infinite; }
 .kwp__star path:nth-child(2) { animation-delay: -2.7s; }
 .kwp__dot circle { animation: kwpPulse 4.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .kwp__dot circle:nth-child(2n) { animation-delay: -1.6s; }
 .kwp__dot circle:nth-child(3n) { animation-delay: -3.1s; }
-.kwp__sunglow { animation: kwpBreathe 7s ease-in-out infinite; }
 .kwp__globe { animation: kwpFloat 12s ease-in-out infinite alternate; }
 @keyframes kwpTwinkle { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.12; } }
 @keyframes kwpPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.45); } }
-@keyframes kwpBreathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 @keyframes kwpFloat { to { translate: 0 -14px; } }
 
 /* ── แถบบน ──
@@ -615,7 +583,7 @@ useHead({
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kwp__rays, .kwp__ring, .kwp__star path, .kwp__dot circle, .kwp__sunglow, .kwp__globe,
+  .kwp__ring, .kwp__star path, .kwp__dot circle, .kwp__globe,
   .phead__eyebrow, .phead__title, .phead__th, .phead__lead, .phead__rule, .topbar { animation: none; }
 }
 </style>
