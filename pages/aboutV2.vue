@@ -237,7 +237,7 @@ const MISSION = [
 /* บรรทัดรอง — เล็กกว่าและจางกว่า KWANG ให้ KWANG เป็นตัวหลัก */
 .mast__word--2 {
   width: 64%;
-  margin-top: clamp(6px, 1vw, 12px); font-size: 190px;
+  margin: clamp(6px, 1vw, 12px) auto 0; font-size: 190px;
   opacity: 0.5;
   animation-name: mastIn2; animation-delay: 0.15s;
 }
