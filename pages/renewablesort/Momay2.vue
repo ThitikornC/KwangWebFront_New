@@ -19,9 +19,8 @@
       <img class="mm-brand__logo" src="/kwang_logo2.png" alt="KWANG UNLIMIT" />
     </a>
     <div class="mm-head__mark">
-      <img src="/home2/momay-enlightenment.png" alt="MOMAY ENLIGHTENMENT" />
+      <img src="/momay/momay-enlightenment-art.jpg" alt="MOMAY ENLIGHTENMENT" />
     </div>
-    <p class="mm-head__sub font-thai">สารบัญงานทั้งหมดของ MOMAY</p>
   </header>
 
   <!-- Running Text -->
@@ -54,7 +53,7 @@
         class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay Human" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Human" class="w-12 h-12 object-contain" />
           <span class="font-thai">Human_NU</span>
         </div>
       </div>
@@ -63,7 +62,7 @@
         class="neon-btn spline-link-card hover:from-green-100 hover:to-green-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay Pharmacy" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Pharmacy" class="w-12 h-12 object-contain" />
           <span class="font-thai">Pharmacy_NU</span>
         </div>
       </div>
@@ -72,7 +71,7 @@
         class="neon-btn spline-link-card hover:from-yellow-100 hover:to-yellow-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="BanKlong Resort" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="BanKlong Resort" class="w-12 h-12 object-contain" />
           <span class="font-thai">BanKlong Resort</span>
         </div>
       </div>
@@ -81,7 +80,7 @@
         class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay" class="w-12 h-12 object-contain" />
           <span class="font-thai">Wongpanit Sukhothai</span>
         </div>
       </div>
@@ -90,7 +89,7 @@
         class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momay 2</span>
         </div>
       </div>
@@ -99,7 +98,7 @@
         class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay" class="w-12 h-12 object-contain" />
           <span class="font-thai">Clinic</span>
         </div>
       </div>
@@ -108,7 +107,7 @@
         class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay" class="w-12 h-12 object-contain" />
           <span class="font-thai">Hospital Noenmaprang V1</span>
         </div>
       </div>
@@ -117,7 +116,7 @@
         class="neon-btn spline-link-card hover:from-pink-100 hover:to-pink-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay" class="w-12 h-12 object-contain" />
           <span class="font-thai">Hospital Noenmaprang</span>
         </div>
       </div>
@@ -126,7 +125,7 @@
         class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay 99/99" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay 99/99" class="w-12 h-12 object-contain" />
           <span class="font-thai">99/99</span>
         </div>
       </div>
@@ -135,7 +134,7 @@
         class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="คุณเดียร์" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="คุณเดียร์" class="w-12 h-12 object-contain" />
           <span class="font-thai">คุณเดียร์</span>
         </div>
       </div>
@@ -144,7 +143,7 @@
         class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="คุณแซน" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="คุณแซน" class="w-12 h-12 object-contain" />
           <span class="font-thai">คุณแซน</span>
         </div>
       </div>
@@ -153,7 +152,7 @@
         class="neon-btn spline-link-card hover:from-blue-100 hover:to-blue-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay คุณนัก" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay คุณนัก" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momay คุณนัก</span>
         </div>
       </div>
@@ -162,7 +161,7 @@
         class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="คุณนิว" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="คุณนิว" class="w-12 h-12 object-contain" />
           <span class="font-thai">คุณนิว</span>
         </div>
       </div>
@@ -171,7 +170,7 @@
         class="neon-btn spline-link-card hover:from-teal-100 hover:to-teal-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="บ้านคลองรีสอร์ท" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="บ้านคลองรีสอร์ท" class="w-12 h-12 object-contain" />
           <span class="font-thai">บ้านคลองรีสอร์ท</span>
         </div>
       </div>
@@ -180,7 +179,7 @@
         class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Demo Momay" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Demo Momay" class="w-12 h-12 object-contain" />
           <span class="font-thai">Demo Momay</span>
         </div>
       </div>
@@ -189,7 +188,7 @@
         class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay คุณเท้ง" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay คุณเท้ง" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momay คุณเท้ง</span>
         </div>
       </div>
@@ -198,7 +197,7 @@
         class="neon-btn spline-link-card hover:from-orange-100 hover:to-orange-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay คุณอิ๊ด" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay คุณอิ๊ด" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momay คุณอิ๊ด</span>
         </div>
       </div>
@@ -207,7 +206,7 @@
         class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay Dashboard" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Dashboard" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momay Dashboard</span>
         </div>
       </div>
@@ -216,7 +215,7 @@
         class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Naresuan Library" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Naresuan Library" class="w-12 h-12 object-contain" />
           <span class="font-thai">Naresuan University Library</span>
         </div>
       </div>
@@ -225,7 +224,7 @@
         class="neon-btn spline-link-card hover:from-rose-100 hover:to-rose-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay แม่พี่เอิน" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay แม่พี่เอิน" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momay แม่พี่เอิน</span>
         </div>
       </div>
@@ -234,7 +233,7 @@
         class="neon-btn spline-link-card hover:from-fuchsia-100 hover:to-fuchsia-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momay คุณเก๋" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momay คุณเก๋" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momay คุณเก๋</span>
         </div>
       </div>
@@ -243,7 +242,7 @@
         class="neon-btn spline-link-card hover:from-purple-100 hover:to-purple-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="MomayDP" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="MomayDP" class="w-12 h-12 object-contain" />
           <span class="font-thai">MomayDP</span>
         </div>
       </div>
@@ -252,7 +251,7 @@
         class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Momayเต็งหนามคอฟฟี่" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Momayเต็งหนามคอฟฟี่" class="w-12 h-12 object-contain" />
           <span class="font-thai">Momayเต็งหนามคอฟฟี่</span>
         </div>
       </div>
@@ -261,7 +260,7 @@
         class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="ปั้มแก๊ส" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="ปั้มแก๊ส" class="w-12 h-12 object-contain" />
           <span class="font-thai">ปั้มแก๊ส</span>
         </div>
       </div>
@@ -270,7 +269,7 @@
         class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="top soccer" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="top soccer" class="w-12 h-12 object-contain" />
           <span class="font-thai">top soccer</span>
         </div>
       </div>
@@ -279,7 +278,7 @@
         class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="คุณกร" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="คุณกร" class="w-12 h-12 object-contain" />
           <span class="font-thai">คุณกร</span>
         </div>
       </div>
@@ -288,7 +287,7 @@
         class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
       >
         <div class="card-content">
-          <img src="/home2/momay-enlightenment.png" alt="Borrow and Return Service" class="w-12 h-12 object-contain" />
+          <img src="/momay/momay-enlightenment-art.jpg" alt="Borrow and Return Service" class="w-12 h-12 object-contain" />
           <span class="font-thai">Borrow and Return Service</span>
         </div>
       </div>
@@ -306,7 +305,7 @@
           @keydown.space.prevent="openBuu"
         >
           <div class="card-content">
-            <img src="/home2/momay-enlightenment.png" alt="BUU" class="w-12 h-12 object-contain" />
+            <img src="/momay/momay-enlightenment-art.jpg" alt="BUU" class="w-12 h-12 object-contain" />
             <span class="font-thai">BUU</span>
           </div>
         </div>
@@ -336,7 +335,7 @@
                 class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="momayBUU" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="momayBUU" class="w-12 h-12 object-contain" />
                   <span class="font-thai">momayBUU</span>
                 </div>
               </div>
@@ -345,7 +344,7 @@
                 class="neon-btn spline-link-card hover:from-cyan-100 hover:to-cyan-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="MomayHMV1" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayHMV1" class="w-12 h-12 object-contain" />
                   <span class="font-thai">MomayHMV1</span>
                 </div>
               </div>
@@ -354,7 +353,7 @@
                 class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="MomayModel" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayModel" class="w-12 h-12 object-contain" />
                   <span class="font-thai">MomayModel</span>
                 </div>
               </div>
@@ -363,7 +362,7 @@
                 class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="MomayBUU-Student" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayBUU-Student" class="w-12 h-12 object-contain" />
                   <span class="font-thai">MomayBUU-Student</span>
                 </div>
               </div>
@@ -372,7 +371,7 @@
                 class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="Momay-Insights" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="Momay-Insights" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay-Insights</span>
                 </div>
               </div>
@@ -381,7 +380,7 @@
                 class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="momay-template" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="momay-template" class="w-12 h-12 object-contain" />
                   <span class="font-thai">momay-template</span>
                 </div>
               </div>
@@ -391,7 +390,7 @@
                 class="neon-btn spline-link-card hover:from-lime-100 hover:to-lime-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="MomayGreedy" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayGreedy" class="w-12 h-12 object-contain" />
                   <span class="font-thai">MomayGreedy</span>
                 </div>
               </div>
@@ -400,7 +399,7 @@
                 class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="MomayBUU" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayBUU" class="w-12 h-12 object-contain" />
                   <span class="font-thai">MomayBUU</span>
                 </div>
               </div>
@@ -417,7 +416,7 @@
                 class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="MomayBUU by Job" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayBUU by Job" class="w-12 h-12 object-contain" />
                   <span class="font-thai">MomayBUU by Job</span>
                 </div>
               </div>
@@ -426,7 +425,7 @@
                 class="neon-btn spline-link-card card-detail hover:from-violet-100 hover:to-violet-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="Momay BUU Student (070926)" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="Momay BUU Student (070926)" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay BUU Student<span class="card-note">(070926) สีดำ V.1 — พี่จ๊อบออก V.1 ยังไม่สนุก ทางการมาก</span></span>
                 </div>
               </div>
@@ -435,7 +434,7 @@
                 class="neon-btn spline-link-card hover:from-sky-100 hover:to-sky-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="MomayBUU-Executive" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayBUU-Executive" class="w-12 h-12 object-contain" />
                   <span class="font-thai">MomayBUU-Executive</span>
                 </div>
               </div>
@@ -444,7 +443,7 @@
                 class="neon-btn spline-link-card label-tight hover:from-violet-100 hover:to-violet-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="Momay-Enligtend-Executive-Student" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="Momay-Enligtend-Executive-Student" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay-Enligtend-Executive-Student</span>
                 </div>
               </div>
@@ -453,7 +452,7 @@
                 class="neon-btn spline-link-card card-detail hover:from-violet-100 hover:to-violet-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="Momay-Student-Pixel" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay Student Pixel V.1<span class="card-note">(100926) ตัวเลขยังเป็น Pixel</span></span>
                 </div>
               </div>
@@ -462,7 +461,7 @@
                 class="neon-btn spline-link-card card-detail hover:from-fuchsia-100 hover:to-fuchsia-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="Momay-Student-Pixel-V2" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="Momay-Student-Pixel-V2" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay Student Pixel V.2<span class="card-note">(130926) ปรับตัวหนังสือชัด ตามพี่ตูน</span></span>
                 </div>
               </div>
@@ -471,7 +470,7 @@
                 class="neon-btn spline-link-card card-detail hover:from-rose-100 hover:to-rose-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="Momay-Student-Pixel-VSettings" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="Momay-Student-Pixel-VSettings" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay Student Pixel V.Settings<span class="card-note">(150926) เพิ่มการตั้งค่า</span></span>
                 </div>
               </div>
@@ -480,7 +479,7 @@
                 class="neon-btn spline-link-card card-detail hover:from-amber-100 hover:to-amber-300"
               >
                 <div class="card-content">
-                  <img src="/home2/momay-enlightenment.png" alt="Momay Enlightened (V230926)" class="w-12 h-12 object-contain" />
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Enlightened (V230926)" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay Enlightened (V230926)<span class="card-note">เพิ่มกล้องชั้น 1-3 ทุกตัว และจัดหมวดหมู่ตามชั้น</span></span>
                 </div>
               </div>
@@ -648,8 +647,11 @@ function openSplineDesign(key: string) {
 
 
 <style scoped>
-/* ══════════════ ธีมกระดาษครีม — ชุดเดียวกับหน้าแรก /home2 ══════════════ */
-.root-bg {
+/* ══════════════ ธีมกระดาษครีม — ชุดเดียวกับหน้าแรก ══════════════ */
+/* ห้อง BUU ถูก Teleport ไปไว้ใต้ <body> อยู่นอก .root-bg จึงต้องประกาศตัวแปรสีให้มันด้วย
+   ไม่งั้นพื้นหลังห้องกับการ์ดข้างในจะโปร่งใสจนเห็นการ์ดหน้าหลักทะลุขึ้นมา */
+.root-bg,
+.buu-modal-overlay {
   --paper: #f6f1e6;
   --paper-2: #fbf7ee;
   --surface: #fdfbf6;
@@ -661,7 +663,8 @@ function openSplineDesign(key: string) {
   --gold: #c2a468;
   --line: rgba(29, 27, 25, 0.14);
   --line-on: rgba(160, 28, 36, 0.4);
-
+}
+.root-bg {
   position: relative;
   background: radial-gradient(120% 90% at 50% 0%, var(--paper-2) 0%, var(--paper) 55%, #efe7d8 100%);
   color: var(--ink);
@@ -706,20 +709,13 @@ function openSplineDesign(key: string) {
   width: var(--logo-box); height: var(--logo-box);
   margin: calc(var(--logo-box) * -0.119) 0 0 calc(var(--logo-box) * -0.044);
 }
-/* ตรา MOMAY ก็มีขอบใสรอบเช่นกัน (ซ้าย 10.13% บน 32.84% · 80.72% × 31.13%) */
+/* ตรา MOMAY — ภาพแบนเนอร์ลายเส้น (1536×1024) แสดงทั้งภาพ ขอบจางเข้าหากระดาษ */
 .mm-head__mark {
-  --wm-w: min(78vw, 420px);
-  --wm-box: calc(var(--wm-w) / 0.8072);
-  --wm-box-h: calc(var(--wm-box) * 0.6667);
-  overflow: hidden;
-  width: var(--wm-w); height: calc(var(--wm-box-h) * 0.3113);
+  width: min(100%, 760px);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 40px rgba(24, 20, 16, 0.1);
 }
-.mm-head__mark img {
-  display: block; max-width: none;
-  width: var(--wm-box); height: auto;
-  margin: calc(var(--wm-box-h) * -0.3284) 0 0 calc(var(--wm-box) * -0.1013);
-}
-.mm-head__sub { font-size: clamp(12px, 1.4vw, 15px); color: var(--ink-dim); }
+.mm-head__mark img { display: block; width: 100%; height: auto; }
 
 /* ── สกรอลล์รีวีล ── */
 .scroll-reveal {
@@ -783,13 +779,11 @@ function openSplineDesign(key: string) {
   transform: translateY(-2px);
 }
 .card-content { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-/* โลโก้บนการ์ดเป็นตรา MOMAY แนวนอนที่มีขอบใสบน-ล่างเกินครึ่งไฟล์
-   ถ้าตั้งความสูงเท่าที่อยากเห็น ตัวโลโก้จะเหลือนิดเดียว จึงตั้งกล่องให้สูงเผื่อขอบใส
-   แล้วดึงขอบใสคืนด้วย margin ติดลบ ตัวโลโก้จะได้เต็มความกว้างการ์ดจริง ๆ */
+/* ไอคอนการ์ด — ภาพแบนเนอร์ MOMAY ครอบตรงกลาง ตัวตราอยู่กลางภาพจึงยังเห็นครบ */
 .card-content img {
-  width: 100% !important; height: 88px !important;
-  object-fit: contain; object-position: center;
-  margin: -27px 0 -30px;
+  width: 100% !important; height: 72px !important;
+  object-fit: cover; object-position: center;
+  border: 1px solid var(--line);
 }
 .card-content span {
   font-size: 12.5px; font-weight: 600; line-height: 1.45; color: var(--ink);
