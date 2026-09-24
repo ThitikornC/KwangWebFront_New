@@ -7,17 +7,16 @@
       ESPRESSO               → /forwardthinkingV2/espresso               (หน้าเดิม /renewablesort/espresso)
       MOMAY                  → /renewablesort/Momay2                     (หน้ารวมการ์ด MOMAY — เดิม /renewablesort/momay)
       COLLABORATIVE SENSING  → /forwardthinkingV2/collaborativesensing   (หน้าเดิม /renewablesort/collaborativesensing)
-      DASHBOARD              → /renewablesort/dashboard                  (หน้าเดิม เปิดแดชบอร์ดเต็มจอ)
+      DASHBOARD              → /renewablesort/dashboard                  (ซ่อนอยู่ — ดู hidden ใน PLATFORMS)
 
   โครงหน้า แถบเมนู แถบท้าย อยู่ที่ components/Kw/Shell.vue
 -->
 <template>
   <KwShell active="forward" title="Forward Thinking">
-    <!-- สี่วงเรียงบนเส้นวงโคจรเส้นเดียว ให้เข้ากับลายเส้นดาราศาสตร์ของพื้นหลัง
+    <!-- วงเรียงบนเส้นวงโคจรเส้นเดียว ให้เข้ากับลายเส้นดาราศาสตร์ของพื้นหลัง
          ไม่มีกรอบการ์ด ทั้งก้อนเป็นลิงก์เดียว -->
     <nav class="plats" aria-label="แพลตฟอร์ม">
-      <a v-for="(p, i) in PLATFORMS" :key="p.id" class="plat" :class="`plat--${p.id}`" :href="p.href">
-        <span class="plat__no">{{ String(i + 1).padStart(2, '0') }}</span>
+      <a v-for="p in VISIBLE" :key="p.id" class="plat" :class="`plat--${p.id}`" :href="p.href">
         <span class="plat__disc">
           <span class="plat__ring" aria-hidden="true" />
           <img :src="p.logo" alt="" />
@@ -49,6 +48,7 @@ const PLATFORMS: {
   name: string
   logo: string
   href: string
+  hidden?: boolean
 }[] = [
   {
     id: 'espresso',
@@ -74,8 +74,11 @@ const PLATFORMS: {
     name: 'DASHBOARD',
     logo: '/chart-logo.png',
     href: '/renewablesort/dashboard',
+    hidden: true, // ซ่อนไว้ก่อนตามที่สั่ง — ลบบรรทัดนี้ก็กลับมาแสดง
   },
 ]
+
+const VISIBLE = PLATFORMS.filter(p => !p.hidden)
 </script>
 
 <style scoped>
@@ -83,17 +86,15 @@ const PLATFORMS: {
 
 .plats {
   --disc: clamp(138px, 13vw, 184px);
-  --no-h: 26px;
-  --no-gap: 16px;
   position: relative;
   display: grid; gap: clamp(20px, 3vw, 44px);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   padding: clamp(10px, 2vw, 24px) 0 clamp(20px, 4vw, 48px);
 }
 /* เส้นวงโคจรลากผ่านกลางวงทั้งสี่ — เส้นประทองจาง ๆ ชุดเดียวกับลายพื้นหลัง */
 .plats::before {
   content: ''; position: absolute; left: 4%; right: 4%;
-  top: calc(clamp(10px, 2vw, 24px) + var(--no-h) + var(--no-gap) + var(--disc) / 2);
+  top: calc(clamp(10px, 2vw, 24px) + 18px + var(--disc) / 2);
   border-top: 1px dashed rgba(194, 164, 104, 0.75);
   pointer-events: none;
 }
@@ -101,12 +102,8 @@ const PLATFORMS: {
 .plat {
   position: relative;
   display: grid; justify-items: center; align-content: start;
+  padding-top: 18px; /* เผื่อวงแหวนเส้นประที่ยื่นออกนอกวง */
   text-decoration: none; color: var(--ink);
-}
-.plat__no {
-  height: var(--no-h); margin-bottom: var(--no-gap);
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 18px; font-style: italic; letter-spacing: 0.08em; color: var(--gold);
 }
 
 /* วงกลมโลโก้ — กระดาษนูนในกรอบทอง มีวงแหวนประหมุนช้า ๆ ล้อมอีกชั้น */
@@ -178,10 +175,11 @@ const PLATFORMS: {
 .plat:hover .plat__go svg { transform: translateX(3px); }
 @keyframes ringSpin { to { transform: rotate(360deg); } }
 
-/* จอแคบ: สองคอลัมน์ เส้นวงโคจรแนวเดียวใช้ไม่ได้แล้วจึงซ่อน */
-@media (max-width: 900px) {
-  .plats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: clamp(36px, 7vw, 56px); }
+/* จอแคบมาก: เรียงลงทีละวง เส้นวงโคจรแนวนอนใช้ไม่ได้แล้วจึงซ่อน */
+@media (max-width: 600px) {
+  .plats { grid-template-columns: 1fr; row-gap: 40px; }
   .plats::before { display: none; }
+  .plat__name { min-height: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
