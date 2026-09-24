@@ -6067,12 +6067,18 @@ section {
 
 /* มือถือแนวตั้ง: แคบเกินกว่าจะวางของคู่กันได้ ต้องคลี่เป็นแถวเดียวทั้งหมด */
 @media (orientation: portrait) and (max-width: 767px) {
-  /* แท็บเล็ตด้านหลังเป็นภาพประกอบล้วน (aria-hidden) และกว้าง 430px
-     บนจอแคบมันดันเครื่องหน้าหลุดออกไปนอกจอทั้งเครื่อง — ตัดออก เหลือมือถือเครื่องเดียว */
-  /* จอแคบเหลือสองเครื่อง (แท็บเล็ตถูกซ่อน) — ย่อลงให้ทั้งคู่อยู่ในจอ ไม่ล้นขอบ */
-  .phone-duo { --pw: min(210px, 47vw); }
+  /* มือถือสองเครื่องคู่กันแถวบน ย่อให้อยู่ในจอ ไม่ล้นขอบ
+     แท็บเล็ต MOMAY CITIZEN วางไว้ตรงข้างเคียงไม่ได้ (จอแคบไป เคยดันเครื่องหน้าหลุดจอ)
+     จึงตัดลงไปเป็นแถวที่สองใต้มือถือ ตั้งตรง กว้างเกือบเต็มจอ แทนที่จะซ่อนทิ้ง */
+  .phone-duo { --pw: min(210px, 47vw); flex-wrap: wrap; }
   .phone--pixel { margin-left: -34px; }
-  .phone-duo .tablet { display: none; }
+  .phone-duo .tablet,
+  .phone-duo:hover .tablet {
+    width: min(360px, 88vw);
+    margin: clamp(28px, 8vw, 44px) auto 0;
+    transform: none;
+    filter: none;
+  }
   .phone--front { transform: perspective(1500px) rotateY(-4deg) rotate(-1deg); }
 }
 
