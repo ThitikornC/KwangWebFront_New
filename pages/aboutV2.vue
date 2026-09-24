@@ -20,6 +20,7 @@
          ชื่อตัวใหญ่เต็มความกว้าง มีภาพลายเส้นอยู่ในตัวอักษร (SVG text + pattern
          ใช้ textLength ให้ตัวอักษรยืดเต็มความกว้างพอดีทุกขนาดจอ) สองบรรทัด KWANG / UNLIMIT -->
     <header class="mast">
+      <KwTicker class="mast__ticker" :words="['Make tech fresh get forward', 'EST 24/01/2024']" />
       <div class="mast__meta">
         <span>ABOUT US</span>
         <span>EST 24/01/2024</span>
@@ -219,7 +220,8 @@ const MISSION = [
 }
 
 /* ══ หน้าปกแบบนิตยสาร ══ */
-.mast { margin-top: clamp(8px, 1.6vw, 20px); }
+.mast { margin-top: clamp(4px, 1vw, 12px); }
+.mast__ticker { margin-bottom: clamp(18px, 2.6vw, 32px); }
 .mast__meta {
   display: flex; justify-content: space-between;
   padding-bottom: 10px; border-bottom: 1px solid rgba(29, 27, 25, 0.25);
