@@ -367,7 +367,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 /* ── แถบบน ───────────────────────────────────────────── */
 .topbar {
-  position: relative; z-index: 10;
+  /* ต้องสูงกว่า .hero (10) ไม่งั้นเมนูที่กางลงมาบนมือถือจะถูกเนื้อหาทับ */
+  position: relative; z-index: 30;
   grid-row: 1; grid-column: 1;
   display: flex; align-items: center; gap: 22px;
   width: 100%; max-width: var(--wrap); margin: 0 auto;
