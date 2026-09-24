@@ -63,6 +63,8 @@
       </div>
     </section>
 
+    <KwOrnament variant="compass" />
+
     <!-- ── เส้นเวลา ── -->
     <section class="sect">
       <ol class="tl">
@@ -73,6 +75,8 @@
         </li>
       </ol>
     </section>
+
+    <KwOrnament variant="armillary" />
 
     <!-- ── ภารกิจ ── -->
     <section class="sect">
