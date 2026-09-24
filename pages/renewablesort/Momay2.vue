@@ -21,10 +21,17 @@
     <div class="mm-head__mark">
       <img src="/momay/momay-enlightenment-art.jpg" alt="MOMAY ENLIGHTENMENT" />
     </div>
+    <!-- ภาพหัวหน้ากินเกือบเต็มจอ บอกให้รู้ว่ามีการ์ดอยู่ข้างล่าง -->
+    <button type="button" class="mm-scroll" aria-label="เลื่อนลงไปดูการ์ด" @click="scrollToContent">
+      <span class="mm-scroll__label">SCROLL</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M6 9.5 12 15.5 18 9.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
   </header>
 
   <!-- Running Text -->
-  <div class="scroll-reveal flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(1rem,4vw,2.5rem)] mb-[clamp(2rem,4vw,3rem)]">
+  <div id="mm-content" class="scroll-reveal flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(1rem,4vw,2.5rem)] mb-[clamp(2rem,4vw,3rem)]">
     <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
       <div class="marquee">
         <div class="marquee-content">
@@ -558,6 +565,10 @@ const splineLinks: Record<string, string> = {
   MomayTemplate: '/momay/MomayTemplate'
 }
 
+function scrollToContent() {
+  document.getElementById('mm-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 onMounted(() => {
   // Scroll animation observer - Apple style
   let observer: IntersectionObserver | null = null
@@ -695,6 +706,8 @@ function openSplineDesign(key: string) {
 .mm-head {
   display: flex; flex-direction: column; align-items: center; gap: clamp(16px, 2.6vw, 28px);
   padding-top: clamp(8px, 2vw, 20px); text-align: center;
+  /* เต็มหนึ่งจอพอดี (หัก padding ของ .root-bg) ปุ่มเลื่อนลงจะได้อยู่ขอบล่างจอ */
+  min-height: calc(100svh - 64px);
 }
 /* ไฟล์โลโก้ KWANG เป็นผืนจัตุรัสที่มีขอบใสรอบเยอะ ครอบทิ้งเหมือนที่ทำในหน้าแรก
    (เนื้อโลโก้เริ่มที่ซ้าย 4.40% บน 11.90% กินพื้นที่ 90.00% × 65.55%) */
@@ -711,11 +724,26 @@ function openSplineDesign(key: string) {
 }
 /* ตรา MOMAY — ภาพแบนเนอร์ลายเส้น (1536×1024) แสดงทั้งภาพ ขอบจางเข้าหากระดาษ */
 .mm-head__mark {
-  width: min(100%, 760px);
+  /* กว้างเท่าที่ความสูงจอยังพอให้เห็นปุ่มเลื่อนลง (ภาพสัดส่วน 3:2) */
+  width: min(100%, 980px, calc((100svh - 260px) * 1.5));
   border: 1px solid var(--line);
   box-shadow: 0 18px 40px rgba(24, 20, 16, 0.1);
 }
 .mm-head__mark img { display: block; width: 100%; height: auto; }
+
+.mm-scroll {
+  margin-top: auto;
+  display: grid; justify-items: center; gap: 2px;
+  padding: 6px 14px; background: none; border: 0; cursor: pointer;
+  color: var(--red);
+}
+.mm-scroll__label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.3em; color: var(--ink-dim); }
+.mm-scroll svg { width: 28px; height: 28px; animation: mmBob 1.8s ease-in-out infinite; }
+.mm-scroll:hover .mm-scroll__label { color: var(--red); }
+@keyframes mmBob {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(7px); opacity: 1; }
+}
 
 /* ── สกรอลล์รีวีล ── */
 .scroll-reveal {
@@ -779,11 +807,15 @@ function openSplineDesign(key: string) {
   transform: translateY(-2px);
 }
 .card-content { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-/* ไอคอนการ์ด — ภาพแบนเนอร์ MOMAY ครอบตรงกลาง ตัวตราอยู่กลางภาพจึงยังเห็นครบ */
+/* ไอคอนการ์ด — ภาพแบนเนอร์ MOMAY เต็มขอบบนของการ์ด (ดึงออกไปทับ padding ของการ์ด)
+   สัดส่วน 3:2 เท่าไฟล์จริง จึงเห็นทั้งภาพไม่ถูกครอบ */
+.card-content { width: 100%; }
 .card-content img {
-  width: 100% !important; height: 72px !important;
-  object-fit: cover; object-position: center;
-  border: 1px solid var(--line);
+  width: calc(100% + 24px) !important; height: auto !important; max-width: none;
+  aspect-ratio: 3 / 2; object-fit: cover; object-position: center;
+  margin: -16px -12px 2px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 4px 4px 0 0;
 }
 .card-content span {
   font-size: 12.5px; font-weight: 600; line-height: 1.45; color: var(--ink);
@@ -833,5 +865,6 @@ function openSplineDesign(key: string) {
 @media (prefers-reduced-motion: reduce) {
   .marquee { animation: none; }
   .scroll-reveal { opacity: 1; transform: none; transition: none; }
+  .mm-scroll svg { animation: none; }
 }
 </style>
