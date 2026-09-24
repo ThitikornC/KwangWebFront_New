@@ -2299,15 +2299,16 @@ const step = ref(1)
 
 const form = reactive({
   // เปิดหน้ามาต้องยังไม่มีอะไรถูกเลือกไว้ให้ ทั้งประเภทองค์กร สัญญาณ และช่วงพีค
-  // ผู้ใช้เป็นคนเลือกเองทั้งหมด (ตัวเลขในช่องกรอกจะเติมให้ตอนเลือกหมวดแล้ว)
+  // ผู้ใช้เป็นคนเลือกเองทั้งหมด ตัวเลขทุกช่องเริ่มที่ 0 ให้ผู้ใช้กรอกเอง
+  // (canAdvance ไม่ให้ไปต่อจนกว่าทุกช่องจะมากกว่า 0)
   org: null as OrgId | null,
-  people: 2500,
-  capacity: 180,
-  energy: 120000,
+  people: 0,
+  capacity: 0,
+  energy: 0,
   /** จำนวนชั้น — ถามเฉพาะห้องสมุด */
-  floors: 6,
+  floors: 0,
   /** จำนวนรายวิชา/กิจกรรมต่อวัน — ถามเฉพาะหมวดคณะ */
-  activities: 80,
+  activities: 0,
   signals: [] as SignalId[],
   peak: null as PeakId | null,
   /** ห้องสมุดมีชุดคำถามของตัวเอง: สิ่งที่อยากให้ช่วยดู และช่วงเวลาที่คนเยอะที่สุด */
@@ -2481,7 +2482,7 @@ const fieldList = computed(() => (org.value.inputs ?? ALL_INPUTS).map(k => org.v
 /** หมวดที่กางดร๊อปดาวน์กรอกข้อมูลอยู่ — เริ่มต้นกางของหมวดที่เลือกไว้ให้เลย */
 const openOrg = ref<OrgId | null>(form.org)
 
-/** เปลี่ยนประเภทองค์กร → เติมค่าตั้งต้นชุดใหม่ (ถ้าผู้ใช้ยังไม่ได้แก้เอง)
+/** เปลี่ยนประเภทองค์กร → กางดร๊อปดาวน์ของหมวดนั้น (ตัวเลขไม่เติมให้ ผู้ใช้กรอกเองจาก 0)
     กดซ้ำที่หมวดเดิม = พับดร๊อปดาวน์เก็บ */
 const touched = ref(false)
 function pickOrg(id: OrgId) {
@@ -2491,14 +2492,6 @@ function pickOrg(id: OrgId) {
   }
   form.org = id
   openOrg.value = id
-  if (!touched.value) {
-    const f = ORG_MAP[id].fields
-    form.people = f.people.default
-    form.capacity = f.capacity.default
-    form.energy = f.energy.default
-    form.floors = f.floors.default
-    form.activities = f.activities.default
-  }
 }
 
 function toggleSignal(id: SignalId) {
