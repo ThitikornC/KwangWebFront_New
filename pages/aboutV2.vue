@@ -232,7 +232,14 @@ const MISSION = [
   animation: mastIn 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 .mast__word text { font: inherit; letter-spacing: -4px; }
-.mast__word--2 { margin-top: clamp(6px, 1vw, 12px); font-size: 190px; animation-delay: 0.15s; }
+/* บรรทัดรอง — เล็กกว่าและจางกว่า KWANG ให้ KWANG เป็นตัวหลัก */
+.mast__word--2 {
+  width: 64%;
+  margin-top: clamp(6px, 1vw, 12px); font-size: 190px;
+  opacity: 0.5;
+  animation-name: mastIn2; animation-delay: 0.15s;
+}
+@keyframes mastIn2 { from { opacity: 0; transform: translateY(18px); } to { opacity: 0.5; transform: none; } }
 @keyframes mastIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 
 /* ── เกี่ยวกับเรา: ป้ายซ้าย ─ หัวเรื่องและสองคอลัมน์ขวา ── */
