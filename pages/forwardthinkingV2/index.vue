@@ -13,18 +13,24 @@
 -->
 <template>
   <KwShell active="forward" title="Forward Thinking">
-    <div class="plats">
-      <article v-for="p in PLATFORMS" :key="p.id" class="plat">
-        <a class="plat__hit" :href="p.href" :aria-label="p.name">
-          <span class="plat__disc"><img :src="p.logo" alt="" /></span>
-          <h2 class="plat__name">{{ p.name }}</h2>
-        </a>
-
-        <div class="plat__foot">
-          <a class="btn btn--solid" :href="p.href">เข้าชม</a>
-        </div>
-      </article>
-    </div>
+    <!-- สี่วงเรียงบนเส้นวงโคจรเส้นเดียว ให้เข้ากับลายเส้นดาราศาสตร์ของพื้นหลัง
+         ไม่มีกรอบการ์ด ทั้งก้อนเป็นลิงก์เดียว -->
+    <nav class="plats" aria-label="แพลตฟอร์ม">
+      <a v-for="(p, i) in PLATFORMS" :key="p.id" class="plat" :class="`plat--${p.id}`" :href="p.href">
+        <span class="plat__no">{{ String(i + 1).padStart(2, '0') }}</span>
+        <span class="plat__disc">
+          <span class="plat__ring" aria-hidden="true" />
+          <img :src="p.logo" alt="" />
+        </span>
+        <h2 class="plat__name">{{ p.name }}</h2>
+        <span class="plat__go font-th">
+          เข้าชม
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M5 12h14m0 0-6-6m6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+      </a>
+    </nav>
   </KwShell>
 </template>
 
@@ -75,49 +81,110 @@ const PLATFORMS: {
 <style scoped>
 /* สีทั้งหมดรับมาจาก KwShell ผ่านตัวแปร CSS */
 
-/* สี่แพลตฟอร์มเรียงเป็นตาราง เหมือนโลโก้สี่วงของหน้าเดิม */
 .plats {
-  display: grid; gap: clamp(16px, 2.2vw, 28px);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-  align-items: stretch;
+  --disc: clamp(138px, 13vw, 184px);
+  --no-h: 26px;
+  --no-gap: 16px;
+  position: relative;
+  display: grid; gap: clamp(20px, 3vw, 44px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: clamp(10px, 2vw, 24px) 0 clamp(20px, 4vw, 48px);
 }
+/* เส้นวงโคจรลากผ่านกลางวงทั้งสี่ — เส้นประทองจาง ๆ ชุดเดียวกับลายพื้นหลัง */
+.plats::before {
+  content: ''; position: absolute; left: 4%; right: 4%;
+  top: calc(clamp(10px, 2vw, 24px) + var(--no-h) + var(--no-gap) + var(--disc) / 2);
+  border-top: 1px dashed rgba(194, 164, 104, 0.75);
+  pointer-events: none;
+}
+
 .plat {
-  display: flex; flex-direction: column;
-  padding: clamp(22px, 2.6vw, 34px);
-  background: rgba(251, 247, 238, 0.72);
-  border: 1px solid rgba(29, 27, 25, 0.14);
-  transition: border-color 0.24s, background 0.24s;
+  position: relative;
+  display: grid; justify-items: center; align-content: start;
+  text-decoration: none; color: var(--ink);
 }
-.plat:hover { border-color: var(--gold); background: rgba(251, 247, 238, 0.95); }
-
-.plat__hit { display: grid; justify-items: center; gap: 18px; text-decoration: none; }
-.plat__disc {
-  display: grid; place-items: center;
-  width: min(100%, 180px); aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle at 42% 34%, var(--paper-2) 0%, #f1e9da 100%);
-  border: 1px solid rgba(194, 164, 104, 0.85);
-  box-shadow: 0 14px 34px rgba(24, 20, 16, 0.09), inset 0 0 0 7px rgba(251, 247, 238, 0.9);
-  transition: transform 0.3s;
-}
-.plat__hit:hover .plat__disc { transform: translateY(-4px) scale(1.03); }
-.plat__disc img { width: 64%; height: 64%; object-fit: contain; }
-.plat__name {
+.plat__no {
+  height: var(--no-h); margin-bottom: var(--no-gap);
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(22px, 2.2vw, 30px); font-weight: 500; line-height: 1.15; text-align: center; color: var(--ink);
+  font-size: 18px; font-style: italic; letter-spacing: 0.08em; color: var(--gold);
 }
 
-/* ปุ่มชิดล่างการ์ดทุกใบ ให้แถวปุ่มตรงกันแม้ข้อความยาวไม่เท่ากัน */
-.plat__foot { display: grid; gap: 10px; margin-top: auto; padding-top: clamp(18px, 2.4vw, 26px); }
-
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 13px 18px;
-  font-family: 'Noto Sans Thai', 'Montserrat', sans-serif;
-  font-size: clamp(13px, 1.1vw, 14.5px); font-weight: 600; letter-spacing: 0.06em;
-  text-decoration: none; text-align: center;
-  transition: background 0.22s, color 0.22s, border-color 0.22s, transform 0.22s;
+/* วงกลมโลโก้ — กระดาษนูนในกรอบทอง มีวงแหวนประหมุนช้า ๆ ล้อมอีกชั้น */
+.plat__disc {
+  position: relative; z-index: 1;
+  display: grid; place-items: center;
+  width: var(--disc); aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 32%, #fffdf8 0%, var(--paper-2) 45%, #efe5d2 100%);
+  border: 1px solid rgba(194, 164, 104, 0.9);
+  box-shadow:
+    0 0 0 6px var(--paper),
+    0 0 0 7px rgba(194, 164, 104, 0.45),
+    0 16px 36px rgba(60, 44, 20, 0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
-.btn--solid { background: var(--red); color: #fdf8ef; }
-.btn--solid:hover { background: #8a171e; transform: translateY(-1px); }
+.plat__ring {
+  position: absolute; inset: -18px;
+  border-radius: 50%;
+  border: 1px dashed rgba(194, 164, 104, 0.55);
+  transition: border-color 0.3s;
+}
+/* จุดแดงบนวงแหวน — เหมือนดาวบนวงโคจรของพื้นหลัง */
+.plat__ring::after {
+  content: ''; position: absolute; top: 50%; right: -4px;
+  width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%;
+  background: var(--red-bright);
+}
+.plat__disc img {
+  position: relative;
+  width: 62%; height: 62%; object-fit: contain;
+  /* ให้พื้นขาวของไฟล์โลโก้กลืนไปกับกระดาษ */
+  mix-blend-mode: multiply;
+}
+/* ไฟล์ตรา MOMAY มีขอบใสรอบเยอะ (เนื้อโลโก้กว้างแค่ ~80% ของไฟล์) ขยายชดเชยให้ขนาดพอ ๆ กับวงอื่น */
+.plat--momay .plat__disc img { width: 88%; height: 88%; }
+
+.plat__name {
+  margin-top: clamp(22px, 2.6vw, 32px);
+  min-height: 2.3em;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(19px, 1.9vw, 27px); font-weight: 500; line-height: 1.15; letter-spacing: 0.02em;
+  text-align: center; color: var(--ink);
+}
+
+/* ลิงก์ตัวอักษรแบบเดียวกับเมนูด้านบน เส้นใต้แดงยืดออกตอนชี้ */
+.plat__go {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 10px; padding-bottom: 6px;
+  font-size: clamp(14px, 1.2vw, 15.5px); font-weight: 600; letter-spacing: 0.08em; color: var(--red);
+}
+.plat__go svg { width: 16px; height: 16px; transition: transform 0.3s; }
+.plat__go::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: var(--red); transform: scaleX(0.35); transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.plat:hover .plat__disc {
+  transform: translateY(-5px);
+  box-shadow:
+    0 0 0 6px var(--paper),
+    0 0 0 7px rgba(194, 164, 104, 0.8),
+    0 22px 44px rgba(60, 44, 20, 0.16);
+}
+.plat:hover .plat__ring { border-color: rgba(160, 28, 36, 0.5); animation: ringSpin 14s linear infinite; }
+.plat:hover .plat__go::after { transform: scaleX(1); }
+.plat:hover .plat__go svg { transform: translateX(3px); }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+
+/* จอแคบ: สองคอลัมน์ เส้นวงโคจรแนวเดียวใช้ไม่ได้แล้วจึงซ่อน */
+@media (max-width: 900px) {
+  .plats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: clamp(36px, 7vw, 56px); }
+  .plats::before { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plat:hover .plat__ring { animation: none; }
+}
 </style>
