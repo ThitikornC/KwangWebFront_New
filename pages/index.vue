@@ -708,8 +708,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   .kicker { font-size: clamp(10px, min(2.9vw, 1.7svh), 13px); letter-spacing: 0.2em; }
   .kicker-th { font-size: clamp(12px, min(3.7vw, 2.2svh), 17px); }
 
-  /* คำโปรยกับหัวเรื่องเกาะใต้โลโก้ด้วยระยะคงที่ ไม่ลอยกลางช่องว่าง
-     ที่ว่างที่เหลือทั้งหมดไปอยู่เหนือปุ่ม (ปุ่มยังชิดล่างด้วย margin-top:auto) */
+  /* ทั้งก้อน โลโก้ → คำโปรย → หัวเรื่อง → ปุ่ม เกาะกันด้วยระยะคงที่จากด้านบน
+     ที่ว่างที่เหลือทั้งหมดไปอยู่ใต้ปุ่ม เหนือแถบล่าง */
   .claim {
     margin-top: clamp(20px, 4.4svh, 48px);
     font-size: clamp(18px, min(8.2vw, 4.6svh), 42px);
@@ -724,8 +724,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   .cta {
     flex-direction: column;
     gap: clamp(10px, 1.6svh, 14px);
-    margin-top: auto;
-    padding-top: clamp(14px, 3.4svh, 40px);
+    margin-top: clamp(24px, 4.4svh, 48px);
   }
   .btn {
     flex: none; width: 100%;
