@@ -3,7 +3,9 @@
 
   หน้าเดิมคือ /renewablesort/espresso — เปลี่ยนแค่ดีไซน์ เนื้อหาไม่แต่งเพิ่ม
     · ตัววิ่ง สมุดพลิก (/5.png–/10.png) ฟอร์มทดลองใช้งานฟรี บัญชีผู้ใช้งาน Download Document  ← จากหน้าเดิม
-    · คำอธิบาย Key Features และการ์ด Espresso Pharmacy / Espresso Human  ← จากแผง Espresso ใน pages/renewable.vue
+    · คำอธิบายและสามข้อ "เราช่วยให้เกิดขึ้นได้จริง"  ← จากสมุด Sale Kit ของ Espresso (/8.png, /9.png)
+      (แผง Espresso ใน pages/renewable.vue ยังเขียนว่าเป็นระบบไฟฟ้า ซึ่งไม่ใช่แล้ว จึงไม่ใช้)
+    · การ์ด Espresso Pharmacy / Espresso Human  ← จากแผง Espresso ใน pages/renewable.vue
 
   ฟอร์มทดลองใช้งานส่งไปที่ /api/lead เหมือนหน้าเดิม (ช่องเดียวกัน: name, phone, type)
 -->
@@ -11,14 +13,13 @@
   <KwShell active="forward" eyebrow="FORWARD THINKING" title="ESPRESSO">
     <KwTicker :words="['Espresso Platform', 'Real-time Data Integration', 'Smart Classroom']" />
 
-    <p class="intro font-th">
-      ระบบบริหารจัดการพลังงานอัจฉริยะ ติดตามและควบคุมการใช้ไฟฟ้าได้อย่างมีประสิทธิภาพ
-      Espresso ช่วยให้คุณเห็นและวิเคราะห์การใช้พลังงานแบบเรียลไทม์
-      เพื่อให้คุณสามารถตรวจสอบและแก้ไขปัญหาได้ทันที
-    </p>
+    <div class="intro font-th">
+      <p class="intro__quote">Espresso เป็นสารตั้งต้นของกาแฟทุกชนิด เช่นเดียวกับการศึกษาไทยที่มี ‘ครู’ และ ‘แพลตฟอร์มดิจิทัลที่ทันสมัย’ เป็นสารตั้งต้นของการเรียนรู้ทุกรูปแบบ</p>
+      <p>เปลี่ยนการเรียนรู้ที่พึ่งพากระดาษให้กลายเป็นแพลตฟอร์มดิจิทัลแบบครบวงจร ที่ช่วยให้ครูสร้างคลาส มอบหมายบทเรียน และติดตามความก้าวหน้าของผู้เรียนแบบเรียลไทม์ — พร้อมยกระดับคุณภาพ ความเสมอภาค และประสิทธิภาพของระบบการศึกษาไทยทั้งระบบ</p>
+    </div>
 
     <section class="sect">
-      <h2 class="sect__title">Key Features</h2>
+      <h2 class="sect__title font-th">เราช่วยให้เกิดขึ้นได้จริง</h2>
       <ul class="feats">
         <li v-for="f in FEATURES" :key="f.head">
           <b>{{ f.head }}</b>
@@ -84,16 +85,16 @@ definePageMeta({ layout: false })
 
 useSeoMeta({
   title: 'ESPRESSO — KWANG UNLIMITED',
-  description: 'ระบบบริหารจัดการพลังงานอัจฉริยะ ติดตามและควบคุมการใช้ไฟฟ้าได้อย่างมีประสิทธิภาพ',
+  description: 'เปลี่ยนการเรียนรู้ที่พึ่งพากระดาษให้กลายเป็นแพลตฟอร์มดิจิทัลแบบครบวงจร',
   ogTitle: 'ESPRESSO — KWANG UNLIMITED',
   ogImage: '/ESPRESSO_logo.png',
 })
 
+/* ยกจากสมุด Sale Kit ของ Espresso — ข้อความไทยจาก /9.png หัวข้ออังกฤษจากปก /5.png */
 const FEATURES = [
-  { head: 'Real-time Monitoring', body: 'เฝ้าติดตามพลังงานแบบเรียลไทม์ ตั้งแต่ภาพรวมอาคารจนถึงแต่ละห้อง' },
-  { head: 'Insight Analytics', body: 'วิเคราะห์ข้อมูลเชิงลึก พร้อมรายงานรายวัน รายเดือน และรายปี' },
-  { head: 'Auto-Reporting', body: 'สร้างรายงานอัตโนมัติ ส่งออกเป็น PDF หรือ CSV ได้ทันที' },
-  { head: 'Web Access', body: 'เข้าถึงระบบออนไลน์ได้ทุกที่ ทุกเวลา ผ่านเว็บเบราว์เซอร์' },
+  { head: 'EQUAL ACCESS LEARNING', body: 'การเข้าถึงสื่อการเรียนรู้คุณภาพสูงอย่างเท่าเทียม สำหรับนักเรียนทุกคน' },
+  { head: 'DATA-DRIVEN POLICY', body: 'กำหนดนโยบายและการตัดสินใจที่ขับเคลื่อนด้วยข้อมูลจริง จากพฤติกรรมและผลลัพธ์การเรียนรู้' },
+  { head: 'LOWER OPERATIONAL COSTS', body: 'ลดต้นทุนการดำเนินงาน ด้วยการลดการใช้กระดาษ และลดความซ้ำซ้อนจากการใช้หลายแพลตฟอร์ม' },
 ]
 
 const showTrialModal = ref(false)
@@ -144,32 +145,35 @@ onBeforeUnmount(() => {
 <style scoped>
 /* สีทั้งหมดรับมาจาก KwShell ผ่านตัวแปร CSS */
 
-.intro {
-  max-width: 860px;
-  margin-top: clamp(26px, 3.6vw, 44px);
-  font-size: clamp(17px, 1.7vw, 22px); line-height: 1.9; color: var(--ink);
+.intro { display: grid; gap: 16px; max-width: 900px; margin-top: clamp(26px, 3.6vw, 44px); }
+.intro p { font-size: clamp(17px, 1.7vw, 22px); line-height: 1.9; color: var(--ink); }
+.intro .intro__quote {
+  padding-left: 18px; border-left: 3px solid var(--red);
+  font-size: clamp(18px, 1.9vw, 24px); font-weight: 500;
 }
 
 .sect { margin-top: clamp(36px, 5vw, 72px); }
 .sect__title {
   margin-bottom: clamp(16px, 2.2vw, 26px);
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(24px, 3vw, 38px); font-weight: 500; color: var(--ink);
+  font-family: 'Noto Sans Thai', 'Montserrat', sans-serif;
+  font-size: clamp(24px, 3vw, 36px); font-weight: 600; color: var(--ink);
 }
 
 .feats {
   display: grid; gap: clamp(12px, 1.6vw, 18px);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   margin: 0; padding: 0; list-style: none;
 }
+/* ข้อความไทยเป็นตัวหลักอยู่บน ป้ายอังกฤษเล็กอยู่ล่าง */
 .feats li {
+  display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 12px;
   padding: 18px 20px;
   background: rgba(251, 247, 238, 0.72);
   border: 1px solid rgba(29, 27, 25, 0.12);
   border-left: 2px solid var(--gold);
 }
-.feats b { display: block; font-size: clamp(13px, 1.15vw, 15px); font-weight: 700; letter-spacing: 0.06em; color: var(--red); }
-.feats span { display: block; margin-top: 8px; font-size: clamp(15px, 1.3vw, 17px); line-height: 1.8; color: var(--ink-soft); }
+.feats b { display: block; font-size: clamp(10.5px, 1vw, 12px); font-weight: 600; letter-spacing: 0.18em; color: var(--red); }
+.feats span { display: block; font-size: clamp(16px, 1.45vw, 19px); font-weight: 500; line-height: 1.75; color: var(--ink); }
 
 /* สมุดพลิก — ตัวคอมโพเนนต์กำหนดขนาดเอง ที่นี่แค่จัดกลาง */
 .book { display: flex; justify-content: center; }
