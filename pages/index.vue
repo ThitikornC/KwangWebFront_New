@@ -700,25 +700,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
     display: flex; flex-direction: column; justify-content: flex-start;
   }
 
-  .wordmark__crop { --wm-w: min(88vw, 40svh, 520px); }
-  .wm-word { font-size: clamp(48px, min(19vw, 11svh), 96px); }
-  .wm-sub { font-size: clamp(12px, min(4vw, 2.4svh), 18px); }
+  /* ขนาดโลโก้/ตัวหนังสือใช้ของจอแคบ (≤1024px) ตามเดิม — เคยขยายตาม vw แล้วใหญ่เกินบนมือถือ */
 
   .hr { width: 100%; margin: clamp(10px, 2.4svh, 26px) 0 clamp(8px, 1.6svh, 18px); }
-  .kicker { font-size: clamp(10px, min(2.9vw, 1.7svh), 13px); letter-spacing: 0.2em; }
-  .kicker-th { font-size: clamp(12px, min(3.7vw, 2.2svh), 17px); }
 
   /* ทั้งก้อน โลโก้ → คำโปรย → หัวเรื่อง → ปุ่ม เกาะกันด้วยระยะคงที่จากด้านบน
      ที่ว่างที่เหลือทั้งหมดไปอยู่ใต้ปุ่ม เหนือแถบล่าง */
   .claim {
     margin-top: clamp(20px, 4.4svh, 48px);
-    font-size: clamp(18px, min(8.2vw, 4.6svh), 42px);
     line-height: 1.1;
   }
   .claim-th {
     margin-top: clamp(8px, 1.6svh, 18px);
-    font-size: clamp(12px, min(3.7vw, 2.2svh), 17px);
-    line-height: 1.6;
   }
 
   .cta {
