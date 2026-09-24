@@ -775,11 +775,14 @@ const deltaTone = (n: number) => (n > 0 ? 'up' : n < 0 ? 'down' : '')
 
 /** ระหว่างพิมพ์แสดงเลขดิบ (คอมมาไม่ดีดเคอร์เซอร์) พอออกจากช่องค่อยใส่คอมมา */
 const focusedKey = ref<InputKey | null>(null)
-const displayValue = (k: InputKey) => (focusedKey.value === k ? String(form[k]) : nf(form[k]))
+// ตอนแตะช่อง ถ้าค่ายังเป็น 0 ให้ช่องว่างไปเลย พิมพ์ได้ทันทีไม่ต้องกดลบ 0 ก่อน
+const displayValue = (k: InputKey) =>
+  focusedKey.value === k ? (form[k] ? String(form[k]) : '') : nf(form[k])
 
 function onNumInput(k: InputKey, e: Event) {
   const el = e.target as HTMLInputElement
-  const digits = el.value.replace(/[^\d]/g, '')
+  // ตัด 0 นำหน้าทิ้งด้วย (พิมพ์ 05 → 5)
+  const digits = el.value.replace(/[^\d]/g, '').replace(/^0+(?=\d)/, '')
   const n = Number(digits)
   touched.value = true
   form[k] = Number.isFinite(n) ? n : 0

@@ -5944,53 +5944,28 @@ section {
   .demolink__label small { font-size: clamp(0.6rem, 2.2vw, 0.74rem); }
 }
 
-/* จอแนวตั้งเท่านั้นที่ใส่กรอบโน้ตบุ๊ค — คอนโซลเป็นผังของจอแนวนอน
-   บนจอแนวตั้งจึงต้องย่อทั้งก้อนใส่กรอบ แทนที่จะบีบผังจนเพี้ยน */
+/* จอแนวตั้ง: คอนโซลเป็นผังของจอแนวนอน จึงย่อทั้งก้อนลงมาแทนที่จะบีบผังจนเพี้ยน
+   (เดิมใส่กรอบโน้ตบุ๊คครอบไว้ — เอาออกแล้ว เหลือแค่จอ 16:10 ขอบมนเรียบ ๆ) */
 @media (orientation: portrait) and (max-width: 1023px) {
-  /* ══════════════ กรอบโน้ตบุ๊ค (คอนโซล ENLIGHTENED) ══════════════ */
-  /* ปลุกชิ้นส่วนกรอบที่ถูกยุบด้วย display:contents ไว้กลับมา */
+  /* ปลุกกล่องที่ถูกยุบด้วย display:contents ไว้กลับมา ส่วนกล้องกับฐานเครื่องไม่ใช้แล้ว */
   .laptop,
   .laptop__lid,
   .laptop__screen,
   .laptop__stage { display: block; }
-  .laptop__cam { display: block; }
-  .laptop__base { display: block; }
-  /* คอนโซลเป็นของจอแนวนอน จึงวางไว้ในโน้ตบุ๊คแทนที่จะลอยเปล่า ๆ
-     จอเป็น 16:10 จริง ส่วนผังข้างในคงขนาดจอคอมไว้แล้วย่อทั้งก้อนด้วย --k ที่ JS วัดให้ */
+  /* ผังข้างในคงขนาดจอคอมไว้แล้วย่อทั้งก้อนด้วย --k ที่ JS วัดให้ */
   .laptop {
     --k: 1;
-    width: min(100%, 1080px, calc((100svh - 380px) * 1.6));
+    width: min(100%, 1080px);
     margin-inline: auto;
-  }
-  .laptop__lid {
-    position: relative;
-    display: block;
-    padding: 15px 13px 15px;
-    border-radius: 16px 16px 7px 7px;
-    background: linear-gradient(155deg, #4a4a55 0%, #23232c 16%, #101016 52%, #08080d 100%);
-    box-shadow:
-      0 50px 100px rgba(0, 0, 0, 0.7),
-      0 0 0 1px rgba(255, 255, 255, 0.09),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-  .laptop__cam {
-    position: absolute;
-    top: 6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #05050a;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
   }
   .laptop__screen {
     position: relative;
     aspect-ratio: 16 / 10;
     overflow: hidden;
-    border-radius: 5px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     background: #07070c;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
   }
   /* เวทีขนาดจอคอม (1180 x 738 = 16:10 พอดี) ย่อลงมาทั้งก้อน */
   .laptop__stage {
@@ -6002,26 +5977,14 @@ section {
     transform: scale(var(--k));
     transform-origin: 0 0;
   }
-  /* ฐานเครื่องกับแป้นพิมพ์ */
-  .laptop__base {
-    position: relative;
-    display: block;
-    height: 13px;
-    margin: 0 -3%;
-    border-radius: 0 0 11px 11px;
-    background: linear-gradient(180deg, #3d3d47 0%, #22222a 44%, #131319 100%);
-    box-shadow: 0 24px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-  }
-  .laptop__notch {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 13%;
-    height: 5px;
-    border-radius: 0 0 7px 7px;
-    background: #0d0d13;
-    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  /* กฎของชุดการ์ด (.brief-showcase--stack .laptop__stage) เจาะจงกว่า เลยทับ scale ข้างบนด้วย rotateY
+     เวทีจึงไม่ถูกย่อ เห็นแค่มุมซ้ายบนของผัง 1180px ซึ่งเป็นพื้นดำ → บนมือถือดูเหมือนภาพไม่ขึ้น
+     ตั้งซ้ำด้วยตัวเลือกเดียวกันให้ชนะ และปล่อยความสูงตามเวที 738px ไม่ใช้ aspect-ratio ของการ์ด */
+  .brief-showcase--stack .laptop__stage {
+    aspect-ratio: auto;
+    border-radius: 0;
+    transform: scale(var(--k));
+    transform-origin: 0 0;
   }
   .brief-showcase--laptop { max-width: 1080px; }
 

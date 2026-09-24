@@ -735,8 +735,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
   /* แถบสี่จังหวะให้อยู่บรรทัดเดียวบนมือถือ และตัดลูกศรลงออก
      (หน้านี้จบใน 1 จอ ลูกศรชี้ลงทำให้คนคิดว่ายังมีต่อ แถมกินที่ความสูงไปเปล่า ๆ) */
-  .rail { padding-bottom: clamp(10px, 2svh, 22px); }
-  .rail__steps { flex-wrap: nowrap; gap: 0 clamp(8px, 3vw, 16px); padding-top: clamp(8px, 1.8svh, 18px); }
+  /* แถบล่างสะท้อนแถบบนพอดี: เส้น → ระยะเท่าช่องใต้โลโก้แถบบน → ตัวหนังสือ → ขอบล่างเท่าขอบบน (16px) */
+  .rail { padding-bottom: 16px; }
+  .rail__steps { flex-wrap: nowrap; gap: 0 clamp(8px, 3vw, 16px); padding-top: clamp(10px, 1.8svh, 18px); }
   .rail__label { font-size: clamp(8.5px, 2.6vw, 12px); letter-spacing: 0.14em; }
   .rail__down { display: none; }
 }
