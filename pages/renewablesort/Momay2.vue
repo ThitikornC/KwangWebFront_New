@@ -703,12 +703,19 @@ function openSplineDesign(key: string) {
 .font-thai { font-family: 'Noto Sans Thai', 'Montserrat', sans-serif; }
 
 /* ── หัวหน้าเพจ ── */
+/* หัวหน้า — ภาพ MOMAY เต็มจอ ขอบถึงขอบ (ดึงออกไปทับ padding 32px ของ .root-bg)
+   โลโก้ KWANG ลอยทับด้านบน ปุ่มเลื่อนลงลอยทับด้านล่าง */
 .mm-head {
-  display: flex; flex-direction: column; align-items: center; gap: clamp(16px, 2.6vw, 28px);
-  padding-top: clamp(8px, 2vw, 20px); text-align: center;
-  /* เต็มหนึ่งจอพอดี (หัก padding ของ .root-bg) ปุ่มเลื่อนลงจะได้อยู่ขอบล่างจอ */
-  min-height: calc(100svh - 64px);
+  --bleed: 32px;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  margin: calc(var(--bleed) * -1) calc(var(--bleed) * -1) 0;
+  height: 100svh;
+  padding: clamp(14px, 2.4vh, 26px) 16px clamp(10px, 2vh, 20px);
+  text-align: center;
+  overflow: hidden;
 }
+.mm-brand { position: relative; z-index: 1; }
 /* ไฟล์โลโก้ KWANG เป็นผืนจัตุรัสที่มีขอบใสรอบเยอะ ครอบทิ้งเหมือนที่ทำในหน้าแรก
    (เนื้อโลโก้เริ่มที่ซ้าย 4.40% บน 11.90% กินพื้นที่ 90.00% × 65.55%) */
 .mm-brand {
@@ -722,16 +729,23 @@ function openSplineDesign(key: string) {
   width: var(--logo-box); height: var(--logo-box);
   margin: calc(var(--logo-box) * -0.119) 0 0 calc(var(--logo-box) * -0.044);
 }
-/* ตรา MOMAY — ภาพแบนเนอร์ลายเส้น (1536×1024) แสดงทั้งภาพ ขอบจางเข้าหากระดาษ */
-.mm-head__mark {
-  /* กว้างเท่าที่ความสูงจอยังพอให้เห็นปุ่มเลื่อนลง (ภาพสัดส่วน 3:2) */
-  width: min(100%, 980px, calc((100svh - 260px) * 1.5));
-  border: 1px solid var(--line);
-  box-shadow: 0 18px 40px rgba(24, 20, 16, 0.1);
+/* ภาพ MOMAY (1536×1024) ปูเต็มจอ ตัวตราอยู่กลางภาพจึงยังเห็นครบเมื่อครอบขอบ */
+.mm-head__mark { position: absolute; inset: 0; background: #fcf8ef; }
+.mm-head__mark img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+/* จอแนวตั้ง: cover เต็มความสูงจะตัดตัวตราขาด จึงขยายภาพแค่ให้ตัวตรา (กว้าง ~58% ของภาพ) กินเกือบเต็มความกว้างจอ
+   วางกลางจอ ส่วนบน-ล่างที่เหลือเป็นพื้นสีเดียวกับภาพ */
+@media (max-aspect-ratio: 5/4) {
+  .mm-head__mark { display: grid; place-items: center; }
+  .mm-head__mark img {
+    width: 160%; max-width: none; height: auto; object-fit: initial;
+    /* ขอบบน-ล่างของภาพจางเข้าหาพื้น ไม่เห็นเป็นเส้นตัด */
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+  }
 }
-.mm-head__mark img { display: block; width: 100%; height: auto; }
 
 .mm-scroll {
+  position: relative; z-index: 1;
   margin-top: auto;
   display: grid; justify-items: center; gap: 2px;
   padding: 6px 14px; background: none; border: 0; cursor: pointer;
@@ -740,6 +754,9 @@ function openSplineDesign(key: string) {
 .mm-scroll__label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.3em; color: var(--ink-dim); }
 .mm-scroll svg { width: 28px; height: 28px; animation: mmBob 1.8s ease-in-out infinite; }
 .mm-scroll:hover .mm-scroll__label { color: var(--red); }
+/* กรอบโฟกัสโชว์เฉพาะตอนใช้คีย์บอร์ด ไม่ขึ้นค้างหลังคลิก */
+.mm-scroll:focus { outline: none; }
+.mm-scroll:focus-visible { outline: 1px solid var(--red); outline-offset: 4px; }
 @keyframes mmBob {
   0%, 100% { transform: translateY(0); opacity: 0.6; }
   50% { transform: translateY(7px); opacity: 1; }
@@ -858,6 +875,7 @@ function openSplineDesign(key: string) {
 
 @media (max-width: 640px) {
   .root-bg { padding: 16px !important; }
+  .mm-head { --bleed: 16px; }
   .neon-btn.spline-link-card { width: calc(50% - 8px); }
   .spline-link-card.card-detail { width: calc(50% - 8px); }
 }
