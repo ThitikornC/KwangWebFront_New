@@ -18,13 +18,13 @@
   <KwShell active="about">
     <!-- ══ หน้าปกแบบนิตยสาร ══
          ชื่อตัวใหญ่เต็มความกว้าง มีภาพลายเส้นอยู่ในตัวอักษร (SVG text + pattern
-         ใช้ textLength ให้ตัวอักษรยืดเต็มความกว้างพอดีทุกขนาดจอ) ตามด้วยแถบภาพใหญ่ -->
+         ใช้ textLength ให้ตัวอักษรยืดเต็มความกว้างพอดีทุกขนาดจอ) สองบรรทัด KWANG / UNLIMIT -->
     <header class="mast">
       <div class="mast__meta">
         <span>ABOUT US</span>
         <span>EST 24/01/2024</span>
       </div>
-      <svg class="mast__word" viewBox="0 0 1000 200" role="img" aria-label="KWANG">
+      <svg class="mast__word" viewBox="0 0 1000 200" role="img" aria-label="KWANG UNLIMIT">
         <defs>
           <pattern id="aboutTypeFill" patternUnits="userSpaceOnUse" width="1000" height="200">
             <image href="/about/type-fill.webp" x="0" y="0" width="1000" height="200" preserveAspectRatio="none" />
@@ -32,9 +32,15 @@
         </defs>
         <text x="0" y="192" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="url(#aboutTypeFill)">KWANG</text>
       </svg>
-      <figure class="mast__band">
-        <img src="/about/band-top.webp" alt="" />
-      </figure>
+      <!-- บรรทัดสองเตี้ยกว่า (viewBox สูง 150) เพราะ 7 ตัวอักษร จะได้ไม่ถูกบีบจนผอม -->
+      <svg class="mast__word mast__word--2" viewBox="0 0 1000 150" role="img" aria-label="UNLIMIT">
+        <defs>
+          <pattern id="aboutTypeFill2" patternUnits="userSpaceOnUse" width="1000" height="150">
+            <image href="/about/type-fill.webp" x="-120" y="-30" width="1250" height="250" preserveAspectRatio="none" />
+          </pattern>
+        </defs>
+        <text x="0" y="146" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="url(#aboutTypeFill2)">UNLIMIT</text>
+      </svg>
     </header>
 
     <!-- ── เกี่ยวกับเรา — ป้ายซ้าย หัวเรื่อง + สองคอลัมน์ขวา ── -->
@@ -222,18 +228,8 @@ const MISSION = [
   animation: mastIn 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 .mast__word text { font: inherit; letter-spacing: -4px; }
-.mast__band {
-  margin: clamp(6px, 1vw, 12px) 0 0;
-  border-top: 1px solid rgba(29, 27, 25, 0.25);
-  border-bottom: 1px solid rgba(29, 27, 25, 0.25);
-  overflow: hidden;
-}
-.mast__band img {
-  display: block; width: 100%; height: auto;
-  animation: mastBand 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.2s both;
-}
+.mast__word--2 { margin-top: clamp(6px, 1vw, 12px); font-size: 190px; animation-delay: 0.15s; }
 @keyframes mastIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-@keyframes mastBand { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: none; } }
 
 /* ── เกี่ยวกับเรา: ป้ายซ้าย ─ หัวเรื่องและสองคอลัมน์ขวา ── */
 .spread {
@@ -348,7 +344,7 @@ const MISSION = [
 
 @media (prefers-reduced-motion: reduce) {
   .tl__item:last-child .tl__dot::before { animation: none; display: none; }
-  .mast__word, .mast__band img, .strip__track { animation: none; }
+  .mast__word, .strip__track { animation: none; }
 }
 
 /* ── การ์ดภารกิจ — ไทยเป็นตัวหลัก อังกฤษเป็นป้ายเล็กใต้ ── */
