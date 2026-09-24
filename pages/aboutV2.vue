@@ -134,9 +134,7 @@
             <h3>การติดต่อ</h3>
             <p>
               <a href="mailto:Natthaphongphothikoed@gmail.com">Natthaphongphothikoed@gmail.com</a><br />
-              <a href="tel:0839549743">083-954-9743</a><br />
-              Mrjob1001<br />
-              Kwangunlimit/กว้างไม่จำกัด
+              <a href="tel:0839549743">083-954-9743</a>
             </p>
           </div>
         </div>

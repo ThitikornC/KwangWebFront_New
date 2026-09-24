@@ -153,7 +153,7 @@ withDefaults(defineProps<{
 
 /* ── เมนู — ชุดเดียวกับ /home2 แก้ที่นี่แล้วต้องตามไปแก้ NAV ใน pages/index.vue ── */
 const NAV = [
-  { key: 'kwang',    label: 'KWANG',            href: '/kwang' },
+  { key: 'kwang',    label: 'KWANG',            href: '/' },
   { key: 'about',    label: 'ABOUT',            href: '/aboutV2' },
   { key: 'projects', label: 'PROJECTS',         href: '/projectsV2' },
   { key: 'forward',  label: 'FORWARD THINKING', href: '/forwardthinkingV2' },

@@ -94,7 +94,7 @@ function readSetup() {
 
 /* ── คำตอบจากหน้า MOMAY Surprise ── */
 
-/** อ่านพารามิเตอร์แล้วคืนตัวคูณความหนาแน่น — ไม่มีข้อมูลส่งมา = 1 (ใช้ตัวเลขตั้งต้น) */
+/** อ่านคำตอบห้องสมุดจาก query string — ไม่มีข้อมูลส่งมา = null (ใช้ผังและตัวเลขตั้งต้น) */
 function readSurvey(search) {
   const q = new URLSearchParams(search)
   const org = q.get('o')
@@ -120,9 +120,7 @@ function readSurvey(search) {
   // จำนวนชั้นที่กรอกไว้ — ผังตั้งต้นจะตัด/เพิ่มชั้นให้ตรงกับเลขนี้
   const floors = Math.min(Math.round(n(q.get('f'), FLOORS.length)), 30)
 
-  // ผังตั้งต้นเฉลี่ยราว 38% ของความจุ — เทียบกับภาระที่โมเดลคำนวณได้
-  const factor = baseline.metrics.people / 38
-  return { inputs, baseline, peak: PEAK_MAP[peak], factor, floors }
+  return { inputs, baseline, peak: PEAK_MAP[peak], floors }
 }
 
 /* ── สร้างข้อมูลจากผัง ── */
@@ -199,16 +197,45 @@ function resolveLayout(setup, survey) {
     }
   }
 
+  if (survey) {
+    // ผังตั้งต้นตามจำนวนชั้นที่กรอก แล้วแบ่งที่นั่งที่กรอกลงแต่ละโซนตามสัดส่วนผัง
+    // ส่วน capacity ของห้องสมุดคือที่นั่ง ไม่ใช่ช่องจอด จึงไม่มีการ์ดที่จอดรถ
+    const floors = defaultLayout(survey.floors)
+    scaleSeats(floors.flatMap((f) => f.zones), survey.inputs.capacity)
+    return {
+      floors,
+      inputs: survey.inputs,
+      baseline: survey.baseline,
+      peak: survey.inputs.peak,
+      parking: 0,
+      autoPower: false,
+      fromSetup: false,
+    }
+  }
+
   return {
-    floors: defaultLayout(survey?.floors),
-    inputs: survey?.inputs ?? null,
-    baseline: survey?.baseline ?? null,
-    peak: survey?.inputs.peak ?? 'midday',
-    parking: survey?.inputs.capacity ?? 0,
+    floors: defaultLayout(),
+    inputs: null,
+    baseline: null,
+    peak: 'midday',
+    parking: 0,
     autoPower: false,
-    factor: survey?.factor ?? 1,
     fromSetup: false,
   }
+}
+
+/** แบ่งที่นั่งรวม total ลงแต่ละโซนตามสัดส่วนที่นั่งเดิม (ปัดแบบเศษมากได้ก่อน)
+ *  ผลรวมเท่ากับ total พอดี และทุกโซนได้อย่างน้อย 1 ที่ถ้าที่นั่งพอ — แก้ seats ในที่ */
+function scaleSeats(zones, total) {
+  const sum = zones.reduce((n, z) => n + z.seats, 0)
+  if (!sum || !zones.length) return
+  const min = total >= zones.length ? 1 : 0
+  const spare = total - min * zones.length
+  const raw = zones.map((z) => (z.seats / sum) * spare)
+  zones.forEach((z, i) => { z.seats = min + Math.floor(raw[i]) })
+  let left = total - zones.reduce((n, z) => n + z.seats, 0)
+  const order = raw.map((r, i) => [r - Math.floor(r), i]).sort((a, b) => b[0] - a[0])
+  for (let k = 0; left > 0; k = (k + 1) % order.length, left--) zones[order[k][1]].seats++
 }
 
 /** คนที่อยู่ในอาคาร "พร้อมกัน" ไม่เท่ากับคนที่เข้ามาทั้งช่วงพีค
@@ -246,12 +273,9 @@ function occupancyOf(layout) {
   const zones = layout.floors.flatMap((f) => f.zones)
   const now = new Date()
 
-  if (!layout.fromSetup) {
-    // ผังตั้งต้น: ใช้ตัวเลขที่ตั้งไว้ในผัง แล้วคูณด้วยภาระที่โมเดลคำนวณได้
-    return new Map(zones.map((z) => [
-      z,
-      isOpenNow(z, now) ? clamp(Math.round((z._seed ?? 0) * layout.factor), 0, z.seats) : 0,
-    ]))
+  if (!layout.baseline) {
+    // ไม่มีคำตอบส่งมาเลย: ใช้ตัวเลขตั้งต้นที่ใส่ไว้ในผังตรง ๆ
+    return new Map(zones.map((z) => [z, isOpenNow(z, now) ? clamp(z._seed ?? 0, 0, z.seats) : 0]))
   }
 
   const totalSeats = zones.reduce((n, z) => n + z.seats, 0)

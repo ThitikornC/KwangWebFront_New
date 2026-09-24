@@ -153,9 +153,14 @@ const MAP_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.42
   box-shadow: 0 16px 36px rgba(24, 20, 16, 0.1);
 }
 .call__label { font-size: 10px; font-weight: 600; letter-spacing: 0.26em; color: var(--red); }
+/* Playfair ใช้ตัวเลขแบบ old-style เป็นค่าตั้งต้น (0 เตี้ย 8 สูง กว้างไม่เท่ากัน)
+   เบอร์สองเบอร์เลยสูง-กว้างไม่เท่ากัน → บังคับเป็นตัวเลขแบบ lining + ความกว้างเท่ากันทุกตัว */
 .call__tel {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(24px, 3vw, 38px); font-weight: 500; letter-spacing: 0.01em; color: var(--ink);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: 'lnum' 1, 'tnum' 1;
+  white-space: nowrap;
 }
 .call__name { font-size: 13px; color: var(--ink-dim); }
 

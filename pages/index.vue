@@ -1,7 +1,7 @@
 <!--
   KWANG UNLIMITED — หน้าแรกของเว็บ (/ — ยังเปิดจาก /home2 ได้ผ่าน alias)
 
-  หน้าแรกเดิมย้ายไปอยู่ pages/kwang.vue (/kwang) เมนู KWANG ซ้ายสุดพากลับไปหน้านั้น
+  หน้าแรกเดิมย้ายไปอยู่ pages/kwang.vue (/kwang) — เมนู KWANG ไม่ลิงก์ไปหน้าเดิมแล้ว ชี้กลับมาหน้าแรกนี้แทน
 
   เมนูของหน้านี้ชี้ไปหน้าชุด V2 ทั้งแถว: /aboutV2 · /projectsV2 · /forwardthinkingV2
   · /renewablesort/MomayforSaleV2 · /contactV2
@@ -222,7 +222,7 @@ useSeoMeta({
       แก้ที่นี่แล้วต้องตามไปแก้ที่นั่นด้วย ไม่งั้นเมนูสองหน้าจะพาไปคนละที่
       (หน้าเดิม /valueProposition, /home, /renewable, /contact ยังอยู่ครบ แค่ไม่ได้อยู่ในเมนูชุดนี้แล้ว) ── */
 const NAV = [
-  { label: 'KWANG',            href: '/kwang' },
+  { label: 'KWANG',            href: '/' },
   { label: 'ABOUT',            href: '/aboutV2' },
   { label: 'PROJECTS',         href: '/projectsV2' },
   { label: 'FORWARD THINKING', href: '/forwardthinkingV2' },
@@ -678,6 +678,57 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
   .wordmark__crop { --wm-w: min(80vw, 34svh, 460px); }
   .claim { font-size: clamp(22px, min(6.6vw, 5svh), 40px); }
   .btn { min-width: 0; flex: 1 1 200px; }
+}
+
+/* ── มือถือแนวตั้ง: ขยายทุกอย่างให้เต็ม 1 จอพอดี ──
+   เดิมเนื้อหาเล็กและกองอยู่ด้านบน เหลือที่ว่างกลางจอเยอะ
+   ตอนนี้ให้คอลัมน์ข้อความกินเต็มความสูงช่องกลางแล้ววางกลาง และขยายขนาดตาม min(vw, svh)
+   ทุกตัวจะได้โตไปพร้อมกันทั้งตามความกว้างและความสูงจอ
+
+   ความสูงหน้าเปลี่ยนจาก height เป็น min-height — จอยาวปกติยังพอดี 1 จอเป๊ะ
+   แต่ถ้าจอเตี้ยมากจนเนื้อหาล้น จะเลื่อนลงได้แทนที่จะโดนตัดทิ้ง */
+@media (max-width: 767px) {
+  .kw { height: auto; min-height: 100vh; min-height: 100svh; }
+
+  .hero {
+    align-items: stretch;
+    padding: clamp(10px, 2svh, 24px) var(--gut);
+  }
+  .hero__copy {
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .wordmark__crop { --wm-w: min(88vw, 40svh, 520px); }
+  .wm-word { font-size: clamp(48px, min(19vw, 11svh), 96px); }
+  .wm-sub { font-size: clamp(12px, min(4vw, 2.4svh), 18px); }
+
+  .hr { width: 100%; margin: clamp(10px, 2.4svh, 26px) 0 clamp(8px, 1.6svh, 18px); }
+  .kicker { font-size: clamp(10px, min(2.9vw, 1.7svh), 13px); letter-spacing: 0.2em; }
+  .kicker-th { font-size: clamp(13px, min(3.7vw, 2.2svh), 17px); }
+
+  .claim {
+    margin-top: clamp(10px, 2.6svh, 28px);
+    font-size: clamp(22px, min(8.2vw, 4.6svh), 42px);
+    line-height: 1.1;
+  }
+  .claim-th {
+    margin-top: clamp(8px, 1.6svh, 18px);
+    font-size: clamp(13px, min(3.7vw, 2.2svh), 17px);
+    line-height: 1.6;
+  }
+
+  .cta {
+    flex-direction: column;
+    gap: clamp(10px, 1.6svh, 14px);
+    margin-top: clamp(14px, 3.4svh, 40px);
+  }
+  .btn {
+    flex: none; width: 100%;
+    padding: clamp(11px, 1.9svh, 18px) 20px;
+    font-size: clamp(11px, 3.2vw, 13px);
+  }
+
+  .rail__label { font-size: clamp(10px, 2.8vw, 12px); }
 }
 
 /* จอเตี้ยมาก (มือถือแนวนอน) — ย่อต่อไม่ไหวแล้ว ยอมให้เลื่อนดีกว่าตัดเนื้อหาทิ้ง */
