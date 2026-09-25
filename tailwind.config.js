@@ -16,6 +16,17 @@ module.exports = {
       xl: '1440px',
     },
     extend: {
+      boxShadow: {
+        'soft-3d': '8px 8px 20px rgba(0,0,0,0.12), -6px -6px 18px rgba(255,255,255,0.95)',
+        'soft-3d-sm': '4px 4px 10px rgba(0,0,0,0.08), -3px -3px 8px rgba(255,255,255,0.95)'
+      },
+      backgroundImage: {
+        'brand-gradient': 'linear-gradient(135deg, rgba(127,24,27,1) 0%, rgba(237,27,46,1) 100%)',
+        'soft-gradient': 'linear-gradient(180deg, rgba(255,255,255,0.9), rgba(247,247,248,0.9))'
+      },
+      fontFamily: {
+        display: ['Poppins', 'sans-serif'],
+      },
       keyframes: {
         typing: {
           "0%": {

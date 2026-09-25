@@ -16,7 +16,9 @@ interface ProductsInterface {
     detail: string;
   };
   image: string;
+  imagePath?: string;
   images: string[];
+  visible?: boolean;
   tag: {
     ICT64: boolean;
     Dome: boolean;
@@ -139,6 +141,8 @@ export const dataProductStore = defineStore('data-store', {
     filterProducts() {
       // Filter by tags and brand
       this.showProductWithFilter = this.allProducts.filter((product) => {
+        // hide products explicitly marked invisible
+        if (product.visible === false) return false;
         // Filter by tags: at least one filter in FilterValue should match
         const matchesTags = this.FilterValue.length > 0
           ? this.FilterValue.some((filter) => product.tag[filter as keyof typeof product.tag])
