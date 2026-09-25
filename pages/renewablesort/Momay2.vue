@@ -487,6 +487,15 @@
                   <span class="font-thai">Momay Enlightened (V230926)<span class="card-note">เพิ่มกล้องชั้น 1-3 ทุกตัว และจัดหมวดหมู่ตามชั้น</span></span>
                 </div>
               </div>
+              <div
+                @click="openSplineDesign('MomayReport')"
+                class="neon-btn spline-link-card card-detail hover:from-teal-100 hover:to-teal-300"
+              >
+                <div class="card-content">
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayReportBuu (V250926)" class="w-12 h-12 object-contain" />
+                  <span class="font-thai">MomayReportBuu (V250926)<span class="card-note">เพิ่มข้อมูลเปรียบเทียบผู้ใช้งาน x ค่าไฟฟ้า</span></span>
+                </div>
+              </div>
               </div>
             </div>
           </div>
@@ -559,6 +568,7 @@ const splineLinks: Record<string, string> = {
   'Momay-Student-Pixel-V2': '/momay/Momay-Student-Pixel-V2',
   'Momay-Student-Pixel-VSettings': '/momay/Momay-Student-Pixel-VSettings',
   MomayBUUV230926: '/momay/MomayBUUV230926',
+  MomayReport: '/momay/MomayReport',
   MomayTemplate: '/momay/MomayTemplate'
 }
 
