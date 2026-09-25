@@ -488,21 +488,21 @@
                 </div>
               </div>
               <div
-                @click="openSplineDesign('MomayReport')"
-                class="neon-btn spline-link-card card-detail hover:from-teal-100 hover:to-teal-300"
-              >
-                <div class="card-content">
-                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayReportBuu (V250926)" class="w-12 h-12 object-contain" />
-                  <span class="font-thai">MomayReportBuu (V250926)<span class="card-note">เพิ่มข้อมูลเปรียบเทียบผู้ใช้งาน x ค่าไฟฟ้า</span></span>
-                </div>
-              </div>
-              <div
                 @click="openSplineDesign('MomayReportV1')"
                 class="neon-btn spline-link-card card-detail hover:from-teal-100 hover:to-teal-300"
               >
                 <div class="card-content">
                   <img src="/momay/momay-enlightenment-art.jpg" alt="Momay ReportV1" class="w-12 h-12 object-contain" />
                   <span class="font-thai">Momay ReportV1<span class="card-note">Momay Report แบบ Classic</span></span>
+                </div>
+              </div>
+              <div
+                @click="openSplineDesign('MomayReport')"
+                class="neon-btn spline-link-card card-detail hover:from-teal-100 hover:to-teal-300"
+              >
+                <div class="card-content">
+                  <img src="/momay/momay-enlightenment-art.jpg" alt="MomayReportBuu (V250926)" class="w-12 h-12 object-contain" />
+                  <span class="font-thai">MomayReportBuu (V250926)<span class="card-note">เพิ่มข้อมูลเปรียบเทียบผู้ใช้งาน x ค่าไฟฟ้า</span></span>
                 </div>
               </div>
               </div>
