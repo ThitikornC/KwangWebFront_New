@@ -482,6 +482,15 @@
                   <span class="font-thai">MomayReportBuu (V250926)<span class="card-note">เพิ่มข้อมูลเปรียบเทียบผู้ใช้งาน x ค่าไฟฟ้า</span></span>
                 </div>
               </div>
+              <div
+                @click="openSplineDesign('MomayReportV160926')"
+                class="neon-btn spline-link-card card-detail hover:from-teal-100 hover:to-teal-300"
+              >
+                <div class="card-content">
+                  <img src="/MOMAY_logo.png" alt="Momay ReportV160926" class="w-12 h-12 object-contain" />
+                  <span class="font-thai">Momay ReportV160926<span class="card-note">Momay Report แบบ Classic</span></span>
+                </div>
+              </div>
               </div>
             </div>
           </div>
@@ -547,6 +556,7 @@ const splineLinks: Record<string, string> = {
   'Momay-Student-Pixel-VSettings': '/momay/Momay-Student-Pixel-VSettings',
   MomayBUUV230926: '/momay/MomayBUUV230926',
   MomayReport: '/momay/MomayReport',
+  MomayReportV160926: '/momay/MomayReportV160926',
   MomayTemplate: '/momay/MomayTemplate'
 }
 
