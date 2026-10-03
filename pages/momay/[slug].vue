@@ -56,8 +56,10 @@ const targets: Record<string, string> = {
   'Momay-Student-Pixel-V2': 'https://momaymodelbuu-production.up.railway.app/buustudent8bitv2',
   'Momay-Student-Pixel-VSettings': 'https://momaymodelbuu-production.up.railway.app/buustudent8bitVsettings',
   MomayBUUV230926: 'https://momaymodelbuu-production.up.railway.app/MomayBUUV230926',
+  MomayBUUV280926: 'https://momaymodelbuu-production.up.railway.app/MomayBUUV280926',
   MomayReport: 'https://momaymodelbuu-production.up.railway.app/momay-report',
   MomayReportV1: 'https://momaymodelbuu-production.up.railway.app/momay-report-classic',
+  MomayExecV290926: 'https://momaymodelbuu-production.up.railway.app/MomayExecV290926',
   // หลังบ้านสำหรับควบคุมแอร์ (ไม่มีปุ่มบนหน้า momay)
   MomayControl: 'https://momaymodelbuu-production.up.railway.app/settings'
 }
