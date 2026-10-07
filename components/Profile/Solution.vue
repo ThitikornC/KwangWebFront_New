@@ -8,7 +8,7 @@ import { solutionsStore } from '~/store/solution_store';
 import type { Solution } from '~/store/solution_store';
 import type { Ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { storage, ref as storageRef, uploadBytes, getDownloadURL } from '~/utils/firebase';
+import { storage, storageRef, uploadBytes, getDownloadURL } from '~/utils/firebase';
 useSeoMeta({
   title: 'Kwang Unlimit',
   ogTitle: 'Kwang Unlimit',
@@ -58,8 +58,8 @@ const videoFile = ref<File | null>(null);
 const videoPreview = ref('');
 const isUploading = ref(false);
 
-// Auto-scroll intervals
-const autoScrollIntervals: { [key: string]: number | null } = {};
+// Auto-scroll animation frames (requestAnimationFrame ids)
+const autoScrollFrames: { [key: string]: number | null } = {};
 
 // Handle file selection
 function handleFileChange(event: Event) {
@@ -261,75 +261,83 @@ function resetForm() {
   videoPreview.value = '';
 }
 
-// Setup auto-scroll for a container (smooth continuous scroll)
-function setupAutoScroll(containerId: string) {
+// รายการการ์ดแบบซ้ำ 2 ชุดต่อกัน เพื่อให้เลื่อนวนได้แบบไร้รอยต่อ (marquee)
+function loopList(category: string) {
+  const arr = projectsByCategory.value[category] || [];
+  return [...arr, ...arr];
+}
+
+// ความเร็ว auto-scroll (px ต่อเฟรม ~60fps) — เลื่อนไปทางซ้ายอย่างต่อเนื่อง
+const AUTO_SCROLL_SPEED = 0.6;
+
+// Setup seamless auto-scroll for a container using requestAnimationFrame
+// resetToEnd = true เฉพาะตอนเริ่มครั้งแรก, ตอน resume ให้เลื่อนต่อจากตำแหน่งเดิม
+function setupAutoScroll(containerId: string, resetToEnd = false) {
   const container = document.getElementById(containerId);
   if (!container) {
     console.log('Container not found:', containerId);
     return;
   }
 
-  // ตรวจสอบว่ามีเนื้อหาเพียงพอที่จะเลื่อนหรือไม่
-  const hasScrollableContent = container.scrollWidth > container.clientWidth;
-  console.log(`${containerId} - scrollWidth: ${container.scrollWidth}, clientWidth: ${container.clientWidth}, hasScrollable: ${hasScrollableContent}`);
+  // ถ้าเนื้อหาแคบกว่าจอ ไม่ต้องเลื่อน
+  if (container.scrollWidth <= container.clientWidth) return;
 
-  if (!hasScrollableContent) {
-    console.log(`${containerId} has no scrollable content, skipping auto-scroll`);
-    return;
+  const children = container.children;
+  // ต้องมีการ์ดครบ 2 ชุด (จาก loopList) จึงจะวนแบบไร้รอยต่อได้
+  if (children.length < 2) return;
+
+  const half = Math.floor(children.length / 2);
+  const first = children[0] as HTMLElement;
+  const secondSetStart = children[half] as HTMLElement | undefined;
+  if (!secondSetStart) return;
+
+  // period = ระยะ 1 คาบ (จากการ์ดใบแรกของชุดที่ 1 ไปใบแรกของชุดที่ 2)
+  // การวนกลับด้วยระยะนี้จะทำให้ภาพตรงกันพอดี ไม่มีรอยต่อ
+  const period = secondSetStart.offsetLeft - first.offsetLeft;
+  if (period <= 0) return;
+
+  // Cancel existing frame if any
+  if (autoScrollFrames[containerId]) {
+    cancelAnimationFrame(autoScrollFrames[containerId]!);
   }
 
-  // Clear existing interval if any
-  if (autoScrollIntervals[containerId]) {
-    clearInterval(autoScrollIntervals[containerId]!);
+  // ตั้งตำแหน่งเริ่มต้นเฉพาะตอนโหลดครั้งแรก (ไม่ทำตอน resume เพื่อไม่ให้ดีดกลับ)
+  if (resetToEnd) {
+    container.scrollLeft = period;
   }
 
-  // Set initial scroll position to the end
-  const maxScroll = container.scrollWidth - container.clientWidth;
-  container.scrollLeft = maxScroll;
-  console.log(`${containerId} initial scroll set to:`, maxScroll);
-
-  // Smooth continuous scroll - update every 30ms (scrolling LEFT)
-  autoScrollIntervals[containerId] = window.setInterval(() => {
-    if (!container) return;
-    
-    const currentScroll = container.scrollLeft;
-    
-    // If reached the start, jump to end without animation
-    if (currentScroll <= 2) {
-      const maxScroll = container.scrollWidth - container.clientWidth;
-      container.scrollLeft = maxScroll;
-      console.log(`${containerId} looped back to end`);
+  const step = () => {
+    if (container.scrollLeft <= 0) {
+      // วนกลับ 1 คาบ — เนื้อหาซ้ำกันจึงเนียนสนิท
+      container.scrollLeft += period;
     } else {
-      // Scroll LEFT by 2px for smooth continuous effect
-      container.scrollLeft -= 2;
+      container.scrollLeft -= AUTO_SCROLL_SPEED;
     }
-  }, 30); // Update every 30ms
-  
-  console.log(`${containerId} auto-scroll started`);
+    autoScrollFrames[containerId] = requestAnimationFrame(step);
+  };
+  autoScrollFrames[containerId] = requestAnimationFrame(step);
 }
 
 // Cleanup function
 function cleanupAutoScroll() {
-  console.log('Cleaning up auto-scroll intervals');
-  Object.entries(autoScrollIntervals).forEach(([key, interval]) => {
-    if (interval !== null) {
-      clearInterval(interval);
-      console.log(`Cleared interval for ${key}`);
+  Object.entries(autoScrollFrames).forEach(([key, frame]) => {
+    if (frame !== null) {
+      cancelAnimationFrame(frame);
+      autoScrollFrames[key] = null;
     }
   });
 }
 
-// เพิ่มฟังก์ชันสำหรับหยุด/เริ่ม auto-scroll เมื่อ hover
+// หยุด/เริ่ม auto-scroll เมื่อ hover หรือเลื่อนเอง
 function pauseAutoScroll(containerId: string) {
-  if (autoScrollIntervals[containerId]) {
-    clearInterval(autoScrollIntervals[containerId]!);
-    autoScrollIntervals[containerId] = null;
-    console.log(`${containerId} auto-scroll paused`);
+  if (autoScrollFrames[containerId]) {
+    cancelAnimationFrame(autoScrollFrames[containerId]!);
+    autoScrollFrames[containerId] = null;
   }
 }
 
 function resumeAutoScroll(containerId: string) {
-  // เริ่ม auto-scroll ใหม่
+  // เริ่ม auto-scroll ใหม่ต่อจากตำแหน่งเดิม
   setupAutoScroll(containerId);
 }
 
@@ -344,9 +352,9 @@ onMounted(async () => {
   // Setup auto-scroll for each category with delay
   setTimeout(() => {
     console.log('Setting up auto-scroll after data load...');
-    setupAutoScroll('solarcell-container');
-    setupAutoScroll('network-container');
-    setupAutoScroll('software-container');
+    setupAutoScroll('solarcell-container', true);
+    setupAutoScroll('network-container', true);
+    setupAutoScroll('software-container', true);
   }, 1500);
 });
 
@@ -370,27 +378,25 @@ onBeforeUnmount(() => {
 </div>
 
     <!-- ตัววิ่ง -->
-<div class="running-text-container flex justify-center flex-1 px-6" 
-     style="margin-top: 90px; margin-left: 0px; margin-bottom: -40px;">       
-      <div class="running-text w-full max-w-[1000px] overflow-hidden relative">
-          <div class="marquee">
-            <div class="marquee-content">
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
-            <div class="marquee-content">
-    
-              <span>Make tech fresh get forward</span>
-              <span>EST 24/01/2024</span>
-            </div>
+<div class="flex justify-center flex-1 px-[clamp(1rem,3vw,1.5rem)] mt-[clamp(4rem,10vw,5.625rem)] mb-[clamp(2rem,4vw,3rem)]">       
+      <div class="running-text w-full max-w-[min(1200px,95vw)] overflow-hidden relative text-[clamp(0.875rem,1.5vw,1.25rem)] whitespace-nowrap">
+        <div class="marquee">
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
+          </div>
+          <div class="marquee-content">
+            <span>Make tech fresh get forward</span>
+            <span>EST 24/01/2024</span>
           </div>
         </div>
       </div>
-  <div class="w-full max-w-[1280px] flex flex-col items-center gap-10 px-4 mt-20">
+    </div>
+  <div class="w-full max-w-[min(80rem,95vw)] flex flex-col items-center gap-[clamp(1.5rem,3vw,2.5rem)] px-[clamp(1rem,3vw,1rem)]">
 
-<div class="neon-btn flex flex-col justify-center items-center text-center mb-1">
-  <h1 class="text-header font-semibold text-black">OUR PROJECTS</h1>
-  <h2 class="text-topic text-black font-thai">ผลงาน</h2>
+<div class="neon-btn flex flex-col justify-center items-center text-center mb-[clamp(0.25rem,1vw,0.25rem)]">
+  <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-semibold text-black">OUR PROJECTS</h1>
+  <h2 class="text-[clamp(1.25rem,2.5vw,1.875rem)] text-black font-thai">ผลงาน</h2>
 </div>
 
 
@@ -401,11 +407,11 @@ onBeforeUnmount(() => {
 
         <!-- Solar Cell Category -->
         <div v-if="projectsByCategory['Solar cell']?.length > 0" class="w-full">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="pt-12 text-xl font-semibold font-thai neon-btn">
+          <div class="flex items-center justify-between mb-[clamp(1rem,2vw,1.5rem)]">
+            <h2 class="pt-[clamp(2rem,3vw,3rem)] text-[clamp(1rem,2vw,1.25rem)] font-semibold font-thai neon-btn whitespace-nowrap">
               ออกแบบและติดตั้งระบบโซล่าเซลล์ (Renewable energy)
             </h2>
-            <span class="text-sl text-gray-600 ml-4 neon-btn">
+            <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-gray-600 ml-[clamp(0.5rem,2vw,1rem)] neon-btn whitespace-nowrap">
               {{ projectsByCategory['Solar cell'].length }} Projects
             </span>
           </div>
@@ -415,18 +421,18 @@ onBeforeUnmount(() => {
               id="solarcell-container"
               @mouseenter="pauseAutoScroll('solarcell-container')"
               @mouseleave="resumeAutoScroll('solarcell-container')"
-              class="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth px-2 py-4"
-              style="scroll-snap-type: x mandatory;"
+              class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
+              style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
-                v-for="(project, i) in projectsByCategory['Solar cell']"
-                :key="project.id"
-class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
+                v-for="(project, i) in loopList('Solar cell')"
+                :key="project.id + '-' + i"
+class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
-                @click="togglePopup('Solar cell', i)"
+                @click="togglePopup('Solar cell', i % projectsByCategory['Solar cell'].length)"
               >
                 <video
-                  class="h-[150px] w-full object-cover object-center pointer-events-none"
+                  class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
                   autoplay
                   muted
                   loop
@@ -435,15 +441,15 @@ class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6p
                   <source :src="project.linkVideoPreview" type="video/mp4" />
                 </video>
 
-                <div class="p-3 flex flex-col items-center gap-2">
-                  <span class="text-base text-graydeep">{{ formatDate(project.date) }}</span>
-                  <h3 class="font-semibold text-[16px] leading-6 text-black my-2">
+                <div class="p-[clamp(0.5rem,1.5vw,0.75rem)] flex flex-col items-center gap-[clamp(0.25rem,1vw,0.5rem)]">
+                  <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-graydeep">{{ formatDate(project.date) }}</span>
+                  <h3 class="font-semibold text-[clamp(0.875rem,1.5vw,1rem)] leading-6 text-black my-[clamp(0.25rem,1vw,0.5rem)]">
                     Project: <span class="font-thai">{{ project.projectName }}</span>
                   </h3>
-                  <div class="flex flex-col gap-y-2 w-full">
+                  <div class="flex flex-col gap-y-[clamp(0.25rem,1vw,0.5rem)] w-full">
                     <nuxt-link
                       :to="`/viewsolution/${project.id}`"
-class="bg-[#74640a] w-full px-4 py-2 font-thai text-white rounded-[4px] border flex gap-2 justify-center hover:bg-white hover:text-[#74640a] group"
+class="bg-[#74640a] w-full px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.5rem,1.5vw,0.5rem)] font-thai text-white rounded-[4px] border flex gap-[clamp(0.25rem,1vw,0.5rem)] justify-center hover:bg-white hover:text-[#74640a] group text-[clamp(0.75rem,1.25vw,0.875rem)]"
                     >
                       Document
                       <img
@@ -499,11 +505,11 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 
         <!-- Software Category -->
         <div v-if="projectsByCategory['Software']?.length > 0" class="w-full">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="pt-12 text-xl font-semibold font-thai neon-btn">
+          <div class="flex items-center justify-between mb-[clamp(1rem,2vw,1.5rem)]">
+            <h2 class="pt-[clamp(2rem,3vw,3rem)] text-[clamp(1rem,2vw,1.25rem)] font-semibold font-thai neon-btn whitespace-nowrap">
               ซอฟต์แวร์ (Software)
             </h2>
-            <span class="text-sl text-gray-600 ml-4 neon-btn">
+            <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-gray-600 ml-[clamp(0.5rem,2vw,1rem)] neon-btn whitespace-nowrap">
               {{ projectsByCategory['Software'].length }} Projects
             </span>
           </div>
@@ -513,18 +519,18 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               id="software-container"
               @mouseenter="pauseAutoScroll('software-container')"
               @mouseleave="resumeAutoScroll('software-container')"
-              class="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth px-2 py-4"
-              style="scroll-snap-type: x mandatory;"
+              class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
+              style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
-                v-for="(project, i) in projectsByCategory['Software']"
-                :key="project.id"
-class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
+                v-for="(project, i) in loopList('Software')"
+                :key="project.id + '-' + i"
+class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
-                @click="togglePopup('Software', i)"
+                @click="togglePopup('Software', i % projectsByCategory['Software'].length)"
               >
                 <video
-                  class="h-[150px] w-full object-cover object-center pointer-events-none"
+                  class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
                   autoplay
                   muted
                   loop
@@ -532,15 +538,15 @@ class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6p
                 >
                   <source :src="project.linkVideoPreview" type="video/mp4" />
                 </video>
-                <div class="p-3 flex flex-col items-center gap-2">
-                  <span class="text-base text-graydeep">{{ formatDate(project.date) }}</span>
-                  <h3 class="font-semibold text-[16px] leading-6 text-black my-2">
+                <div class="p-[clamp(0.5rem,1.5vw,0.75rem)] flex flex-col items-center gap-[clamp(0.25rem,1vw,0.5rem)]">
+                  <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-graydeep">{{ formatDate(project.date) }}</span>
+                  <h3 class="font-semibold text-[clamp(0.875rem,1.5vw,1rem)] leading-6 text-black my-[clamp(0.25rem,1vw,0.5rem)]">
                     Project: <span class="font-thai">{{ project.projectName }}</span>
                   </h3>
-                  <div class="flex flex-col gap-y-2 w-full">
+                  <div class="flex flex-col gap-y-[clamp(0.25rem,1vw,0.5rem)] w-full">
                     <nuxt-link
                       :to="`/viewsolution/${project.id}`"
-class="bg-[#74640a] w-full px-4 py-2 font-thai text-white rounded-[4px] border flex gap-2 justify-center hover:bg-white hover:text-[#74640a] group"
+class="bg-[#74640a] w-full px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.5rem,1.5vw,0.5rem)] font-thai text-white rounded-[4px] border flex gap-[clamp(0.25rem,1vw,0.5rem)] justify-center hover:bg-white hover:text-[#74640a] group text-[clamp(0.75rem,1.25vw,0.875rem)]"
                     >
                       Document
                       <img
@@ -595,11 +601,11 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 
         <!-- Network Category -->
         <div v-if="projectsByCategory['Network']?.length > 0" class="w-full">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="pt-12 text-xl font-semibold font-thai neon-btn">
+          <div class="flex items-center justify-between mb-[clamp(1rem,2vw,1.5rem)]">
+            <h2 class="pt-[clamp(2rem,3vw,3rem)] text-[clamp(1rem,2vw,1.25rem)] font-semibold font-thai neon-btn whitespace-nowrap">
               ออกแบบและติดตั้งไอทีเน็ตเวิร์ค (IT Network)
             </h2>
-            <span class="text-sl text-gray-600 ml-4 neon-btn">
+            <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-gray-600 ml-[clamp(0.5rem,2vw,1rem)] neon-btn whitespace-nowrap">
               {{ projectsByCategory['Network'].length }} Projects
             </span>
           </div>
@@ -609,18 +615,18 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
               id="network-container"
               @mouseenter="pauseAutoScroll('network-container')"
               @mouseleave="resumeAutoScroll('network-container')"
-              class="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth px-2 py-4"
-              style="scroll-snap-type: x mandatory;"
+              class="flex gap-[clamp(1rem,2vw,1.25rem)] overflow-x-auto scrollbar-hide scroll-smooth px-[clamp(0.5rem,1vw,0.5rem)] py-[clamp(0.75rem,2vw,1rem)]"
+              style="scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;"
             >
               <div
-                v-for="(project, i) in projectsByCategory['Network']"
-                :key="project.id"
-class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
+                v-for="(project, i) in loopList('Network')"
+                :key="project.id + '-' + i"
+class="relative flex-shrink-0 w-[clamp(250px,25vw,300px)] h-[clamp(350px,40vw,420px)] bg-white rounded-lg border-[6px] border-[#74640a] shadow-[1px_1px_0_#000,-8px_6px_0_#3b3305,0_0_20px_rgba(255,230,160,0.55)] overflow-hidden hover:scale-105 cursor-pointer transition-transform duration-300 z-50"
                 style="scroll-snap-align: start;"
-                @click="togglePopup('Network', i)"
+                @click="togglePopup('Network', i % projectsByCategory['Network'].length)"
               >
                 <video
-                  class="h-[150px] w-full object-cover object-center pointer-events-none"
+                  class="h-[clamp(120px,15vw,150px)] w-full object-cover object-center pointer-events-none"
                   autoplay
                   muted
                   loop
@@ -628,15 +634,15 @@ class="relative flex-shrink-0 w-[300px] h-[420px] bg-white rounded-lg border-[6p
                 >
                   <source :src="project.linkVideoPreview" type="video/mp4" />
                 </video>
-                <div class="p-3 flex flex-col items-center gap-2">
-                  <span class="text-base text-graydeep">{{ formatDate(project.date) }}</span>
-                  <h3 class="font-semibold text-[16px] leading-6 text-black my-2">
+                <div class="p-[clamp(0.5rem,1.5vw,0.75rem)] flex flex-col items-center gap-[clamp(0.25rem,1vw,0.5rem)]">
+                  <span class="text-[clamp(0.875rem,1.5vw,1rem)] text-graydeep">{{ formatDate(project.date) }}</span>
+                  <h3 class="font-semibold text-[clamp(0.875rem,1.5vw,1rem)] leading-6 text-black my-[clamp(0.25rem,1vw,0.5rem)]">
                     Project: <span class="font-thai">{{ project.projectName }}</span>
                   </h3>
-                  <div class="flex flex-col gap-y-2 w-full">
+                  <div class="flex flex-col gap-y-[clamp(0.25rem,1vw,0.5rem)] w-full">
                     <nuxt-link
                       :to="`/viewsolution/${project.id}`"
-class="bg-[#74640a] w-full px-4 py-2 font-thai text-white rounded-[4px] border flex gap-2 justify-center hover:bg-white hover:text-[#74640a] group"
+class="bg-[#74640a] w-full px-[clamp(0.75rem,2vw,1rem)] py-[clamp(0.5rem,1.5vw,0.5rem)] font-thai text-white rounded-[4px] border flex gap-[clamp(0.25rem,1vw,0.5rem)] justify-center hover:bg-white hover:text-[#74640a] group text-[clamp(0.75rem,1.25vw,0.875rem)]"
                     >
                       Document
                       <img
@@ -1003,23 +1009,42 @@ class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white hover:b
 .running-text {
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   color: #000;
-   border: 6px solid #74640a;
-border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต็มสำหรับปุ่มสั้น */
+  border: clamp(4px, 0.5vw, 6px) solid #74640a;
+  border-radius: 9999px;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 15px 20px;
-  box-shadow:
-    0 0 5px rgba(255,248,220,0.25),
-    0 0 10px rgba(255,240,180,0.2),
-    inset 0 10px 16px rgba(239,187,91,0.68),
-    inset 0 10px 16px rgba(255,220,140,0.55),
-    inset 0 0 45px rgba(255,235,180,0.45),
-    inset 0 0 80px rgba(255,250,230,1);
+  padding: clamp(10px, 1.5vw, 15px) clamp(15px, 2vw, 20px);
+  box-shadow: 1px 1px 0 #000, clamp(-6px, -0.8vw, -8px) clamp(4px, 0.6vw, 6px) #3b3305, 0 0 20px rgba(255,230,160,0.55);
   text-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,0,0.15), 0 0 6px rgba(255,230,160,0.55);
- box-shadow: 1px 1px 0 #000, -8px 6px  #3b3305, 0 0 20px rgba(255,230,160,0.55);
   overflow: hidden;
   position: relative;
   z-index: 50;
+}
+
+/* ลดขนาด 70% สำหรับมือถือ */
+@media (max-width: 768px) {
+  .running-text {
+    border-width: 2px;
+    padding: 3px 4px;
+    font-size: 0.6rem;
+  }
+  
+  /* ป้องกัน text wrap */
+  .whitespace-nowrap {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* จอเล็กมาก (360px) */
+@media (max-width: 400px) {
+  .running-text {
+    border-width: 1.5px !important;
+    padding: 2px 3px !important;
+    font-size: 0.5rem !important;
+    max-width: 100% !important;
+  }
 }
 
 /* --- ส่วน marquee, scroll-reveal และอื่นๆ เหมือนเดิม --- */
@@ -1031,14 +1056,36 @@ border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต�
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  padding: 0.5rem 2rem;
+  padding: clamp(0.375rem, 1vw, 0.5rem) clamp(1.25rem, 2.5vw, 2rem);
   background: linear-gradient(180deg, #f8f6f0 0%, #fff8e8 50%, #f5f0e5 100%);
   font-weight: 700;
   text-transform: uppercase;
-  border: 2px solid #000;
-  border-radius: 6px;
+  border: clamp(1.5px, 0.25vw, 2px) solid #000;
+  border-radius: clamp(4px, 0.6vw, 6px);
   box-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 6px rgba(255,230,160,0.55);
-  margin-right: 1rem;
+  margin-right: clamp(0.75rem, 1.5vw, 1rem);
+  font-size: clamp(0.75rem, 1.25vw, 0.875rem);
+}
+
+@media (max-width: 768px) {
+  .marquee span {
+    padding: 0.2rem 0.6rem;
+    border-width: 1px;
+    border-radius: 3px;
+    font-size: 0.5rem;
+    margin-right: 0.4rem;
+  }
+}
+
+/* จอเล็กมาก (360px) */
+@media (max-width: 400px) {
+  .marquee span {
+    padding: 0.15rem 0.4rem !important;
+    border-width: 0.5px !important;
+    border-radius: 2px !important;
+    font-size: 0.4rem !important;
+    margin-right: 0.3rem !important;
+  }
 }
 
 .running-text-container { justify-content: flex-start; padding-left: 25px; padding-right: 0; }
@@ -1048,22 +1095,27 @@ border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต�
 .neon-btn {
   background: linear-gradient(180deg, #f8f6f0 0%, #fffef8 45%, #fff8e8 55%, #f5f0e5 100%);
   color: #000000;
-  border: 6px solid #74640a;
-border-radius: 9999px; /* ทำเป็นวงรี/วงกลมเต็มสำหรับปุ่มสั้น */
+  border: clamp(4px, 0.5vw, 6px) solid #74640a;
+  border-radius: 9999px;
   box-shadow:
-
-  inset 0 0 90px rgba(255, 252, 240, 1),
-  1px 1px 0 #000,
-  -8px 6px  #3b3305,
-  0 0 20px rgba(255,230,160,0.55);
+    inset 0 0 90px rgba(255, 252, 240, 1),
+    1px 1px 0 #000,
+    clamp(-6px, -0.8vw, -8px) clamp(4px, 0.6vw, 6px) #3b3305,
+    0 0 20px rgba(255,230,160,0.55);
   font-weight: 700;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(0, 0, 0, 0.1);
-    
-
   position: relative;
-  padding: 16px 40px;
+  padding: clamp(12px, 1.5vw, 16px) clamp(28px, 4vw, 40px);
   transform: translateZ(0);
   transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .neon-btn {
+    border-width: 3px;
+    padding: 8.4px 19.6px;
+    font-size: 0.7rem;
+  }
 }
 .background-image2 {
   position: fixed;

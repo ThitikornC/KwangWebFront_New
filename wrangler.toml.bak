@@ -1,0 +1,12 @@
+name = "espresso-proxy"
+main = "scripts/cloudflare/espresso-proxy-worker.js"
+compatibility_date = "2026-01-21"
+account_id = "${CF_ACCOUNT_ID}"
+workers_dev = false
+route = "${WRANGLER_ROUTE}"
+zone_id = "${ZONE_ID}"
+
+[vars]
+BACKEND_BASE = "https://www.kwangunlimit.com"
+CACHE_TTL = "60"
+BACKEND_API = "https://kwangwebfrontnew-production.up.railway.app"

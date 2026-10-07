@@ -1,6 +1,6 @@
 // ~/plugins/firebase.ts
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDRWHlu9SH93htyBkr45IQuj9mjwIYaDCI",
@@ -15,4 +15,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-export { storage, ref, uploadBytes, getDownloadURL };
+export { storage, ref as storageRef, uploadBytes, uploadBytesResumable, getDownloadURL, deleteObject };
