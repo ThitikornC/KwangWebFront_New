@@ -224,6 +224,7 @@ const buuShelves: { label: string; groups: { label: string; books: Book[] }[] }[
         label: 'รวม',
         books: [
           { key: 'MomayPrototype', title: 'Momay-Enligtend-Executive-Student' },
+          { key: '061026waitJobAppove', title: '061026waitJobAppove', tag: '06/10/26' },
         ],
       },
     ],
@@ -338,6 +339,7 @@ const splineLinks: Record<string, string> = {
   MomayAnan: '/momay/MomayAnan',
   MomayKorn: '/momay/MomayKorn',
   MomayPrototype: '/momay/MomayPrototype',
+  '061026waitJobAppove': '/momay/061026waitJobAppove',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',

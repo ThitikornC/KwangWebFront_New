@@ -542,6 +542,15 @@
                       <span class="font-thai"><span class="card-date">18/08/26</span>Momay-Enligtend-Executive-Student</span>
                     </div>
                   </div>
+                  <div
+                    @click="openSplineDesign('061026waitJobAppove')"
+                    class="neon-btn spline-link-card label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="061026waitJobAppove" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">06/10/26</span>061026waitJobAppove</span>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -609,6 +618,7 @@ const splineLinks: Record<string, string> = {
   MomayAnan: '/momay/MomayAnan',
   MomayKorn: '/momay/MomayKorn',
   MomayPrototype: '/momay/MomayPrototype',
+  '061026waitJobAppove': '/momay/061026waitJobAppove',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',

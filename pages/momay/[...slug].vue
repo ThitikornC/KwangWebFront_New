@@ -60,6 +60,7 @@ const targets: Record<string, string> = {
   MomayReport: 'https://momaymodelbuu-production.up.railway.app/momay-report',
   MomayReportV1: 'https://momaymodelbuu-production.up.railway.app/momay-report-classic',
   MomayExecV290926: 'https://momaymodelbuu-production.up.railway.app/MomayExecV290926',
+  '061026waitJobAppove': 'https://momaymodelbuu-production.up.railway.app/061026waitJobAppove',
   // หลังบ้านสำหรับควบคุมแอร์ (ไม่มีปุ่มบนหน้า momay)
   MomayControl: 'https://momaymodelbuu-production.up.railway.app/settings'
 }
