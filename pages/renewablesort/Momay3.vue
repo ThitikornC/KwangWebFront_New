@@ -167,6 +167,7 @@ const momayBooks: Book[] = [
   { key: 'MomayTopSoccer', title: 'ปั้มแก๊ส' },
   { key: 'MomayAnan', title: 'top soccer' },
   { key: 'MomayKorn', title: 'คุณกร' },
+  { key: 'MomayUChangNoi', title: 'อู่ช่างน้อย' },
   { key: 'SmartLibrary', title: 'Borrow and Return Service' },
 ]
 
@@ -338,6 +339,7 @@ const splineLinks: Record<string, string> = {
   MomayTopSoccer: '/momay/MomayTopSoccer',
   MomayAnan: '/momay/MomayAnan',
   MomayKorn: '/momay/MomayKorn',
+  MomayUChangNoi: '/momay/MomayUChangNoi',
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   SmartLibrary: '/momay/SmartLibrary',

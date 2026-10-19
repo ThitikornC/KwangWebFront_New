@@ -288,6 +288,15 @@
         </div>
       </div>
       <div
+        @click="openSplineDesign('MomayUChangNoi')"
+        class="neon-btn spline-link-card hover:from-emerald-100 hover:to-emerald-300"
+      >
+        <div class="card-content">
+          <img src="/momay/momay-enlightenment-art.jpg" alt="อู่ช่างน้อย" class="w-12 h-12 object-contain" />
+          <span class="font-thai">อู่ช่างน้อย</span>
+        </div>
+      </div>
+      <div
         @click="openSplineDesign('SmartLibrary')"
         class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
       >
@@ -617,6 +626,7 @@ const splineLinks: Record<string, string> = {
   MomayTopSoccer: '/momay/MomayTopSoccer',
   MomayAnan: '/momay/MomayAnan',
   MomayKorn: '/momay/MomayKorn',
+  MomayUChangNoi: '/momay/MomayUChangNoi',
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   SmartLibrary: '/momay/SmartLibrary',
