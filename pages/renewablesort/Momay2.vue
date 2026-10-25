@@ -560,6 +560,15 @@
                       <span class="font-thai"><span class="card-date">06/10/26</span>061026waitJobAppove</span>
                     </div>
                   </div>
+                  <div
+                    @click="openSplineDesign('MomayV251026')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay รวม (V251026)" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">25/10/26</span>Momay รวม (V251026)<span class="card-note">เปลี่ยนสี Heatmap ตามสมการเวลา</span></span>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -629,6 +638,7 @@ const splineLinks: Record<string, string> = {
   MomayUChangNoi: '/momay/MomayUChangNoi',
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
+  MomayV251026: '/momay/MomayV251026',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',

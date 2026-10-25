@@ -226,6 +226,7 @@ const buuShelves: { label: string; groups: { label: string; books: Book[] }[] }[
         books: [
           { key: 'MomayPrototype', title: 'Momay-Enligtend-Executive-Student' },
           { key: '061026waitJobAppove', title: '061026waitJobAppove', tag: '06/10/26' },
+          { key: 'MomayV251026', title: 'Momay รวม', tag: 'V251026', note: 'เปลี่ยนสี Heatmap ตามสมการเวลา' },
         ],
       },
     ],
@@ -342,6 +343,7 @@ const splineLinks: Record<string, string> = {
   MomayUChangNoi: '/momay/MomayUChangNoi',
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
+  MomayV251026: '/momay/MomayV251026',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
