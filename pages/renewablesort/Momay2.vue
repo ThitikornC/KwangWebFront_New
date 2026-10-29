@@ -309,18 +309,20 @@
     </section>
 
     <section class="momay-section">
-      <div class="flex justify-center">
+      <div class="flex gap-3 sm:gap-4 flex-wrap justify-center">
         <div
-          @click="openBuu"
+          v-for="room in rooms"
+          :key="room"
+          @click="openRoomModal(room)"
           class="neon-btn spline-link-card buu-entry-card"
           role="button"
           tabindex="0"
-          @keydown.enter="openBuu"
-          @keydown.space.prevent="openBuu"
+          @keydown.enter="openRoomModal(room)"
+          @keydown.space.prevent="openRoomModal(room)"
         >
           <div class="card-content">
-            <img src="/momay/momay-enlightenment-art.jpg" alt="BUU" class="w-12 h-12 object-contain" />
-            <span class="font-thai">BUU</span>
+            <img src="/momay/momay-enlightenment-art.jpg" :alt="room" class="w-12 h-12 object-contain" />
+            <span class="font-thai">{{ room }}</span>
           </div>
         </div>
       </div>
@@ -332,9 +334,9 @@
 
   <!-- BUU: กดการ์ด BUU แล้วค่อยเข้ามาดูรายการข้างใน -->
   <Teleport to="body">
-    <div v-if="isBuuOpen" class="buu-modal-overlay" @click.self="closeBuu">
+    <div v-if="openRoom === 'BUU'" class="buu-modal-overlay" @click.self="closeRoom">
       <div class="buu-modal" role="dialog" aria-modal="true" aria-label="BUU">
-        <button type="button" class="buu-modal-close" aria-label="ปิด" @click="closeBuu">&times;</button>
+        <button type="button" class="buu-modal-close" aria-label="ปิด" @click="closeRoom">&times;</button>
         <div class="section-head">
           <h2 class="section-title font-thai">BUU</h2>
         </div>
@@ -576,6 +578,39 @@
           </div>
       </div>
     </div>
+
+    <!-- NU: โครงเดียวกับห้อง BUU -->
+    <div v-if="openRoom === 'NU'" class="buu-modal-overlay" @click.self="closeRoom">
+      <div class="buu-modal" role="dialog" aria-modal="true" aria-label="NU">
+        <button type="button" class="buu-modal-close" aria-label="ปิด" @click="closeRoom">&times;</button>
+        <div class="section-head">
+          <h2 class="section-title font-thai">NU</h2>
+        </div>
+          <div class="buu-subsections">
+            <div class="buu-subsection">
+              <div class="subsection-head">
+                <h3 class="subsection-title font-thai">ส่งงาน</h3>
+              </div>
+              <div class="send-groups">
+                <div class="send-group">
+                  <h4 class="group-title group-title--th font-thai">รวม</h4>
+                  <div class="group-cards">
+                  <div
+                    @click="openSplineDesign('MomayNuV271026')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay รวม (V30102026)" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">30/10/26</span>Momay รวม (V30102026)<span class="card-note">รวม waitJobAppove</span></span>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
   </Teleport>
 </div>
 </template>
@@ -639,6 +674,7 @@ const splineLinks: Record<string, string> = {
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   MomayV251026: '/momay/MomayV251026',
+  MomayNuV271026: '/momay/MomayNuV271026',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
@@ -702,22 +738,24 @@ onMounted(() => {
   })
 })
 
-const isBuuOpen = ref(false)
+// ห้องย่อยที่เปิดอยู่ (BUU / NU) — เปิดได้ทีละห้อง
+const rooms = ['BUU', 'NU'] as const
+const openRoom = ref<typeof rooms[number] | null>(null)
 
 function onBuuKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') closeBuu()
+  if (e.key === 'Escape') closeRoom()
 }
 
-function openBuu() {
-  isBuuOpen.value = true
+function openRoomModal(room: typeof rooms[number]) {
+  openRoom.value = room
   if (typeof window !== 'undefined') {
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onBuuKeydown)
   }
 }
 
-function closeBuu() {
-  isBuuOpen.value = false
+function closeRoom() {
+  openRoom.value = null
   if (typeof window !== 'undefined') {
     document.body.style.overflow = ''
     window.removeEventListener('keydown', onBuuKeydown)

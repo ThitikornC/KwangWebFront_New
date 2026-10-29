@@ -77,9 +77,11 @@
       <!-- ผิวบนของตู้ที่กองหนังสือวางอยู่ -->
       <div class="case__top" aria-hidden="true"></div>
 
-      <div class="case__crown"><span class="plate">BUU</span></div>
+      <!-- ตู้ BUU แล้วต่อด้วยตู้ NU ซ้อนลงมา แต่ละตู้มีป้ายชื่อบนหัวตู้ -->
+      <template v-for="c in cases" :key="c.label">
+      <div class="case__crown"><span class="plate">{{ c.label }}</span></div>
       <div class="case__body">
-        <template v-for="(g, gi) in buuShelves" :key="g.label">
+        <template v-for="(g, gi) in c.shelves" :key="g.label">
           <div v-if="gi" class="case__divider"><span class="plate">{{ g.label }}</span></div>
           <div class="shelf">
             <div
@@ -113,6 +115,7 @@
           </div>
         </template>
       </div>
+      </template>
       <div class="case__base" aria-hidden="true"></div>
     </section>
   </div>
@@ -171,8 +174,10 @@ const momayBooks: Book[] = [
   { key: 'SmartLibrary', title: 'Borrow and Return Service' },
 ]
 
+type Shelf = { label: string; groups: { label: string; books: Book[] }[] }
+
 // ชั้น "ส่งงาน" แบ่งย่อยตามประเภทงาน ประเภทละหนึ่งชั้น มีป้ายชื่อติดขอบชั้น
-const buuShelves: { label: string; groups: { label: string; books: Book[] }[] }[] = [
+const buuShelves: Shelf[] = [
   {
     label: 'เก็บไว้เช็คประวัติ',
     groups: [{
@@ -231,6 +236,26 @@ const buuShelves: { label: string; groups: { label: string; books: Book[] }[] }[
       },
     ],
   },
+]
+
+// ตู้ NU โครงเดียวกับ BUU
+const nuShelves: Shelf[] = [
+  {
+    label: 'ส่งงาน',
+    groups: [
+      {
+        label: 'รวม',
+        books: [
+          { key: 'MomayNuV271026', title: 'Momay รวม', tag: 'V30102026', note: 'รวม waitJobAppove' },
+        ],
+      },
+    ],
+  },
+]
+
+const cases = [
+  { label: 'BUU', shelves: buuShelves },
+  { label: 'NU', shelves: nuShelves },
 ]
 
 // กองหนังสือบนหลังตู้ 4 กอง สูงต่ำไม่เท่ากันให้ดูจัดวางจริง เรียงตามลำดับเดิม อ่านจากกองซ้ายบนลงล่าง
@@ -344,6 +369,7 @@ const splineLinks: Record<string, string> = {
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   MomayV251026: '/momay/MomayV251026',
+  MomayNuV271026: '/momay/MomayNuV271026',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
