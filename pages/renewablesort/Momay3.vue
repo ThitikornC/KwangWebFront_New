@@ -246,7 +246,7 @@ const nuShelves: Shelf[] = [
       {
         label: 'รวม',
         books: [
-          { key: 'MomayNuV271026', title: 'Momay รวม', tag: 'V30102026', note: 'รวม waitJobAppove' },
+          { key: 'MomayNuV301026', title: 'Momay รวม', tag: 'V301026', note: 'รวม waitJobAppove' },
         ],
       },
     ],
@@ -369,7 +369,7 @@ const splineLinks: Record<string, string> = {
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   MomayV251026: '/momay/MomayV251026',
-  MomayNuV271026: '/momay/MomayNuV271026',
+  MomayNuV301026: '/momay/MomayNuV301026',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
