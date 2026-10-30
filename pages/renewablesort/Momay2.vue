@@ -297,6 +297,15 @@
         </div>
       </div>
       <div
+        @click="openSplineDesign('MomayPRG')"
+        class="neon-btn spline-link-card hover:from-amber-100 hover:to-amber-300"
+      >
+        <div class="card-content">
+          <img src="/momay/momay-enlightenment-art.jpg" alt="PRG" class="w-12 h-12 object-contain" />
+          <span class="font-thai">PRG</span>
+        </div>
+      </div>
+      <div
         @click="openSplineDesign('SmartLibrary')"
         class="neon-btn spline-link-card hover:from-violet-100 hover:to-violet-300"
       >
@@ -671,6 +680,7 @@ const splineLinks: Record<string, string> = {
   MomayAnan: '/momay/MomayAnan',
   MomayKorn: '/momay/MomayKorn',
   MomayUChangNoi: '/momay/MomayUChangNoi',
+  MomayPRG: '/momay/MomayPRG',
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   MomayV251026: '/momay/MomayV251026',
