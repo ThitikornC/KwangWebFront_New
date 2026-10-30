@@ -605,12 +605,21 @@
                   <h4 class="group-title group-title--th font-thai">รวม</h4>
                   <div class="group-cards">
                   <div
+                    @click="openSplineDesign('MomayNuV271026')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay รวม (V271026)" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">27/10/26</span>Momay รวม (V271026)<span class="card-note">รวม waitJobAppove</span></span>
+                    </div>
+                  </div>
+                  <div
                     @click="openSplineDesign('MomayNuV301026')"
                     class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
                   >
                     <div class="card-content">
                       <img src="/momay/momay-enlightenment-art.jpg" alt="Momay รวม (V301026)" class="w-12 h-12 object-contain" />
-                      <span class="font-thai"><span class="card-date">30/10/26</span>Momay รวม (V301026)<span class="card-note">รวม waitJobAppove</span></span>
+                      <span class="font-thai"><span class="card-date">30/10/26</span>Momay รวม (V301026)<span class="card-note">ปรับขนาดตัวอักษร ปรับสี ปรับความสูงการ์ด CCTV</span></span>
                     </div>
                   </div>
                   </div>
@@ -684,6 +693,7 @@ const splineLinks: Record<string, string> = {
   MomayPrototype: '/momay/MomayPrototype',
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   MomayV251026: '/momay/MomayV251026',
+  MomayNuV271026: '/momay/MomayNuV271026',
   MomayNuV301026: '/momay/MomayNuV301026',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
