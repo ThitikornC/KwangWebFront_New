@@ -249,6 +249,7 @@ const nuShelves: Shelf[] = [
         books: [
           { key: 'MomayNuV271026', title: 'Momay รวม', tag: 'V271026', note: 'รวม waitJobAppove' },
           { key: 'MomayNuV301026', title: 'Momay รวม', tag: 'V301026', note: 'ปรับขนาดตัวอักษร ปรับสี ปรับความสูงการ์ด CCTV' },
+          { key: 'MomayNuV301026B', title: 'Momay รวม', tag: 'V301026B', note: 'แก้ 4 ข้อ ธีมส้ม ตัด Booking สเกล CCTV เท่า BUU Entry & Exit ทั้งอาคาร' },
         ],
       },
     ],
@@ -374,6 +375,7 @@ const splineLinks: Record<string, string> = {
   MomayV251026: '/momay/MomayV251026',
   MomayNuV271026: '/momay/MomayNuV271026',
   MomayNuV301026: '/momay/MomayNuV301026',
+  MomayNuV301026B: '/momay/MomayNuV301026B',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
