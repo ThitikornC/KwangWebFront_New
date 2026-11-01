@@ -631,6 +631,15 @@
                       <span class="font-thai"><span class="card-date">31/10/26</span>Momay รวม (V301026B)<span class="card-note">แก้ 4 ข้อ ธีมส้ม ตัด Booking สเกล CCTV เท่า BUU Entry &amp; Exit ทั้งอาคาร</span></span>
                     </div>
                   </div>
+                  <div
+                    @click="openSplineDesign('MomayNuV11226')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay รวม (V11226)" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">01/11/26</span>Momay รวม (V11226)<span class="card-note">เพิ่ม logo และเพิ่มตัวเปิดแอพ</span></span>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -705,6 +714,7 @@ const splineLinks: Record<string, string> = {
   MomayNuV271026: '/momay/MomayNuV271026',
   MomayNuV301026: '/momay/MomayNuV301026',
   MomayNuV301026B: '/momay/MomayNuV301026B',
+  MomayNuV11226: '/momay/MomayNuV11226',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
