@@ -7,59 +7,59 @@ onMounted(() => {
 });
 </script>
 <template>
-    <div class="w-full flex flex-col items-center font-inter pb-14 ">
+    <div class="w-full flex flex-col items-center font-inter pb-[clamp(2rem,4vw,3.5rem)]">
         <!-- sension mission -->
        
 
-        <div class="w-full mt-8">
+        <div class="w-full mt-[clamp(1.5rem,3vw,2rem)]">
             <!-- animation slide up -->
-            <section id="features" class="relative block px-6 py-6 ">
+            <section id="features" class="relative block px-[clamp(1rem,3vw,1.5rem)] py-[clamp(1rem,2vw,1.5rem)]">
               <!--  <div aria-hidden="true"
                     class="absolute inset-0 h-max w-full m-auto grid grid-cols-2 -space-x-52 opacity-40">
                     <div class="blur-[106px] h-56 bg-gradient-to-br to-bluelight from-bluesky"></div>
                     <div class="blur-[106px] h-32 bg-gradient-to-r from-yellowold to-redlight"></div>
                 </div>
                 -->
-                <div class=" neon-btn relative mx-auto max-w-5xl text-center">
+                <div class="neon-btn relative mx-auto max-w-[min(80rem,90vw)] text-center">
                     <span
-                        class="my-3 flex flex-col sm:flex-row sm:items-center sm:justify-center tracking-wider text-header gap-2">
+                        class="my-[clamp(0.75rem,2vw,0.75rem)] flex flex-col sm:flex-row sm:items-center sm:justify-center tracking-wider text-[clamp(1.5rem,3vw,2.5rem)] gap-[clamp(0.5rem,1vw,0.5rem)]">
                         <!-- <span class="font-medium">What is</span> -->
-                        <span class="font-bold text-black text-header">MISSION</span>
+                        <span class="font-bold text-black">MISSION</span>
                     </span>
-                    <h2 class="block font-thai text-black text-topic">
+                    <h2 class="block font-thai text-black text-[clamp(1.25rem,2.5vw,1.875rem)]">
                         ภารกิจ
                     </h2>
                 </div>
                 <div
-                    class="relative mx-auto max-w-7xl z-10 grid grid-cols-1 gap-10 pt-14 sm:grid-cols-2 lg:grid-cols-3">
-<div class="neon-btn rounded-md p-8 shadow flex flex-col justify-center items-center text-center h-64" 
+                    class="relative mx-auto max-w-[min(88rem,95vw)] z-10 grid grid-cols-1 gap-[clamp(1.5rem,3vw,2.5rem)] pt-[clamp(2rem,4vw,3.5rem)] sm:grid-cols-2 lg:grid-cols-3">
+<div class="neon-btn rounded-md p-[clamp(1.5rem,3vw,2rem)] shadow flex flex-col justify-center items-center text-center h-[clamp(14rem,20vw,16rem)]" 
      data-aos="fade-up" data-aos-duration="1000">
 
-   <h3 class="mt-6 text-black font-bold text-2xl md:text-3xl lg:text-xl">TECHNICAL REPRESENTATIVE</h3>
+   <h3 class="mt-[clamp(1rem,2vw,1.5rem)] text-black font-bold text-[clamp(1rem,2vw,1.25rem)]">TECHNICAL REPRESENTATIVE</h3>
     
-    <p class="mt-4 font-normal leading-relaxed tracking-wide text-black font-thai">
+    <p class="mt-[clamp(0.75rem,1.5vw,1rem)] font-normal leading-relaxed tracking-wide text-black font-thai text-[clamp(0.875rem,1.5vw,1rem)]">
         ตัวแทนด้านเทคนิคที่นำเสนอข้อมูลเชิงเทคนิคให้เข้าใจง่ายและน่าสนใจสำหรับทุกกลุ่มผู้ฟัง
     </p>
 
 </div>
 
-                     <div class="neon-btn rounded-md p-8 shadow flex flex-col justify-center items-center text-center h-64" 
+                     <div class="neon-btn rounded-md p-[clamp(1.5rem,3vw,2rem)] shadow flex flex-col justify-center items-center text-center h-[clamp(14rem,20vw,16rem)]" 
      data-aos="fade-up" data-aos-duration="1000">    
-                        <h3 class="mt-6 text-black font-bold text-2xl md:text-3xl lg:text-xl">ADAPT, AND TEST</h3>
-    <p class="mt-4 font-normal leading-relaxed tracking-wide text-black font-thai">
+                        <h3 class="mt-[clamp(1rem,2vw,1.5rem)] text-black font-bold text-[clamp(1rem,2vw,1.25rem)]">ADAPT, AND TEST</h3>
+    <p class="mt-[clamp(0.75rem,1.5vw,1rem)] font-normal leading-relaxed tracking-wide text-black font-thai text-[clamp(0.875rem,1.5vw,1rem)]">
                            ปรับตัว และทดสอบ โดยยึดความพึงพอใจของลูกค้าเป็นหลัก
                         </p>
                     </div>
 
 
-  <div class="neon-btn rounded-md p-8 shadow flex flex-col justify-center items-center text-center h-64 gap-2"
+  <div class="neon-btn rounded-md p-[clamp(1.5rem,3vw,2rem)] shadow flex flex-col justify-center items-center text-center h-[clamp(14rem,20vw,16rem)] gap-[clamp(0.5rem,1vw,0.5rem)]"
      data-aos="fade-up" data-aos-duration="1000">
 
-    <h3 class="text-black font-bold text-2xl md:text-3xl lg:text-xl">
+    <h3 class="text-black font-bold text-[clamp(1rem,2vw,1.25rem)]">
         FOCUS ON CONTINUOUSLY IMPROVING BUSINESS COMPETITIVENESS
     </h3>
 
-    <p class="font-normal leading-relaxed tracking-wide text-black font-thai">
+    <p class="font-normal leading-relaxed tracking-wide text-black font-thai text-[clamp(0.875rem,1.5vw,1rem)]">
         วางแผน ปรับเปลียน ทดสอบ โดยยึดความพึงพอใจของผู้บริโภคเป็นหลัก
     </p>
 
@@ -67,17 +67,17 @@ onMounted(() => {
 
                 </div>
             </section>
-            <section class="mt-4 relative block px-6 py-6">
+            <section class="mt-[clamp(1rem,2vw,1rem)] relative block px-[clamp(1rem,3vw,1.5rem)] py-[clamp(1rem,2vw,1.5rem)]">
                 <!-- ตกแต่ง -->
-<div class="neon-btn relative mx-auto max-w-[1280px] text-center border-2 p-10 rounded flex flex-col justify-center items-center gap-6 mt-5">
+<div class="neon-btn relative mx-auto max-w-[min(80rem,90vw)] text-center border-2 p-[clamp(1.5rem,3vw,2.5rem)] rounded flex flex-col justify-center items-center gap-[clamp(1rem,2vw,1.5rem)] mt-[clamp(1rem,2vw,1.25rem)]">
 
     <!-- Label / Title -->
-    <h3 class="text-black font-bold text-2xl md:text-3xl lg:text-xl">
+    <h3 class="text-black font-bold text-[clamp(1rem,2vw,1.25rem)]">
         IMPACT PARTNER
     </h3>
 
     <!-- Description -->
-    <p class="font-normal leading-relaxed tracking-wide text-black font-thai">
+    <p class="font-normal leading-relaxed tracking-wide text-black font-thai text-[clamp(0.875rem,1.5vw,1rem)]">
         ความร่วมมือในการออกแบบแผนการ ดำเนินการ
         ตั้งแต่เริ่มต้นโดยเฉพาะโครงการดิจิทัลให้บรรลุเป้าหมายระยะยาวกับผู้ที่เกี่ยวข้อง
     </p>
