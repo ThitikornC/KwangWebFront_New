@@ -640,6 +640,15 @@
                       <span class="font-thai"><span class="card-date">01/11/26</span>Momay รวม (V11226)<span class="card-note">เพิ่ม logo และเพิ่มตัวเปิดแอพ</span></span>
                     </div>
                   </div>
+                  <div
+                    @click="openSplineDesign('MomayNuV11126B')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay รวม (V11126B)" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">02/11/26</span>Momay รวม (V11126B)<span class="card-note">ปรับแสงสะท้อนหัวข้อ และปรับ logo</span></span>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -715,6 +724,7 @@ const splineLinks: Record<string, string> = {
   MomayNuV301026: '/momay/MomayNuV301026',
   MomayNuV301026B: '/momay/MomayNuV301026B',
   MomayNuV11226: '/momay/MomayNuV11226',
+  MomayNuV11126B: '/momay/MomayNuV11126B',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',
