@@ -317,7 +317,9 @@
       </div>
     </section>
 
+    <!-- เส้นแบ่งการ์ดทั่วไปกับห้องลูกค้า (BUU / NU) — ผู้ใช้สั่ง 2026-11-03 -->
     <section class="momay-section">
+      <div class="customer-divider"><span class="font-thai">Customer</span></div>
       <div class="flex gap-3 sm:gap-4 flex-wrap justify-center">
         <div
           v-for="room in rooms"
@@ -1097,6 +1099,9 @@ function openSplineDesign(key: string) {
 /* ── หัวข้อหมวด ── */
 .momay-sections { padding-bottom: clamp(40px, 6vw, 72px); }
 .momay-section { margin-top: clamp(28px, 4vw, 48px); }
+.customer-divider { display: flex; align-items: center; gap: 14px; max-width: 900px; margin: 0 auto clamp(16px, 2.4vw, 26px); }
+.customer-divider::before, .customer-divider::after { content: ''; flex: 1; height: 1px; background: var(--red); opacity: .55; }
+.customer-divider span { font-size: clamp(13px, 1.6vw, 16px); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); }
 .section-head { display: flex; justify-content: center; margin-bottom: clamp(14px, 2vw, 22px); }
 .section-title {
   position: relative;
