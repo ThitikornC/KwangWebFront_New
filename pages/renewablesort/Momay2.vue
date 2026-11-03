@@ -1152,7 +1152,7 @@ function openSplineDesign(key: string) {
 .send-group + .send-group { border-top: 1px solid var(--line); padding-top: 22px; }
 /* grid ช่องกว้างเท่ากัน: ทั้งก้อนอยู่กลางหน้า แต่แถวที่ล้นลงมาเริ่มจากซ้าย */
 .group-cards {
-  display: grid; grid-template-columns: repeat(auto-fit, clamp(168px, 24vw, 210px));
+  display: grid; grid-template-columns: repeat(auto-fill, clamp(168px, 24vw, 210px));
   justify-content: center; gap: 12px 16px;
 }
 .group-cards .neon-btn.spline-link-card { width: 100%; position: relative; }
@@ -1239,7 +1239,7 @@ function openSplineDesign(key: string) {
 .subsection-title--badge {
   padding: 5px 16px; border-radius: 4px;
   background: var(--red); color: #fff;
-  font-size: clamp(15px, 1.9vw, 19px); font-weight: 700; letter-spacing: 0.08em;
+  font-weight: 700; letter-spacing: 0.08em;
   box-shadow: 0 4px 14px rgba(160, 30, 40, 0.28);
 }
 /* ป็อปอัป BUU Final ไม่ติด NEW และหัวหมวดไม่มีเส้นคั่น */
