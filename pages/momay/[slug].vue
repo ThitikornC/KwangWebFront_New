@@ -64,6 +64,7 @@ const targets: Record<string, string> = {
   MomayExecV290926: 'https://momaymodelbuu-production.up.railway.app/MomayExecV290926',
   '061026waitJobAppove': 'https://momaymodelbuu-production.up.railway.app/allmomay-v',
   MomayV251026: 'https://momaymodelbuu-production.up.railway.app/allmomay-V251026',
+  MomayV31126: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126',
   MomayNuV271026: 'https://momaynu-production.up.railway.app/allmomay-V271026',
   MomayNuV301026: 'https://momaynu-production.up.railway.app/allmomay-V301026',
   MomayNuV301026B: 'https://momaynu-production.up.railway.app/allmomay-V301026B',
