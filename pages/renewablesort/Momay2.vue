@@ -591,7 +591,7 @@
                   </div>
                   </div>
                 </div>
-                <!-- ส่งงาน Final BUU — ลิงก์ย่อยของ V31126 แยกทีละระบบ (รหัส 562241) -->
+                <!-- ส่งงาน Final BUU — ลิงก์ย่อยของ V31126 แยกทีละระบบ (รหัสหน้าเว็บอยู่ในแอป Momay) -->
                 <div class="send-group">
                   <h4 class="group-title group-title--th font-thai">BUU V.ส่งงาน 4/11/2026</h4>
                   <div class="group-cards">
@@ -879,18 +879,18 @@ function closeRoom() {
 }
 
 function openSplineDesign(key: string) {
+  // BUU V31126 + งานส่ง Final BUU: ไม่ถามรหัสที่นี่ — แอป Momay ถามรหัสเองตอนเปิดหน้า
+  if (key === 'MomayV31126' || key.startsWith('BUUFinal')) {
+    const direct = splineLinks[key]
+    if (direct) window.open(direct, '_blank', 'noopener,noreferrer')
+    return
+  }
   const password = prompt("กรุณาใส่รหัสผ่านเพื่อเข้าถึง")
 
   // ถ้าเป็น hospital ให้ตรวจรหัสเฉพาะ
   if (key === 'hospital_Noenmaprang' || key === 'hospital_Noenmaprang_v1') {
     if (password !== '1125711257') {
       alert("รหัสสำหรับโรงพยาบาลไม่ถูกต้อง ❌")
-      return
-    }
-  } else if (key === 'MomayV31126' || key.startsWith('BUUFinal')) {
-    // BUU V31126 + งานส่ง Final BUU ใช้รหัสเดิมของ BUU
-    if (password !== '562241') {
-      alert("รหัสผ่านไม่ถูกต้อง ❌")
       return
     }
   } else if (key === 'naresuan_library') {
