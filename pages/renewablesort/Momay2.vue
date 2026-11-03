@@ -593,21 +593,11 @@
                 </div>
               </div>
             </div>
-          </div>
-      </div>
-    </div>
 
-    <!-- BUU Final: งานส่ง Final BUU (V31126 แยกทีละระบบ) — แยกเป็นห้องใหม่คู่กับ BUU เดิม (ผู้ใช้สั่ง 2026-11-03) -->
-    <div v-if="openRoom === 'BUU Final'" class="buu-modal-overlay" @click.self="closeRoom">
-      <div class="buu-modal" role="dialog" aria-modal="true" aria-label="BUU Final">
-        <button type="button" class="buu-modal-close" aria-label="ปิด" @click="closeRoom">&times;</button>
-        <div class="section-head">
-          <h2 class="section-title font-thai">BUU Final</h2>
-        </div>
-          <div class="buu-subsections">
-            <div class="buu-subsection">
+            <!-- ส่งงาน Final BUU (04/11/26) — V31126 แยกทีละระบบ · ย้ายจากห้อง BUU Final มาอยู่ในห้อง BUU ใต้เส้นคั่น (ผู้ใช้สั่ง 2026-11-03) -->
+            <div class="buu-subsection buu-subsection--final" id="buu-final">
               <div class="subsection-head">
-                <h3 class="subsection-title font-thai">ส่งงาน BUU V.4/11/2026</h3>
+                <h3 class="subsection-title font-thai">ส่งงาน (04/11/26)</h3>
               </div>
               <div class="send-groups">
                 <!-- BUU V.ส่งงาน 4/11/2026 — แยกหมวดละการ์ด (ผู้ใช้สั่ง 2026-11-03) -->
@@ -904,7 +894,7 @@ onMounted(() => {
 })
 
 // ห้องย่อยที่เปิดอยู่ (BUU / NU) — เปิดได้ทีละห้อง
-const rooms = ['BUU', 'BUU Final', 'NU'] as const
+const rooms = ['BUU', 'NU'] as const
 const openRoom = ref<typeof rooms[number] | null>(null)
 
 function onBuuKeydown(e: KeyboardEvent) {
@@ -920,11 +910,15 @@ function openRoomModal(room: typeof rooms[number]) {
 }
 
 // ลิงก์ตรงเข้าห้อง: /renewablesort/Momay2?room=buu-final (หรือ buu / nu) — เปิดหน้าแล้วกางห้องนั้นให้เลย
-const roomByParam: Record<string, typeof rooms[number]> = { 'buu': 'BUU', 'buu-final': 'BUU Final', 'nu': 'NU' }
+// buu-final = ห้อง BUU แล้วเลื่อนลงไปหมวดส่งงาน (04/11/26)
+const roomByParam: Record<string, typeof rooms[number]> = { 'buu': 'BUU', 'buu-final': 'BUU', 'nu': 'NU' }
 onMounted(() => {
   if (typeof window === 'undefined') return
-  const r = roomByParam[(new URLSearchParams(window.location.search).get('room') || '').toLowerCase()]
-  if (r) openRoomModal(r)
+  const p = (new URLSearchParams(window.location.search).get('room') || '').toLowerCase()
+  const r = roomByParam[p]
+  if (!r) return
+  openRoomModal(r)
+  if (p === 'buu-final') nextTick(() => document.getElementById('buu-final')?.scrollIntoView({ block: 'start' }))
 })
 
 function closeRoom() {
@@ -1211,6 +1205,8 @@ function openSplineDesign(key: string) {
 }
 .buu-modal-close:hover { color: var(--red); }
 .buu-subsections { display: flex; flex-direction: column; gap: 26px; margin-top: 18px; }
+/* เส้นคั่นก่อนหมวดส่งงาน Final (04/11/26) */
+.buu-subsection--final { border-top: 2px solid var(--red); padding-top: 6px; scroll-margin-top: 12px; }
 
 @media (max-width: 640px) {
   .root-bg { padding: 16px !important; }
