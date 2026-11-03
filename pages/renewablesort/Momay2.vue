@@ -52,6 +52,8 @@
       <div class="section-head">
         <h2 class="section-title font-thai">Momay</h2>
       </div>
+      <!-- หัวกลุ่มลูกค้า แบบเดียวกับเส้น BUU / NU ด้านล่าง (ผู้ใช้สั่ง 2026-11-03) -->
+      <div class="customer-divider"><span class="font-thai">Customer</span></div>
       <div class="card-grid">
       <div
         @click="openSplineDesign('Mpmay_human')"
@@ -319,11 +321,11 @@
 
     <!-- เส้นแบ่งการ์ดลูกค้าด้านบน กับห้อง BUU / NU (คนละกลุ่มกัน) — ผู้ใช้สั่ง 2026-11-03 -->
     <section class="momay-section">
-      <div class="customer-divider"></div>
+      <!-- ห้องละบรรทัด มีเส้นคั่นก่อนทุกห้อง (ผู้ใช้สั่ง 2026-11-03) -->
+      <template v-for="room in rooms" :key="room">
+      <div class="customer-divider"><span class="font-thai">{{ room }}</span></div>
       <div class="card-grid">
         <div
-          v-for="room in rooms"
-          :key="room"
           @click="openRoomModal(room)"
           class="neon-btn spline-link-card buu-entry-card"
           role="button"
@@ -337,6 +339,7 @@
           </div>
         </div>
       </div>
+      </template>
     </section>
 
   </div>
@@ -1074,7 +1077,9 @@ function openSplineDesign(key: string) {
 /* ── หัวข้อหมวด ── */
 .momay-sections { padding-bottom: clamp(40px, 6vw, 72px); }
 .momay-section { margin-top: clamp(28px, 4vw, 48px); }
-.customer-divider { max-width: 1200px; height: 1px; margin: 0 auto clamp(20px, 3vw, 32px); background: var(--red); opacity: .55; }
+.customer-divider { display: flex; align-items: center; gap: 14px; max-width: 1200px; margin: clamp(20px, 3vw, 32px) auto; }
+.customer-divider::before, .customer-divider::after { content: ''; flex: 1; height: 1px; background: var(--red); opacity: .55; }
+.customer-divider span { font-size: clamp(13px, 1.6vw, 16px); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); }
 /* การ์ดหน้าแรก: ทั้งก้อนอยู่กลางหน้า แต่เรียงซ้ายไปขวา เก่าไปใหม่ แถวที่ล้นลงมาเริ่มจากซ้าย (ผู้ใช้สั่ง 2026-11-03) */
 .card-grid {
   display: grid; grid-template-columns: repeat(auto-fill, clamp(148px, 21vw, 186px));
@@ -1194,8 +1199,9 @@ function openSplineDesign(key: string) {
 }
 .buu-modal-close:hover { color: var(--red); }
 .buu-subsections { display: flex; flex-direction: column; gap: 26px; margin-top: 18px; }
-/* เส้นคั่นก่อนหมวดส่งงาน Final (04/11/26) */
-.buu-subsection--final { border-top: 2px solid var(--red); padding-top: 6px; scroll-margin-top: 12px; }
+/* เส้นคั่นระหว่างหมวดในห้อง (เก็บไว้เช็คประวัติ / ส่งงาน / ส่งงาน (04/11/26)) — ผู้ใช้สั่ง 2026-11-03 */
+.buu-subsection + .buu-subsection { border-top: 2px solid var(--red); padding-top: 6px; }
+.buu-subsection--final { scroll-margin-top: 12px; }
 
 @media (max-width: 640px) {
   .root-bg { padding: 16px !important; }
