@@ -591,7 +591,25 @@
                   </div>
                   </div>
                 </div>
-                <!-- ส่งงาน Final BUU — ลิงก์ย่อยของ V31126 แยกทีละระบบ (รหัสหน้าเว็บอยู่ในแอป Momay) -->
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <!-- BUU Final: งานส่ง Final BUU (V31126 แยกทีละระบบ) — แยกเป็นห้องใหม่คู่กับ BUU เดิม (ผู้ใช้สั่ง 2026-11-03) -->
+    <div v-if="openRoom === 'BUU Final'" class="buu-modal-overlay" @click.self="closeRoom">
+      <div class="buu-modal" role="dialog" aria-modal="true" aria-label="BUU Final">
+        <button type="button" class="buu-modal-close" aria-label="ปิด" @click="closeRoom">&times;</button>
+        <div class="section-head">
+          <h2 class="section-title font-thai">BUU Final</h2>
+        </div>
+          <div class="buu-subsections">
+            <div class="buu-subsection">
+              <div class="subsection-head">
+                <h3 class="subsection-title font-thai">ส่งงาน</h3>
+              </div>
+              <div class="send-groups">
                 <div class="send-group">
                   <h4 class="group-title group-title--th font-thai">BUU V.ส่งงาน 4/11/2026</h4>
                   <div class="group-cards">
@@ -855,7 +873,7 @@ onMounted(() => {
 })
 
 // ห้องย่อยที่เปิดอยู่ (BUU / NU) — เปิดได้ทีละห้อง
-const rooms = ['BUU', 'NU'] as const
+const rooms = ['BUU', 'BUU Final', 'NU'] as const
 const openRoom = ref<typeof rooms[number] | null>(null)
 
 function onBuuKeydown(e: KeyboardEvent) {
