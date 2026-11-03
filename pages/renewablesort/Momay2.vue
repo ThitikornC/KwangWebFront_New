@@ -658,6 +658,15 @@
                       <span class="font-thai"><span class="card-date">02/11/26</span>Momay รวม (V11126B)<span class="card-note">ปรับแสงสะท้อนหัวข้อ และปรับ logo</span></span>
                     </div>
                   </div>
+                  <div
+                    @click="openSplineDesign('MomayNuV31126')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay รวม (V31126)" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">03/11/26</span>Momay รวม (V31126)<span class="card-note"><span class="card-note">1. ปรับสี heatmap โซนแอร์ A ชั้น 1 ให้เข้มขึ้น</span><span class="card-note">2. ปรับ heatmap ใน Report ให้สัดส่วนพื้นที่พอดีการ์ด และขยายคำอธิบายและสัญลักษณ์</span><span class="card-note">3. เปลี่ยนธีมสี Student เป็นแสดเทา</span></span></span>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -735,6 +744,7 @@ const splineLinks: Record<string, string> = {
   MomayNuV301026B: '/momay/MomayNuV301026B',
   MomayNuV11226: '/momay/MomayNuV11226',
   MomayNuV11126B: '/momay/MomayNuV11126B',
+  MomayNuV31126: '/momay/MomayNuV31126',
   SmartLibrary: '/momay/SmartLibrary',
   MomayInsights: '/momay/MomayInsights',
   MomayBUUStudent: '/momay/MomayBUUStudent',

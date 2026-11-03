@@ -70,6 +70,7 @@ const targets: Record<string, string> = {
   MomayNuV301026B: 'https://momaynu-production.up.railway.app/allmomay-V301026B',
   MomayNuV11226: 'https://momaynu-production.up.railway.app/allmomay-V11226',
   MomayNuV11126B: 'https://momaynu-production.up.railway.app/allmomay-V11126B',
+  MomayNuV31126: 'https://momaynu-production.up.railway.app/allmomay-V31126',
   // หลังบ้านสำหรับควบคุมแอร์ (ไม่มีปุ่มบนหน้า momay)
   MomayControl: 'https://momaymodelbuu-production.up.railway.app/settings'
 }
