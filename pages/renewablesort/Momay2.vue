@@ -601,11 +601,8 @@
               <div class="subsection-head">
                 <h3 class="subsection-title font-thai">ส่งงาน (04/11/26)</h3>
               </div>
-              <div class="send-groups">
-                <!-- BUU V.ส่งงาน 4/11/2026 — แยกหมวดละการ์ด (ผู้ใช้สั่ง 2026-11-03) -->
-                <div class="send-group">
-                  <h4 class="group-title group-title--th font-thai">รวมทุกระบบ</h4>
-                  <div class="group-cards">
+              <!-- ทุกระบบเรียงแถวเดียวกัน (ผู้ใช้สั่ง 2026-11-03) -->
+              <div class="group-cards">
                   <div
                     @click="openSplineDesign('BUUFinalAll')"
                     class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
@@ -615,11 +612,6 @@
                       <span class="font-thai"><span class="card-date">03/11/26</span>รวมทุกระบบ<span class="card-note">Momay Enlightenment + Executive Brief + Report + Students</span></span>
                     </div>
                   </div>
-                  </div>
-                </div>
-                <div class="send-group">
-                  <h4 class="group-title">Enlightenment</h4>
-                  <div class="group-cards">
                   <div
                     @click="openSplineDesign('BUUFinalEnlightenment')"
                     class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
@@ -629,11 +621,6 @@
                       <span class="font-thai"><span class="card-date">03/11/26</span>Momay Enlightenment</span>
                     </div>
                   </div>
-                  </div>
-                </div>
-                <div class="send-group">
-                  <h4 class="group-title">Executive Brief</h4>
-                  <div class="group-cards">
                   <div
                     @click="openSplineDesign('BUUFinalExec')"
                     class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
@@ -643,11 +630,6 @@
                       <span class="font-thai"><span class="card-date">03/11/26</span>Momay Executive Brief</span>
                     </div>
                   </div>
-                  </div>
-                </div>
-                <div class="send-group">
-                  <h4 class="group-title">Report</h4>
-                  <div class="group-cards">
                   <div
                     @click="openSplineDesign('BUUFinalReport')"
                     class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
@@ -657,11 +639,6 @@
                       <span class="font-thai"><span class="card-date">03/11/26</span>Momay Report</span>
                     </div>
                   </div>
-                  </div>
-                </div>
-                <div class="send-group">
-                  <h4 class="group-title">Student</h4>
-                  <div class="group-cards">
                   <div
                     @click="openSplineDesign('BUUFinalStudent')"
                     class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
@@ -671,8 +648,6 @@
                       <span class="font-thai"><span class="card-date">03/11/26</span>Momay Students</span>
                     </div>
                   </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
