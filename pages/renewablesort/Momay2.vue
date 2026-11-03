@@ -619,7 +619,7 @@
                   >
                     <div class="card-content">
                       <img src="/momay/momay-enlightenment-art.jpg" alt="รวมทุกระบบ" class="w-12 h-12 object-contain" />
-                      <span class="font-thai"><span class="card-date">03/11/26</span>รวมทุกระบบ<span class="card-note">Momay Enlightenment + Executive Brief + Students</span></span>
+                      <span class="font-thai"><span class="card-date">03/11/26</span>รวมทุกระบบ<span class="card-note">Momay Enlightenment + Executive Brief + Report + Students</span></span>
                     </div>
                   </div>
                   <div
@@ -638,6 +638,15 @@
                     <div class="card-content">
                       <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Executive Brief" class="w-12 h-12 object-contain" />
                       <span class="font-thai"><span class="card-date">03/11/26</span>Momay Executive Brief</span>
+                    </div>
+                  </div>
+                  <div
+                    @click="openSplineDesign('BUUFinalReport')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Report" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">03/11/26</span>Momay Report</span>
                     </div>
                   </div>
                   <div
@@ -802,6 +811,7 @@ const splineLinks: Record<string, string> = {
   BUUFinalAll: '/momay/BUUFinalAll',
   BUUFinalEnlightenment: '/momay/BUUFinalEnlightenment',
   BUUFinalExec: '/momay/BUUFinalExec',
+  BUUFinalReport: '/momay/BUUFinalReport',
   BUUFinalStudent: '/momay/BUUFinalStudent',
   MomayNuV271026: '/momay/MomayNuV271026',
   MomayNuV301026: '/momay/MomayNuV301026',
@@ -887,6 +897,14 @@ function openRoomModal(room: typeof rooms[number]) {
     window.addEventListener('keydown', onBuuKeydown)
   }
 }
+
+// ลิงก์ตรงเข้าห้อง: /renewablesort/Momay2?room=buu-final (หรือ buu / nu) — เปิดหน้าแล้วกางห้องนั้นให้เลย
+const roomByParam: Record<string, typeof rooms[number]> = { 'buu': 'BUU', 'buu-final': 'BUU Final', 'nu': 'NU' }
+onMounted(() => {
+  if (typeof window === 'undefined') return
+  const r = roomByParam[(new URLSearchParams(window.location.search).get('room') || '').toLowerCase()]
+  if (r) openRoomModal(r)
+})
 
 function closeRoom() {
   openRoom.value = null
