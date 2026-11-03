@@ -591,6 +591,48 @@
                   </div>
                   </div>
                 </div>
+                <!-- ส่งงาน Final BUU — ลิงก์ย่อยของ V31126 แยกทีละระบบ (รหัส 562241) -->
+                <div class="send-group">
+                  <h4 class="group-title group-title--th font-thai">BUU V.ส่งงาน 4/11/2026</h4>
+                  <div class="group-cards">
+                  <div
+                    @click="openSplineDesign('BUUFinalAll')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="รวมทุกระบบ" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">03/11/26</span>รวมทุกระบบ<span class="card-note">Momay Enlightenment + Executive Brief + Students</span></span>
+                    </div>
+                  </div>
+                  <div
+                    @click="openSplineDesign('BUUFinalEnlightenment')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Enlightenment" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">03/11/26</span>Momay Enlightenment</span>
+                    </div>
+                  </div>
+                  <div
+                    @click="openSplineDesign('BUUFinalExec')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Executive Brief" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">03/11/26</span>Momay Executive Brief</span>
+                    </div>
+                  </div>
+                  <div
+                    @click="openSplineDesign('BUUFinalStudent')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay Students" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">03/11/26</span>Momay Students</span>
+                    </div>
+                  </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -739,6 +781,10 @@ const splineLinks: Record<string, string> = {
   '061026waitJobAppove': '/momay/061026waitJobAppove',
   MomayV251026: '/momay/MomayV251026',
   MomayV31126: '/momay/MomayV31126',
+  BUUFinalAll: '/momay/BUUFinalAll',
+  BUUFinalEnlightenment: '/momay/BUUFinalEnlightenment',
+  BUUFinalExec: '/momay/BUUFinalExec',
+  BUUFinalStudent: '/momay/BUUFinalStudent',
   MomayNuV271026: '/momay/MomayNuV271026',
   MomayNuV301026: '/momay/MomayNuV301026',
   MomayNuV301026B: '/momay/MomayNuV301026B',
@@ -839,6 +885,12 @@ function openSplineDesign(key: string) {
   if (key === 'hospital_Noenmaprang' || key === 'hospital_Noenmaprang_v1') {
     if (password !== '1125711257') {
       alert("รหัสสำหรับโรงพยาบาลไม่ถูกต้อง ❌")
+      return
+    }
+  } else if (key === 'MomayV31126' || key.startsWith('BUUFinal')) {
+    // BUU V31126 + งานส่ง Final BUU ใช้รหัสเดิมของ BUU
+    if (password !== '562241') {
+      alert("รหัสผ่านไม่ถูกต้อง ❌")
       return
     }
   } else if (key === 'naresuan_library') {

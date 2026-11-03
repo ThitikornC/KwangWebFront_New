@@ -65,6 +65,11 @@ const targets: Record<string, string> = {
   '061026waitJobAppove': 'https://momaymodelbuu-production.up.railway.app/allmomay-v',
   MomayV251026: 'https://momaymodelbuu-production.up.railway.app/allmomay-V251026',
   MomayV31126: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126',
+  // ส่งงาน Final BUU (03/11/26) — แยกทีละระบบ
+  BUUFinalAll: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126',
+  BUUFinalEnlightenment: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126/enlightenment',
+  BUUFinalExec: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126/exec',
+  BUUFinalStudent: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126/student',
   MomayNuV271026: 'https://momaynu-production.up.railway.app/allmomay-V271026',
   MomayNuV301026: 'https://momaynu-production.up.railway.app/allmomay-V301026',
   MomayNuV301026B: 'https://momaynu-production.up.railway.app/allmomay-V301026B',
