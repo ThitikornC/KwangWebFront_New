@@ -1118,6 +1118,8 @@ function openSplineDesign(key: string) {
   justify-content: center; gap: 12px 16px;
 }
 .group-cards .neon-btn.spline-link-card { width: 100%; position: relative; }
+/* หมวดส่งงาน (04/11/26) การ์ดทุกใบเป็นชุดเดียวกัน ไม่ติด NEW (ผู้ใช้สั่ง 2026-11-03) */
+.buu-subsection--final .group-cards .neon-btn.spline-link-card:last-child::after { content: none; }
 /* การ์ดเรียงจากเก่าไปใหม่ ใบสุดท้ายของหมวดจึงเป็นใบใหม่สุด */
 .group-cards .neon-btn.spline-link-card:last-child::after {
   content: 'NEW'; position: absolute; top: 8px; right: 8px; z-index: 1;
