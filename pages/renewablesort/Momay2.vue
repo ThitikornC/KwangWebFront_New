@@ -602,9 +602,38 @@
             <!-- ส่งงาน Final BUU (04/11/26) — V31126 แยกทีละระบบ · ย้ายจากห้อง BUU Final มาอยู่ในห้อง BUU ใต้เส้นคั่น (ผู้ใช้สั่ง 2026-11-03) -->
             <div class="buu-subsection buu-subsection--final" id="buu-final">
               <div class="subsection-head">
-                <h3 class="subsection-title font-thai">ส่งงาน (04/11/26)</h3>
+                <h3 class="subsection-title subsection-title--badge font-thai">ส่งงาน Final (04/11/26)</h3>
               </div>
-              <!-- ทุกระบบเรียงแถวเดียวกัน (ผู้ใช้สั่ง 2026-11-03) -->
+              <!-- ห่อการ์ดส่งงานทั้ง 5 ใบไว้ในการ์ด BUU Final กดแล้วเปิดป็อปอัปซ้อน (ผู้ใช้สั่ง 2026-11-03) -->
+              <div class="group-cards">
+                  <div
+                    @click="finalOpen = true"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                    role="button" tabindex="0" @keydown.enter="finalOpen = true"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="BUU Final" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">04/11/26</span>BUU Final<span class="card-note">รวมทุกระบบ · Enlightenment · Executive Brief · Report · Students</span></span>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <!-- BUU Final: ป็อปอัปซ้อนบนห้อง BUU — การ์ดส่งงาน (04/11/26) ทั้ง 5 ใบ -->
+    <div v-if="openRoom === 'BUU' && finalOpen" class="buu-modal-overlay buu-modal-overlay--nested" @click.self="finalOpen = false">
+      <div class="buu-modal" role="dialog" aria-modal="true" aria-label="BUU Final">
+        <button type="button" class="buu-modal-close" aria-label="ปิด" @click="finalOpen = false">&times;</button>
+        <div class="section-head">
+          <h2 class="section-title font-thai">BUU Final</h2>
+        </div>
+          <div class="buu-subsections">
+            <div class="buu-subsection buu-subsection--final">
+              <div class="subsection-head">
+                <h3 class="subsection-title subsection-title--badge font-thai">ส่งงาน Final (04/11/26)</h3>
+              </div>
               <div class="group-cards">
                   <div
                     @click="openSplineDesign('BUUFinalAll')"
@@ -876,9 +905,12 @@ onMounted(() => {
 // ห้องย่อยที่เปิดอยู่ (BUU / NU) — เปิดได้ทีละห้อง
 const rooms = ['BUU', 'NU'] as const
 const openRoom = ref<typeof rooms[number] | null>(null)
+const finalOpen = ref(false)   // ป็อปอัปซ้อน BUU Final ในห้อง BUU
 
 function onBuuKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') closeRoom()
+  if (e.key !== 'Escape') return
+  if (finalOpen.value) finalOpen.value = false
+  else closeRoom()
 }
 
 function openRoomModal(room: typeof rooms[number]) {
@@ -890,7 +922,7 @@ function openRoomModal(room: typeof rooms[number]) {
 }
 
 // ลิงก์ตรงเข้าห้อง: /renewablesort/Momay2?room=buu-final (หรือ buu / nu) — เปิดหน้าแล้วกางห้องนั้นให้เลย
-// buu-final = ห้อง BUU แล้วเลื่อนลงไปหมวดส่งงาน (04/11/26)
+// buu-final = ห้อง BUU แล้วเปิดป็อปอัป BUU Final ซ้อนให้เลย
 const roomByParam: Record<string, typeof rooms[number]> = { 'buu': 'BUU', 'buu-final': 'BUU', 'nu': 'NU' }
 onMounted(() => {
   if (typeof window === 'undefined') return
@@ -898,11 +930,12 @@ onMounted(() => {
   const r = roomByParam[p]
   if (!r) return
   openRoomModal(r)
-  if (p === 'buu-final') nextTick(() => document.getElementById('buu-final')?.scrollIntoView({ block: 'start' }))
+  if (p === 'buu-final') finalOpen.value = true
 })
 
 function closeRoom() {
   openRoom.value = null
+  finalOpen.value = false
   if (typeof window !== 'undefined') {
     document.body.style.overflow = ''
     window.removeEventListener('keydown', onBuuKeydown)
@@ -1201,7 +1234,16 @@ function openSplineDesign(key: string) {
 .buu-subsections { display: flex; flex-direction: column; gap: 26px; margin-top: 18px; }
 /* เส้นคั่นระหว่างหมวดในห้อง (เก็บไว้เช็คประวัติ / ส่งงาน / ส่งงาน (04/11/26)) — ผู้ใช้สั่ง 2026-11-03 */
 .buu-subsection + .buu-subsection { border-top: 2px solid var(--red); padding-top: 6px; }
-.buu-subsection--final { scroll-margin-top: 12px; }
+.buu-modal-overlay--nested { z-index: 90; }
+/* หัวหมวดส่งงาน Final เป็นป้ายแดงแบบ NEW (ผู้ใช้สั่ง 2026-11-03) */
+.subsection-title--badge {
+  padding: 5px 16px; border-radius: 4px;
+  background: var(--red); color: #fff;
+  font-size: clamp(15px, 1.9vw, 19px); font-weight: 700; letter-spacing: 0.08em;
+  box-shadow: 0 4px 14px rgba(160, 30, 40, 0.28);
+}
+/* ป็อปอัป BUU Final ไม่ติด NEW และหัวหมวดไม่มีเส้นคั่น */
+.buu-modal-overlay--nested .buu-subsection--final { border-top: 0; padding-top: 0; }
 
 @media (max-width: 640px) {
   .root-bg { padding: 16px !important; }
