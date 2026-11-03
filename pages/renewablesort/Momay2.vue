@@ -52,7 +52,7 @@
       <div class="section-head">
         <h2 class="section-title font-thai">Momay</h2>
       </div>
-      <div class="flex gap-3 sm:gap-4 flex-wrap justify-center">
+      <div class="card-grid">
       <div
         @click="openSplineDesign('Mpmay_human')"
         class="neon-btn spline-link-card hover:from-indigo-100 hover:to-indigo-300"
@@ -317,10 +317,10 @@
       </div>
     </section>
 
-    <!-- เส้นแบ่งการ์ดทั่วไปกับห้องลูกค้า (BUU / NU) — ผู้ใช้สั่ง 2026-11-03 -->
+    <!-- เส้นแบ่งการ์ดลูกค้าด้านบน กับห้อง BUU / NU (คนละกลุ่มกัน) — ผู้ใช้สั่ง 2026-11-03 -->
     <section class="momay-section">
-      <div class="customer-divider"><span class="font-thai">Customer</span></div>
-      <div class="flex gap-3 sm:gap-4 flex-wrap justify-center">
+      <div class="customer-divider"></div>
+      <div class="card-grid">
         <div
           v-for="room in rooms"
           :key="room"
@@ -1074,9 +1074,16 @@ function openSplineDesign(key: string) {
 /* ── หัวข้อหมวด ── */
 .momay-sections { padding-bottom: clamp(40px, 6vw, 72px); }
 .momay-section { margin-top: clamp(28px, 4vw, 48px); }
-.customer-divider { display: flex; align-items: center; gap: 14px; max-width: 900px; margin: 0 auto clamp(16px, 2.4vw, 26px); }
-.customer-divider::before, .customer-divider::after { content: ''; flex: 1; height: 1px; background: var(--red); opacity: .55; }
-.customer-divider span { font-size: clamp(13px, 1.6vw, 16px); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); }
+.customer-divider { max-width: 1200px; height: 1px; margin: 0 auto clamp(20px, 3vw, 32px); background: var(--red); opacity: .55; }
+/* การ์ดหน้าแรก: ทั้งก้อนอยู่กลางหน้า แต่เรียงซ้ายไปขวา เก่าไปใหม่ แถวที่ล้นลงมาเริ่มจากซ้าย (ผู้ใช้สั่ง 2026-11-03) */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, clamp(148px, 21vw, 186px));
+  justify-content: center; gap: 12px 16px; max-width: 1200px; margin: 0 auto;
+}
+.card-grid > .neon-btn.spline-link-card { width: 100%; }
+@media (max-width: 640px) {
+  .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .section-head { display: flex; justify-content: center; margin-bottom: clamp(14px, 2vw, 22px); }
 .section-title {
   position: relative;
