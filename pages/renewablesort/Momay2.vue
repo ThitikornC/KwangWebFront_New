@@ -618,7 +618,7 @@
                   </div>
                   <!-- V101126 (ผู้ใช้สั่ง 2026-11-10): เวอร์ชันต่อจาก BUU Final → /allmomay-V71126 -->
                   <div
-                    @click="openSplineDesign('BUUFinalV101126')"
+                    @click="openSplineDesign('MomayV101126')"
                     class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
                   >
                     <div class="card-content">
@@ -843,7 +843,7 @@ const splineLinks: Record<string, string> = {
   BUUFinalExec: '/momay/BUUFinalExec',
   BUUFinalReport: '/momay/BUUFinalReport',
   BUUFinalStudent: '/momay/BUUFinalStudent',
-  BUUFinalV101126: '/momay/BUUFinalV101126',
+  MomayV101126: '/momay/MomayV101126',
   MomayNuV271026: '/momay/MomayNuV271026',
   MomayNuV301026: '/momay/MomayNuV301026',
   MomayNuV301026B: '/momay/MomayNuV301026B',
@@ -955,7 +955,7 @@ function closeRoom() {
 
 function openSplineDesign(key: string) {
   // BUU V31126 + งานส่ง Final BUU: ไม่ถามรหัสที่นี่ — แอป Momay ถามรหัสเองตอนเปิดหน้า
-  if (key === 'MomayV31126' || key.startsWith('BUUFinal')) {
+  if (key === 'MomayV31126' || key === 'MomayV101126' || key.startsWith('BUUFinal')) {
     const direct = splineLinks[key]
     if (direct) window.open(direct, '_blank', 'noopener,noreferrer')
     return
