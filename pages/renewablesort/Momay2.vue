@@ -353,6 +353,8 @@
         <button type="button" class="buu-modal-close" aria-label="ปิด" @click="closeRoom">&times;</button>
         <div class="section-head">
           <h2 class="section-title font-thai">BUU</h2>
+          <!-- ประวัติการปรับปรุงของแอป BUU (ผู้ใช้สั่ง 2026-11-10) — ดูได้ทุกคน · แก้ไขต้องใส่รหัส -->
+          <div class="buu-changelog"><ChangelogPanel room="BUU" /></div>
         </div>
           <div class="buu-subsections">
             <div class="buu-subsection">
@@ -1242,6 +1244,7 @@ function openSplineDesign(key: string) {
   background: none; border: 0; cursor: pointer;
 }
 .buu-modal-close:hover { color: var(--red); }
+.buu-changelog { display: flex; align-items: center; margin-left: 16px; }
 .buu-subsections { display: flex; flex-direction: column; gap: 26px; margin-top: 18px; }
 /* เส้นคั่นระหว่างหมวดในห้อง (เก็บไว้เช็คประวัติ / ส่งงาน / ส่งงาน (04/11/26)) — ผู้ใช้สั่ง 2026-11-03 */
 .buu-subsection + .buu-subsection { border-top: 2px solid var(--red); padding-top: 6px; }
