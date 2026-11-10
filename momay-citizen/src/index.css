@@ -1,0 +1,129 @@
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-ink-900 text-slate-200 font-sans antialiased;
+    background-image:
+      radial-gradient(1100px 620px at 18% -8%, rgba(37, 99, 235, 0.22), transparent 62%),
+      radial-gradient(900px 540px at 88% 4%, rgba(147, 51, 234, 0.16), transparent 58%);
+    background-attachment: fixed;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(94, 160, 255, 0.22);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(94, 160, 255, 0.36);
+  }
+}
+
+@layer components {
+  /* Frosted card shell used by every panel on the dashboard. */
+  .panel {
+    @apply rounded-2xl border border-edge bg-ink-800/70 shadow-panel backdrop-blur-sm;
+  }
+
+  .panel-title {
+    @apply flex items-center gap-2 text-[15px] font-semibold text-white;
+  }
+
+  .chip {
+    @apply rounded-full border border-edge bg-white/5 px-2.5 py-1 text-[11px] font-medium text-slate-300;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* --- Leaflet, themed to match the dashboard --------------------------- */
+.leaflet-container {
+  background: #060d20;
+  font-family: inherit;
+  outline: none;
+}
+
+/* OSM tiles are a light basemap; invert + retint them into the dark theme.
+   Only the tile pane is filtered, so markers, circles and popups keep their
+   real colours. Remove this once a native dark tile source is in place. */
+.leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.96) contrast(0.86) saturate(0.55);
+}
+
+/* Custom marker: circular badge holding an inline <Icon> */
+.momay-pin__badge {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  border-radius: 9999px;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.9);
+  outline: 2px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.15s ease;
+}
+.momay-pin:hover .momay-pin__badge {
+  transform: scale(1.12);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(7, 13, 34, 0.96);
+  color: #e2e8f0;
+  border: 1px solid rgba(94, 160, 255, 0.22);
+  box-shadow: 0 18px 44px -24px rgba(0, 0, 0, 0.95);
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 0.75rem;
+}
+.leaflet-popup-content {
+  margin: 0.7rem 0.9rem;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.leaflet-popup-content strong {
+  color: #fff;
+  font-weight: 600;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: #64748b;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #e2e8f0;
+}
+
+.leaflet-control-attribution {
+  background: rgba(5, 9, 26, 0.78) !important;
+  color: #64748b;
+  font-size: 10px;
+  padding: 1px 6px;
+}
+.leaflet-control-attribution a {
+  color: #7dd3fc;
+}
