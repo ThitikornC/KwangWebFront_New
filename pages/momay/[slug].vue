@@ -71,6 +71,7 @@ const targets: Record<string, string> = {
   BUUFinalExec: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126/exec',
   BUUFinalReport: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126/report',
   BUUFinalStudent: 'https://momaymodelbuu-production.up.railway.app/allmomay-V31126/student',
+  BUUFinalV101126: 'https://momaymodelbuu-production.up.railway.app/allmomay-V71126',   // V101126 (10/11/26)
   MomayNuV271026: 'https://momaynu-production.up.railway.app/allmomay-V271026',
   MomayNuV301026: 'https://momaynu-production.up.railway.app/allmomay-V301026',
   MomayNuV301026B: 'https://momaynu-production.up.railway.app/allmomay-V301026B',

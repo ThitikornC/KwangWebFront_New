@@ -616,6 +616,16 @@
                       <span class="font-thai"><span class="card-date">04/11/26</span>BUU Final<span class="card-note">รวมทุกระบบ · Enlightenment · Executive Brief · Report · Students</span></span>
                     </div>
                   </div>
+                  <!-- V101126 (ผู้ใช้สั่ง 2026-11-10): เวอร์ชันต่อจาก BUU Final → /allmomay-V71126 -->
+                  <div
+                    @click="openSplineDesign('BUUFinalV101126')"
+                    class="neon-btn spline-link-card card-detail label-tight hover:from-violet-100 hover:to-violet-300"
+                  >
+                    <div class="card-content">
+                      <img src="/momay/momay-enlightenment-art.jpg" alt="Momay V101126" class="w-12 h-12 object-contain" />
+                      <span class="font-thai"><span class="card-date">10/11/26</span>Momay รวม (V101126)<span class="card-note"><span class="card-note">1. ปรับสมการ heatmap</span><span class="card-note">2. Student: เปลี่ยนตัวเลขเป็น % และเพิ่มบาร์</span><span class="card-note">3. เพิ่มลายน้ำ</span><span class="card-note">4. เปลี่ยนภาพเปิด</span></span></span>
+                    </div>
+                  </div>
               </div>
             </div>
           </div>
@@ -833,6 +843,7 @@ const splineLinks: Record<string, string> = {
   BUUFinalExec: '/momay/BUUFinalExec',
   BUUFinalReport: '/momay/BUUFinalReport',
   BUUFinalStudent: '/momay/BUUFinalStudent',
+  BUUFinalV101126: '/momay/BUUFinalV101126',
   MomayNuV271026: '/momay/MomayNuV271026',
   MomayNuV301026: '/momay/MomayNuV301026',
   MomayNuV301026B: '/momay/MomayNuV301026B',
