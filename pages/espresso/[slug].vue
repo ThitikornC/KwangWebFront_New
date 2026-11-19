@@ -34,7 +34,8 @@ const targets: Record<string, string> = {
   EspressoDemo: 'https://espressotemplate-production-94ae.up.railway.app/',
   // ── Espresso HMNU (vercel) ──
   EspressoEnlightenment: 'https://espressohmnu.vercel.app/data',
-  EspressoStudent: 'https://espressohmnu.vercel.app/s'
+  EspressoStudent: 'https://espressohmnu.vercel.app/s',
+  EspressoStudentMrJob: 'https://espressohmnu.vercel.app/s?as=2'
 }
 
 const url = ref<string | null>(null)
