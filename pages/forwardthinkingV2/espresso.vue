@@ -42,11 +42,11 @@
     <!-- popup การ์ดคณะสังคม -->
     <Teleport to="body">
       <Transition name="fade">
-        <div v-if="showSocialModal" class="modal-mask" @click.self="showSocialModal = false">
-          <div class="modal modal--wide">
-            <div class="modal__head">
-              <h3 class="modal__title">Espresso คณะสังคม</h3>
-              <button type="button" class="modal__close" aria-label="ปิด" @click="showSocialModal = false">×</button>
+        <div v-if="showSocialModal" class="esp-modal-mask" @click.self="showSocialModal = false">
+          <div class="esp-modal esp-modal--wide">
+            <div class="esp-modal__head">
+              <h3 class="esp-modal__title">Espresso คณะสังคม</h3>
+              <button type="button" class="esp-modal__close" aria-label="ปิด" @click="showSocialModal = false">×</button>
             </div>
             <KwLinkCards :items="SOCIAL_CARDS" />
           </div>
@@ -57,9 +57,9 @@
     <!-- ฟอร์มทดลองใช้งานฟรี — ช่องและข้อความเดียวกับหน้าเดิม -->
     <Teleport to="body">
       <Transition name="fade">
-        <div v-if="showTrialModal" class="modal-mask" @click.self="showTrialModal = false">
-          <form class="modal" @submit.prevent="submitTrialForm">
-            <h3 class="modal__title">ลงทะเบียนทดลองใช้งานฟรี</h3>
+        <div v-if="showTrialModal" class="esp-modal-mask" @click.self="showTrialModal = false">
+          <form class="esp-modal" @submit.prevent="submitTrialForm">
+            <h3 class="esp-modal__title">ลงทะเบียนทดลองใช้งานฟรี</h3>
 
             <label class="field">
               <span>ชื่อ-นามสกุล</span>
@@ -79,7 +79,7 @@
               </select>
             </label>
 
-            <div class="modal__actions">
+            <div class="esp-modal__actions">
               <button type="button" class="mbtn mbtn--ghost" @click="showTrialModal = false">ยกเลิก</button>
               <button type="submit" class="mbtn mbtn--solid" :disabled="isSubmittingTrial || !trialForm.type">
                 {{ isSubmittingTrial ? 'กำลังส่งข้อมูล...' : 'ยืนยันการลงทะเบียน' }}
@@ -202,12 +202,12 @@ onBeforeUnmount(() => {
 .book { display: flex; justify-content: center; }
 
 /* ── ฟอร์ม ── */
-.modal-mask {
+.esp-modal-mask {
   position: fixed; inset: 0; z-index: 90;
   display: grid; place-items: center; padding: 16px;
   background: rgba(24, 20, 16, 0.6); backdrop-filter: blur(3px);
 }
-.modal {
+.esp-modal {
   width: min(100%, 440px);
   display: grid; gap: 16px;
   padding: clamp(22px, 4vw, 32px);
@@ -216,10 +216,10 @@ onBeforeUnmount(() => {
   box-shadow: 0 24px 60px rgba(24, 20, 16, 0.3);
   font-family: 'Noto Sans Thai', 'Montserrat', sans-serif;
 }
-.modal--wide { width: min(100%, 640px); --ink: #1d1b19; --gold: #c2a468; --red: #a01c24; --paper-2: #f3ead8; }
-.modal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.modal__close { font-size: 28px; line-height: 1; background: none; border: 0; cursor: pointer; color: #4a443d; }
-.modal__title { font-size: clamp(20px, 2.4vw, 24px); font-weight: 600; }
+.esp-modal--wide { width: min(100%, 640px); --ink: #1d1b19; --gold: #c2a468; --red: #a01c24; --paper-2: #f3ead8; }
+.esp-modal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.esp-modal__close { font-size: 28px; line-height: 1; background: none; border: 0; cursor: pointer; color: #4a443d; }
+.esp-modal__title { font-size: clamp(20px, 2.4vw, 24px); font-weight: 600; }
 .field { display: grid; gap: 6px; font-size: 14px; color: #4a443d; }
 .field input, .field select {
   width: 100%; padding: 10px 12px;
@@ -228,7 +228,7 @@ onBeforeUnmount(() => {
   outline: none;
 }
 .field input:focus, .field select:focus { border-color: #a01c24; }
-.modal__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+.esp-modal__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
 .mbtn { padding: 11px 20px; font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
 .mbtn--solid { background: #a01c24; color: #fdf8ef; }
 .mbtn--solid:disabled { opacity: 0.5; cursor: not-allowed; }
