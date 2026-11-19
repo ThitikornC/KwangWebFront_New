@@ -39,21 +39,6 @@
       </ClientOnly>
     </section>
 
-    <!-- popup การ์ดคณะสังคม -->
-    <Teleport to="body">
-      <Transition name="fade">
-        <div v-if="showSocialModal" class="esp-modal-mask" @click.self="showSocialModal = false">
-          <div class="esp-modal esp-modal--wide">
-            <div class="esp-modal__head">
-              <h3 class="esp-modal__title">Espresso คณะสังคม</h3>
-              <button type="button" class="esp-modal__close" aria-label="ปิด" @click="showSocialModal = false">×</button>
-            </div>
-            <KwLinkCards :items="SOCIAL_CARDS" />
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
-
     <!-- ฟอร์มทดลองใช้งานฟรี — ช่องและข้อความเดียวกับหน้าเดิม -->
     <Teleport to="body">
       <Transition name="fade">
@@ -113,20 +98,13 @@ const FEATURES = [
 ]
 
 const showTrialModal = ref(false)
-const showSocialModal = ref(false)
-
-/* การ์ดย่อยใน popup คณะสังคม */
-const SOCIAL_CARDS: KwLinkCard[] = [
-  { label: 'Espresso Enlightenment', logo: '/ESPRESSO_logo.png', href: '/espresso/EspressoEnlightenment' },
-  { label: 'Espresso Student', logo: '/ESPRESSO_logo.png', href: '/espresso/EspressoStudent' },
-]
 
 const CARDS: KwLinkCard[] = [
   { label: 'ทดลองใช้งานฟรี', logo: '/ESPRESSO_logo.png', action: () => { showTrialModal.value = true } },
   { label: 'บัญชีผู้ใช้งาน', logo: '/ESPRESSO_logo.png', href: '/renewablesort/Client' },
   { label: 'Espresso Pharmacy', logo: '/ESPRESSO_logo.png', href: 'https://my.spline.design/espresopharmacy-a21edee004531a425af1c2768331add8/' },
   { label: 'Espresso Human', logo: '/ESPRESSO_logo.png', href: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/' },
-  { label: 'Espresso คณะสังคม', logo: '/ESPRESSO_logo.png', badge: 'NEW', action: () => { showSocialModal.value = true } },
+  { label: 'Espresso คณะสังคม', logo: '/ESPRESSO_logo.png', badge: 'NEW', href: '/EspressoSocial' },
   { label: 'Download Document', logo: '/ESPRESSO_logo.png', href: '/Sale Kit Espresso251125.pdf', download: true },
 ]
 
@@ -216,9 +194,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 24px 60px rgba(24, 20, 16, 0.3);
   font-family: 'Noto Sans Thai', 'Montserrat', sans-serif;
 }
-.esp-modal--wide { width: min(100%, 640px); --ink: #1d1b19; --gold: #c2a468; --red: #a01c24; --paper-2: #f3ead8; }
-.esp-modal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.esp-modal__close { font-size: 28px; line-height: 1; background: none; border: 0; cursor: pointer; color: #4a443d; }
 .esp-modal__title { font-size: clamp(20px, 2.4vw, 24px); font-weight: 600; }
 .field { display: grid; gap: 6px; font-size: 14px; color: #4a443d; }
 .field input, .field select {
