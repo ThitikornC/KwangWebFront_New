@@ -18,6 +18,7 @@
     >
       <span class="lc__mark" aria-hidden="true"><img :src="c.logo" alt="" /></span>
       <span class="lc__label font-th">{{ c.label }}</span>
+      <span v-if="c.badge" class="lc__badge">{{ c.badge }}</span>
       <svg class="lc__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
         <path v-if="c.download" d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14" stroke-linecap="round" stroke-linejoin="round" />
         <path v-else d="M5 12h14m0 0-6-6m6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
@@ -32,6 +33,7 @@ export type KwLinkCard = {
   logo: string
   href?: string
   download?: boolean
+  badge?: string
   action?: () => void
 }
 defineProps<{ items: KwLinkCard[] }>()
@@ -43,6 +45,7 @@ defineProps<{ items: KwLinkCard[] }>()
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
 }
 .lc__card {
+  position: relative;
   display: flex; align-items: center; gap: 14px;
   padding: 14px 18px;
   font: inherit; text-align: left; text-decoration: none; color: var(--ink);
@@ -60,6 +63,12 @@ defineProps<{ items: KwLinkCard[] }>()
 }
 .lc__mark img { width: 30px; height: 30px; object-fit: contain; }
 .lc__label { flex: 1; min-width: 0; overflow-wrap: anywhere; font-family: 'Noto Sans Thai', 'Montserrat', sans-serif; font-size: clamp(15px, 1.35vw, 17px); font-weight: 500; line-height: 1.45; }
+.lc__badge {
+  position: absolute; top: -9px; right: 12px;
+  padding: 2px 9px; font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em;
+  color: #fdf8ef; background: var(--red);
+}
 .lc__arrow { flex: none; width: 18px; height: 18px; color: var(--red); transition: transform 0.22s; }
 .lc__card:hover .lc__arrow { transform: translateX(3px); }
 </style>
