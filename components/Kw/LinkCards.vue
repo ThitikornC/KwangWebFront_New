@@ -14,6 +14,8 @@
       :type="c.href ? undefined : 'button'"
       :href="c.href"
       :download="c.download ? '' : undefined"
+      :target="c.newTab ? '_blank' : undefined"
+      :rel="c.newTab ? 'noopener' : undefined"
       @click="c.action?.()"
     >
       <span class="lc__mark" aria-hidden="true"><img :src="c.logo" alt="" /></span>
@@ -34,6 +36,7 @@ export type KwLinkCard = {
   href?: string
   download?: boolean
   badge?: string
+  newTab?: boolean
   action?: () => void
 }
 defineProps<{ items: KwLinkCard[] }>()

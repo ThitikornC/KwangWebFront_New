@@ -23,8 +23,8 @@ useSeoMeta({
 })
 
 const CARDS: KwLinkCard[] = [
-  { label: 'Espresso Enlightenment', logo: '/ESPRESSO_logo.png', href: '/espresso/EspressoEnlightenment' },
-  { label: 'Espresso Student', logo: '/ESPRESSO_logo.png', href: '/espresso/EspressoStudent' },
+  { label: 'Espresso Enlightenment', logo: '/ESPRESSO_logo.png', href: '/espresso/EspressoEnlightenment', newTab: true },
+  { label: 'Espresso Student', logo: '/ESPRESSO_logo.png', href: '/espresso/EspressoStudent', newTab: true },
 ]
 </script>
 
