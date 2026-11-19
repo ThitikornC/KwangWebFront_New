@@ -59,4 +59,16 @@ useSeoMeta({
   100% { transform: translateY(0); }
 }
 
+/* Responsive สำหรับมือถือ */
+@media (max-width: 768px) {
+  .root-bg {
+    min-height: 100vh;
+  }
+  
+  .root-bg::before,
+  .root-bg::after {
+    animation: floatBg 20s linear infinite;
+  }
+}
+
 </style>

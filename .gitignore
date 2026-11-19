@@ -1,3 +1,14 @@
+/.env
+/.env.local
+/.env.*.local
+node_modules/
+/.output
+/.nuxt
+dist/
+/.cache
+/.idea
+/*.log
+/.DS_Store
 # Nuxt dev/build outputs
 .output
 .data
@@ -22,3 +33,6 @@ logs
 .env
 .env.*
 !.env.example
+
+# โปรไฟล์เบราว์เซอร์ที่ใช้ทดสอบ ไม่ใช่ส่วนของโปรเจกต์
+.edge-prof

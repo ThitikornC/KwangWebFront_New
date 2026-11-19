@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { dataProductStore } from '~/store/product-store';
 import { storeToRefs } from 'pinia';
 import { dataComapareProductStore } from '~/store/compare_store';
+import SoftButton from '~/components/SoftButton.vue';
+import BentoGrid from '~/components/Design/BentoGrid.vue';
 const runtimeConfig = useRuntimeConfig();
 const { brandFilterValue, FilterValue, sortValue, allProducts, showProductWithFilter } = storeToRefs(dataProductStore());
 const { setDefaultCatagoriesAndBand, filterProducts } = dataProductStore()
@@ -55,6 +57,8 @@ const dropdownOpen = ref(false);
 function toggleDropdown() {
     dropdownOpen.value = !dropdownOpen.value;
 }
+// handler reference kept in module scope so onBeforeUnmount can remove it
+let productsUpdatedHandler: (() => void) | null = null;
 function onCheckboxChange(event: any, product: any) {
     if (event.target.checked) {
         addProductCompare(product);
@@ -69,12 +73,21 @@ onMounted(async () => {
     if (storedProducts) {
         products.value = JSON.parse(storedProducts);
     }
+    // listen for admin updates
+    productsUpdatedHandler = () => { try { filterProducts() } catch (e) { console.warn('products-updated handler error', e) } }
+    window.addEventListener('products-updated', productsUpdatedHandler)
 });
+
+onBeforeUnmount(() => {
+    try {
+        if (productsUpdatedHandler) window.removeEventListener('products-updated', productsUpdatedHandler)
+    } catch (e) { }
+})
 
 </script>
 
 <template>
-    <div class="w-full h-full font-thai px-10 py-6 flex flex-col gap-3">
+    <div class="w-full h-full font-thai px-10 py-8 flex flex-col gap-6 page-hero-bg grain-overlay">
         <div class="py-2 w-full flex justify-between">
             <div class="flex flex-row gap-2 text-sm">
                 <span v-for="item in brandFilterValue"
@@ -120,19 +133,46 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <!-- card สินค้า -->
-        <div class="w-full pt-4">
-            <div class="w-full flex flex-wrap gap-6 justify-center">
+        <!-- hero + card สินค้า -->
+        <div class="w-full pt-6">
+            <!-- hero: show first product prominently -->
+            <div v-if="showProductWithFilter && showProductWithFilter.length > 0" class="w-full mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 card-hero p-8 flex flex-col justify-between">
+                    <div>
+                        <h2 class="display-heading text-4xl text-white">{{ showProductWithFilter[0].ProductBrand }}</h2>
+                        <p class="text-graylight mt-2">{{ showProductWithFilter[0].ProductCode }}</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-6">
+                        <div>
+                            <div class="text-topic text-white text-2xl">ราคา {{ showProductWithFilter[0].price }} บาท</div>
+                        </div>
+                        <div>
+                            <button class="cta-pill">Get Started</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-1">
+                    <div class="soft-card p-4">
+                        <img :src="showProductWithFilter[0].image" class="w-full h-48 object-cover rounded-md" />
+                        <div class="pt-3">
+                            <h4 class="text-topic text-white">Visual Depth</h4>
+                            <p class="text-graylight text-sm">มิติความลึกที่ไม่รบกวนสายตา</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <BentoGrid cols="3" gap="6" class="w-full justify-center">
                 <div v-if="isLoadingCarddata === false" class="w-full flex justify-center items-center gap-5">
                     <div class="rounded-md h-10 w-10 border-4 border-t-4 border-reddeep animate-spin"></div>
                     <span class="text-topic ">Loading</span>
                 </div>
                 <!-- card -->
                 <div v-else v-for="(product, index) in showProductWithFilter" :key="index"
-                    class="relative group w-[340px] border border-gray bg-white overflow-hidden max-w-sm cursor-pointer hover:border-reddeep"
+                    class="relative group w-[340px] soft-card overflow-hidden max-w-sm cursor-pointer hover:shadow-soft-3d"
                     @mouseenter="product.showCompare = true" @mouseleave="product.showCompare = false">
                     <div class="w-full relative">
-                        <img class="w-full h-[280px] p-10 object-center object-scale-down bg-graylight/50"
+                        <img class="w-full h-[280px] p-6 object-contain bg-graylight/40"
                             :src="product.image" alt="Product Image" />
                         <!-- เมื่อ hover ให้มันโผล่ขึ้นมา -->
                         <div v-if="product.showCompare"
@@ -151,34 +191,26 @@ onMounted(async () => {
                         </div>
 
                     </div>
-                    <div class="py-3 px-4 flex flex-col gap-1">
-                        <h3 class="text-topic font-normal text-black">{{ product.ProductBrand }}</h3>
+                        <div class="py-3 px-4 flex flex-col gap-1">
+                        <h3 class="text-topic display-heading text-black">{{ product.ProductBrand }}</h3>
                         <h3 class="text-lg font-normal text-black">{{ product.ProductCode }}</h3>
                         <div class="flex gap-2">
-                            <span class="font-thai text-detail font-extralight text-black">ราคา {{ product.price }}
-                                บาท</span>
-                            <!-- สำหรับลดราคา -->
+                            <span class="font-thai text-detail text-black">ราคา {{ product.price }} บาท</span>
                         </div>
-                        <div class="w-full flex items-center justify-between">
-                            <div class="w-[140px]">
-                                <button
-                                    class="w-[140px] h-[50px] bg-gray text-white border px-5 py-3 duration-300 font-medium font-thai text-sm hover:text-graydeep hover:bg-white">
-                                    <nuxt-link
-                                        :to="`/products/${product.type}/${product.ProductBrand}/${product.ProductCode}`">
-                                        ดูรายละเอียด
-                                    </nuxt-link>
-                                </button>
+                        <div class="w-full flex items-center justify-between pt-2">
+                            <div class="w-[160px]">
+                                <SoftButton>
+                                  <nuxt-link class="w-full block text-center" :to="`/products/${product.type}/${product.ProductBrand}/${product.ProductCode}`">ดูรายละเอียด</nuxt-link>
+                                </SoftButton>
                             </div>
-                            <div class="w-[140px]">
-                                <button @click.prevent="addProduct(product)"
-                                    class="w-[140px] h-[50px] bg-gray text-white border px-5 py-3 duration-300 font-medium font-thai text-sm hover:text-graydeep hover:bg-white">
-                                    เพิ่มลงตะกร้า
-                                </button>
+                            <div class="w-[160px]">
+                                <SoftButton @click.prevent="addProduct(product)">เพิ่มลงตะกร้า</SoftButton>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                
+                </BentoGrid>
         </div>
     </div>
     <!-- Preview before compare product and push data to stage -->
