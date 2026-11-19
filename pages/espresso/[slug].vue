@@ -31,7 +31,10 @@ const targets: Record<string, string> = {
   Mahawanaram: 'https://espressohuaroa3-production.up.railway.app/',  // มหาวนาราม
   naresuan_library: 'https://momaylib-production.up.railway.app/',
   // ── Espresso demo (ฐานข้อมูล Espresso_Demo) ──
-  EspressoDemo: 'https://espressotemplate-production-94ae.up.railway.app/'
+  EspressoDemo: 'https://espressotemplate-production-94ae.up.railway.app/',
+  // ── Espresso HMNU (vercel) ──
+  EspressoEnlightenment: 'https://espressohmnu.vercel.app/data',
+  EspressoStudent: 'https://espressohmnu.vercel.app/s'
 }
 
 const url = ref<string | null>(null)
