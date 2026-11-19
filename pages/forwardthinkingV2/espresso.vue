@@ -104,8 +104,8 @@ const CARDS: KwLinkCard[] = [
   { label: 'บัญชีผู้ใช้งาน', logo: '/ESPRESSO_logo.png', href: '/renewablesort/Client' },
   { label: 'Espresso Pharmacy', logo: '/ESPRESSO_logo.png', href: 'https://my.spline.design/espresopharmacy-a21edee004531a425af1c2768331add8/' },
   { label: 'Espresso Human', logo: '/ESPRESSO_logo.png', href: 'https://my.spline.design/espresohumen-dde33c067dcf5aa8cf10d9d16cfe66b2/' },
-  { label: 'Espresso คณะสังคม', logo: '/ESPRESSO_logo.png', badge: 'NEW', href: '/EspressoSocial' },
   { label: 'Download Document', logo: '/ESPRESSO_logo.png', href: '/Sale Kit Espresso251125.pdf', download: true },
+  { label: 'Espresso คณะสังคม', logo: '/ESPRESSO_logo.png', badge: 'NEW', href: '/EspressoSocial' },
 ]
 
 const PAGES = ['/5.png', '/6.png', '/7.png', '/8.png', '/9.png', '/10.png']
